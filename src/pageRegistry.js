@@ -1,4 +1,50 @@
-import { PAGE_DEFINITIONS } from './pageMetadata.js'
+export const PAGE_DEFINITIONS = Object.freeze([
+    Object.freeze({
+        id: 'home',
+        routePath: '/',
+        pageKey: 'home-page',
+        label: '',
+        navLabel: null,
+        showInNav: false,
+        sceneStateKey: 'home-page',
+    }),
+    Object.freeze({
+        id: 'about',
+        routePath: '/about',
+        pageKey: 'about-page',
+        label: 'Kind Words',
+        navLabel: 'About',
+        showInNav: true,
+        sceneStateKey: 'about-page',
+    }),
+    Object.freeze({
+        id: 'services',
+        routePath: '/services',
+        pageKey: 'services-page',
+        label: 'Our Specialties',
+        navLabel: 'Services',
+        showInNav: true,
+        sceneStateKey: 'services-page',
+    }),
+    Object.freeze({
+        id: 'work',
+        routePath: '/work',
+        pageKey: 'work-page',
+        label: 'Our Work',
+        navLabel: 'Work',
+        showInNav: true,
+        sceneStateKey: 'work-page',
+    }),
+    Object.freeze({
+        id: 'contact',
+        routePath: '/contact',
+        pageKey: 'contact-page',
+        label: '',
+        navLabel: null,
+        showInNav: false,
+        sceneStateKey: 'contact-page',
+    }),
+])
 
 const PAGE_BY_PATH = Object.freeze(
     Object.fromEntries(
@@ -14,8 +60,6 @@ const createRouteHandle = (pageDefinition) => ({
     pageKey: pageDefinition.pageKey,
     label: pageDefinition.label,
 })
-
-export { PAGE_DEFINITIONS }
 
 export const NAV_ITEMS = Object.freeze(
     PAGE_DEFINITIONS.filter((pageDefinition) => pageDefinition.showInNav).map(

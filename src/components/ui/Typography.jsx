@@ -48,18 +48,6 @@ export const BodySmall = styled.p`
   ${applyTypography('bodySmall')}
 `
 
-export const ButtonText = styled.span`
-  ${applyTypography('buttonLarge')}
-`
-
-export const ButtonTextMedium = styled.span`
-  ${applyTypography('buttonMedium')}
-`
-
-export const ButtonTextSmall = styled.span`
-  ${applyTypography('buttonSmall')}
-`
-
 export const Label = styled.span`
   ${applyTypography('label')}
 `

@@ -3,7 +3,7 @@ import useCarousel from '../hooks/useCarousel'
 import caseStudies from '../data/caseStudies'
 import ArrowButton from '../components/ui/ArrowButton'
 import WorkMarmot from '../components/characters/WorkMarmot'
-import ViewContainer from '../views/ViewContainer'
+import ViewContainer from '@/components/ui/ViewContainer'
 import usePageActive from '../hooks/usePageActive'
 
 const ArrowCol = styled.div`

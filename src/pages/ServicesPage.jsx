@@ -2,7 +2,7 @@ import { useState } from 'react'
 import styled from 'styled-components'
 import { BodyMedium } from '@/components/ui/Typography'
 import services from '@/data/services'
-import ViewContainer from '@/views/ViewContainer'
+import ViewContainer from '@/components/ui/ViewContainer'
 import usePageActive from '@/hooks/usePageActive'
 
 const ServiceList = styled.ul`
