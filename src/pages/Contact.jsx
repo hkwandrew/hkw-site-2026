@@ -100,7 +100,6 @@ const projectTypes = [
 export default function Contact({ isActive, onClose }) {
   return (
     <ViewContainer $isActive={isActive} style={{ zIndex: isActive ? 50 : 1 }}>
-      <Logo>HKW</Logo>
       <Overlay>
         <Circle>
           <CloseWrapper>

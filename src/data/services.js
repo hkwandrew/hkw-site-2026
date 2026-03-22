@@ -7,37 +7,37 @@ const services = [
   {
     name: 'Branding',
     description:
-      'We create distinctive brand identities that tell your story and connect with your audience on a deeper level.',
+      'We build brands with backbone. From positioning to visual identity, we  craft cohesive systems that help you stand out and stay memorable.',
   },
   {
     name: 'Graphic Design',
     description:
-      'From print to digital, we design visuals that capture attention and communicate your message with clarity and style.',
+      'Design that does more than look good — it works hard. We create thoughtful,  polished visuals that communicate clearly and elevate your message.',
   },
   {
     name: 'Web Design',
     description:
-      'Beautiful, functional websites that provide exceptional user experiences and reflect your brand perfectly.',
+      'Beautiful meets functional. We design websites that feel intuitive, reflect your  brand, and guide users exactly where they need to go.',
   },
   {
     name: 'UI/UX',
     description:
-      'We design intuitive interfaces and seamless user experiences that keep your audience engaged and coming back.',
+      'People first, always. We design seamless digital experiences that balance  usability, accessibility, and delight at every interaction.',
   },
   {
     name: 'Website Development',
     description:
-      'We build fast, accessible, and responsive websites using modern technologies that scale with your business.',
+      'Where strategy and design come to life. We build fast, responsive, scalable  websites that perform just as beautifully as they look.',
   },
   {
     name: 'Online Marketing',
     description:
-      'Build a strong reputation through strategic online marketing and brand representation that amplifies your impact.',
+      'Smart tactics, real results. We create data-informed campaigns that connect  with your audience and move the needle where it counts.',
   },
   {
     name: 'Creative Direction',
     description:
-      'We guide the visual and conceptual vision of your projects to ensure cohesive, impactful creative output.',
+      'Big-picture thinking with sharp execution. We shape cohesive creative visions that keep every touchpoint aligned and impactful.',
   },
 ]
 

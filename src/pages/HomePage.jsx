@@ -56,7 +56,6 @@ const FooterText = styled(BodySmall)`
 export default function Home({ isActive }) {
   return (
     <ViewContainer $isActive={isActive}>
-      <Logo>HKW</Logo>
       <Content>
         <Subtitle>HAPPY, KNOWLEDGABLE WORK</Subtitle>
         <HeroText as="h1">

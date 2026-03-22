@@ -1,6 +1,113 @@
 import { useLayoutEffect, useRef } from 'react'
 import { NavLink, useLocation } from 'react-router'
+import styled from 'styled-components'
 import { NAV_ITEMS } from '../pageRegistry.js'
+
+const Content = styled.div`
+  position: relative;
+
+  --pill-x: 0px;
+  --pill-w: 0px;
+  --pill-h: 0px;
+  --pill-o: 0;
+  --pill-move-dur: 0.5s;
+`
+
+const Pill = styled.div`
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+
+  left: var(--pill-x);
+  width: var(--pill-w);
+  height: var(--pill-h);
+
+  background-color: ${({ theme }) => theme.colors.orange.base};
+  border-radius: 9999px;
+
+  opacity: var(--pill-o);
+
+  transition:
+    left var(--pill-move-dur) ease,
+    width var(--pill-move-dur) ease,
+    height var(--pill-move-dur) ease,
+    opacity 0.15s ease;
+`
+
+const Items = styled.ul`
+  display: flex;
+  background-color: ${({ theme }) => theme.colors.orange.dark};
+  border-radius: 9999px;
+`
+
+const Item = styled.li`
+  border-radius: 9999px;
+  z-index: 1;
+`
+
+const StyledNavLink = styled(NavLink)`
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 18px 21px;
+  text-box: trim-both cap alphabetic;
+  text-transform: uppercase;
+
+  font-variation-settings: "wdth" 68, "wght" ${({ theme }) => theme.font.weight.medium};
+  font-size: 24px;
+  line-height: 26px;
+  border-radius: 9999px;
+
+  color: ${({ theme }) => theme.colors.yellow.light};
+
+  transition:
+    font-variation-settings 0.45s ease,
+    color 0.45s ease,
+    background-color 0.45s ease;
+
+  &::after {
+    content: attr(data-text);
+    display: block;
+    white-space: nowrap;
+
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+    user-select: none;
+    pointer-events: none;
+
+    font-variation-settings: "wdth" 68, "wght" ${({ theme }) => theme.font.weight.bold};
+    transition: none;
+  }
+
+  @media speech {
+    &::after {
+      display: none;
+    }
+  }
+
+  &.active {
+    color: ${({ theme }) => theme.colors.white};
+    font-variation-settings: "wdth" 68, "wght" ${({ theme }) => theme.font.weight.bold};
+    background-color: ${({ theme }) => theme.colors.orange.base};
+  }
+
+  &:not(.active):hover {
+    border-radius: 9999px;
+    background-color: ${({ theme }) => theme.colors.orange.base};
+    color: ${({ theme }) => theme.colors.white};
+
+    font-variation-settings: "wdth" 68, "wght" ${({ theme }) => theme.font.weight.bold};
+
+    transition:
+      font-variation-settings 0.15s ease,
+      color 0.15s ease,
+      background-color 0.15s ease;
+  }
+`
 
 const NavMenu = () => {
     const location = useLocation()
@@ -102,29 +209,26 @@ const NavMenu = () => {
     }, [location.pathname])
 
     return (
-        <nav id='menu'>
-            <div className='content' ref={contentRef}>
-                <div id='pill' />
-                <ul id='items' ref={menuRef}>
+        <nav>
+            <Content ref={contentRef}>
+                <Pill />
+                <Items ref={menuRef}>
                     {NAV_ITEMS.map(({ label, path }, index) => (
-                        <li key={path} className="item">
-                            <NavLink
+                        <Item key={path}>
+                            <StyledNavLink
                                 to={path}
                                 end
                                 data-text={label}
                                 ref={(el) => {
                                     linkRefs.current[index] = el
                                 }}
-                                className={({ isActive }) =>
-                                    `button${isActive ? ' active' : ''}`
-                                }
                             >
                                 {label}
-                            </NavLink>
-                        </li>
+                            </StyledNavLink>
+                        </Item>
                     ))}
-                </ul>
-            </div>
+                </Items>
+            </Content>
         </nav>
     )
 }
