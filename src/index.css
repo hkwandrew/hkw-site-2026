@@ -1,0 +1,61 @@
+@import "./styles/header.css";
+@import "./styles/nav-menu.css";
+@import './styles/about.css';
+
+@font-face {
+  font-family: "AcuminVF";
+  src:
+    local("Acumin VF"),
+    local("AcuminVF"),
+    url("./assets/fonts/AcuminVF.woff2") format("woff2-variations"),
+    url("./assets/fonts/AcuminVF.ttf") format("truetype-variations");
+  font-weight: 100 900;
+  font-stretch: 50% 115%;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  font-family: AcuminVF;
+  color-scheme: light;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+
+  --colors-dk-orange: #a53213;
+  --colors-orange: #d0471b;
+
+  --colors-gold: #fa9c38;
+  --colors-lt-yellow: #fcfae5;
+
+  --colors-dk-blue: #1c2d38;
+  --colors-lt-blue: #afd3fc;
+  --colors-med-blue: #5495d6;
+  --colors-med-dk-blue: #80bfff;
+
+  --colors-green: #415441;
+
+  --colors-dk-brown: #2b1e15;
+  --colors-lt-brown: #4f4030;
+  --colors-brick: #6f1b00;
+
+  --colors-white: #fff;
+
+  --bold: 700;
+  --medium: 500;
+  --regular: 400;
+
+  --global-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@property --contrast-color {
+  syntax: "<color>";
+  initial-value: white;
+  inherits: true;
+}
+
+#scene {
+  position: relative;
+}

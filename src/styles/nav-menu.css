@@ -1,0 +1,109 @@
+#menu .content {
+    position: relative;
+
+    /* Defaults prevent a 0x0 flash before first measurement */
+    --pill-x: 0px;
+    --pill-w: 0px;
+    --pill-h: 0px;
+    --pill-o: 0;
+    --pill-move-dur: 0.5s;
+}
+
+#menu .content #pill {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+
+    left: var(--pill-x);
+    width: var(--pill-w);
+    height: var(--pill-h);
+
+    background-color: var(--colors-orange);
+    color: var(--colors-white);
+    border-radius: 9999px;
+
+    opacity: var(--pill-o);
+
+    transition:
+        left var(--pill-move-dur) ease,
+        width var(--pill-move-dur) ease,
+        height var(--pill-move-dur) ease,
+        opacity 0.15s ease;
+}
+
+#menu .content #items {
+    display: flex;
+    background-color: var(--colors-dk-orange);
+    border-radius: 9999px;
+}
+
+#menu .content #items .item {
+    border-radius: 9999px;
+    z-index: 1;
+}
+
+#menu .content #items .item a.button {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 18px 21px;
+    text-box: trim-both cap alphabetic;
+    text-transform: uppercase;
+
+    font-variation-settings: "wdth" 68, "wght" 500;
+    font-size: 24px;
+    line-height: 26px;
+    border-radius: 9999px;
+
+    color: var(--colors-lt-yellow);
+
+    transition:
+        font-variation-settings 0.45s ease,
+        color 0.45s ease,
+        background-color 0.45s ease;
+}
+
+#menu .content #items .item a.button::after {
+    content: attr(data-text);
+    display: block;
+    white-space: nowrap;
+
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+    user-select: none;
+    pointer-events: none;
+
+    font-variation-settings: "wdth" 68, "wght" var(--bold);
+    transition: none;
+}
+
+@media speech {
+    #menu .content #items .item a.button::after {
+        display: none;
+    }
+}
+
+/* Active route */
+#menu .content #items .item a.button.active {
+    color: var(--colors-white);
+    font-variation-settings: "wdth" 68, "wght" var(--bold);
+    background-color: var(--colors-orange);
+}
+
+/* Hover for non-active */
+#menu .content #items .item a.button:not(.active):hover {
+    border-radius: 9999px;
+    background-color: var(--colors-orange);
+    color: var(--colors-white);
+
+    font-variation-settings: "wdth" 68, "wght" var(--bold);
+
+    transition:
+        font-variation-settings 0.15s ease,
+        color 0.15s ease,
+        background-color 0.15s ease;
+}
