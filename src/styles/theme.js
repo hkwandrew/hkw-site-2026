@@ -139,7 +139,7 @@ const theme = {
     medium: 'all 400ms ease',
   },
   breakpoints: {
-    mobile: '768px',
+    mobile: '767px',
     tablet: '1024px',
   },
 }

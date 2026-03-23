@@ -5,7 +5,7 @@
     overflow-x: clip;
 }
 
-.about-page>svg {
+.about-page > svg {
     position: fixed;
     inset: 0 auto auto 0;
     z-index: 0;
@@ -15,35 +15,53 @@
     pointer-events: none;
 }
 
-.about-page>.about,
-.about-page>.pin-spacer {
+.about-page > .about,
+.about-page > .about-static,
+.about-page > .pin-spacer {
     position: relative;
     z-index: 1;
 }
 
 .about-page .about-scene {
-    transform: translateY(0);
     will-change: transform;
 }
 
-.about-page .about-scene.about-scene--intro {
-    transform: translateY(100dvh);
+.about-page .about-scene.about-scene--enter {
+    animation: about-slide-in 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-.about-page .about-scene.about-scene--intro.about-scene--intro-active {
-    transform: translateY(0);
-    transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+.about-page .about-scene.about-scene--exit {
+    animation: about-slide-out 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-.about-page .about-scene.about-scene--outro {
-    transform: translateY(100dvh);
-    transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+@keyframes about-slide-in {
+    from {
+        transform: translateY(100dvh);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+@keyframes about-slide-out {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(100dvh);
+    }
 }
 
 .about {
     position: relative;
     min-height: 100dvh;
     overflow: clip;
+}
+
+.about-static {
+    display: none;
 }
 
 .about-scene {
@@ -61,33 +79,24 @@
     height: auto;
 }
 
-.about[data-about-stage="1"] .about-heroCloud svg,
-.about[data-about-stage="2"] .about-heroCloud svg,
-.about[data-about-stage="3"] .about-heroCloud svg {
-    width: unset;
+.about-heroCloudTarget {
+    visibility: hidden;
+    pointer-events: none;
 }
 
-.about[data-about-stage="2"] .about-heroCloud svg,
-.about[data-about-stage="3"] .about-heroCloud svg {
+.about[data-about-stage='2'] .about-heroCloud svg,
+.about[data-about-stage='3'] .about-heroCloud svg {
     opacity: 0;
-    transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-    transition-delay: 0.5s;
+    transition: opacity 1.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .about-heroCloud {
+    left: 0;
+    right: 0;
     position: absolute;
+    top: 79.01px;
     z-index: 4;
     pointer-events: none;
-    transform: rotate(11.99deg);
-
-    transition:
-        transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.about[data-about-stage="1"] .about-heroCloud,
-.about[data-about-stage="2"] .about-heroCloud,
-.about[data-about-stage="3"] .about-heroCloud {
-    transform: rotate(0);
 }
 
 .about-introCopy {
@@ -103,20 +112,20 @@
         line-height: 1.6;
         text-align: center;
         font-variation-settings:
-            "wdth" 100,
-            "wght" 400;
+            'wdth' 100,
+            'wght' 400;
     }
 
-    p+p {
+    p + p {
         margin-top: 20px;
     }
 
     span {
-        font-variation-settings: "wght" 500;
+        font-variation-settings: 'wght' 500;
     }
 
-    span+span {
-        font-variation-settings: "wght" 600;
+    span + span {
+        font-variation-settings: 'wght' 600;
     }
 }
 
@@ -132,7 +141,7 @@
     z-index: 46;
 }
 
-.about-scrollHint img {
+.about-scrollHint svg {
     width: 100%;
     height: auto;
     display: block;
@@ -147,7 +156,7 @@
 .about-clouds {
     z-index: 10;
     pointer-events: none;
-    background: linear-gradient(to top, #1c2d38, #1c2d38 30%, transparent 30%);
+    background: linear-gradient(to top, #1c2d38, #1c2d38 40%, transparent 40%);
 }
 
 .about-quotes {
@@ -166,7 +175,13 @@
 
 .about-cloud--dark {
     z-index: 20;
-    background: linear-gradient(to top, #1c2d38, #1c2d38 40%, transparent 40%, transparent);
+    background: linear-gradient(
+        to top,
+        #1c2d38,
+        #1c2d38 40%,
+        transparent 40%,
+        transparent
+    );
 }
 
 .about-cloud--mid {
@@ -216,6 +231,7 @@
 }
 
 .about-quoteText,
+.about-static-quoteText,
 .about-outroQuote {
     margin: 0;
     color: #fff;
@@ -223,27 +239,29 @@
     font-size: 24px;
     line-height: calc(32 / 24);
     font-variation-settings:
-        "wdth" 100,
-        "wght" 500,
-        "slnt" -12;
+        'wdth' 100,
+        'wght' 500,
+        'slnt' -12;
 }
 
 .about-quoteName,
+.about-static-quoteName,
 .about-outroName {
     margin: 25px 0 0;
     color: #afd3fc;
     font-size: 20px;
     line-height: 0.8;
     font-variation-settings:
-        "wdth" 100,
-        "wght" 500;
+        'wdth' 100,
+        'wght' 500;
 }
 
 .about-outroName {
     color: #1c2d38;
 }
 
-.about-quoteRole {
+.about-quoteRole,
+.about-static-quoteRole {
     margin: 7px 0 0;
 
     span {
@@ -251,8 +269,8 @@
         color: #afd3fc;
         font-size: 18px;
         font-variation-settings:
-            "wdth" 100,
-            "wght" 400;
+            'wdth' 100,
+            'wght' 400;
     }
 }
 
@@ -260,7 +278,7 @@
     margin: 7px 0 0;
     color: #1c2d38;
     font-size: 18px;
-    font-variation-settings: "wght" 400;
+    font-variation-settings: 'wght' 400;
 }
 
 .about-quote--mid .about-quoteName,
@@ -298,23 +316,177 @@
     height: 100dvh;
 }
 
-@media (max-width: 1023px) {
-    .about {
-        min-height: 100dvh;
+@media (max-width: 767px), (prefers-reduced-motion: reduce) {
+    .about--animated,
+    .about-page > .pin-spacer:has(.about--animated) {
+        display: none;
     }
 
-    .about-scene {
-        height: 100dvh;
+    .about-static {
+        display: block;
+        overflow: clip;
+        padding-top: clamp(6.5rem, 18vw, 7.75rem);
     }
 
-    .about-introCopy {
-        left: 8%;
-        top: 25%;
-        width: 84%;
+    .about-staticIntro {
+        position: relative;
+        min-height: 24.5rem;
+        padding: 0 1rem 0;
     }
 
-    .about-scrollHint {
+    .about-staticPageLabel {
+        position: relative;
+        z-index: 2;
+        width: min(calc(100% - 2rem), 21rem);
+        margin: 0 auto;
+        color: #d0471b;
+        font-size: 24px;
+        line-height: 1;
+        text-transform: uppercase;
+        font-variation-settings:
+            'wdth' 68,
+            'wght' 600;
+    }
+
+    .about-staticHeroCloud {
+        width: min(47rem, 192vw);
+        margin: 0.9rem auto clamp(-6.5rem, -18vw, -5rem);
+        pointer-events: none;
+    }
+
+    .about-introCopy--static {
+        position: relative;
+        left: auto;
+        top: auto;
+        width: min(calc(100% - 2rem), 21rem);
+        max-width: none;
+        margin: 0 auto;
+        padding: 3.9rem 0 0;
+        z-index: 1;
+
+        p {
+            font-size: 16px;
+            line-height: 1.25;
+            letter-spacing: -0.0194rem;
+        }
+
+        p + p {
+            margin-top: 1.2rem;
+        }
+    }
+
+    .about-staticCards {
+        display: grid;
+        gap: 0.72rem;
+        padding-bottom: 1.75rem;
+    }
+
+    .about-staticCard {
+        position: relative;
+        min-height: 16.2rem;
+        overflow: clip;
+    }
+
+    .about-staticCardCloud {
+        width: calc(100% + 1.25rem);
+        margin-left: -0.4375rem;
+
+        svg {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+    }
+
+    .about-staticCardContent {
+        position: absolute;
+        top: 5rem;
         left: 50%;
+        width: min(calc(100% - 2.5rem), 20.125rem);
         transform: translateX(-50%);
+        text-align: center;
+    }
+
+    .about-static-quoteText,
+    .about-staticOutroQuote {
+        font-size: 20px;
+        line-height: 1.25;
+    }
+
+    .about-static-quoteName {
+        margin-top: 0.95rem;
+        font-size: 18px;
+        line-height: 0.9;
+    }
+
+    .about-static-quoteRole {
+        margin-top: 0.85rem;
+
+        span {
+            font-size: 16px;
+            line-height: 1.25;
+        }
+    }
+
+    .about-staticCard--mid .about-static-quoteText {
+        color: #fff;
+    }
+
+    .about-staticCard--mid .about-static-quoteName,
+    .about-staticCard--mid .about-static-quoteRole span,
+    .about-staticCard--light .about-static-quoteText,
+    .about-staticCard--light .about-static-quoteName,
+    .about-staticCard--light .about-static-quoteRole span {
+        color: #1c2d38;
+    }
+
+    .about-staticCard--outro {
+        min-height: 19rem;
+    }
+
+    .about-staticCard--outro .about-staticCardContent {
+        top: 2.6rem;
+        width: min(calc(100% - 3rem), 18.5625rem);
+    }
+
+    .about-staticOutroQuote {
+        color: #d0471b;
+    }
+
+    .about-staticSwipeHint {
+        position: absolute;
+        left: 50%;
+        bottom: 0.95rem;
+        width: 3.64rem;
+        transform: translateX(-50%);
+
+        svg {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+    }
+
+    .about-mascot--static {
+        position: absolute;
+        left: 50%;
+        bottom: -1.2rem;
+        width: min(7.35rem, 30vw);
+        transform: translateX(-50%);
+    }
+}
+
+@media (min-width: 700px) and (max-width: 767px) {
+    .about-staticCards {
+        gap: 1.25rem;
+    }
+
+    .about-staticCardCloud {
+        width: min(31rem, 100%);
+        margin: 0 auto;
+    }
+
+    .about-staticCardContent {
+        width: min(19rem, 80%);
     }
 }

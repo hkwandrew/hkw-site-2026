@@ -5,7 +5,9 @@ export const PAGE_DEFINITIONS = Object.freeze([
         pageKey: 'home-page',
         label: '',
         navLabel: null,
+        phoneNavLabel: null,
         showInNav: false,
+        showInPhoneNav: false,
         sceneStateKey: 'home-page',
     }),
     Object.freeze({
@@ -14,7 +16,9 @@ export const PAGE_DEFINITIONS = Object.freeze([
         pageKey: 'about-page',
         label: 'Kind Words',
         navLabel: 'About',
+        phoneNavLabel: 'About',
         showInNav: true,
+        showInPhoneNav: true,
         sceneStateKey: 'about-page',
     }),
     Object.freeze({
@@ -23,7 +27,9 @@ export const PAGE_DEFINITIONS = Object.freeze([
         pageKey: 'services-page',
         label: 'Our Specialties',
         navLabel: 'Services',
+        phoneNavLabel: 'Services',
         showInNav: true,
+        showInPhoneNav: true,
         sceneStateKey: 'services-page',
     }),
     Object.freeze({
@@ -32,7 +38,9 @@ export const PAGE_DEFINITIONS = Object.freeze([
         pageKey: 'work-page',
         label: 'Our Work',
         navLabel: 'Work',
+        phoneNavLabel: null,
         showInNav: true,
+        showInPhoneNav: false,
         sceneStateKey: 'work-page',
     }),
     Object.freeze({
@@ -41,7 +49,9 @@ export const PAGE_DEFINITIONS = Object.freeze([
         pageKey: 'contact-page',
         label: '',
         navLabel: null,
+        phoneNavLabel: 'Contact',
         showInNav: false,
+        showInPhoneNav: true,
         sceneStateKey: 'contact-page',
     }),
 ])
@@ -67,6 +77,20 @@ export const NAV_ITEMS = Object.freeze(
             Object.freeze({
                 id: pageDefinition.id,
                 label: pageDefinition.navLabel,
+                path: pageDefinition.routePath,
+            }),
+    ),
+)
+
+export const PHONE_NAV_ITEMS = Object.freeze(
+    PAGE_DEFINITIONS.filter((pageDefinition) => pageDefinition.showInPhoneNav).map(
+        (pageDefinition) =>
+            Object.freeze({
+                id: pageDefinition.id,
+                label:
+                    pageDefinition.phoneNavLabel ??
+                    pageDefinition.navLabel ??
+                    pageDefinition.label,
                 path: pageDefinition.routePath,
             }),
     ),

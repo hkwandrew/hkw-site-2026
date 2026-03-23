@@ -21,6 +21,10 @@ const GlobalStyle = createGlobalStyle`
     overflow: hidden;
   }
 
+  main {
+    min-height: 100%;
+  }
+
   body {
     font-family: ${({ theme }) => theme.font.family};
     font-weight: ${({ theme }) => theme.font.weight.regular};
@@ -29,6 +33,28 @@ const GlobalStyle = createGlobalStyle`
     background-color: ${({ theme }) => theme.colors.yellow.light};
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  body[data-mobile-nav-open='true'] {
+    overflow: hidden;
+    touch-action: none;
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    html, body, #root {
+      height: auto;
+      min-height: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    main {
+      min-height: 100dvh;
+    }
+
+    #scene-svg {
+      display: none;
+    }
   }
 
   a {

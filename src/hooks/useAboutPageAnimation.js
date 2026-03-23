@@ -1,24 +1,25 @@
 import { useEffect, useLayoutEffect, useRef } from 'react'
 import gsap from 'gsap'
 import ScrollTrigger from 'gsap/ScrollTrigger'
+import ScrollToPlugin from 'gsap/ScrollToPlugin'
 import MorphSVGPlugin from 'gsap/MorphSVGPlugin'
 import { useBlocker } from 'react-router'
 import { usePageSceneTransition } from '../context/pageSceneTransition'
 
 import {
+    ABOUT_DESKTOP_MIN_WIDTH,
+    ABOUT_INITIAL_VISIBILITY,
+    ABOUT_SCROLL_TRIGGER_ID,
+    ABOUT_TRANSITIONS,
     HERO_CLOUD_STAGE_ONE_SELECTOR,
     HERO_CLOUD_STAGE_ZERO_SELECTOR,
-    ABOUT_SCROLL_TRIGGER_ID,
     SCROLL_DISTANCE_VIEWPORT_MULTIPLIER,
-    STAGE_CLASS_NAMES,
-    STAGE_ONE_SCROLL_LABEL,
     STAGE_ONE_SCROLL_PROGRESS,
-    STATE_FOUR,
     STATE_ONE,
-    STATE_THREE,
     STATE_TWO,
     TIMELINE,
-} from './aboutAnimationConfig'
+    TIMELINE_END_TIME,
+} from '../aboutAnimationConfig'
 import {
     CLOUDS,
     DESIGN_FRAME,
@@ -26,16 +27,15 @@ import {
     MASCOT,
     OUTRO_COPY,
     QUOTES,
-} from './aboutData'
-import { ABOUT_STAGE_EASE } from './aboutStageEasing'
+} from '../data/about-clouds-quotes'
 
-gsap.registerPlugin(ScrollTrigger, MorphSVGPlugin)
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin, MorphSVGPlugin)
 
-const INTRO_TRANSITION_MS = 850
-const INTRO_TRANSITION_FALLBACK_MS = INTRO_TRANSITION_MS + 220
-const INTRO_CLASS_NAME = 'about-scene--intro'
-const INTRO_ACTIVE_CLASS_NAME = 'about-scene--intro-active'
-const OUTRO_CLASS_NAME = 'about-scene--outro'
+const INTRO_DURATION_S = 1.5
+const INTRO_DURATION_MS = INTRO_DURATION_S * 1000
+
+const resolveResponsiveValue = (lazy, resolver) =>
+    lazy ? () => resolver() : resolver()
 
 const useAboutAnimation = () => {
     const sectionRef = useRef(null)
@@ -59,13 +59,13 @@ const useAboutAnimation = () => {
 
         transitionSceneToPath(nextPathRef.current)
 
-        const runExitTransition = exitTransitionRef.current
-        if (!runExitTransition) {
+        const runExit = exitTransitionRef.current
+        if (!runExit) {
             leaveAboutBlocker.proceed()
             return
         }
 
-        runExitTransition(() => {
+        runExit(() => {
             nextPathRef.current = null
             leaveAboutBlocker.proceed()
         })
@@ -74,51 +74,52 @@ const useAboutAnimation = () => {
     useLayoutEffect(() => {
         const section = sectionRef.current
         if (!section) return undefined
-        const sceneEl = section.querySelector('.about-scene')
 
+        const sceneEl = section.querySelector('.about-scene')
         const shouldReduce = window.matchMedia(
             '(prefers-reduced-motion: reduce)',
         ).matches
+        const isStaticMode =
+            shouldReduce || window.innerWidth < ABOUT_DESKTOP_MIN_WIDTH
 
         const toX = (value) => (value / DESIGN_FRAME.width) * section.clientWidth
         const toY = (value) => (value / DESIGN_FRAME.height) * section.clientHeight
-        const transitionOneStart =
-            TIMELINE.stateTwo - TIMELINE.transitionOneDuration
-        const transitionTwoStart =
-            TIMELINE.stateThree - TIMELINE.transitionTwoDuration
-        const transitionThreeStart =
-            TIMELINE.stateFour - TIMELINE.transitionThreeDuration
+        const createXYWidthProps = (state, width, lazy, extraProps = {}) => ({
+            x: resolveResponsiveValue(lazy, () => toX(state.x)),
+            y: resolveResponsiveValue(lazy, () => toY(state.y)),
+            width: resolveResponsiveValue(lazy, () => toX(width)),
+            ...extraProps,
+        })
+        const createLeftTopWidthProps = (state, lazy, extraProps = {}) => ({
+            left: resolveResponsiveValue(lazy, () => toX(state.x)),
+            top: resolveResponsiveValue(lazy, () => toY(state.y)),
+            width: resolveResponsiveValue(lazy, () => toX(state.width)),
+            ...extraProps,
+        })
 
         let activeStage = -1
+        let scrollCtx
+        let introTimeoutId = 0
+        let isDisposed = false
 
-        const getStageFromTime = (time) => {
-            if (time >= transitionThreeStart) return STATE_FOUR
-            if (time >= transitionTwoStart) return STATE_THREE
-            if (time >= transitionOneStart) return STATE_TWO
-            return STATE_ONE
-        }
+        const getStageFromTime = (time) =>
+            ABOUT_TRANSITIONS.reduce(
+                (stage, transition) =>
+                    time >= transition.start ? transition.toState : stage,
+                STATE_ONE,
+            )
 
         const applyStageTargeting = (stage) => {
             if (activeStage === stage) return
-
             activeStage = stage
             section.dataset.aboutStage = String(stage)
-
-            STAGE_CLASS_NAMES.forEach((className, index) => {
-                section.classList.toggle(className, index === stage)
-            })
         }
 
         const clearStageTargeting = () => {
             activeStage = -1
             section.removeAttribute('data-about-stage')
-            STAGE_CLASS_NAMES.forEach((className) => {
-                section.classList.remove(className)
-            })
         }
 
-        const cloudElements = new Map()
-        const quoteElements = new Map()
         const heroCloudEl = section.querySelector('.about-heroCloud')
         const heroCloudStageZeroPathEl = section.querySelector(
             HERO_CLOUD_STAGE_ZERO_SELECTOR,
@@ -128,88 +129,113 @@ const useAboutAnimation = () => {
         )
         const heroCloudStageZeroD = heroCloudStageZeroPathEl?.getAttribute('d')
         const heroCloudStageOneD = heroCloudStageOnePathEl?.getAttribute('d')
+        const introCopyEl = section.querySelector('[data-intro-copy]')
+        const scrollHintEl = section.querySelector('[data-scroll-hint]')
+        const outroCopyEl = section.querySelector('[data-outro-copy]')
+        const mascotEl = section.querySelector('[data-outro-mascot]')
+        const darkQuoteEls = [
+            ...section.querySelectorAll('[data-quote-layer="dark"]'),
+        ]
+        const midQuoteEls = [...section.querySelectorAll('[data-quote-layer="mid"]')]
+        const lightQuoteEls = [
+            ...section.querySelectorAll('[data-quote-layer="light"]'),
+        ]
+        const allQuoteEls = [...section.querySelectorAll('.about-quote')]
+        const introElements = [introCopyEl, scrollHintEl].filter(Boolean)
 
-        CLOUDS.forEach((cloud) => {
-            const cloudEl = section.querySelector(`[data-cloud-id="${cloud.id}"]`)
-            if (cloudEl) cloudElements.set(cloud.id, cloudEl)
-        })
-
-        QUOTES.forEach((quote) => {
-            const quoteEl = section.querySelector(`[data-quote-id="${quote.id}"]`)
-            if (quoteEl) quoteElements.set(quote.id, quoteEl)
-        })
-
-        const setCloudState = (stateIndex) => {
-            CLOUDS.forEach((cloud) => {
-                const cloudEl = cloudElements.get(cloud.id)
-                const state = cloud.states[stateIndex]
-                if (!cloudEl || !state) return
-
-                gsap.set(cloudEl, {
-                    x: toX(state.x),
-                    y: toY(state.y),
-                    width: toX(cloud.width),
-                })
-            })
+        const visibilityGroups = {
+            intro: introElements,
+            dark: darkQuoteEls,
+            mid: midQuoteEls,
+            light: lightQuoteEls,
+            outro: outroCopyEl ? [outroCopyEl] : [],
+            mascot: mascotEl ? [mascotEl] : [],
         }
 
-        const setQuoteState = (stateIndex) => {
-            QUOTES.forEach((quote) => {
-                const quoteEl = quoteElements.get(quote.id)
-                const state = quote.states[stateIndex]
-                if (!quoteEl || !state) return
+        const heroContainerStates = [
+            HERO_CLOUD_CONTAINER_STATES[STATE_ONE],
+            HERO_CLOUD_CONTAINER_STATES[STATE_TWO],
+            HERO_CLOUD_CONTAINER_STATES[STATE_TWO],
+            HERO_CLOUD_CONTAINER_STATES[STATE_TWO],
+        ]
 
-                gsap.set(quoteEl, {
-                    x: toX(state.x),
-                    y: toY(state.y),
-                    width: toX(quote.width),
-                })
-            })
-        }
+        const motionTargets = [
+            ...CLOUDS.map((cloud) => {
+                const element = section.querySelector(`[data-cloud-id="${cloud.id}"]`)
 
-        const getHeroCloudContainerState = (stateIndex) =>
-            stateIndex === STATE_ONE
-                ? HERO_CLOUD_CONTAINER_STATES[STATE_ONE]
-                : HERO_CLOUD_CONTAINER_STATES[STATE_TWO]
+                return {
+                    element,
+                    propsForState: (stateIndex, lazy) => {
+                        const state = cloud.states[stateIndex]
+                        if (!element || !state) return null
 
-        const setHeroCloudContainerState = (stateIndex) => {
-            const state = getHeroCloudContainerState(stateIndex)
-            if (!heroCloudEl || !state) return
-
-            gsap.set(heroCloudEl, {
-                left: toX(state.x),
-                top: toY(state.y),
-                width: toX(state.width),
-            })
-        }
-
-        const setHeroCloudState = (stateIndex) => {
-            if (!heroCloudStageOneD) return
-
-            if (heroCloudStageZeroPathEl && heroCloudStageZeroD) {
-                gsap.set(heroCloudStageZeroPathEl, {
-                    attr: {
-                        d:
-                            stateIndex === STATE_ONE
-                                ? heroCloudStageZeroD
-                                : heroCloudStageOneD,
+                        return createXYWidthProps(state, cloud.width, lazy)
                     },
-                })
-            }
+                }
+            }),
+            ...QUOTES.map((quote) => {
+                const element = section.querySelector(`[data-quote-id="${quote.id}"]`)
+
+                return {
+                    element,
+                    propsForState: (stateIndex, lazy) => {
+                        const state = quote.states[stateIndex]
+                        if (!element || !state) return null
+
+                        return createXYWidthProps(state, quote.width, lazy)
+                    },
+                }
+            }),
+            {
+                element: outroCopyEl,
+                propsForState: (stateIndex, lazy) => {
+                    const state = OUTRO_COPY.states[stateIndex]
+                    if (!outroCopyEl || !state) return null
+
+                    return createXYWidthProps(state, OUTRO_COPY.width, lazy)
+                },
+            },
+            {
+                element: mascotEl,
+                propsForState: (stateIndex, lazy) => {
+                    const state = MASCOT.states[stateIndex]
+                    if (!mascotEl || !state) return null
+
+                    return createXYWidthProps(state, MASCOT.width, lazy, {
+                        autoAlpha: resolveResponsiveValue(lazy, () => state.opacity),
+                        transformOrigin: 'center bottom',
+                    })
+                },
+            },
+            {
+                element: heroCloudEl,
+                propsForState: (stateIndex, lazy) => {
+                    const state = heroContainerStates[stateIndex]
+                    if (!heroCloudEl || !state) return null
+
+                    return createLeftTopWidthProps(state, lazy)
+                },
+            },
+        ]
+
+        const applyMotionState = (stateIndex) => {
+            motionTargets.forEach((target) => {
+                const props = target.propsForState(stateIndex, false)
+                if (!target.element || !props) return
+
+                gsap.set(target.element, props)
+            })
         }
 
-        const tweenCloudState = (timeline, stateIndex, position, duration) => {
-            CLOUDS.forEach((cloud) => {
-                const cloudEl = cloudElements.get(cloud.id)
-                const state = cloud.states[stateIndex]
-                if (!cloudEl || !state) return
+        const tweenMotionState = (timeline, stateIndex, position, duration) => {
+            motionTargets.forEach((target) => {
+                const props = target.propsForState(stateIndex, true)
+                if (!target.element || !props) return
 
                 timeline.to(
-                    cloudEl,
+                    target.element,
                     {
-                        x: () => toX(state.x),
-                        y: () => toY(state.y),
-                        width: () => toX(cloud.width),
+                        ...props,
                         duration,
                     },
                     position,
@@ -217,107 +243,50 @@ const useAboutAnimation = () => {
             })
         }
 
+        const setGroupVisibility = (group, autoAlpha) => {
+            const elements = visibilityGroups[group] ?? []
+            if (!elements.length) return
+
+            gsap.set(elements, { autoAlpha })
+        }
+
+        const setHeroCloudState = (stateIndex) => {
+            if (!heroCloudStageZeroPathEl || !heroCloudStageZeroD || !heroCloudStageOneD) {
+                return
+            }
+
+            gsap.set(heroCloudStageZeroPathEl, {
+                attr: {
+                    d: stateIndex === STATE_ONE ? heroCloudStageZeroD : heroCloudStageOneD,
+                },
+            })
+        }
+
         const tweenHeroCloudState = (timeline, position, duration) => {
-            if (!heroCloudStageOnePathEl || !heroCloudStageZeroPathEl) return
+            if (!heroCloudStageZeroPathEl || !heroCloudStageOnePathEl) return
 
             timeline.to(
                 heroCloudStageZeroPathEl,
                 {
                     morphSVG: heroCloudStageOnePathEl,
                     duration,
+                    immediateRender: false,
                 },
                 position,
             )
         }
 
-        const tweenHeroCloudContainerState = (
-            timeline,
-            stateIndex,
-            position,
-            duration,
-        ) => {
-            const state = getHeroCloudContainerState(stateIndex)
-            if (!heroCloudEl || !state) return
-
-            timeline.to(
-                heroCloudEl,
-                {
-                    left: () => toX(state.x),
-                    top: () => toY(state.y),
-                    width: () => toX(state.width),
-                    duration,
-                },
-                position,
-            )
-        }
-
-        const tweenQuoteState = (timeline, stateIndex, position, duration) => {
-            QUOTES.forEach((quote) => {
-                const quoteEl = quoteElements.get(quote.id)
-                const state = quote.states[stateIndex]
-                if (!quoteEl || !state) return
-
-                timeline.to(
-                    quoteEl,
-                    {
-                        x: () => toX(state.x),
-                        y: () => toY(state.y),
-                        width: () => toX(quote.width),
-                        duration,
-                    },
-                    position,
-                )
-            })
-        }
-
-        const outroCopyEl = section.querySelector('[data-outro-copy]')
-        const mascotEl = section.querySelector('[data-outro-mascot]')
-        const introCopyEl = section.querySelector('[data-intro-copy]')
-        const scrollHintEl = section.querySelector('[data-scroll-hint]')
-        const darkQuoteEls = section.querySelectorAll('[data-quote-layer="dark"]')
-        const midQuoteEls = section.querySelectorAll('[data-quote-layer="mid"]')
-        const lightQuoteEls = section.querySelectorAll('[data-quote-layer="light"]')
-        const allQuoteEls = section.querySelectorAll('.about-quote')
-        const introElements = [introCopyEl, scrollHintEl].filter(Boolean)
-
-        const setOutroState = (index) => {
-            const state = OUTRO_COPY.states[index]
-            if (!outroCopyEl || !state) return
-            gsap.set(outroCopyEl, {
-                x: toX(state.x),
-                y: toY(state.y),
-                width: toX(OUTRO_COPY.width),
-            })
-        }
-
-        const setMascotState = (index) => {
-            const state = MASCOT.states[index]
-            if (!mascotEl || !state) return
-
-            gsap.set(mascotEl, {
-                x: toX(state.x),
-                y: toY(state.y),
-                width: toX(MASCOT.width),
-                autoAlpha: state.opacity,
-                rotation: -11.89,
-                transformOrigin: 'center bottom',
-            })
-        }
-
-        setCloudState(STATE_ONE)
-        setQuoteState(STATE_ONE)
-        setHeroCloudContainerState(STATE_ONE)
+        applyMotionState(STATE_ONE)
         setHeroCloudState(STATE_ONE)
-        setOutroState(STATE_ONE)
-        setMascotState(STATE_ONE)
         applyStageTargeting(STATE_ONE)
 
-        if (shouldReduce || window.innerWidth < 1024) {
+        if (isStaticMode) {
             section.classList.add('about--static')
-            gsap.set(introElements, { autoAlpha: 1 })
+            setGroupVisibility('intro', 1)
             gsap.set(allQuoteEls, { autoAlpha: 1 })
             gsap.set(outroCopyEl, { autoAlpha: 1 })
             gsap.set(mascotEl, { autoAlpha: 0 })
+
             return () => {
                 section.classList.remove('about--static')
                 clearStageTargeting()
@@ -326,199 +295,78 @@ const useAboutAnimation = () => {
 
         section.classList.remove('about--static')
 
-        let ctx
-
         const initScrollAnimation = () => {
-            if (ctx) return
+            if (scrollCtx) return
 
-            ctx = gsap.context(() => {
-                const timelineEnd = TIMELINE.stateFour + TIMELINE.holdTail
-
-                gsap.set(introElements, { autoAlpha: 1 })
-                gsap.set(darkQuoteEls, { autoAlpha: 1 })
-                gsap.set(midQuoteEls, { autoAlpha: 0 })
-                gsap.set(lightQuoteEls, { autoAlpha: 0 })
-                gsap.set(outroCopyEl, { autoAlpha: 0 })
-                gsap.set(mascotEl, { autoAlpha: 0 })
+            scrollCtx = gsap.context(() => {
+                Object.entries(ABOUT_INITIAL_VISIBILITY).forEach(
+                    ([group, autoAlpha]) => {
+                        setGroupVisibility(group, autoAlpha)
+                    },
+                )
 
                 const timeline = gsap.timeline({
-                    defaults: { ease: ABOUT_STAGE_EASE },
                     scrollTrigger: {
                         id: ABOUT_SCROLL_TRIGGER_ID,
                         trigger: section,
                         start: 'top top',
-                        end: '+=420%',
+                        end: `+=${SCROLL_DISTANCE_VIEWPORT_MULTIPLIER * 100}%`,
                         scrub: true,
                         pin: true,
                         anticipatePin: 1,
                         invalidateOnRefresh: true,
                         onUpdate: (self) => {
-                            applyStageTargeting(getStageFromTime(self.animation?.time?.() ?? 0))
+                            applyStageTargeting(
+                                getStageFromTime(self.animation?.time?.() ?? 0),
+                            )
                         },
                         onRefresh: (self) => {
-                            applyStageTargeting(getStageFromTime(self.animation?.time?.() ?? 0))
+                            applyStageTargeting(
+                                getStageFromTime(self.animation?.time?.() ?? 0),
+                            )
                         },
                     },
                 })
 
-                const tweenOutroState = (stateIndex, position, duration) => {
-                    const state = OUTRO_COPY.states[stateIndex]
-                    if (!outroCopyEl || !state) return
-                    timeline.to(
-                        outroCopyEl,
-                        {
-                            x: () => toX(state.x),
-                            y: () => toY(state.y),
-                            width: () => toX(OUTRO_COPY.width),
-                            duration,
-                        },
-                        position,
-                    )
-                }
-
-                const tweenMascotState = (timeline, stateIndex, position, duration) => {
-                    const state = MASCOT.states[stateIndex]
-                    if (!mascotEl || !state) return
-                    timeline.to(
-                        mascotEl,
-                        {
-                            x: () => toX(state.x),
-                            y: () => toY(state.y),
-                            width: () => toX(MASCOT.width),
-                            autoAlpha: state.opacity,
-                            rotation: -11.89,
-                            duration,
-                        },
-                        position,
-                    )
-                }
-
                 timeline.addLabel('view-1', 0)
 
-                timeline.to(
-                    introElements,
-                    { autoAlpha: 0, duration: TIMELINE.transitionOneDuration * 0.45 },
-                    transitionOneStart + TIMELINE.transitionOneDuration * 0.2,
-                )
-                timeline.to(
-                    midQuoteEls,
-                    { autoAlpha: 1, duration: TIMELINE.transitionOneDuration * 0.45 },
-                    transitionOneStart + TIMELINE.transitionOneDuration * 0.45,
-                )
-                tweenCloudState(
-                    timeline,
-                    STATE_TWO,
-                    transitionOneStart,
-                    TIMELINE.transitionOneDuration,
-                )
-                tweenHeroCloudState(
-                    timeline,
-                    transitionOneStart,
-                    TIMELINE.transitionOneDuration,
-                )
-                tweenHeroCloudContainerState(
-                    timeline,
-                    STATE_TWO,
-                    transitionOneStart,
-                    TIMELINE.transitionOneDuration,
-                )
-                tweenQuoteState(
-                    timeline,
-                    STATE_TWO,
-                    transitionOneStart,
-                    TIMELINE.transitionOneDuration,
-                )
-                tweenOutroState(
-                    STATE_TWO,
-                    transitionOneStart,
-                    TIMELINE.transitionOneDuration,
-                )
-                tweenMascotState(
-                    timeline,
-                    STATE_TWO,
-                    transitionOneStart,
-                    TIMELINE.transitionOneDuration,
-                )
-                timeline.addLabel('view-2', TIMELINE.stateTwo)
+                ABOUT_TRANSITIONS.forEach((transition) => {
+                    transition.fades.forEach((fade) => {
+                        const elements = visibilityGroups[fade.group] ?? []
+                        if (!elements.length) return
 
-                timeline.to(
-                    darkQuoteEls,
-                    { autoAlpha: 0, duration: TIMELINE.transitionTwoDuration * 0.42 },
-                    transitionTwoStart + TIMELINE.transitionTwoDuration * 0.08,
-                )
-                timeline.to(
-                    lightQuoteEls,
-                    { autoAlpha: 1, duration: TIMELINE.transitionTwoDuration * 0.42 },
-                    transitionTwoStart + TIMELINE.transitionTwoDuration * 0.5,
-                )
-                tweenCloudState(
-                    timeline,
-                    STATE_THREE,
-                    transitionTwoStart,
-                    TIMELINE.transitionTwoDuration,
-                )
-                tweenQuoteState(
-                    timeline,
-                    STATE_THREE,
-                    transitionTwoStart,
-                    TIMELINE.transitionTwoDuration,
-                )
-                tweenOutroState(
-                    STATE_THREE,
-                    transitionTwoStart,
-                    TIMELINE.transitionTwoDuration,
-                )
-                tweenMascotState(
-                    timeline,
-                    STATE_THREE,
-                    transitionTwoStart,
-                    TIMELINE.transitionTwoDuration,
-                )
-                timeline.addLabel('view-3', TIMELINE.stateThree)
+                        timeline.to(
+                            elements,
+                            {
+                                autoAlpha: fade.autoAlpha,
+                                duration: transition.duration * fade.durationScale,
+                            },
+                            transition.start + transition.duration * fade.offset,
+                        )
+                    })
 
-                timeline.to(
-                    midQuoteEls,
-                    { autoAlpha: 0, duration: TIMELINE.transitionThreeDuration * 0.42 },
-                    transitionThreeStart + TIMELINE.transitionThreeDuration * 0.1,
-                )
-                timeline.to(
-                    outroCopyEl,
-                    { autoAlpha: 1, duration: TIMELINE.transitionThreeDuration * 0.42 },
-                    transitionThreeStart + TIMELINE.transitionThreeDuration * 0.54,
-                )
-                timeline.to(
-                    mascotEl,
-                    { autoAlpha: 1, duration: TIMELINE.transitionThreeDuration * 0.42 },
-                    transitionThreeStart + TIMELINE.transitionThreeDuration * 0.56,
-                )
-                tweenCloudState(
-                    timeline,
-                    STATE_FOUR,
-                    transitionThreeStart,
-                    TIMELINE.transitionThreeDuration,
-                )
-                tweenQuoteState(
-                    timeline,
-                    STATE_FOUR,
-                    transitionThreeStart,
-                    TIMELINE.transitionThreeDuration,
-                )
-                tweenOutroState(
-                    STATE_FOUR,
-                    transitionThreeStart,
-                    TIMELINE.transitionThreeDuration,
-                )
-                tweenMascotState(
-                    timeline,
-                    STATE_FOUR,
-                    transitionThreeStart,
-                    TIMELINE.transitionThreeDuration,
-                )
-                timeline.addLabel('view-4', TIMELINE.stateFour)
+                    tweenMotionState(
+                        timeline,
+                        transition.toState,
+                        transition.start,
+                        transition.duration,
+                    )
+
+                    if (transition.morphHero) {
+                        tweenHeroCloudState(
+                            timeline,
+                            transition.start,
+                            transition.duration,
+                        )
+                    }
+
+                    timeline.addLabel(transition.label, transition.time)
+                })
+
                 timeline.to(
                     { hold: 0 },
                     { hold: 1, duration: TIMELINE.holdTail },
-                    timelineEnd - TIMELINE.holdTail,
+                    TIMELINE_END_TIME - TIMELINE.holdTail,
                 )
                 applyStageTargeting(getStageFromTime(timeline.time()))
             }, section)
@@ -526,187 +374,60 @@ const useAboutAnimation = () => {
             ScrollTrigger.refresh()
         }
 
-        let transitionTimeoutId = 0
-        let exitTransitionTimeoutId = 0
-        let introStartFrameId = 0
-        let introActivateFrameId = 0
-        let isDisposed = false
-        let isExiting = false
-        let hasStartedScrollAnimation = false
-        let exitCallbacks = []
-
-        const cleanupIntroClasses = () => {
-            if (!sceneEl) return
-            sceneEl.classList.remove(INTRO_ACTIVE_CLASS_NAME)
-            sceneEl.classList.remove(INTRO_CLASS_NAME)
-        }
-
-        const cleanupOutroClasses = () => {
-            if (!sceneEl) return
-            sceneEl.classList.remove(OUTRO_CLASS_NAME)
-        }
-
-        const ensureScrollAnimation = () => {
-            if (isDisposed || isExiting || hasStartedScrollAnimation) return
-            hasStartedScrollAnimation = true
-            initScrollAnimation()
-        }
-
-        const startScrollAnimation = () => {
-            if (isDisposed || isExiting) return
-            cleanupIntroClasses()
-            ensureScrollAnimation()
-        }
-
-        const removeTransitionListener =
-            sceneEl &&
-            ((event) => {
-                if (event.target !== sceneEl || event.propertyName !== 'transform') {
-                    return
-                }
-                sceneEl.removeEventListener('transitionend', removeTransitionListener)
-                window.clearTimeout(transitionTimeoutId)
-                startScrollAnimation()
-            })
-
-        const finishExitTransition = () => {
-            if (!isExiting) return
-
-            isExiting = false
-            window.clearTimeout(exitTransitionTimeoutId)
-            if (sceneEl) {
-                sceneEl.removeEventListener('transitionend', handleExitTransitionEnd)
-            }
-
-            const queuedCallbacks = exitCallbacks
-            exitCallbacks = []
-            queuedCallbacks.forEach((callback) => {
-                callback()
-            })
-        }
-
-        function handleExitTransitionEnd(event) {
-            if (event.target !== sceneEl || event.propertyName !== 'transform') {
-                return
-            }
-
-            finishExitTransition()
-        }
-
         const runExitTransition = (onComplete) => {
-            if (typeof onComplete === 'function') {
-                exitCallbacks.push(onComplete)
-            }
-
-            if (
-                !sceneEl ||
-                shouldReduce ||
-                window.innerWidth < 1024 ||
-                isDisposed
-            ) {
-                const queuedCallbacks = exitCallbacks
-                exitCallbacks = []
-                queuedCallbacks.forEach((callback) => {
-                    callback()
-                })
+            if (!sceneEl || isStaticMode || isDisposed) {
+                onComplete?.()
                 return
             }
 
-            if (isExiting) return
-
-            isExiting = true
-            window.cancelAnimationFrame(introStartFrameId)
-            window.cancelAnimationFrame(introActivateFrameId)
-            window.clearTimeout(transitionTimeoutId)
-            if (removeTransitionListener) {
-                sceneEl.removeEventListener('transitionend', removeTransitionListener)
-            }
-
-            cleanupIntroClasses()
-            cleanupOutroClasses()
-            void sceneEl.offsetHeight
-
-            sceneEl.addEventListener('transitionend', handleExitTransitionEnd)
-            sceneEl.classList.add(OUTRO_CLASS_NAME)
-
-            exitTransitionTimeoutId = window.setTimeout(
-                finishExitTransition,
-                INTRO_TRANSITION_FALLBACK_MS,
-            )
+            sceneEl.classList.add('about-scene--exit')
+            introTimeoutId = setTimeout(() => {
+                onComplete?.()
+            }, INTRO_DURATION_MS)
         }
 
         exitTransitionRef.current = runExitTransition
 
         if (!sceneEl) {
-            startScrollAnimation()
+            initScrollAnimation()
         } else {
-            ensureScrollAnimation()
-            cleanupIntroClasses()
-            cleanupOutroClasses()
-            sceneEl.classList.add(INTRO_CLASS_NAME)
+            // CSS animation intro — immune to React StrictMode's
+            // mount-cleanup-remount cycle unlike GSAP tweens.
+            sceneEl.classList.add('about-scene--enter')
 
-            introStartFrameId = window.requestAnimationFrame(() => {
-                introActivateFrameId = window.requestAnimationFrame(() => {
-                    if (isDisposed) return
-
-                    if (removeTransitionListener) {
-                        sceneEl.addEventListener('transitionend', removeTransitionListener)
-                    }
-
-                    sceneEl.classList.add(INTRO_ACTIVE_CLASS_NAME)
-
-                    transitionTimeoutId = window.setTimeout(() => {
-                        if (removeTransitionListener) {
-                            sceneEl.removeEventListener('transitionend', removeTransitionListener)
-                        }
-                        startScrollAnimation()
-                    }, INTRO_TRANSITION_FALLBACK_MS)
-                })
-            })
+            introTimeoutId = setTimeout(() => {
+                if (isDisposed) return
+                sceneEl.classList.remove('about-scene--enter')
+                initScrollAnimation()
+            }, INTRO_DURATION_MS)
         }
 
         return () => {
             isDisposed = true
-            window.cancelAnimationFrame(introStartFrameId)
-            window.cancelAnimationFrame(introActivateFrameId)
-            window.clearTimeout(transitionTimeoutId)
-            window.clearTimeout(exitTransitionTimeoutId)
-            if (sceneEl && removeTransitionListener) {
-                sceneEl.removeEventListener('transitionend', removeTransitionListener)
-            }
+            clearTimeout(introTimeoutId)
+
             if (sceneEl) {
-                sceneEl.removeEventListener('transitionend', handleExitTransitionEnd)
+                sceneEl.classList.remove('about-scene--enter', 'about-scene--exit')
             }
-            cleanupIntroClasses()
-            cleanupOutroClasses()
+
             exitTransitionRef.current = null
-            ctx?.revert()
+            scrollCtx?.revert()
             clearStageTargeting()
         }
     }, [])
 
     const handleScrollHintClick = () => {
         const trigger = ScrollTrigger.getById(ABOUT_SCROLL_TRIGGER_ID)
-        if (trigger) {
-            const labelScrollY = trigger.labelToScroll?.(STAGE_ONE_SCROLL_LABEL)
-            const fallbackScrollY =
-                trigger.start +
-                (trigger.end - trigger.start) * STAGE_ONE_SCROLL_PROGRESS
-            const targetY =
-                typeof labelScrollY === 'number' ? labelScrollY : fallbackScrollY
-            window.scrollTo({ top: Math.round(targetY), behavior: 'smooth' })
-            return
-        }
+        if (!trigger) return
 
-        const section = sectionRef.current
-        if (!section) return
-        const sectionTop = section.getBoundingClientRect().top + window.scrollY
         const targetY =
-            sectionTop +
-            window.innerHeight *
-            SCROLL_DISTANCE_VIEWPORT_MULTIPLIER *
-            STAGE_ONE_SCROLL_PROGRESS
-        window.scrollTo({ top: Math.round(targetY), behavior: 'smooth' })
+            trigger.start +
+            (trigger.end - trigger.start) * STAGE_ONE_SCROLL_PROGRESS
+
+        gsap.to(window, {
+            scrollTo: { y: Math.round(targetY), autoKill: true },
+            duration: 1,
+        })
     }
 
     return {

@@ -11,6 +11,10 @@ const ViewContainer = styled.div`
   transition: opacity 500ms ease, transform 500ms ease;
   z-index: ${({ $isActive }) => ($isActive ? 2 : 1)};
   padding: 40px;
+
+  @media (max-width: 767px) {
+    padding: 0;
+  }
 `
 
 export default ViewContainer

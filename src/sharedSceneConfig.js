@@ -6,7 +6,7 @@ import {
     getScenePathMorphConfig,
 } from './scenePathConfig.js'
 
-export const SCENE_TRANSITION_DURATION_MS = 2500
+export const SCENE_TRANSITION_DURATION_MS = 1500
 
 const HOME_SCENE_STATE = Object.freeze({
     blueMountain: Object.freeze({
