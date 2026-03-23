@@ -28,7 +28,7 @@ const HOME_SCENE_STATE = Object.freeze({
         wrapper: Object.freeze({ scaleX: 1, scaleY: 1 }),
     }),
     treeMountain: Object.freeze({
-        container: Object.freeze({ x: 1405.680149, y: 576.860407 }),
+        container: Object.freeze({ x: 1455.680149, y: 576.860407 }),
         wrapper: Object.freeze({ scaleX: 1, scaleY: 1 }),
     }),
     upperField: Object.freeze({

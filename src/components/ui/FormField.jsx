@@ -42,6 +42,7 @@ const ErrorText = styled.span`
   color: ${({ theme }) => theme.colors.yellow.light};
   font-size: 14px;
   font-style: italic;
+  font-variation-settings: 'wdth' 87;
   line-height: 1.1;
   text-align: right;
   white-space: nowrap;

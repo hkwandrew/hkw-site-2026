@@ -6,11 +6,11 @@ const ViewContainer = styled.div`
   display: flex;
   flex-direction: column;
   opacity: ${({ $isActive }) => ($isActive ? 1 : 0)};
-  pointer-events: ${({ $isActive }) => ($isActive ? 'auto' : 'none')};
+  pointer-events: none;
   transform: translateY(${({ $isActive }) => ($isActive ? '0' : '20px')});
   transition: opacity 500ms ease, transform 500ms ease;
   z-index: ${({ $isActive }) => ($isActive ? 2 : 1)};
-  padding: 40px;
+  // padding: 40px;
 
   @media (max-width: 767px) {
     padding: 0;

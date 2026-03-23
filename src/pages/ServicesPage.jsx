@@ -5,6 +5,9 @@ import services from '@/data/services'
 import ViewContainer from '@/components/ui/ViewContainer'
 import usePageActive from '@/hooks/usePageActive'
 import TopHatMarmot from '../components/characters/TopHatMarmot'
+import BlueMountain from '@/components/BlueMountain'
+import GoldMountain from '@/components/GoldMountain'
+import TreeMountain from '@/components/TreeMountain'
 
 const ServiceList = styled.ul`
   display: flex;
@@ -67,6 +70,7 @@ const DesktopServices = styled.div`
   width: 100%;
   flex: 1;
   height: 100%;
+  pointer-events: auto;
 
   @media (max-width: 767px) {
     display: none;
@@ -79,6 +83,7 @@ const MobileServices = styled.div`
   flex: 1;
   height: 100%;
   overflow: hidden;
+  pointer-events: auto;
   background: ${({ theme }) => theme.colors.blue.dark};
 
   @media (min-width: 768px) {
@@ -86,34 +91,29 @@ const MobileServices = styled.div`
   }
 `
 
-const MobileBackdrop = styled.div`
+const MobileSceneWrap = styled.div`
   position: absolute;
-  inset: 0;
-  background: ${({ theme }) => theme.colors.blue.dark};
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 260px;
+  pointer-events: none;
+  z-index: 0;
+`
 
-  &::before {
-    content: '';
-    position: absolute;
-    left: -44px;
-    top: -48px;
-    width: 264px;
-    height: 154px;
-    background: ${({ theme }) => theme.colors.yellow.light};
-    border-radius: 0 0 180px 180px;
-    transform: rotate(-12deg);
-  }
+const MobileSceneSvg = styled.svg`
+  width: 100%;
+  height: 100%;
+`
 
-  &::after {
-    content: '';
-    position: absolute;
-    right: -34px;
-    top: 64px;
-    width: 176px;
-    height: 128px;
-    background: ${({ theme }) => theme.colors.orange.base};
-    border-radius: 0 0 0 180px;
-    transform: rotate(10deg);
-  }
+const MobileLogoBadge = styled.div`
+  position: absolute;
+  left: 23px;
+  top: 87px;
+  width: 69px;
+  height: 27px;
+  background: ${({ theme }) => theme.colors.blue.light};
+  z-index: 1;
 `
 
 const MobileTitle = styled.h2`
@@ -153,14 +153,14 @@ const MobileItem = styled.li`
   font-variation-settings: 'wdth' 100, 'wght' ${({ $isActive, theme }) =>
         $isActive ? theme.font.weight.semibold : theme.font.weight.regular};
   color: ${({ $isActive, theme }) =>
-        $isActive ? theme.colors.orange.base : '#c0ddfa'};
+        $isActive ? theme.colors.yellow.gold : '#c0ddfa'};
   cursor: pointer;
   transition: color 200ms ease;
   width: fit-content;
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      color: ${({ theme }) => theme.colors.orange.base};
+      color: ${({ theme }) => theme.colors.yellow.gold};
     }
   }
 `
@@ -170,7 +170,7 @@ const MobileDescription = styled.div`
   right: 19px;
   top: 252px;
   width: 165px;
-  color: ${({ theme }) => theme.colors.orange.base};
+  color: ${({ theme }) => theme.colors.yellow.gold};
   font-family: ${({ theme }) => theme.font.family};
   font-size: 16px;
   line-height: 1.25;
@@ -223,7 +223,15 @@ export default function Services() {
             </DesktopServices>
 
             <MobileServices aria-label="HKW services mobile view">
-                <MobileBackdrop />
+                <MobileSceneWrap aria-hidden="true">
+                    <MobileSceneSvg viewBox="1380 150 980 700" preserveAspectRatio="xMidYMin slice">
+                        <path d="M3960,0L0,0v1014h3975.5L3960,0Z" transform="translate(-1.849932 0)" fill="#fcfae5" />
+                        <BlueMountain />
+                        <GoldMountain />
+                        <TreeMountain />
+                    </MobileSceneSvg>
+                </MobileSceneWrap>
+                <MobileLogoBadge />
                 <MobileTitle>OUR SPECIALTIES</MobileTitle>
                 <MobileLayout>
                     <MobileList>

@@ -95,10 +95,9 @@ const theme = {
     },
     bodySmall: {
       size: '16px',
-      weight: 400,
-      width: 100,
-      lineHeight: 1.4,
-      letterSpacing: '0',
+      weight: 300,
+      lineHeight: 1.625,
+      textBox: 'trim-both cap alphabetic'
     },
     buttonLarge: {
       size: '24px',
