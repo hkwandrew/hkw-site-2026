@@ -75,6 +75,13 @@ const useAboutAnimation = () => {
         const section = sectionRef.current
         if (!section) return undefined
 
+        const scrollTargets = [document.documentElement, document.body, document.getElementById('root')]
+        scrollTargets.forEach((el) => {
+            if (!el) return
+            el.style.height = 'auto'
+            el.style.overflowY = 'auto'
+        })
+
         const sceneEl = section.querySelector('.about-scene')
         const shouldReduce = window.matchMedia(
             '(prefers-reduced-motion: reduce)',
@@ -412,6 +419,12 @@ const useAboutAnimation = () => {
 
             exitTransitionRef.current = null
             scrollCtx?.revert()
+            window.scrollTo(0, 0)
+            scrollTargets.forEach((el) => {
+                if (!el) return
+                el.style.height = ''
+                el.style.overflowY = ''
+            })
             clearStageTargeting()
         }
     }, [])

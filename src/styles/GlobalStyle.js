@@ -21,6 +21,7 @@ const GlobalStyle = createGlobalStyle`
     overflow: hidden;
   }
 
+
   main {
     min-height: 100%;
   }
