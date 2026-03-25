@@ -21,13 +21,215 @@ const riseIn = keyframes`
   }
 `
 
+const planeCrossPage = keyframes`
+  from {
+    transform: translate3d(calc(-100% - 80px), 0, 0);
+  }
+
+  to {
+    transform: translate3d(calc(100vw + 80px), 0, 0);
+  }
+`
+
+const planeDrift = keyframes`
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+
+  20% {
+    transform: translate3d(3px, -5px, 0) rotate(-0.85deg);
+  }
+
+  50% {
+    transform: translate3d(8px, -1px, 0) rotate(0.55deg);
+  }
+
+  80% {
+    transform: translate3d(4px, 5px, 0) rotate(0.95deg);
+  }
+
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+`
+
+const rigSway = keyframes`
+  0% {
+    transform: rotate(0deg) translateY(0);
+  }
+
+  25% {
+    transform: rotate(-0.35deg) translateY(0.25px);
+  }
+
+  50% {
+    transform: rotate(0.25deg) translateY(-0.5px);
+  }
+
+  75% {
+    transform: rotate(-0.2deg) translateY(0.25px);
+  }
+
+  100% {
+    transform: rotate(0deg) translateY(0);
+  }
+`
+
+const towLineSway = keyframes`
+  0% {
+    transform: rotate(0deg) translateY(0);
+  }
+
+  25% {
+    transform: rotate(-0.35deg) translateY(0.15px);
+  }
+
+  50% {
+    transform: rotate(0.2deg) translateY(-0.15px);
+  }
+
+  75% {
+    transform: rotate(-0.25deg) translateY(0.1px);
+  }
+
+  100% {
+    transform: rotate(0deg) translateY(0);
+  }
+`
+
+const bannerTrail = keyframes`
+  0% {
+    transform: translateX(0) translateY(0) rotate(0deg);
+  }
+
+  25% {
+    transform: translateX(-0.5px) translateY(0.15px) rotate(-0.15deg);
+  }
+
+  50% {
+    transform: translateX(-1px) translateY(0.35px) rotate(0.1deg);
+  }
+
+  75% {
+    transform: translateX(-0.5px) translateY(0.15px) rotate(-0.1deg);
+  }
+
+  100% {
+    transform: translateX(0) translateY(0) rotate(0deg);
+  }
+`
+
+const bannerFabricFlutter = keyframes`
+  0% {
+    transform: translateX(0) translateY(0) rotate(0deg) skewX(0deg) scaleY(1);
+  }
+
+  25% {
+    transform: translateX(-0.25px) translateY(0.15px) rotate(0.15deg) skewX(-0.35deg) scaleY(1.006);
+  }
+
+  50% {
+    transform: translateX(-0.5px) translateY(0.3px) rotate(-0.2deg) skewX(0.45deg) scaleY(0.996);
+  }
+
+  75% {
+    transform: translateX(-0.25px) translateY(0.15px) rotate(0.1deg) skewX(-0.2deg) scaleY(1.003);
+  }
+
+  100% {
+    transform: translateX(0) translateY(0) rotate(0deg) skewX(0deg) scaleY(1);
+  }
+`
+
+const bannerTextDrift = keyframes`
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+
+  25% {
+    transform: translateX(-0.5px) translateY(0.15px);
+  }
+
+  50% {
+    transform: translateX(-1px) translateY(0.4px);
+  }
+
+  75% {
+    transform: translateX(-0.5px) translateY(0.15px);
+  }
+
+  100% {
+    transform: translateX(0) translateY(0);
+  }
+`
+
+const bannerHighlightSweep = keyframes`
+  0% {
+    transform: translateX(0);
+    opacity: 0;
+  }
+
+  12% {
+    opacity: 0;
+  }
+
+  24% {
+    opacity: 1;
+  }
+
+  50% {
+    transform: translateX(235px);
+    opacity: 1;
+  }
+
+  62% {
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateX(420px);
+    opacity: 0;
+  }
+`
+
+const propellerSpin = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+`
+
+const motionStreakPulse = keyframes`
+  0% {
+    opacity: 0;
+    transform: translateX(-8px) scaleX(0.88);
+  }
+
+  20% {
+    opacity: 0.28;
+  }
+
+  50% {
+    opacity: 0.48;
+    transform: translateX(0) scaleX(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(10px) scaleX(1.08);
+  }
+`
+
 const DesktopHome = styled.div`
   position: relative;
   width: 100%;
   flex: 1;
   height: 100%;
   pointer-events: none;
-  
+
   @media (max-width: 767px) {
     display: none;
   }
@@ -67,6 +269,7 @@ const Footer = styled.footer`
   bottom: 39px;
   left: 119px;
   z-index: 5;
+  pointer-events: auto;
 `
 
 const FooterText = styled(BodySmall)`
@@ -195,200 +398,140 @@ const MobileFooterText = styled(BodySmall)`
   }
 `
 
-const PlaneWrapper = styled.div`
+const PlaneTrack = styled.div`
   position: absolute;
-  width: 469.685px;
-  height: 74px;
-  z-index: 3;
   top: 47px;
-  left: 252px;
+  left: 0;
+  z-index: 3;
+  display: inline-flex;
+  pointer-events: none;
+  will-change: transform;
+  animation: ${planeCrossPage} 30s linear infinite;
+  animation-delay: -6s;
+
+  @media (prefers-reduced-motion: reduce) {
+    left: 252px;
+    transform: none;
+    animation: none;
+  }
+
+  @media (max-width: 767px) {
+    top: 56px;
+    left: clamp(92px, 29.26vw, 115px);
+    animation: none;
+  }
+`
+
+const PlaneShell = styled.div`
+  --plane-motion-duration: 3.2s;
+  width: 469.685px;
+  aspect-ratio: 470 / 74;
+  will-change: transform;
+  animation: ${planeDrift} var(--plane-motion-duration) ease-in-out infinite;
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
 
   #hkw-plane {
     overflow: visible;
   }
 
   #plane-group,
+  #banner-group {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
   #banner-rig,
   #tow-line,
   #banner-group,
   #banner-fabric,
   #banner-highlight,
   #banner-highlight-strip,
-  #banner-text {
-    will-change: transform;
-  }
-
-  #plane-group {
-    transform-box: fill-box;
-    transform-origin: center;
-    animation: plane-fly 6s ease-in-out infinite;
+  #banner-text,
+  #propeller-group,
+  #motion-streaks {
+    will-change: transform, opacity;
   }
 
   #banner-rig {
     transform-box: fill-box;
     transform-origin: right center;
-    animation: rig-sway 6s ease-in-out infinite;
+    animation: ${rigSway} var(--plane-motion-duration) ease-in-out infinite;
   }
 
   #tow-line {
     transform-box: fill-box;
     transform-origin: right center;
-    animation: tow-line-sway 6s ease-in-out infinite;
+    animation: ${towLineSway} var(--plane-motion-duration) ease-in-out infinite;
   }
 
   #banner-group {
     transform-box: fill-box;
     transform-origin: right center;
-    animation: banner-trail 6s ease-in-out infinite;
+    animation: ${bannerTrail} var(--plane-motion-duration) ease-in-out infinite;
   }
 
   #banner-fabric {
     transform-box: fill-box;
     transform-origin: right center;
-    animation: banner-fabric-flutter 6s ease-in-out infinite;
+    animation: ${bannerFabricFlutter} var(--plane-motion-duration) ease-in-out infinite;
   }
 
   #banner-text {
     transform-box: fill-box;
     transform-origin: right center;
-    animation: banner-text-drift 6s ease-in-out infinite;
+    animation: ${bannerTextDrift} var(--plane-motion-duration) ease-in-out infinite;
   }
 
   #banner-highlight-strip {
     transform-box: fill-box;
     transform-origin: center;
-    animation: banner-highlight-sweep 6s ease-in-out infinite;
+    animation: ${bannerHighlightSweep} var(--plane-motion-duration) linear infinite;
   }
 
-  @keyframes plane-fly {
-    0% {
-      transform: translateX(0) translateY(0);
-    }
-    25% {
-      transform: translateX(2px) translateY(-1px);
-    }
-    50% {
-      transform: translateX(4px) translateY(0);
-    }
-    75% {
-      transform: translateX(2px) translateY(1px);
-    }
-    100% {
-      transform: translateX(0) translateY(0);
-    }
+  #propeller-group {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: ${propellerSpin} 180ms linear infinite;
   }
 
-  @keyframes rig-sway {
-    0% {
-      transform: rotate(0deg) translateY(0);
-    }
-    25% {
-      transform: rotate(-0.35deg) translateY(0.25px);
-    }
-    50% {
-      transform: rotate(0.25deg) translateY(-0.5px);
-    }
-    75% {
-      transform: rotate(-0.2deg) translateY(0.25px);
-    }
-    100% {
-      transform: rotate(0deg) translateY(0);
-    }
+  #motion-streaks {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: ${motionStreakPulse} 1.4s ease-out infinite;
   }
 
-  @keyframes tow-line-sway {
-    0% {
-      transform: rotate(0deg) translateY(0);
-    }
-    25% {
-      transform: rotate(-0.35deg) translateY(0.15px);
-    }
-    50% {
-      transform: rotate(0.2deg) translateY(-0.15px);
-    }
-    75% {
-      transform: rotate(-0.25deg) translateY(0.1px);
-    }
-    100% {
-      transform: rotate(0deg) translateY(0);
-    }
-  }
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    transform: none;
 
-  @keyframes banner-trail {
-    0% {
-      transform: translateX(0) translateY(0) rotate(0deg);
+    #banner-rig,
+    #tow-line,
+    #banner-group,
+    #banner-fabric,
+    #banner-text,
+    #banner-highlight-strip,
+    #propeller-group,
+    #motion-streaks {
+      animation: none;
+      transform: none;
     }
-    25% {
-      transform: translateX(-0.5px) translateY(0.15px) rotate(-0.15deg);
-    }
-    50% {
-      transform: translateX(-1px) translateY(0.35px) rotate(0.1deg);
-    }
-    75% {
-      transform: translateX(-0.5px) translateY(0.15px) rotate(-0.1deg);
-    }
-    100% {
-      transform: translateX(0) translateY(0) rotate(0deg);
-    }
-  }
 
-  @keyframes banner-fabric-flutter {
-    0% {
-      transform: translateX(0) translateY(0) rotate(0deg) skewX(0deg) scaleY(1);
-    }
-    25% {
-      transform: translateX(-0.25px) translateY(0.15px) rotate(0.15deg) skewX(-0.35deg) scaleY(1.006);
-    }
-    50% {
-      transform: translateX(-0.5px) translateY(0.3px) rotate(-0.2deg) skewX(0.45deg) scaleY(0.996);
-    }
-    75% {
-      transform: translateX(-0.25px) translateY(0.15px) rotate(0.1deg) skewX(-0.2deg) scaleY(1.003);
-    }
-    100% {
-      transform: translateX(0) translateY(0) rotate(0deg) skewX(0deg) scaleY(1);
-    }
-  }
-
-  @keyframes banner-text-drift {
-    0% {
-      transform: translateX(0) translateY(0);
-    }
-    25% {
-      transform: translateX(-0.5px) translateY(0.15px);
-    }
-    50% {
-      transform: translateX(-1px) translateY(0.4px);
-    }
-    75% {
-      transform: translateX(-0.5px) translateY(0.15px);
-    }
-    100% {
-      transform: translateX(0) translateY(0);
-    }
-  }
-
-  @keyframes banner-highlight-sweep {
-    0% {
-      transform: translateX(0);
+    #motion-streaks {
       opacity: 0;
     }
-    12% {
+  }
+
+  @media (max-width: 767px) {
+    --plane-motion-duration: 4.1s;
+    width: min(207px, calc(100vw - 120px));
+
+    #motion-streaks {
       opacity: 0;
-    }
-    24% {
-      opacity: 1;
-    }
-    50% {
-      transform: translateX(235px);
-      opacity: 1;
-    }
-    62% {
-      opacity: 0;
-    }
-    100% {
-      transform: translateX(420px);
-      opacity: 0;
+      animation: none;
     }
   }
 `
@@ -419,9 +562,11 @@ export default function Home() {
 
   return (
     <>
-      <PlaneWrapper>
-        <Plane />
-      </PlaneWrapper>
+      <PlaneTrack>
+        <PlaneShell>
+          <Plane />
+        </PlaneShell>
+      </PlaneTrack>
       <ViewContainer $isActive={isActive}>
         <DesktopHome>
           <Content>
