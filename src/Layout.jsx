@@ -121,7 +121,6 @@ const Layout = () => {
                     textRendering="geometricPrecision"
                 >
                     <g id="scene" transform="translate(-1181.222193 -8.108808)">
-
                         <path id="sky" d="M3960,0L0,0v1014h3975.5L3960,0Z" transform="translate(-1.849932 0)"
                             fill="#fcfae5" />
                         <BlueMountain />

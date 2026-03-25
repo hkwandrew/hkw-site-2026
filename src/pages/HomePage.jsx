@@ -21,6 +21,199 @@ const riseIn = keyframes`
   }
 `
 
+const marmotEmerge = keyframes`
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 280px, 0) scale(0.985);
+  }
+
+  58% {
+    opacity: 1;
+    transform: translate3d(0, -6px, 0) scale(1.003);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+`
+
+const marmotIdleFloat = keyframes`
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(0, -3px, 0);
+  }
+`
+
+const steamRiseLeft = keyframes`
+  0% {
+    opacity: 0;
+    transform: translate3d(-2px, 10px, 0) scale(0.78);
+  }
+
+  18% {
+    opacity: 0.55;
+  }
+
+  62% {
+    opacity: 0.32;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(-10px, -28px, 0) scale(1.12);
+  }
+`
+
+const steamRiseCenter = keyframes`
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0) scale(0.74);
+  }
+
+  16% {
+    opacity: 0.62;
+  }
+
+  56% {
+    opacity: 0.36;
+    transform: translate3d(4px, -10px, 0) scale(0.96);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(8px, -30px, 0) scale(1.08);
+  }
+`
+
+const steamRiseRight = keyframes`
+  0% {
+    opacity: 0;
+    transform: translate3d(1px, 10px, 0) scale(0.76);
+  }
+
+  20% {
+    opacity: 0.58;
+  }
+
+  58% {
+    opacity: 0.3;
+    transform: translate3d(-3px, -11px, 0) scale(0.98);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(-6px, -27px, 0) scale(1.05);
+  }
+`
+
+const marmotBlink = keyframes`
+  0%,
+  7.9%,
+  31.9%,
+  100% {
+    opacity: 1;
+  }
+
+  8.25%,
+  32.25% {
+    opacity: 0.35;
+  }
+
+  8.45%,
+  9.1%,
+  32.45%,
+  33.1% {
+    opacity: 0.05;
+  }
+
+  9.35%,
+  33.35% {
+    opacity: 0.7;
+  }
+
+  9.6%,
+  33.6% {
+    opacity: 1;
+  }
+`
+
+const marmotLashBlink = keyframes`
+  0%,
+  7%,
+  31%,
+  100% {
+    transform: translateY(0);
+  }
+
+  8%,
+  32% {
+    transform: translateY(2px);
+  }
+
+  8.5%,
+  9.5%,
+  32.5%,
+  33.5% {
+    transform: translateY(3.35px);
+  }
+
+  10.5%,
+  34.5% {
+    transform: translateY(1px);
+  }
+`
+
+const leftEarWriggle = keyframes`
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  14% {
+    transform: rotate(-6deg) translateY(-1.4px);
+  }
+
+  22% {
+    transform: rotate(3.1deg) translateY(0.15px);
+  }
+
+  30% {
+    transform: rotate(-1.8deg) translateY(-0.7px);
+  }
+
+  38% {
+    transform: rotate(0deg);
+  }
+`
+
+const rightEarWriggle = keyframes`
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  12% {
+    transform: rotate(6.75deg) translateY(-0.9px);
+  }
+
+  20% {
+    transform: rotate(-3.15deg) translateY(0.1px);
+  }
+
+  28% {
+    transform: rotate(1.95deg) translateY(-0.65px);
+  }
+
+  36% {
+    transform: rotate(0deg);
+  }
+`
+
 const planeCrossPage = keyframes`
   from {
     transform: translate3d(calc(-100% - 80px), 0, 0);
@@ -251,7 +444,9 @@ const Subtitle = styled.p`
   color: ${({ theme }) => theme.colors.yellow.gold};
   font-size: 24px;
   line-height: calc(26 / 24);
-  font-variation-settings: 'wdth' 75, 'wght' 600;
+  font-variation-settings:
+    'wdth' 75,
+    'wght' 600;
 
   display: block;
 `
@@ -323,40 +518,157 @@ const MobileFieldFill = styled.div`
   z-index: 2;
 `
 
-
 const HomeMarmotWrapper = styled.div`
   position: absolute;
   right: -75.38px;
-  bottom:-36.36px ;
+  bottom: -36.36px;
   width: 681px;
-  height: 453px;
+  aspect-ratio: 681 / 453;
   z-index: 5;
+  pointer-events: none;
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  #marmot-character-intro,
+  #marmot-character-idle,
+  #left-ear,
+  #right-ear,
+  #left-eye-core,
+  #right-eye-core,
+  #left-eye-lash,
+  #right-eye-lash,
+  #coffee-steam path {
+    transform-box: fill-box;
+    will-change: transform, opacity;
+  }
+
+  #marmot-character-intro {
+    opacity: 0;
+    transform-origin: center bottom;
+    animation: ${marmotEmerge} 860ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  #marmot-character-idle {
+    transform-origin: center bottom;
+    animation: ${marmotIdleFloat} 5.8s ease-in-out 900ms infinite;
+  }
+
+  #left-ear {
+    transform-origin: center bottom;
+    animation: ${leftEarWriggle} 6.4s ease-in-out 1.2s infinite;
+  }
+
+  #right-ear {
+    transform-origin: center bottom;
+    animation: ${rightEarWriggle} 5.9s ease-in-out 1.45s infinite;
+  }
+
+  #left-eye-core,
+  #right-eye-core {
+    transform-origin: center;
+    animation: ${marmotBlink} 8.8s steps(1, end) 1.25s infinite;
+  }
+
+  #left-eye-lash,
+  #right-eye-lash {
+    transform-origin: center;
+    animation: ${marmotLashBlink} 8.8s ease-in-out 1.25s infinite;
+  }
+
+  #coffee-steam {
+    pointer-events: none;
+  }
+
+  #coffee-steam path {
+    opacity: 0;
+    transform-origin: center bottom;
+  }
+
+  #steam-wisp-1 {
+    animation: ${steamRiseLeft} 3.6s ease-out 1.05s infinite;
+  }
+
+  #steam-wisp-2 {
+    animation: ${steamRiseCenter} 3.15s ease-out 1.55s infinite;
+  }
+
+  #steam-wisp-3 {
+    animation: ${steamRiseRight} 2.85s ease-out 1.95s infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #marmot-character-intro,
+    #marmot-character-idle,
+    #left-ear,
+    #right-ear,
+    #left-eye-core,
+    #right-eye-core,
+    #left-eye-lash,
+    #right-eye-lash,
+    #coffee-steam path {
+      animation: none;
+      transform: none;
+    }
+
+    #marmot-character-intro {
+      opacity: 1;
+    }
+
+    #coffee-steam path {
+      opacity: 0;
+    }
+  }
+
+  @media (max-width: 767px) {
+    right: -128px;
+    bottom: 100px;
+    width: min(478px, 122vw);
+  }
+
+  @media (max-width: 767px) and (max-height: 760px) {
+    right: -118px;
+    bottom: 76px;
+    width: min(446px, 122vw);
+  }
 `
 
 const MobileCopy = styled.div`
   position: absolute;
   left: 20px;
-  right: 18px;
-  top: 314px;
+  top: 285px;
+  width: min(353px, calc(100vw - 37px));
   z-index: 4;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   animation: ${riseIn} 700ms ease both;
 
   @media (max-height: 660px) {
-    top: 296px;
+    top: 264px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
   }
 `
 
 const MobileKicker = styled(Label)`
   display: block;
-  margin-bottom: 18px;
+  width: min(267px, calc(100vw - 40px));
   color: ${({ theme }) => theme.colors.orange.base};
   font-size: 16px;
-  line-height: 1.2;
-  font-variation-settings: 'wdth' 67.5, 'wght' 600;
+  line-height: calc(26 / 16);
+  font-variation-settings:
+    'wdth' 67.5,
+    'wght' 600;
 `
 
 const MobileHero = styled.p`
   margin: 0;
+  width: min(353px, calc(100vw - 37px));
   max-width: 353px;
   color: ${({ theme }) => theme.colors.yellow.light};
   font-size: 18px;
@@ -365,32 +677,40 @@ const MobileHero = styled.p`
 `
 
 const MobileRoles = styled.div`
-  display: grid;
-  gap: 14px;
-  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 `
 
 const MobileRole = styled.span`
+  display: block;
   width: fit-content;
   color: ${({ theme }) => theme.colors.orange.base};
   font-size: 16px;
-  line-height: 1.2;
+  line-height: 40px;
   text-decoration: underline;
-  text-decoration-thickness: 1.5px;
-  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
 `
 
 const MobileFooter = styled.footer`
   position: absolute;
   left: 20px;
-  bottom: 20px;
-  z-index: 5;
+  bottom: 146px;
+  z-index: 6;
+
+  @media (max-height: 760px) {
+    bottom: 112px;
+  }
 `
 
 const MobileFooterText = styled(BodySmall)`
   color: ${({ theme }) => theme.colors.yellow.light};
-  font-size: 16px;
-  line-height: 1.25;
+  font-size: 14px;
+  line-height: 1.45;
+  font-variation-settings:
+    'wdth' 100,
+    'wght' 300;
 
   a {
     text-decoration: underline;
@@ -477,19 +797,22 @@ const PlaneShell = styled.div`
   #banner-fabric {
     transform-box: fill-box;
     transform-origin: right center;
-    animation: ${bannerFabricFlutter} var(--plane-motion-duration) ease-in-out infinite;
+    animation: ${bannerFabricFlutter} var(--plane-motion-duration) ease-in-out
+      infinite;
   }
 
   #banner-text {
     transform-box: fill-box;
     transform-origin: right center;
-    animation: ${bannerTextDrift} var(--plane-motion-duration) ease-in-out infinite;
+    animation: ${bannerTextDrift} var(--plane-motion-duration) ease-in-out
+      infinite;
   }
 
   #banner-highlight-strip {
     transform-box: fill-box;
     transform-origin: center;
-    animation: ${bannerHighlightSweep} var(--plane-motion-duration) linear infinite;
+    animation: ${bannerHighlightSweep} var(--plane-motion-duration) linear
+      infinite;
   }
 
   #propeller-group {
@@ -537,19 +860,23 @@ const PlaneShell = styled.div`
 `
 
 const HomeMobileScene = () => (
-  <MobileSceneSvg viewBox="1380 150 980 1180" preserveAspectRatio="xMidYMin slice" aria-hidden="true">
+  <MobileSceneSvg
+    viewBox='1380 150 980 1180'
+    preserveAspectRatio='xMidYMin slice'
+    aria-hidden='true'
+  >
     <path
-      d="M3960,0L0,0v1014h3975.5L3960,0Z"
-      transform="translate(-1.849932 0)"
-      fill="#fcfae5"
+      d='M3960,0L0,0v1014h3975.5L3960,0Z'
+      transform='translate(-1.849932 0)'
+      fill='#fcfae5'
     />
     <BlueMountain />
     <GoldMountain />
-    <g transform="translate(1706.222193,231.108808)">
+    <g transform='translate(1706.222193,231.108808)'>
       <path
-        d="M1689.5,291c32.03,0,58-25.967,58-58s-25.97-58-58-58-58,25.967-58,58s25.97,58,58,58Z"
-        transform="translate(-1689.5,-233)"
-        fill="#d0471b"
+        d='M1689.5,291c32.03,0,58-25.967,58-58s-25.97-58-58-58-58,25.967-58,58s25.97,58,58,58Z'
+        transform='translate(-1689.5,-233)'
+        fill='#d0471b'
       />
     </g>
     <TreeMountain />
@@ -571,30 +898,31 @@ export default function Home() {
         <DesktopHome>
           <Content>
             <Subtitle>HAPPY, KNOWLEDGABLE WORK</Subtitle>
-            <HeroText as="h1">
-              We are a digital design and marketing studio based in Spokane, Washington.
-              We build unique online experiences and engaging campaigns for non-profits and fun brands.
+            <HeroText as='h1'>
+              We are a digital design and marketing studio based in Spokane,
+              Washington. We build unique online experiences and engaging
+              campaigns for non-profits and fun brands.
             </HeroText>
           </Content>
           <Footer>
             <FooterText>
-              &copy; 2026 HKW &nbsp;|&nbsp; <a href="#policies">Policies</a>
+              &copy; 2026 HKW &nbsp;|&nbsp; <a href='#policies'>Policies</a>
             </FooterText>
           </Footer>
         </DesktopHome>
 
-        <MobileHome aria-label="HKW home mobile hero">
+        <MobileHome aria-label='HKW home mobile hero'>
           <MobileSceneWrap>
-
             <HomeMobileScene />
           </MobileSceneWrap>
-          <MobileFieldFill aria-hidden="true" />
+          <MobileFieldFill aria-hidden='true' />
 
           <MobileCopy>
             <MobileKicker>HAPPY, KNOWLEDGABLE WORK</MobileKicker>
             <MobileHero>
-              We are a digital design and marketing studio based in Spokane, Washington.
-              We build unique online experiences and engaging campaigns for non-profits and fun brands.
+              We are a digital design and marketing studio based in Spokane,
+              Washington. We build unique online experiences and engaging
+              campaigns for non-profits and fun brands.
             </MobileHero>
             <MobileRoles>
               <MobileRole>(Non-profit workers)</MobileRole>
@@ -606,7 +934,7 @@ export default function Home() {
             <MobileFooterText>
               &copy; 2026 HKW
               <br />
-              <a href="#policies">Policies</a>
+              <a href='#policies'>Policies</a>
             </MobileFooterText>
           </MobileFooter>
         </MobileHome>
