@@ -29,7 +29,7 @@ const ServiceItem = styled.li`
   line-height: 1.2;
   letter-spacing: -0.02em;
   color: ${({ $isActive, theme }) =>
-        $isActive ? theme.colors.yellow.gold : theme.colors.blue.light};
+    $isActive ? theme.colors.yellow.gold : theme.colors.blue.light};
   cursor: pointer;
   transition: color 400ms ease-in-out;
 
@@ -125,7 +125,9 @@ const MobileTitle = styled.h2`
   font-family: ${({ theme }) => theme.font.family};
   font-size: 20px;
   line-height: 1.2;
-  font-variation-settings: 'wdth' 67.5, 'wght' 600;
+  font-variation-settings:
+    'wdth' 68,
+    'wght' 600;
   text-transform: uppercase;
 `
 
@@ -150,10 +152,13 @@ const MobileItem = styled.li`
   font-size: 24px;
   line-height: 1.25;
   letter-spacing: -0.02em;
-  font-variation-settings: 'wdth' 100, 'wght' ${({ $isActive, theme }) =>
+  font-variation-settings:
+    'wdth' 100,
+    'wght'
+      ${({ $isActive, theme }) =>
         $isActive ? theme.font.weight.semibold : theme.font.weight.regular};
   color: ${({ $isActive, theme }) =>
-        $isActive ? theme.colors.yellow.gold : '#c0ddfa'};
+    $isActive ? theme.colors.yellow.gold : '#c0ddfa'};
   cursor: pointer;
   transition: color 200ms ease;
   width: fit-content;
@@ -174,7 +179,9 @@ const MobileDescription = styled.div`
   font-family: ${({ theme }) => theme.font.family};
   font-size: 16px;
   line-height: 1.25;
-  font-variation-settings: 'wdth' 100, 'wght' 400;
+  font-variation-settings:
+    'wdth' 100,
+    'wght' 400;
 `
 
 const MobileMarmot = styled.div`
@@ -191,69 +198,72 @@ const MobileMarmot = styled.div`
 `
 
 export default function Services() {
-    const isActive = usePageActive()
-    const [activeService, setActiveService] = useState(0)
-    const activeEntry = services[activeService]
+  const isActive = usePageActive()
+  const [activeService, setActiveService] = useState(0)
+  const activeEntry = services[activeService]
 
-    return (
-        <ViewContainer $isActive={isActive}>
-            <DesktopServices>
-                <TopHatMarmotWrapper>
-                    <TopHatMarmot />
-                </TopHatMarmotWrapper>
-                <ServiceList>
-                    {services.map((service, i) => (
-                        <ServiceItem
-                            key={service.name}
-                            $isActive={i === activeService}
-                            onClick={() => setActiveService(i)}
-                            onMouseEnter={() => setActiveService(i)}
-                        >
-                            {service.name}
-                        </ServiceItem>
-                    ))}
-                </ServiceList>
-                {services.map((service, i) => (
-                    <Description key={service.name} $visible={i === activeService}>
-                        <DescriptionText>
-                            {service.description}
-                        </DescriptionText>
-                    </Description>
-                ))}
-            </DesktopServices>
+  return (
+    <ViewContainer $isActive={isActive}>
+      <DesktopServices>
+        <TopHatMarmotWrapper>
+          <TopHatMarmot />
+        </TopHatMarmotWrapper>
+        <ServiceList>
+          {services.map((service, i) => (
+            <ServiceItem
+              key={service.name}
+              $isActive={i === activeService}
+              onClick={() => setActiveService(i)}
+              onMouseEnter={() => setActiveService(i)}
+            >
+              {service.name}
+            </ServiceItem>
+          ))}
+        </ServiceList>
+        {services.map((service, i) => (
+          <Description key={service.name} $visible={i === activeService}>
+            <DescriptionText>{service.description}</DescriptionText>
+          </Description>
+        ))}
+      </DesktopServices>
 
-            <MobileServices aria-label="HKW services mobile view">
-                <MobileSceneWrap aria-hidden="true">
-                    <MobileSceneSvg viewBox="1380 150 980 700" preserveAspectRatio="xMidYMin slice">
-                        <path d="M3960,0L0,0v1014h3975.5L3960,0Z" transform="translate(-1.849932 0)" fill="#fcfae5" />
-                        <BlueMountain />
-                        <GoldMountain />
-                        <TreeMountain />
-                    </MobileSceneSvg>
-                </MobileSceneWrap>
-                <MobileLogoBadge />
-                <MobileTitle>OUR SPECIALTIES</MobileTitle>
-                <MobileLayout>
-                    <MobileList>
-                        {services.map((service, i) => (
-                            <MobileItem
-                                key={service.name}
-                                $isActive={i === activeService}
-                                onClick={() => setActiveService(i)}
-                            >
-                                {service.name}
-                            </MobileItem>
-                        ))}
-                    </MobileList>
+      <MobileServices aria-label='HKW services mobile view'>
+        <MobileSceneWrap aria-hidden='true'>
+          <MobileSceneSvg
+            viewBox='1380 150 980 700'
+            preserveAspectRatio='xMidYMin slice'
+          >
+            <path
+              d='M3960,0L0,0v1014h3975.5L3960,0Z'
+              transform='translate(-1.849932 0)'
+              fill='#fcfae5'
+            />
+            <BlueMountain />
+            <GoldMountain />
+            <TreeMountain />
+          </MobileSceneSvg>
+        </MobileSceneWrap>
+        <MobileLogoBadge />
+        <MobileTitle>OUR SPECIALTIES</MobileTitle>
+        <MobileLayout>
+          <MobileList>
+            {services.map((service, i) => (
+              <MobileItem
+                key={service.name}
+                $isActive={i === activeService}
+                onClick={() => setActiveService(i)}
+              >
+                {service.name}
+              </MobileItem>
+            ))}
+          </MobileList>
 
-                    <MobileDescription>
-                        {activeEntry?.description}
-                    </MobileDescription>
-                </MobileLayout>
-                <MobileMarmot>
-                    <TopHatMarmot />
-                </MobileMarmot>
-            </MobileServices>
-        </ViewContainer>
-    )
+          <MobileDescription>{activeEntry?.description}</MobileDescription>
+        </MobileLayout>
+        <MobileMarmot>
+          <TopHatMarmot />
+        </MobileMarmot>
+      </MobileServices>
+    </ViewContainer>
+  )
 }

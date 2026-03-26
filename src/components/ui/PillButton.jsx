@@ -5,25 +5,25 @@ const variants = {
   'nav-active': css`
     background: ${({ theme }) => theme.colors.orange.base};
     color: ${({ theme }) => theme.colors.white};
-    font-variation-settings: 'wdth' 75;
+    font-variation-settings: 'wdth' 68;
     font-weight: 600;
   `,
   'nav-inactive': css`
     background: transparent;
     color: ${({ theme }) => theme.colors.yellow.light};
-    font-variation-settings: 'wdth' 75;
+    font-variation-settings: 'wdth' 68;
     font-weight: 500;
   `,
   send: css`
     background: ${({ theme }) => theme.colors.blue.dark};
     color: ${({ theme }) => theme.colors.yellow.light};
-    font-variation-settings: 'wdth' 75;
+    font-variation-settings: 'wdth' 68;
     font-weight: 500;
   `,
   close: css`
     background: ${({ theme }) => theme.colors.orange.dark};
     color: ${({ theme }) => theme.colors.yellow.light};
-    font-variation-settings: 'wdth' 75;
+    font-variation-settings: 'wdth' 68;
     font-weight: 500;
 
     &:hover {
@@ -55,7 +55,11 @@ const StyledButton = styled.button`
   }
 `
 
-export default function PillButton({ variant = 'nav-inactive', children, ...props }) {
+export default function PillButton({
+  variant = 'nav-inactive',
+  children,
+  ...props
+}) {
   return (
     <StyledButton $variant={variant} {...props}>
       {children}

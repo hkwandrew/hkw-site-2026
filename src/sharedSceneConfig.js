@@ -1,3 +1,15 @@
+/**
+ * Shared scene configuration for cross-page landscape transitions.
+ *
+ * Architecture:
+ * - The landscape is composed of 7 SVG layers: blueMountain, goldMountain,
+ *   sun, dkBlueMountain, treeMountain, upperField, and whiteSand.
+ * - Each page defines a frozen scene state that positions and scales every layer.
+ * - Page transitions animate from the current layer positions to the target
+ *   page's scene state using GSAP timelines (see sharedSceneRuntime.js).
+ * - Layers with SVG paths (blueMountain, goldMountain) also morph their
+ *   path data between pages via MorphSVGPlugin.
+ */
 import { getTransitionKey, PAGE_DEFINITIONS, getPageDefinitionForPath } from './pageRegistry.js'
 import {
     SCENE_PATH_LAYER_KEYS,
@@ -6,6 +18,7 @@ import {
     getScenePathMorphConfig,
 } from './scenePathConfig.js'
 
+/** Duration in milliseconds for all page-to-page scene transitions. */
 export const SCENE_TRANSITION_DURATION_MS = 1500
 
 const HOME_SCENE_STATE = Object.freeze({
@@ -174,6 +187,7 @@ const CONTACT_SCENE_STATE = Object.freeze({
     }),
 })
 
+/** Frozen map of page keys to their scene layer states. */
 export const SCENE_PAGE_STATES = Object.freeze({
     'about-page': ABOUT_SCENE_STATE,
     'contact-page': CONTACT_SCENE_STATE,
@@ -212,6 +226,11 @@ const validateLayerState = (sceneKey, layerKey, layerState) => {
     return errors
 }
 
+/**
+ * Returns the scene state for a given route pathname.
+ * @param {string} pathname - Route path (e.g. '/', '/about')
+ * @returns {Object|null} Scene state with layer positions, or null if unknown
+ */
 export const resolveSceneStateForPath = (pathname) => {
     const pageDefinition = getPageDefinitionForPath(pathname)
 
@@ -220,6 +239,12 @@ export const resolveSceneStateForPath = (pathname) => {
     return SCENE_PAGE_STATES[pageDefinition.sceneStateKey] ?? null
 }
 
+/**
+ * Builds a transition config for animating between two pages.
+ * @param {string} fromPath - Source route path
+ * @param {string} toPath - Target route path
+ * @returns {{ transitionKey: string, durationMs: number, fromPage: Object, toPage: Object, targetState: Object, pathMorphByLayer: Object }|null}
+ */
 export const resolveSceneTransition = (fromPath, toPath) => {
     const fromPage = getPageDefinitionForPath(fromPath)
     const toPage = getPageDefinitionForPath(toPath)
@@ -247,6 +272,10 @@ export const resolveSceneTransition = (fromPath, toPath) => {
     }
 }
 
+/**
+ * Validates all scene states have required layers and properties.
+ * @returns {string[]} Array of error messages (empty when valid)
+ */
 export const validateSharedSceneConfig = () => {
     const errors = []
 

@@ -1,3 +1,24 @@
+/**
+ * About page animation hook — scroll-driven 4-stage parallax system.
+ *
+ * Animation stages:
+ *   Stage 1 (intro): Hero cloud visible, intro copy + scroll hint shown.
+ *   Stage 2 (dark):  Dark-layer quotes fade in, clouds shift positions.
+ *   Stage 3 (mid):   Mid/light-layer quotes appear, hero cloud morphs.
+ *   Stage 4 (outro): Outro testimonial + mascot float in; mascot has a
+ *                     special "rise" accent animation.
+ *
+ * Flow:
+ *   1. CSS slide-in animation plays for INTRO_DURATION_MS (1.5s).
+ *   2. ScrollTrigger pins the section and drives a scrub timeline.
+ *   3. On navigation away, useBlocker intercepts to play a CSS slide-out
+ *      exit transition before proceeding to the next route.
+ *   4. The shared scene transition is triggered in parallel via
+ *      transitionSceneToPath from the PageSceneTransition context.
+ *
+ * Falls back to a static card layout when the viewport is below
+ * ABOUT_DESKTOP_MIN_WIDTH or prefers-reduced-motion is active.
+ */
 import { useEffect, useLayoutEffect, useRef } from 'react'
 import gsap from 'gsap'
 import ScrollTrigger from 'gsap/ScrollTrigger'
@@ -42,6 +63,10 @@ const MASCOT_RISE_DURATION = 0.24
 const resolveResponsiveValue = (lazy, resolver) =>
     lazy ? () => resolver() : resolver()
 
+/**
+ * Hook managing the About page's scroll-driven animation and exit transitions.
+ * @returns {{ sectionRef: React.RefObject, handleScrollHintClick: Function }}
+ */
 const useAboutAnimation = () => {
     const sectionRef = useRef(null)
     const exitTransitionRef = useRef(null)

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router'
-import styled from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 import logo from '../assets/images/logo.svg'
 import { getPageLabelForPath } from '../pageRegistry.js'
 import MobileNavMenu from './MobileNavMenu'
@@ -64,20 +64,21 @@ const PageLabel = styled.div`
     line-height: 26px;
     text-transform: uppercase;
     font-variation-settings: "wdth" 68, "wght" ${({ theme }) => theme.font.weight.bold};
-    color: ${({ isServicesPage, theme }) => isServicesPage ? theme.colors.orange.base : theme.colors.white};
+    color: ${({ $isServicesPage, theme }) => $isServicesPage ? theme.colors.orange.base : theme.colors.white};
 
     @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
         display: none;
     }
 `
 
-const usePhoneViewport = () => {
+const usePhoneViewport = (mobileBreakpoint) => {
+    const mediaQueryString = `(max-width: ${mobileBreakpoint})`
     const [isPhoneViewport, setIsPhoneViewport] = useState(() =>
-        typeof window !== 'undefined' ? window.matchMedia('(max-width: 767px)').matches : false,
+        typeof window !== 'undefined' ? window.matchMedia(mediaQueryString).matches : false,
     )
 
     useEffect(() => {
-        const mediaQuery = window.matchMedia(`(max-width: 767px)`)
+        const mediaQuery = window.matchMedia(mediaQueryString)
 
         const update = () => {
             setIsPhoneViewport(mediaQuery.matches)
@@ -85,28 +86,21 @@ const usePhoneViewport = () => {
 
         update()
 
-        if (mediaQuery.addEventListener) {
-            mediaQuery.addEventListener('change', update)
-        } else {
-            mediaQuery.addListener(update)
-        }
+        mediaQuery.addEventListener('change', update)
 
         return () => {
-            if (mediaQuery.removeEventListener) {
-                mediaQuery.removeEventListener('change', update)
-            } else {
-                mediaQuery.removeListener(update)
-            }
+            mediaQuery.removeEventListener('change', update)
         }
-    }, [])
+    }, [mediaQueryString])
 
     return isPhoneViewport
 }
 
 const Header = () => {
+    const theme = useTheme()
     const location = useLocation()
     const pageLabel = getPageLabelForPath(location.pathname)
-    const isPhoneViewport = usePhoneViewport()
+    const isPhoneViewport = usePhoneViewport(theme.breakpoints.mobile)
     return (
         <StyledHeader>
             <BrandBlock>

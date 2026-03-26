@@ -1,4 +1,5 @@
 import SunHoverArt from '@/components/SunHoverArt'
+import theme from '@/styles/theme'
 import { useHomeHover } from '@/context/homeHover'
 import {
   getHomeHoverRegionPosition,
@@ -32,7 +33,7 @@ const Sun = () => {
           id='sun'
           d='M1689.5,291c32.03,0,58-25.967,58-58s-25.97-58-58-58-58,25.967-58,58s25.97,58,58,58Z'
           transform='translate(-1689.5,-233)'
-          fill='#d0471b'
+          fill={theme.colors.orange.base}
         />
         <g
           transform={`translate(${CONTACT_BADGE.x ?? 0} ${CONTACT_BADGE.y ?? 0}) scale(${CONTACT_BADGE_SCALE_X} ${CONTACT_BADGE_SCALE_Y})`}

@@ -1,3 +1,14 @@
+/**
+ * Runtime engine for shared scene transitions.
+ *
+ * Reads current SVG layer positions from the DOM via transform attribute
+ * parsing, then animates to target positions using GSAP timelines.
+ * Path layers are morphed via MorphSVGPlugin.
+ *
+ * DOM contract: each layer is located via CSS selectors in
+ * SCENE_LAYER_SELECTORS (e.g. '#blue-mountain__container'). These IDs
+ * must match the SVG elements rendered by the mountain/field components.
+ */
 import gsap from 'gsap'
 import MorphSVGPlugin from 'gsap/MorphSVGPlugin'
 
@@ -36,7 +47,9 @@ const SCENE_LAYER_SELECTORS = Object.freeze({
     }),
 })
 
+/** Matches `translate(x, y)` or `translate(x y)` with optional `px` units. */
 const TRANSLATE_PATTERN = /translate\(([-\d.]+)(?:px)?(?:,\s*|\s+)([-\d.]+)(?:px)?\)/
+/** Matches `scale(x, y)` or `scale(x)` (uniform). */
 const SCALE_PATTERN = /scale\(([-\d.]+)(?:,\s*|\s+)?([-\d.]+)?\)/
 
 const toTranslate = ({ x, y }) => `translate(${x},${y})`
@@ -138,6 +151,12 @@ const addPathTween = ({
     )
 }
 
+/**
+ * Immediately applies a scene state to the DOM (no animation).
+ * Sets transform attributes on all layer container/wrapper elements.
+ * @param {HTMLElement} rootElement - Root SVG element containing all layers
+ * @param {Object} sceneState - Target state from SCENE_PAGE_STATES
+ */
 export const applySharedSceneState = (rootElement, sceneState) => {
     if (!rootElement || !sceneState) return
 
@@ -149,6 +168,17 @@ export const applySharedSceneState = (rootElement, sceneState) => {
     })
 }
 
+/**
+ * Creates a GSAP timeline that animates all layers from their current
+ * DOM state to the target scene state.
+ * @param {Object} config
+ * @param {number} config.durationMs - Animation duration in milliseconds
+ * @param {Object} config.pathMorphByLayer - Per-layer MorphSVG config overrides
+ * @param {HTMLElement} config.rootElement - Root SVG element
+ * @param {Object} config.targetState - Target scene state
+ * @param {Function} [config.onComplete] - Callback when animation finishes
+ * @returns {gsap.core.Timeline|null} The GSAP timeline, or null if inputs are invalid
+ */
 export const animateSharedSceneTransition = ({
     durationMs,
     pathMorphByLayer,

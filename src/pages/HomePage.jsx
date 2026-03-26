@@ -455,7 +455,7 @@ const Subtitle = styled.p`
   font-size: 24px;
   line-height: calc(26 / 24);
   font-variation-settings:
-    'wdth' 75,
+    'wdth' 68,
     'wght' 600;
 
   display: block;
@@ -694,7 +694,7 @@ const MobileKicker = styled(Label)`
   font-size: 16px;
   line-height: calc(26 / 16);
   font-variation-settings:
-    'wdth' 67.5,
+    'wdth' 68,
     'wght' 600;
 `
 

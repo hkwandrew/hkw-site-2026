@@ -3,6 +3,45 @@ import MarmotCheer from '../components/characters/MarmotCheer'
 import useAboutPageAnimation from '../hooks/useAboutPageAnimation'
 import { HERO_CLOUD_PATHS } from '../aboutAnimationConfig'
 import { CLOUDS, QUOTES } from '../data/about-clouds-quotes'
+import {
+    AboutPageStyle,
+    AnimatedSection,
+    Cloud,
+    CloudFloat,
+    CloudsLayer,
+    HeroCloud,
+    HeroCloudTarget,
+    IntroCopy,
+    Mascot,
+    MascotFigure,
+    MascotFloat,
+    OutroCopy,
+    OutroName,
+    OutroQuote,
+    OutroRole,
+    Quote,
+    QuoteName,
+    QuoteRole,
+    QuoteText,
+    QuotesLayer,
+    Scene,
+    ScrollHint,
+    StaticCard,
+    StaticCardCloud,
+    StaticCardContent,
+    StaticCards,
+    StaticHeroCloud,
+    StaticIntroCopy,
+    StaticIntro,
+    StaticMascot,
+    StaticOutroQuote,
+    StaticPageLabel,
+    StaticQuoteName,
+    StaticQuoteRole,
+    StaticQuoteText,
+    StaticSection,
+    StaticSwipeHint,
+} from '../styles/aboutStyles'
 
 const BR_TAG_REGEX = /<br\s*\/?>/gi
 const MOBILE_CARD_CLOUD_BY_LAYER = {
@@ -37,7 +76,7 @@ const AboutPage = () => {
         createElement(
             Fragment,
             null,
-            '"',
+            '\u201C',
             ...quoteLines(quote).map((line, index) =>
                 createElement(
                     Fragment,
@@ -46,7 +85,7 @@ const AboutPage = () => {
                     line,
                 ),
             ),
-            '"',
+            '\u201D',
         )
 
     const renderHeroCloudSvg = ({ includeMorphTarget = false }) => (
@@ -57,25 +96,36 @@ const AboutPage = () => {
                 fill='white'
             />
             {includeMorphTarget ? (
-                <path
+                <HeroCloudTarget
                     data-hero-cloud-stage-one={includeMorphTarget ? '' : undefined}
                     d={HERO_CLOUD_PATHS.stageOne}
                     fill='white'
-                    className='about-heroCloudTarget'
                 />
             ) : null}
         </svg>
     )
 
-    const renderQuoteContent = (quote, prefix = 'about') => (
+    const renderQuoteContent = (quote) => (
         <>
-            <p className={`${prefix}-quoteText`}>{quoteTextWithMarks(quote.quote)}</p>
-            <p className={`${prefix}-quoteName`}>{quote.name}</p>
-            <p className={`${prefix}-quoteRole`}>
+            <QuoteText>{quoteTextWithMarks(quote.quote)}</QuoteText>
+            <QuoteName>{quote.name}</QuoteName>
+            <QuoteRole>
                 {quote.roleLines.map((line, index) => (
                     <span key={`${quote.id}-role-${index}`}>{line}</span>
                 ))}
-            </p>
+            </QuoteRole>
+        </>
+    )
+
+    const renderStaticQuoteContent = (quote) => (
+        <>
+            <StaticQuoteText>{quoteTextWithMarks(quote.quote)}</StaticQuoteText>
+            <StaticQuoteName>{quote.name}</StaticQuoteName>
+            <StaticQuoteRole>
+                {quote.roleLines.map((line, index) => (
+                    <span key={`${quote.id}-role-${index}`}>{line}</span>
+                ))}
+            </StaticQuoteRole>
         </>
     )
 
@@ -99,31 +149,33 @@ const AboutPage = () => {
     const introCopy = (
         <>
             <p>
-                Great design isn’t just about looking good—it’s about creating
+                Great design isn't just about looking good—it's about creating
                 connection. At HKW, we bring curiosity, strategy, and care to every
-                project, whether we’re amplifying nonprofit missions or shaping
+                project, whether we're amplifying nonprofit missions or shaping
                 distinctive brand voices.
             </p>
             <p>
-                <span>But don’t just take our word for it—</span>
-                <span>here’s what our clients have to say.</span>
+                <span>But don't just take our word for it—</span>
+                <span>here's what our clients have to say.</span>
             </p>
         </>
     )
 
     return (
         <>
-            <section className='about about--animated' id='about' ref={sectionRef}>
-                <div className='about-scene'>
-                    <div className='about-heroCloud' aria-hidden='true'>
+            <AboutPageStyle />
+
+            <AnimatedSection className='about about--animated' id='about' ref={sectionRef}>
+                <Scene className='about-scene'>
+                    <HeroCloud className='about-heroCloud' aria-hidden='true'>
                         {renderHeroCloudSvg({ includeMorphTarget: true })}
-                    </div>
+                    </HeroCloud>
 
-                    <div className='about-introCopy' data-intro-copy>
+                    <IntroCopy data-intro-copy>
                         {introCopy}
-                    </div>
+                    </IntroCopy>
 
-                    <button
+                    <ScrollHint
                         onClick={handleScrollHintClick}
                         type='button'
                         aria-label='Scroll for testimonials'
@@ -135,85 +187,89 @@ const AboutPage = () => {
                             <path d='M46.3024 31.8543H40.1901L41.4222 20.5794C41.5551 19.3426 40.5766 18.262 39.3324 18.262H26.0446C25.7789 18.262 25.5252 18.31 25.2957 18.3941C24.438 18.7183 23.8461 19.5828 23.9427 20.5554L25.0661 31.8543H18.9054C17.7941 31.8543 17.1901 33.1391 17.8907 33.9796L24.3655 41.7724L31.6013 50.4778C32.1207 51.1021 33.0992 51.1021 33.6186 50.4778L39.6585 43.2013L40.8424 41.7724L44.4059 37.4738L47.3051 33.9796C48.0057 33.1271 47.4017 31.8543 46.3024 31.8543Z' fill='#1C2D38' />
                             <path d='M39.6472 43.2013C35.8662 47.7641 29.9109 45.4947 28.1593 43.3574C24.9944 39.491 26.0091 34.8201 26.8668 33.4873C27.7244 32.1545 25.2722 18.3941 25.2722 18.3941C24.4146 18.7183 23.8226 19.5828 23.9193 20.5554L25.0427 31.8543H18.882C17.7707 31.8543 17.1667 33.1391 17.8673 33.9796L24.3421 41.7724L31.5779 50.4778C32.0973 51.1021 33.0758 51.1021 33.5952 50.4778L39.6351 43.2013H39.6472Z' fill='#1C2D38' />
                         </svg>
-                    </button>
+                    </ScrollHint>
 
-                    <div className='about-clouds' aria-hidden='true'>
+                    <CloudsLayer aria-hidden='true'>
                         {CLOUDS.map((cloud) => (
-                            <div
+                            <Cloud
                                 key={cloud.id}
-                                className={`about-cloud about-cloud--${cloud.layer}`}
+                                $layer={cloud.layer}
                                 data-cloud-id={cloud.id}
                             >
-                                {createElement(cloud.component)}
-                            </div>
+                                <CloudFloat $layer={cloud.layer}>
+                                    {createElement(cloud.component)}
+                                </CloudFloat>
+                            </Cloud>
                         ))}
-                    </div>
+                    </CloudsLayer>
 
-                    <div className='about-quotes'>
+                    <QuotesLayer>
                         {QUOTES.map((quote) => (
-                            <article
+                            <Quote
                                 key={quote.id}
-                                className={`about-quote about-quote--${quote.layer}`}
+                                $layer={quote.layer}
                                 data-quote-id={quote.id}
                                 data-quote-layer={quote.layer}
                             >
                                 {renderQuoteContent(quote)}
-                            </article>
+                            </Quote>
                         ))}
-                    </div>
+                    </QuotesLayer>
 
-                    <article className='about-outroCopy' data-outro-copy>
-                        <p className='about-outroQuote'>"We are grateful we selected HKW..."</p>
-                        <p className='about-outroName'>Nancy Janzen</p>
-                        <p className='about-outroRole'>CEO at Maplewood</p>
-                    </article>
+                    <OutroCopy data-outro-copy>
+                        <OutroQuote>"We are grateful we selected HKW..."</OutroQuote>
+                        <OutroName>Nancy Janzen</OutroName>
+                        <OutroRole>CEO at Maplewood</OutroRole>
+                    </OutroCopy>
 
-                    <div className='about-mascot' data-outro-mascot aria-hidden='true'>
-                        <div className='about-mascotFigure' data-outro-mascot-figure>
-                            <div className='about-mascotFloat'>
+                    <Mascot data-outro-mascot aria-hidden='true'>
+                        <MascotFigure data-outro-mascot-figure>
+                            <MascotFloat>
                                 <MarmotCheer />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+                            </MascotFloat>
+                        </MascotFigure>
+                    </Mascot>
+                </Scene>
+            </AnimatedSection>
 
-            <section className='about-static' aria-label='Client testimonials'>
-                <div className='about-staticIntro'>
-                    <p className='about-staticPageLabel'>Kind Words</p>
+            <StaticSection aria-label='Client testimonials'>
+                <StaticIntro>
+                    <StaticPageLabel>Kind Words</StaticPageLabel>
 
-                    <div className='about-staticHeroCloud' aria-hidden='true'>
+                    <StaticHeroCloud aria-hidden='true'>
                         {renderHeroCloudSvg({ includeMorphTarget: false })}
-                    </div>
+                    </StaticHeroCloud>
 
-                    <div className='about-introCopy about-introCopy--static'>
+                    <StaticIntroCopy>
                         {introCopy}
-                    </div>
-                </div>
+                    </StaticIntroCopy>
+                </StaticIntro>
 
-                <div className='about-staticCards'>
+                <StaticCards>
                     {MOBILE_CARDS.map((quote, index) => {
                         const cardCloud = MOBILE_CARD_CLOUD_BY_LAYER[quote.layer]
 
                         return (
-                            <article
+                            <StaticCard
                                 key={quote.id}
-                                className={`about-staticCard about-staticCard--${quote.layer}`}
+                                $layer={quote.layer}
+                                $isOutro={quote.isOutro}
+                                data-is-outro={quote.isOutro ? '' : undefined}
                             >
-                                <div className='about-staticCardCloud' aria-hidden='true'>
+                                <StaticCardCloud aria-hidden='true'>
                                     {cardCloud?.component
                                         ? createElement(cardCloud.component)
                                         : null}
-                                </div>
+                                </StaticCardCloud>
 
-                                <div className='about-staticCardContent'>
+                                <StaticCardContent>
                                     {quote.isOutro ? (
                                         <>
-                                            <p className='about-staticOutroQuote'>
+                                            <StaticOutroQuote>
                                                 {quoteTextWithMarks(quote.quote)}
-                                            </p>
-                                            <p className='about-static-quoteName'>{quote.name}</p>
-                                            <p className='about-static-quoteRole'>
+                                            </StaticOutroQuote>
+                                            <StaticQuoteName>{quote.name}</StaticQuoteName>
+                                            <StaticQuoteRole>
                                                 {quote.roleLines.map((line, roleIndex) => (
                                                     <span
                                                         key={`${quote.id}-role-${roleIndex}`}
@@ -221,32 +277,29 @@ const AboutPage = () => {
                                                         {line}
                                                     </span>
                                                 ))}
-                                            </p>
+                                            </StaticQuoteRole>
                                         </>
                                     ) : (
-                                        renderQuoteContent(quote, 'about-static')
+                                        renderStaticQuoteContent(quote)
                                     )}
-                                </div>
+                                </StaticCardContent>
 
                                 {index === 0 ? (
-                                    <div className='about-staticSwipeHint'>
+                                    <StaticSwipeHint>
                                         {renderMobileSwipeIcon()}
-                                    </div>
+                                    </StaticSwipeHint>
                                 ) : null}
 
                                 {quote.isOutro ? (
-                                    <div
-                                        className='about-mascot about-mascot--static'
-                                        aria-hidden='true'
-                                    >
+                                    <StaticMascot aria-hidden='true'>
                                         <MarmotCheer />
-                                    </div>
+                                    </StaticMascot>
                                 ) : null}
-                            </article>
+                            </StaticCard>
                         )
                     })}
-                </div>
-            </section>
+                </StaticCards>
+            </StaticSection>
         </>
     )
 }

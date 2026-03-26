@@ -1,5 +1,6 @@
 import goldMountainHover from '@/assets/images/gold-mountain-hover.png'
-import { useHomeHover } from '@/context/homeHover'
+import MountainBase from '@/components/MountainBase'
+import theme from '@/styles/theme'
 import {
   getHomeHoverRegionPosition,
   HOME_HOVER_REGION,
@@ -17,68 +18,36 @@ const GOLD_MOUNTAIN_HOVER_POSITION = Object.freeze(
   getHomeHoverRegionPosition(HOME_HOVER_REGION.goldMountain),
 )
 
-const GoldMountain = () => {
-  const { clearHomeHoverRegion, homeHoverRegion, isHome, setHomeHoverRegion } =
-    useHomeHover()
-  const isHoverActive =
-    isHome && homeHoverRegion === HOME_HOVER_REGION.goldMountain
-
-  return (
-    <g
-      id='gold-mountain__container'
-      transform={`translate(${CONTAINER.x},${CONTAINER.y})`}
-    >
-      <g id='gold-mountain__wrapper' transform='scale(1,1)'>
-        <g id='gold-mountain' transform='translate(-2005,-666.210876)'>
-          <path
-            id='gold-mountain-path'
-            d={GOLD_MOUNTAIN_PATH}
-            transform='translate(-5.492666 -75.016071)'
-            clipRule='evenodd'
-            fill='#fa9c38'
-            fillRule='evenodd'
-          />
-
-          <g
-            pointerEvents='none'
-            style={{
-              opacity: isHoverActive ? 1 : 0,
-              transition: 'opacity 220ms ease',
-            }}
-            transform={`translate(${GOLD_MOUNTAIN_HOVER_POSITION.x ?? 0} ${GOLD_MOUNTAIN_HOVER_POSITION.y ?? 0})`}
-          >
-            <image
-              href={goldMountainHover}
-              width={GOLD_MOUNTAIN_HOVER_POSITION.width}
-              height={GOLD_MOUNTAIN_HOVER_POSITION.height}
-              preserveAspectRatio='none'
-            />
-          </g>
-
-          <path
-            id='gold-mountain-hover-hitbox'
-            d={GOLD_MOUNTAIN_PATH}
-            transform='translate(-5.492666 -75.016071)'
-            fill='transparent'
-            onMouseEnter={() => {
-              if (isHome) {
-                setHomeHoverRegion(HOME_HOVER_REGION.goldMountain)
-              }
-            }}
-            onMouseLeave={() => {
-              if (isHome) {
-                clearHomeHoverRegion()
-              }
-            }}
-            style={{
-              cursor: isHome ? 'pointer' : 'default',
-              pointerEvents: isHome ? 'auto' : 'none',
-            }}
-          />
-        </g>
-      </g>
-    </g>
-  )
-}
+const GoldMountain = () => (
+  <MountainBase
+    containerId='gold-mountain__container'
+    wrapperId='gold-mountain__wrapper'
+    container={CONTAINER}
+    hoverRegion={HOME_HOVER_REGION.goldMountain}
+    hoverContent={
+      <image
+        href={goldMountainHover}
+        width={GOLD_MOUNTAIN_HOVER_POSITION.width}
+        height={GOLD_MOUNTAIN_HOVER_POSITION.height}
+        preserveAspectRatio='none'
+      />
+    }
+    mountainContent={
+      <path
+        id='gold-mountain-path'
+        d={GOLD_MOUNTAIN_PATH}
+        transform='translate(-5.492666 -75.016071)'
+        clipRule='evenodd'
+        fill={theme.colors.yellow.gold}
+        fillRule='evenodd'
+      />
+    }
+    hitboxId='gold-mountain-hover-hitbox'
+    hitboxPath={GOLD_MOUNTAIN_PATH}
+    hitboxTransform='translate(-5.492666 -75.016071)'
+    innerGroupId='gold-mountain'
+    innerGroupTransform='translate(-2005,-666.210876)'
+  />
+)
 
 export default GoldMountain

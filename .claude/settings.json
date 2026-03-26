@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "command": "npx eslint --fix \"$CLAUDE_FILE_PATH\" 2>/dev/null || true"
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "command": "if echo \"$CLAUDE_FILE_PATH\" | grep -q 'package-lock.json'; then echo 'BLOCK: Do not edit lock files directly. Use npm install instead.' && exit 1; fi"
+      }
+    ]
+  }
+}

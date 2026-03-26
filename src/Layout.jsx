@@ -20,6 +20,7 @@ import TreeMountain from './components/TreeMountain'
 import UpperField from './components/UpperField'
 import Sun from './components/Sun'
 import WhiteSand from './components/WhiteSand.jsx'
+import theme from './styles/theme'
 
 const Layout = () => {
   const location = useLocation()
@@ -180,7 +181,7 @@ const Layout = () => {
                 id='sky'
                 d='M3960,0L0,0v1014h3975.5L3960,0Z'
                 transform='translate(-1.849932 0)'
-                fill='#fcfae5'
+                fill={theme.colors.yellow.light}
               />
               {isHome ? (
                 <Link to='/about'>

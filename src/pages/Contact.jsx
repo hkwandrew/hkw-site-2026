@@ -3,10 +3,9 @@ import styled from 'styled-components'
 import CloseButton from '@/components/ui/CloseButton'
 import FormField from '@/components/ui/FormField'
 import PillButton from '@/components/ui/PillButton'
+import { validateContact } from '@/utils/validateContact'
 
 const PHONE_BREAKPOINT = '767px'
-const REQUIRED_MESSAGE = 'Please fill out this field.'
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 const PROJECT_TYPES = [
   'Website Design',
@@ -27,12 +26,12 @@ const initialValues = {
 }
 
 const Page = styled.section`
-  position: relative;
+  position: absolute;
+  top: 0;
   width: 100%;
   min-height: 100dvh;
   overflow-x: hidden;
   overflow-y: auto;
-  background: ${({ theme }) => theme.colors.yellow.light};
 `
 
 const DesktopStage = styled.section`
@@ -40,7 +39,6 @@ const DesktopStage = styled.section`
   align-items: center;
   justify-content: center;
   min-height: 100dvh;
-  padding: 32px 24px;
 
   @media (max-width: ${PHONE_BREAKPOINT}) {
     display: none;
@@ -49,14 +47,9 @@ const DesktopStage = styled.section`
 
 const DesktopPanel = styled.div`
   position: relative;
-  width: min(90vmin, 700px);
-  height: min(90vmin, 700px);
-  border-radius: 50%;
-  background: ${({ theme }) => theme.colors.orange.base};
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 48px 40px 38px;
   overflow-y: auto;
 `
 
@@ -69,25 +62,22 @@ const DesktopCloseWrapper = styled.div`
 
 const Title = styled.h1`
   margin: 0;
-  color: ${({ theme }) => theme.colors.white};
+  color: ${({ theme }) => theme.colors.yellow.light};
   text-align: center;
   text-transform: uppercase;
   font-family: ${({ theme }) => theme.font.family};
-  font-variation-settings: 'wdth' 67.5;
+  font-variation-settings: 'wdth' 68;
   font-size: clamp(24px, 4vw, 40px);
-  font-weight: ${({ theme }) => theme.font.weight.semibold};
-  line-height: 1.1;
-  letter-spacing: -0.02em;
+  font-weight: ${({ theme }) => theme.font.weight.medium};
 `
 
 const Subtitle = styled.p`
-  margin: 8px 0 0;
   color: ${({ theme }) => theme.colors.white};
   text-align: center;
   font-family: ${({ theme }) => theme.font.family};
   font-size: 16px;
   font-weight: ${({ theme }) => theme.font.weight.regular};
-  line-height: 1.25;
+  line-height: calc(29 / 16);
 `
 
 const ContactForm = styled.form`
@@ -95,8 +85,8 @@ const ContactForm = styled.form`
   flex-direction: column;
   gap: ${({ $layout }) => ($layout === 'phone' ? '14px' : '12px')};
   width: 100%;
-  max-width: ${({ $layout }) => ($layout === 'phone' ? '300px' : '400px')};
-  margin-top: ${({ $layout }) => ($layout === 'phone' ? '18px' : '24px')};
+  max-width: ${({ $layout }) => ($layout === 'phone' ? '300px' : '365px')};
+  margin-top: ${({ $layout }) => ($layout === 'phone' ? '18px' : '31px')};
 `
 
 const SubmitRow = styled.div`
@@ -111,7 +101,7 @@ const SubmitButton = styled(PillButton)`
   padding: 0 20px;
   font-size: 16px;
   line-height: 1;
-  font-variation-settings: 'wdth' 67.5;
+  font-variation-settings: 'wdth' 68;
 
   @media (min-width: 768px) {
     min-width: 180px;
@@ -131,11 +121,11 @@ const RequiredNote = styled.p`
   line-height: 1;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  font-variation-settings: 'wdth' 67.5;
+  font-variation-settings: 'wdth' 68;
 `
 
 const PhoneStage = styled.section`
-    display: none;
+  display: none;
 
   @media (max-width: ${PHONE_BREAKPOINT}) {
     display: block;
@@ -187,83 +177,69 @@ const PhoneTitle = styled(Title)`
   }
 `
 
-function validateContact(values) {
-  const nextErrors = {}
-
-  if (!values.name.trim()) {
-    nextErrors.name = REQUIRED_MESSAGE
-  }
-
-  if (!values.email.trim() || !EMAIL_PATTERN.test(values.email.trim())) {
-    nextErrors.email = REQUIRED_MESSAGE
-  }
-
-  return nextErrors
-}
-
 function ContactFormFields({ layout, values, errors, onChange, onSubmit }) {
   const isPhone = layout === 'phone'
 
   return (
     <ContactForm $layout={layout} noValidate onSubmit={onSubmit}>
       <FormField
-        label="PROJECT TYPE"
-        type="select"
-        variant="contact"
-        name="projectType"
+        label='PROJECT TYPE'
+        type='select'
+        variant='contact'
+        name='projectType'
         value={values.projectType}
         onChange={onChange}
         options={PROJECT_TYPES}
       />
       <FormField
-        label="ENTER NAME"
+        label='ENTER NAME'
         required
-        variant="contact"
-        name="name"
+        variant='contact'
+        name='name'
         value={values.name}
         onChange={onChange}
         errorText={errors.name}
-        autoComplete="name"
+        autoComplete='name'
       />
       <FormField
-        label="ORGANIZATION"
-        variant="contact"
-        name="organization"
+        label='ORGANIZATION'
+        variant='contact'
+        name='organization'
         value={values.organization}
         onChange={onChange}
-        autoComplete="organization"
+        autoComplete='organization'
       />
       <FormField
-        label="ENTER EMAIL ADDRESS"
-        type="email"
+        label='ENTER EMAIL ADDRESS'
+        type='email'
         required
-        variant="contact"
-        name="email"
+        variant='contact'
+        name='email'
         value={values.email}
         onChange={onChange}
         errorText={errors.email}
         placeholder={isPhone ? 'example@email.com' : 'example@email.com'}
-        autoComplete="email"
-        inputMode="email"
+        autoComplete='email'
+        inputMode='email'
       />
       <FormField
-        label="ENTER WEBSITE, IF APPLICABLE"
-        variant="contact"
-        name="website"
+        label='ENTER WEBSITE, IF APPLICABLE'
+        variant='contact'
+        name='website'
         value={values.website}
         onChange={onChange}
-        autoComplete="url"
+        autoComplete='url'
       />
       <FormField
-        label="TELL US ABOUT YOUR PROJECT"
-        type="textarea"
-        variant="contact"
-        name="message"
+        label='TELL US ABOUT YOUR PROJECT'
+        type='textarea'
+        variant='contact'
+        name='message'
         value={values.message}
         onChange={onChange}
       />
       <SubmitRow>
-        <SubmitButton variant="send" type="submit">
+        <SubmitButton variant='send' type='submit'>
           SEND MESSAGE
         </SubmitButton>
       </SubmitRow>
@@ -306,7 +282,7 @@ export default function Contact({ onClose } = {}) {
 
   return (
     <Page>
-      <DesktopStage aria-label="Contact form">
+      <DesktopStage aria-label='Contact form'>
         <DesktopPanel>
           {onClose ? (
             <DesktopCloseWrapper>
@@ -314,9 +290,11 @@ export default function Contact({ onClose } = {}) {
             </DesktopCloseWrapper>
           ) : null}
           <Title>Get In Touch</Title>
-          <Subtitle>Fill out the form below and we&apos;ll follow up soon.</Subtitle>
+          <Subtitle>
+            Fill out the form below and we&apos;ll follow up soon.
+          </Subtitle>
           <ContactFormFields
-            layout="desktop"
+            layout='desktop'
             values={values}
             errors={errors}
             onChange={handleChange}
@@ -325,12 +303,14 @@ export default function Contact({ onClose } = {}) {
         </DesktopPanel>
       </DesktopStage>
 
-      <PhoneStage aria-label="Contact form mobile">
+      <PhoneStage aria-label='Contact form mobile'>
         <PhonePanel>
           <PhoneTitle>GET IN TOUCH</PhoneTitle>
-          <PhoneSubtitle>Fill out the form below and we&apos;ll follow up soon.</PhoneSubtitle>
+          <PhoneSubtitle>
+            Fill out the form below and we&apos;ll follow up soon.
+          </PhoneSubtitle>
           <ContactFormFields
-            layout="phone"
+            layout='phone'
             values={values}
             errors={errors}
             onChange={handleChange}

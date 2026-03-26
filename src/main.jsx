@@ -12,6 +12,7 @@ import Home from "./pages/HomePage.jsx"
 import About from "./pages/AboutPage.jsx"
 import Services from "./pages/ServicesPage.jsx"
 import Work from "./pages/WorkPage.jsx"
+import ErrorBoundary from './components/ErrorBoundary.jsx'
 import Layout from './Layout.jsx'
 import Contact from './pages/Contact.jsx'
 import { getRouteChildrenConfig } from './pageRegistry.js'
@@ -35,7 +36,9 @@ createRoot(document.getElementById("root")).render(
     <StrictMode>
         <ThemeProvider theme={theme}>
             <GlobalStyle />
-            <RouterProvider router={router} />
+            <ErrorBoundary>
+                <RouterProvider router={router} />
+            </ErrorBoundary>
         </ThemeProvider>
     </StrictMode>,
 )

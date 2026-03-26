@@ -2,10 +2,15 @@ import { createGlobalStyle } from 'styled-components'
 
 const GlobalStyle = createGlobalStyle`
   @font-face {
-    font-family: 'Acumin Variable Concept';
-    src: url('/fonts/AcuminVF.woff2') format('woff2-variations');
+    font-family: "Acumin Variable Concept";
+    src:
+      local("Acumin VF"),
+      local("AcuminVF"),
+      url("/fonts/AcuminVF.woff2") format("woff2-variations"),
+      url("/fonts/AcuminVF.ttf") format("truetype-variations");
     font-weight: 100 900;
-    font-stretch: 75% 100%;
+    font-stretch: 50% 115%;
+    font-style: normal;
     font-display: swap;
   }
 
