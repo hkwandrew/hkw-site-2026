@@ -3,8 +3,9 @@ import styled, { css } from 'styled-components'
 import { applyTypography } from './Typography'
 
 const CONTACT_INVALID_FILL = '#FEE3CA'
-const CONTACT_SELECT_ARROW = `data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%231C2D38' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E`
-
+const CONTACT_SELECT_ARROW = `data:image/svg+xml,${encodeURIComponent(
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 15" fill="none"><path d="M3 3L12 12L21 3" stroke="#1C2D38" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+)}`
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -17,13 +18,12 @@ const LabelRow = styled.div`
   align-items: flex-end;
   justify-content: space-between;
   gap: 12px;
-  min-height: 18px;
+  min-height: 24px;
 `
 
 const FieldLabel = styled.label`
   ${applyTypography('label')}
   color: ${({ theme }) => theme.colors.white};
-  line-height: 1;
 `
 
 const ErrorText = styled.span`
@@ -82,12 +82,23 @@ const StyledTextarea = styled.textarea`
 const StyledSelect = styled.select`
   ${controlBase}
   cursor: pointer;
-  background-image: url('${CONTACT_SELECT_ARROW}');
+  background-image: url("${CONTACT_SELECT_ARROW}");
+  background-position: ${({ $layout }) =>
+    $layout === 'desktop' ? 'right 23px center' : 'right 20px center'};
   background-repeat: no-repeat;
-  background-position: right 20px center;
-  background-size: 12px 8px;
-  padding-right: 50px;
+  background-size: ${({ $layout }) =>
+    $layout === 'desktop' ? '24px 15px' : '18px 11px'};
+  line-height: ${({ $layout }) => ($layout === 'desktop' ? '30px' : '1')};
+  padding-top: ${({ $layout }) => ($layout === 'desktop' ? '10px' : '10px')};
+  padding-right: ${({ $layout }) => ($layout === 'desktop' ? '72px' : '56px')};
+  padding-bottom: ${({ $layout }) => ($layout === 'desktop' ? '10px' : '10px')};
+  padding-left: ${({ $layout }) => ($layout === 'desktop' ? '27px' : '20px')};
   ${({ $invalid }) => $invalid && invalidControlStyles}
+`
+
+const SelectControl = styled.div`
+  position: relative;
+  width: 100%;
 `
 
 export default function FormField({
@@ -96,6 +107,7 @@ export default function FormField({
   required,
   options,
   errorText,
+  layout = 'desktop',
   id,
   name,
   ...props
@@ -116,6 +128,7 @@ export default function FormField({
     'aria-invalid': invalid || undefined,
     'aria-describedby': describedBy,
     $invalid: invalid,
+    $layout: layout,
     ...props,
   }
 
@@ -131,19 +144,21 @@ export default function FormField({
       {type === 'textarea' ? (
         <StyledTextarea {...controlProps} />
       ) : type === 'select' ? (
-        <StyledSelect
-          {...controlProps}
-          {...(props.value === undefined
-            ? { defaultValue: props.defaultValue ?? '' }
-            : { value: props.value })}
-        >
-          <option value=''>Select option</option>
-          {options?.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
-            </option>
-          ))}
-        </StyledSelect>
+        <SelectControl $layout={layout}>
+          <StyledSelect
+            {...controlProps}
+            {...(props.value === undefined
+              ? { defaultValue: props.defaultValue ?? '' }
+              : { value: props.value })}
+          >
+            <option value=''>Select option</option>
+            {options?.map((opt) => (
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </StyledSelect>
+        </SelectControl>
       ) : (
         <StyledInput type={type} {...controlProps} />
       )}

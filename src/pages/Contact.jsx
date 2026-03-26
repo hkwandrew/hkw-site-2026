@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router'
 import styled from 'styled-components'
 import CloseButton from '@/components/ui/CloseButton'
 import FormField from '@/components/ui/FormField'
@@ -50,12 +51,13 @@ const DesktopPanel = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow-y: auto;
+  width: 365px;
+  overflow: visible;
 `
 
 const DesktopCloseWrapper = styled.div`
   position: absolute;
-  top: 20px;
+  top: -55px;
   left: 50%;
   transform: translateX(-50%);
 `
@@ -72,6 +74,7 @@ const Title = styled.h1`
 `
 
 const Subtitle = styled.p`
+  max-width: 339px;
   color: ${({ theme }) => theme.colors.white};
   text-align: center;
   font-family: ${({ theme }) => theme.font.family};
@@ -83,44 +86,37 @@ const Subtitle = styled.p`
 const ContactForm = styled.form`
   display: flex;
   flex-direction: column;
-  gap: ${({ $layout }) => ($layout === 'phone' ? '14px' : '12px')};
-  width: 100%;
-  max-width: ${({ $layout }) => ($layout === 'phone' ? '300px' : '365px')};
+  gap: ${({ $layout }) => ($layout === 'phone' ? '14px' : '8px')};
+  width: ${({ $layout }) => ($layout === 'phone' ? '300px' : '365px')};
   margin-top: ${({ $layout }) => ($layout === 'phone' ? '18px' : '31px')};
 `
 
 const SubmitRow = styled.div`
   display: flex;
   justify-content: center;
-  margin-top: 4px;
+  margin-top: ${({ $layout }) => ($layout === 'phone' ? '4px' : '16px')};
 `
 
 const SubmitButton = styled(PillButton)`
+  width: 145px;
   min-width: 145px;
   height: 47px;
   padding: 0 20px;
-  font-size: 16px;
+  font-size: 20px;
   line-height: 1;
   font-variation-settings: 'wdth' 68;
-
-  @media (min-width: 768px) {
-    min-width: 180px;
-    height: 52px;
-    padding: 0 24px;
-    font-size: 18px;
-  }
 `
 
 const RequiredNote = styled.p`
-  margin: 2px 0 0;
+  margin: ${({ $layout }) => ($layout === 'phone' ? '2px 0 0' : '14px 0 0')};
   color: ${({ theme }) => theme.colors.white};
   text-align: center;
   font-family: ${({ theme }) => theme.font.family};
-  font-size: 14px;
+  font-size: 16px;
   font-weight: ${({ theme }) => theme.font.weight.medium};
-  line-height: 1;
+  line-height: calc(24 / 16);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 1.6px;
   font-variation-settings: 'wdth' 68;
 `
 
@@ -185,7 +181,7 @@ function ContactFormFields({ layout, values, errors, onChange, onSubmit }) {
       <FormField
         label='PROJECT TYPE'
         type='select'
-        variant='contact'
+        layout={layout}
         name='projectType'
         value={values.projectType}
         onChange={onChange}
@@ -194,7 +190,7 @@ function ContactFormFields({ layout, values, errors, onChange, onSubmit }) {
       <FormField
         label='ENTER NAME'
         required
-        variant='contact'
+        layout={layout}
         name='name'
         value={values.name}
         onChange={onChange}
@@ -203,7 +199,7 @@ function ContactFormFields({ layout, values, errors, onChange, onSubmit }) {
       />
       <FormField
         label='ORGANIZATION'
-        variant='contact'
+        layout={layout}
         name='organization'
         value={values.organization}
         onChange={onChange}
@@ -213,7 +209,7 @@ function ContactFormFields({ layout, values, errors, onChange, onSubmit }) {
         label='ENTER EMAIL ADDRESS'
         type='email'
         required
-        variant='contact'
+        layout={layout}
         name='email'
         value={values.email}
         onChange={onChange}
@@ -224,7 +220,7 @@ function ContactFormFields({ layout, values, errors, onChange, onSubmit }) {
       />
       <FormField
         label='ENTER WEBSITE, IF APPLICABLE'
-        variant='contact'
+        layout={layout}
         name='website'
         value={values.website}
         onChange={onChange}
@@ -233,24 +229,34 @@ function ContactFormFields({ layout, values, errors, onChange, onSubmit }) {
       <FormField
         label='TELL US ABOUT YOUR PROJECT'
         type='textarea'
-        variant='contact'
+        layout={layout}
         name='message'
         value={values.message}
         onChange={onChange}
       />
-      <SubmitRow>
+      <SubmitRow $layout={layout}>
         <SubmitButton variant='send' type='submit'>
           SEND MESSAGE
         </SubmitButton>
       </SubmitRow>
-      <RequiredNote>* REQUIRED</RequiredNote>
+      <RequiredNote $layout={layout}>* REQUIRED</RequiredNote>
     </ContactForm>
   )
 }
 
 export default function Contact({ onClose } = {}) {
+  const navigate = useNavigate()
   const [values, setValues] = useState(initialValues)
   const [errors, setErrors] = useState({})
+
+  const handleClose = () => {
+    if (onClose) {
+      onClose()
+      return
+    }
+
+    navigate('/')
+  }
 
   const handleChange = (event) => {
     const { name, value } = event.target
@@ -284,11 +290,9 @@ export default function Contact({ onClose } = {}) {
     <Page>
       <DesktopStage aria-label='Contact form'>
         <DesktopPanel>
-          {onClose ? (
-            <DesktopCloseWrapper>
-              <CloseButton onClick={onClose} />
-            </DesktopCloseWrapper>
-          ) : null}
+          <DesktopCloseWrapper>
+            <CloseButton onClick={handleClose} />
+          </DesktopCloseWrapper>
           <Title>Get In Touch</Title>
           <Subtitle>
             Fill out the form below and we&apos;ll follow up soon.
