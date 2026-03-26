@@ -24,7 +24,7 @@ const HOME_SCENE_STATE = Object.freeze({
         wrapper: Object.freeze({ scaleX: 1, scaleY: 1 }),
     }),
     dkBlueMountain: Object.freeze({
-        container: Object.freeze({ x: 2480.5, y: 697.21376 }),
+        container: Object.freeze({ x: 2525.5, y: 707.21376 }),
         wrapper: Object.freeze({ scaleX: 1, scaleY: 1 }),
     }),
     treeMountain: Object.freeze({

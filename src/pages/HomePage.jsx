@@ -8,6 +8,16 @@ import TreeMountain from '@/components/TreeMountain'
 import UpperField from '@/components/UpperField'
 import HomeMarmot from '@/components/characters/HomeMarmot'
 import Plane from '@/components/Plane'
+import StumpHoverArt from '@/components/StumpHoverArt'
+import { useHomeHover } from '@/context/homeHover'
+import {
+  getHomeHoverRegionPosition,
+  HOME_HOVER_REGION,
+} from '@/homeHoverConfig'
+
+const MASCOT_HOVER_ART = Object.freeze(
+  getHomeHoverRegionPosition(HOME_HOVER_REGION.mascot),
+)
 
 const riseIn = keyframes`
   from {
@@ -525,11 +535,13 @@ const HomeMarmotWrapper = styled.div`
   width: 681px;
   aspect-ratio: 681 / 453;
   z-index: 5;
-  pointer-events: none;
+  overflow: visible;
+  pointer-events: auto;
 
   svg {
     width: 100%;
     height: 100%;
+    pointer-events: none;
   }
 
   #marmot-character-intro,
@@ -626,12 +638,32 @@ const HomeMarmotWrapper = styled.div`
     right: -128px;
     bottom: 100px;
     width: min(478px, 122vw);
+    pointer-events: none;
   }
 
   @media (max-width: 767px) and (max-height: 760px) {
     right: -118px;
     bottom: 76px;
     width: min(446px, 122vw);
+  }
+`
+
+const StumpHoverOverlay = styled.div`
+  position: absolute;
+  right: ${MASCOT_HOVER_ART.right}px;
+  bottom: ${MASCOT_HOVER_ART.bottom}px;
+  width: ${MASCOT_HOVER_ART.width}px;
+  max-width: none;
+  pointer-events: none;
+  opacity: ${({ $active }) => ($active ? 1 : 0)};
+  transform: translate3d(0, ${({ $active }) => ($active ? '0' : '10px')}, 0);
+  transition:
+    opacity 220ms ease,
+    transform 220ms ease;
+
+  svg {
+    width: 100%;
+    height: auto;
   }
 `
 
@@ -886,6 +918,10 @@ const HomeMobileScene = () => (
 
 export default function Home() {
   const isActive = usePageActive()
+  const { clearHomeHoverRegion, homeHoverRegion, isHome, setHomeHoverRegion } =
+    useHomeHover()
+  const isStumpHoverActive =
+    isHome && homeHoverRegion === HOME_HOVER_REGION.mascot
 
   return (
     <>
@@ -939,7 +975,21 @@ export default function Home() {
           </MobileFooter>
         </MobileHome>
       </ViewContainer>
-      <HomeMarmotWrapper>
+      <HomeMarmotWrapper
+        onMouseEnter={() => {
+          if (isHome) {
+            setHomeHoverRegion(HOME_HOVER_REGION.mascot)
+          }
+        }}
+        onMouseLeave={() => {
+          if (isHome) {
+            clearHomeHoverRegion()
+          }
+        }}
+      >
+        <StumpHoverOverlay aria-hidden='true' $active={isStumpHoverActive}>
+          <StumpHoverArt />
+        </StumpHoverOverlay>
         <HomeMarmot />
       </HomeMarmotWrapper>
     </>
