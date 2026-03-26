@@ -169,7 +169,11 @@ const AboutPage = () => {
                     </article>
 
                     <div className='about-mascot' data-outro-mascot aria-hidden='true'>
-                        <MarmotCheer />
+                        <div className='about-mascotFigure' data-outro-mascot-figure>
+                            <div className='about-mascotFloat'>
+                                <MarmotCheer />
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>

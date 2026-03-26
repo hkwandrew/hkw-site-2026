@@ -96,8 +96,8 @@ export const ABOUT_TRANSITIONS = [
             {
                 group: 'mascot',
                 autoAlpha: 1,
-                offset: 0.56,
-                durationScale: 0.42,
+                offset: 0.64,
+                durationScale: 0.24,
             },
         ],
     },

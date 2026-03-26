@@ -15,6 +15,7 @@ import {
     HERO_CLOUD_STAGE_ZERO_SELECTOR,
     SCROLL_DISTANCE_VIEWPORT_MULTIPLIER,
     STAGE_ONE_SCROLL_PROGRESS,
+    STATE_FOUR,
     STATE_ONE,
     STATE_TWO,
     TIMELINE,
@@ -33,6 +34,10 @@ gsap.registerPlugin(ScrollTrigger, ScrollToPlugin, MorphSVGPlugin)
 
 const INTRO_DURATION_S = 1.5
 const INTRO_DURATION_MS = INTRO_DURATION_S * 1000
+const MASCOT_FIGURE_SELECTOR = '[data-outro-mascot-figure]'
+const MASCOT_ENTRY_OFFSET_Y = 56
+const MASCOT_RISE_OFFSET = 0.66
+const MASCOT_RISE_DURATION = 0.24
 
 const resolveResponsiveValue = (lazy, resolver) =>
     lazy ? () => resolver() : resolver()
@@ -140,6 +145,7 @@ const useAboutAnimation = () => {
         const scrollHintEl = section.querySelector('[data-scroll-hint]')
         const outroCopyEl = section.querySelector('[data-outro-copy]')
         const mascotEl = section.querySelector('[data-outro-mascot]')
+        const mascotFigureEl = section.querySelector(MASCOT_FIGURE_SELECTOR)
         const darkQuoteEls = [
             ...section.querySelectorAll('[data-quote-layer="dark"]'),
         ]
@@ -250,6 +256,27 @@ const useAboutAnimation = () => {
             })
         }
 
+        const addMascotMotionAccent = (timeline, transition) => {
+            if (transition.toState !== STATE_FOUR) return
+
+            const riseStart =
+                transition.start + transition.duration * MASCOT_RISE_OFFSET
+            const riseDuration =
+                transition.duration * MASCOT_RISE_DURATION
+
+            if (mascotFigureEl) {
+                timeline.to(
+                    mascotFigureEl,
+                    {
+                        y: 0,
+                        duration: riseDuration,
+                        ease: 'power3.out',
+                    },
+                    riseStart,
+                )
+            }
+        }
+
         const setGroupVisibility = (group, autoAlpha) => {
             const elements = visibilityGroups[group] ?? []
             if (!elements.length) return
@@ -312,6 +339,13 @@ const useAboutAnimation = () => {
                     },
                 )
 
+                if (mascotFigureEl) {
+                    gsap.set(mascotFigureEl, {
+                        y: MASCOT_ENTRY_OFFSET_Y,
+                        transformOrigin: 'center bottom',
+                    })
+                }
+
                 const timeline = gsap.timeline({
                     scrollTrigger: {
                         id: ABOUT_SCROLL_TRIGGER_ID,
@@ -366,6 +400,8 @@ const useAboutAnimation = () => {
                             transition.duration,
                         )
                     }
+
+                    addMascotMotionAccent(timeline, transition)
 
                     timeline.addLabel(transition.label, transition.time)
                 })

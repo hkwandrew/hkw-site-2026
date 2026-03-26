@@ -54,6 +54,28 @@
     }
 }
 
+@keyframes about-scroll-hint-bob {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(8px);
+    }
+}
+
+@keyframes about-mascot-float {
+    0%,
+    100% {
+        transform: translate3d(0, 0, 0);
+    }
+
+    50% {
+        transform: translate3d(0, -8px, 0);
+    }
+}
+
 .about {
     position: relative;
     min-height: 100dvh;
@@ -139,12 +161,17 @@
     background: transparent;
     cursor: pointer;
     z-index: 46;
+    will-change: transform;
 }
 
 .about-scrollHint svg {
     width: 100%;
     height: auto;
     display: block;
+}
+
+.about[data-about-stage='0'] .about-scrollHint {
+    animation: about-scroll-hint-bob 2.6s ease-in-out infinite;
 }
 
 .about-clouds,
@@ -310,6 +337,20 @@
     z-index: 61;
     will-change: transform, width, opacity;
     pointer-events: none;
+}
+
+.about-mascotFigure {
+    transform-origin: center bottom;
+    will-change: transform;
+}
+
+.about-mascotFloat {
+    transform-origin: center bottom;
+    will-change: transform;
+}
+
+.about[data-about-stage='3'] .about-mascotFloat {
+    animation: about-mascot-float 3.4s ease-in-out infinite;
 }
 
 .about--static .about-scene {
