@@ -7,7 +7,7 @@ import {
   PAGE_DEFINITIONS,
   NAV_ITEMS,
   PHONE_NAV_ITEMS,
-} from '@/pageRegistry'
+} from '@/app/router/routeRegistry'
 
 describe('getPageKeyForPath', () => {
   it('returns correct page key for each route', () => {
@@ -16,6 +16,7 @@ describe('getPageKeyForPath', () => {
     expect(getPageKeyForPath('/services')).toBe('services-page')
     expect(getPageKeyForPath('/work')).toBe('work-page')
     expect(getPageKeyForPath('/contact')).toBe('contact-page')
+    expect(getPageKeyForPath('/roots')).toBe('roots-page')
   })
 
   it('returns unknown for unrecognized paths', () => {
@@ -50,6 +51,18 @@ describe('getPageDefinitionForPath', () => {
     expect(aboutPage.sceneStateKey).toBe('about-page')
   })
 
+  it('returns the hidden Non-profit Roots page definition', () => {
+    const rootsPage = getPageDefinitionForPath('/roots')
+
+    expect(rootsPage).not.toBeNull()
+    expect(rootsPage.id).toBe('roots')
+    expect(rootsPage.pageKey).toBe('roots-page')
+    expect(rootsPage.routePath).toBe('/roots')
+    expect(rootsPage.sceneStateKey).toBe('roots-page')
+    expect(rootsPage.showInNav).toBe(false)
+    expect(rootsPage.showInPhoneNav).toBe(false)
+  })
+
   it('returns null for unknown paths', () => {
     expect(getPageDefinitionForPath('/nonexistent')).toBeNull()
   })
@@ -74,8 +87,8 @@ describe('getTransitionKey', () => {
 })
 
 describe('PAGE_DEFINITIONS', () => {
-  it('contains exactly 5 page definitions', () => {
-    expect(PAGE_DEFINITIONS).toHaveLength(5)
+  it('contains exactly 6 page definitions', () => {
+    expect(PAGE_DEFINITIONS).toHaveLength(6)
   })
 
   it('each definition has required properties', () => {

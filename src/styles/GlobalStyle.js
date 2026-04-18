@@ -20,6 +20,12 @@ const GlobalStyle = createGlobalStyle`
     padding: 0;
   }
 
+  :root {
+    color-scheme: light;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+  }
+
   html, body, #root {
     height: 100%;
     width: 100%;

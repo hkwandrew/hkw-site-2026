@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook } from '@testing-library/react'
 import { createElement, useEffect } from 'react'
 import { createMemoryRouter, RouterProvider } from 'react-router'
-import { PageSceneTransitionProvider } from '@/context/pageSceneTransition'
+import { PageSceneTransitionProvider } from '@/app/landscape/pageSceneTransition'
 
 // Mock GSAP and plugins before importing the hook
 vi.mock('gsap', () => {
@@ -44,7 +44,7 @@ describe('useAboutPageAnimation', () => {
 
   beforeEach(async () => {
     vi.clearAllMocks()
-    const mod = await import('@/hooks/useAboutPageAnimation')
+    const mod = await import('@/routes/about/useAboutPageAnimation')
     useAboutPageAnimation = mod.default
   })
 

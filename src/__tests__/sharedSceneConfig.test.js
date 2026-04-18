@@ -1,11 +1,12 @@
 import { describe, it, expect } from 'vitest'
 import {
+  ROOTS_SCENE_STATE,
   SCENE_TRANSITION_DURATION_MS,
   SCENE_PAGE_STATES,
   resolveSceneStateForPath,
   resolveSceneTransition,
   validateSharedSceneConfig,
-} from '@/sharedSceneConfig'
+} from '@/app/landscape/sceneRegistry'
 
 const REQUIRED_LAYERS = [
   'blueMountain',
@@ -15,6 +16,7 @@ const REQUIRED_LAYERS = [
   'treeMountain',
   'upperField',
   'whiteSand',
+  'dirtLayer',
 ]
 
 describe('SCENE_TRANSITION_DURATION_MS', () => {
@@ -24,16 +26,21 @@ describe('SCENE_TRANSITION_DURATION_MS', () => {
 })
 
 describe('SCENE_PAGE_STATES', () => {
-  it('has entries for all 5 pages', () => {
-    expect(Object.keys(SCENE_PAGE_STATES)).toHaveLength(5)
+  it('has entries for all 6 pages', () => {
+    expect(Object.keys(SCENE_PAGE_STATES)).toHaveLength(6)
     expect(SCENE_PAGE_STATES).toHaveProperty('home-page')
     expect(SCENE_PAGE_STATES).toHaveProperty('about-page')
     expect(SCENE_PAGE_STATES).toHaveProperty('services-page')
     expect(SCENE_PAGE_STATES).toHaveProperty('work-page')
     expect(SCENE_PAGE_STATES).toHaveProperty('contact-page')
+    expect(SCENE_PAGE_STATES).toHaveProperty('roots-page')
   })
 
-  it('each page state has all 7 required layers', () => {
+  it('exposes ROOTS_SCENE_STATE through roots-page', () => {
+    expect(SCENE_PAGE_STATES['roots-page']).toBe(ROOTS_SCENE_STATE)
+  })
+
+  it('each page state has all 8 required layers', () => {
     Object.entries(SCENE_PAGE_STATES).forEach(([pageKey, state]) => {
       REQUIRED_LAYERS.forEach((layerKey) => {
         expect(state, `${pageKey} missing layer ${layerKey}`).toHaveProperty(layerKey)
@@ -54,6 +61,17 @@ describe('SCENE_PAGE_STATES', () => {
       })
     })
   })
+
+  it('defines independent whiteSand and dirtLayer transforms for every page', () => {
+    Object.entries(SCENE_PAGE_STATES).forEach(([pageKey, state]) => {
+      expect(state.whiteSand, `${pageKey} missing whiteSand`).toBeDefined()
+      expect(state.dirtLayer, `${pageKey} missing dirtLayer`).toBeDefined()
+      expect(state.whiteSand.container).toHaveProperty('x')
+      expect(state.dirtLayer.container).toHaveProperty('x')
+      expect(state.whiteSand.wrapper).toHaveProperty('scaleX')
+      expect(state.dirtLayer.wrapper).toHaveProperty('scaleX')
+    })
+  })
 })
 
 describe('resolveSceneStateForPath', () => {
@@ -70,6 +88,9 @@ describe('resolveSceneStateForPath', () => {
     expect(resolveSceneStateForPath('/services')).toBe(SCENE_PAGE_STATES['services-page'])
     expect(resolveSceneStateForPath('/work')).toBe(SCENE_PAGE_STATES['work-page'])
     expect(resolveSceneStateForPath('/contact')).toBe(SCENE_PAGE_STATES['contact-page'])
+    expect(resolveSceneStateForPath('/roots')).toBe(
+      SCENE_PAGE_STATES['roots-page'],
+    )
   })
 
   it('returns null for unknown paths', () => {

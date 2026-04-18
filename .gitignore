@@ -24,3 +24,7 @@ dist-ssr
 *.sw?
 
 output
+.claude
+
+graphify-out
+.playwright-mcp

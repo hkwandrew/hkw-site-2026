@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { validateContact } from '@/utils/validateContact'
+import { validateContact } from '@/routes/contact/validateContact'
 
 describe('validateContact', () => {
   it('returns errors for empty fields', () => {
