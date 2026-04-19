@@ -22,7 +22,6 @@ const GlobalStyle = createGlobalStyle`
 
   :root {
     color-scheme: light;
-    font-synthesis: none;
     text-rendering: optimizeLegibility;
   }
 
@@ -66,6 +65,10 @@ const GlobalStyle = createGlobalStyle`
 
     #scene-svg {
       display: none;
+    }
+
+    main.about-page #scene-svg {
+      display: block !important;
     }
   }
 

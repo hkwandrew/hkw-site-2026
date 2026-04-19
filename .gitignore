@@ -28,3 +28,5 @@ output
 
 graphify-out
 .playwright-mcp
+.playwright-cli
+scripts

@@ -1,6 +1,6 @@
 const MarmotCheer = () => {
     return (
-        <svg width="349px" height="390px" overflow="visible"
+        <svg overflow="visible"
             style={{ display: 'block' }} viewBox="0 0 349.01 390.223" fill="none"
             xmlns="http://www.w3.org/2000/svg">
             <g id="marmot cheer">
