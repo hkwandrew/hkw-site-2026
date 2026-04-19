@@ -1,0 +1,1 @@
+var e=`fromRootsDive`;export{e as t};
