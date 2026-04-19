@@ -15,4 +15,6 @@ export const createAppRouter = () =>
         },
       ],
     },
-  ])
+  ], {
+    basename: import.meta.env.BASE_URL,
+  })

@@ -2,9 +2,12 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import svgr from 'vite-plugin-svgr'
 import { fileURLToPath } from 'url'
+import { ghPages } from 'vite-plugin-gh-pages'
 
 export default defineConfig({
+  base: '/hkw-site-2026/',
   plugins: [
+    ghPages(),
     react({
       devTarget: 'es2022',
       plugins: [
