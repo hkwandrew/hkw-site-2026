@@ -1,13 +1,15 @@
 import { createGlobalStyle } from 'styled-components'
 
+const fontBaseUrl = `${import.meta.env.BASE_URL}fonts`
+
 const GlobalStyle = createGlobalStyle`
   @font-face {
     font-family: "Acumin Variable Concept";
     src:
       local("Acumin VF"),
       local("AcuminVF"),
-      url("/fonts/AcuminVF.woff2") format("woff2-variations"),
-      url("/fonts/AcuminVF.ttf") format("truetype-variations");
+      url("${fontBaseUrl}/AcuminVF.woff2") format("woff2-variations"),
+      url("${fontBaseUrl}/AcuminVF.ttf") format("truetype-variations");
     font-weight: 100 900;
     font-stretch: 50% 115%;
     font-style: normal;

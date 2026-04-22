@@ -1,4 +1,10 @@
-import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import {
+  useCallback,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {
   SCENE_TRANSITION_DURATION_MS,
   getPageKeyForPath,
@@ -26,7 +32,8 @@ const useLandscapeTransitionController = (pathname) => {
   const pageKey = getPageKeyForPath(pathname)
   const isHome = pathname === '/'
   const headerContentPath = revealedContentPath
-  const headerNavPath = pendingNavPath ?? pathname
+  const scenePathname = pendingNavPath ?? pathname
+  const headerNavPath = scenePathname
   const shouldShowHeader = headerContentPath !== '/roots'
   const isRouteContentRevealed = revealedContentPath === pathname
   const areHomeLayerLinksInteractive = isHome && isRouteContentRevealed
@@ -60,6 +67,38 @@ const useLandscapeTransitionController = (pathname) => {
     }
   }, [])
 
+  const cancelPendingHomeHoverClear = useCallback(() => {
+    if (
+      homeHoverClearTimeoutRef.current !== null &&
+      typeof window !== 'undefined'
+    ) {
+      window.clearTimeout(homeHoverClearTimeoutRef.current)
+      homeHoverClearTimeoutRef.current = null
+    }
+  }, [])
+
+  const requestHomeHoverRegion = useCallback(
+    (nextRegion) => {
+      cancelPendingHomeHoverClear()
+      setHomeHoverRegion(nextRegion)
+    },
+    [cancelPendingHomeHoverClear],
+  )
+
+  const clearHomeHoverRegion = useCallback(() => {
+    cancelPendingHomeHoverClear()
+
+    if (typeof window === 'undefined') {
+      setHomeHoverRegion(null)
+      return
+    }
+
+    homeHoverClearTimeoutRef.current = window.setTimeout(() => {
+      setHomeHoverRegion(null)
+      homeHoverClearTimeoutRef.current = null
+    }, 40)
+  }, [cancelPendingHomeHoverClear])
+
   const transitionSceneToPath = useCallback(
     (nextPath) => {
       const mainElement = mainRef.current
@@ -71,6 +110,9 @@ const useLandscapeTransitionController = (pathname) => {
         window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
       if (!mainElement || !nextSceneState) return false
+
+      cancelPendingHomeHoverClear()
+      setHomeHoverRegion(null)
 
       queueMicrotask(() => {
         setPendingNavPath(nextPath)
@@ -105,7 +147,7 @@ const useLandscapeTransitionController = (pathname) => {
 
       return true
     },
-    [finishSceneTransition, setSceneTransitionKey],
+    [cancelPendingHomeHoverClear, finishSceneTransition, setSceneTransitionKey],
   )
 
   useLayoutEffect(() => {
@@ -149,44 +191,13 @@ const useLandscapeTransitionController = (pathname) => {
     }
   }, [pathname, transitionSceneToPath])
 
-  const cancelPendingHomeHoverClear = useCallback(() => {
-    if (
-      homeHoverClearTimeoutRef.current !== null &&
-      typeof window !== 'undefined'
-    ) {
-      window.clearTimeout(homeHoverClearTimeoutRef.current)
-      homeHoverClearTimeoutRef.current = null
-    }
-  }, [])
-
-  const requestHomeHoverRegion = useCallback(
-    (nextRegion) => {
-      cancelPendingHomeHoverClear()
-      setHomeHoverRegion(nextRegion)
-    },
-    [cancelPendingHomeHoverClear],
-  )
-
-  const clearHomeHoverRegion = useCallback(() => {
-    cancelPendingHomeHoverClear()
-
-    if (typeof window === 'undefined') {
-      setHomeHoverRegion(null)
-      return
-    }
-
-    homeHoverClearTimeoutRef.current = window.setTimeout(() => {
-      setHomeHoverRegion(null)
-      homeHoverClearTimeoutRef.current = null
-    }, 40)
-  }, [cancelPendingHomeHoverClear])
-
   return {
     SCENE_TRANSITION_DURATION_MS,
     pageKey,
     mainRef,
     headerContentPath,
     headerNavPath,
+    scenePathname,
     shouldShowHeader,
     isRouteContentRevealed,
     areHomeLayerLinksInteractive,
@@ -197,11 +208,18 @@ const useLandscapeTransitionController = (pathname) => {
     homeHoverContextValue: useMemo(
       () => ({
         clearHomeHoverRegion,
-        homeHoverRegion: isHome ? homeHoverRegion : null,
+        homeHoverRegion: areHomeLayerLinksInteractive ? homeHoverRegion : null,
         isHome,
+        isHomeInteractive: areHomeLayerLinksInteractive,
         setHomeHoverRegion: requestHomeHoverRegion,
       }),
-      [clearHomeHoverRegion, homeHoverRegion, isHome, requestHomeHoverRegion],
+      [
+        areHomeLayerLinksInteractive,
+        clearHomeHoverRegion,
+        homeHoverRegion,
+        isHome,
+        requestHomeHoverRegion,
+      ],
     ),
   }
 }

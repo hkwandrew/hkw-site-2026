@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { useNavigate } from 'react-router'
 import useCarousel from '@/shared/hooks/useCarousel'
+import usePageActive from '@/shared/hooks/usePageActive'
 import ROOTS_PORTFOLIO_ITEMS from './rootsPortfolio'
 import BookShelf from './BookShelf'
 import RootsPortfolioSlider from './RootsPortfolioSlider'
@@ -62,6 +63,10 @@ const DesktopScene = styled.div`
   width: 100%;
   height: 100%;
   z-index: 1;
+  opacity: ${({ $isActive }) => ($isActive ? 1 : 0)};
+  transform: translateY(${({ $isActive }) => ($isActive ? '0' : '20px')});
+  transition: opacity 500ms ease, transform 500ms ease;
+  will-change: transform, opacity;
 `
 
 const DesktopFrameButton = styled.button`
@@ -167,6 +172,10 @@ const MobileScene = styled.div`
       transparent 10%
     ),
     ${({ theme }) => theme.colors.brown.brick};
+  opacity: ${({ $isActive }) => ($isActive ? 1 : 0)};
+  transform: translateY(${({ $isActive }) => ($isActive ? '0' : '20px')});
+  transition: opacity 500ms ease, transform 500ms ease;
+  will-change: transform, opacity;
 
   &::after {
     content: '';
@@ -326,6 +335,7 @@ function useIsMobileViewport() {
 
 export default function RootsScene({ sceneRef }) {
   const navigate = useNavigate()
+  const isActive = usePageActive()
   const isMobile = useIsMobileViewport()
   const triggerRefs = useRef({})
   const openedFromIdRef = useRef(null)
@@ -366,7 +376,7 @@ export default function RootsScene({ sceneRef }) {
       <VisuallyHiddenHeading>Non-profit Roots</VisuallyHiddenHeading>
 
       {isMobile ? (
-        <MobileScene aria-hidden={isSliderOpen}>
+        <MobileScene aria-hidden={isSliderOpen} $isActive={isActive}>
           <MobileBackButton
             type='button'
             aria-label='Return to home'
@@ -402,7 +412,7 @@ export default function RootsScene({ sceneRef }) {
           </MobileMarmotAccent>
         </MobileScene>
       ) : (
-        <DesktopScene aria-hidden={isSliderOpen}>
+        <DesktopScene aria-hidden={isSliderOpen} $isActive={isActive}>
           <BackButton
             type='button'
             aria-label='Return to home'

@@ -13,6 +13,7 @@ const AppLayout = () => {
     mainRef,
     headerContentPath,
     headerNavPath,
+    scenePathname,
     shouldShowHeader,
     isRouteContentRevealed,
     areHomeLayerLinksInteractive,
@@ -38,6 +39,7 @@ const AppLayout = () => {
 
           <LandscapeScene
             areHomeLayerLinksInteractive={areHomeLayerLinksInteractive}
+            scenePathname={scenePathname}
           />
 
           {isRouteContentRevealed ? (

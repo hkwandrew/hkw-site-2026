@@ -1,5 +1,5 @@
 import styled, { css, keyframes } from 'styled-components'
-import { BodySmall, H3, Label } from '@/shared/ui/Typography'
+import { BodySmall, H4, Label } from '@/shared/ui/Typography'
 import { HOME_HOVER_REGION } from './homeHoverRegions'
 import {
   getHomeHoverRegionPosition,
@@ -247,12 +247,19 @@ const planeDrift = keyframes`
 `
 
 const propellerSpin = keyframes`
-  from {
-    transform: rotate(0deg);
+  0% {
+    opacity: 0.94;
+    transform: rotateX(0deg) scaleY(1);
   }
 
-  to {
-    transform: rotate(360deg);
+  50% {
+    opacity: 0.38;
+    transform: rotateX(90deg) scaleY(0.12);
+  }
+
+  100% {
+    opacity: 0.94;
+    transform: rotateX(180deg) scaleY(1);
   }
 `
 
@@ -303,21 +310,22 @@ export const Content = styled.div`
 
 export const Subtitle = styled.p`
   color: ${({ theme }) => theme.colors.yellow.gold};
-  font-size: 24px;
-  line-height: calc(26 / 24);
+  font-size: 20px;
+  line-height: 1.3;
   font-variation-settings:
-    'wdth' 68,
-    'wght' 600;
+    'wdth' 90,
+    'wght' 700;
 
   display: block;
 `
 
-export const HeroText = styled(H3)`
+export const HeroText = styled(H4)`
   color: ${({ theme }) => theme.colors.yellow.light};
   margin-bottom: 0;
-  line-height: 1.05;
+  line-height: 1.4;
   font-weight: 400;
   letter-spacing: unset;
+  max-width: 560.57px;
 `
 
 export const Footer = styled.footer`
@@ -487,7 +495,7 @@ export const HomeMarmotWrapper = styled.div`
   }
 
   @media (max-width: ${({ theme }) =>
-      theme.breakpoints.mobile}) and (max-height: 760px) {
+    theme.breakpoints.mobile}) and (max-height: 760px) {
     right: -118px;
     bottom: 76px;
     width: min(446px, 122vw);
@@ -566,7 +574,7 @@ export const StumpHoverOverlay = styled.div`
   transform: translate3d(
     0,
     ${({ $active, $isTransitioning }) =>
-      $isTransitioning ? '22px' : $active ? '0' : '10px'},
+    $isTransitioning ? '22px' : $active ? '0' : '10px'},
     0
   );
   transition:
@@ -604,7 +612,7 @@ export const StumpTrigger = styled.button`
   }
 
   @media (max-width: ${({ theme }) =>
-      theme.breakpoints.mobile}) and (max-height: 760px) {
+    theme.breakpoints.mobile}) and (max-height: 760px) {
     right: 124px;
     bottom: 93px;
   }
@@ -720,12 +728,15 @@ export const PlaneShell = styled.div`
   --plane-motion-duration: 3.2s;
   width: 469.685px;
   aspect-ratio: 470 / 74;
+  perspective: 480px;
+  transform-style: preserve-3d;
   will-change: transform;
   animation: ${planeDrift} var(--plane-motion-duration) ease-in-out infinite;
 
   svg {
     width: 100%;
     height: 100%;
+    overflow: visible;
   }
 
   #hkw-plane {
@@ -751,6 +762,8 @@ export const PlaneShell = styled.div`
   #propeller-group {
     transform-box: fill-box;
     transform-origin: center;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
     animation: ${propellerSpin} 180ms linear infinite;
   }
 

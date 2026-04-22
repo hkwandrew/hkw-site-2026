@@ -14,9 +14,16 @@ const MountainBase = ({
   innerGroupId,
   innerGroupTransform,
 }) => {
-  const { clearHomeHoverRegion, homeHoverRegion, isHome, setHomeHoverRegion } =
-    useHomeHover()
-  const isHoverActive = isHome && homeHoverRegion === hoverRegion
+  const {
+    clearHomeHoverRegion,
+    homeHoverRegion,
+    isHome,
+    isHomeInteractive,
+    setHomeHoverRegion,
+  } = useHomeHover()
+  const canInteractWithHomeHover = isHomeInteractive ?? isHome
+  const isHoverActive =
+    canInteractWithHomeHover && homeHoverRegion === hoverRegion
 
   const hoverGroup = (
     <g
@@ -38,18 +45,18 @@ const MountainBase = ({
       transform={hitboxTransform}
       fill='transparent'
       onMouseEnter={() => {
-        if (isHome) {
+        if (canInteractWithHomeHover) {
           setHomeHoverRegion(hoverRegion)
         }
       }}
       onMouseLeave={() => {
-        if (isHome) {
+        if (canInteractWithHomeHover) {
           clearHomeHoverRegion()
         }
       }}
       style={{
-        cursor: isHome ? 'pointer' : 'default',
-        pointerEvents: isHome ? 'auto' : 'none',
+        cursor: canInteractWithHomeHover ? 'pointer' : 'default',
+        pointerEvents: canInteractWithHomeHover ? 'auto' : 'none',
       }}
     />
   )

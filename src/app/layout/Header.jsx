@@ -80,6 +80,22 @@ const PageLabel = styled.div`
   }
 `
 
+const MobilePageLabel = styled.div`
+  display: none;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    display: block;
+    margin-top: 6px;
+    color: ${({ theme }) => theme.colors.orange.base};
+    font-size: 20px;
+    line-height: 1.3;
+    text-transform: uppercase;
+    font-variation-settings:
+      'wdth' 68,
+      'wght' ${({ theme }) => theme.font.weight.bold};
+  }
+`
+
 const usePhoneViewport = (mobileBreakpoint) => {
   const mediaQueryString = `(max-width: ${mobileBreakpoint})`
   const [isPhoneViewport, setIsPhoneViewport] = useState(() =>
@@ -131,6 +147,9 @@ const Header = ({ contentPathname, navPathname }) => {
             {pageLabel}
           </PageLabel>
         )}
+        {isPhoneViewport && isAboutPage && pageLabel ? (
+          <MobilePageLabel>{pageLabel}</MobilePageLabel>
+        ) : null}
       </BrandBlock>
 
       {isPhoneViewport ? (

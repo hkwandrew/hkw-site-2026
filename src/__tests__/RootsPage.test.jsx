@@ -6,6 +6,8 @@ import RootsPage from '@/routes/roots/RootsPage'
 import { ROOTS_SCENE_TRANSITION_DURATION_MS } from '@/routes/roots/useRootsPageTransition'
 
 const originalMatchMedia = window.matchMedia
+const originalRequestAnimationFrame = window.requestAnimationFrame
+const originalCancelAnimationFrame = window.cancelAnimationFrame
 
 const createMatchMedia = (matches) =>
   vi.fn().mockImplementation((query) => ({
@@ -45,6 +47,32 @@ const renderRootsRoute = () => {
   }
 }
 
+const renderRootsRouteFromHome = () => {
+  const transitionSceneToPath = vi.fn()
+  const router = createMemoryRouter(
+    [
+      {
+        path: '/roots',
+        element: withTheme(
+          <PageSceneTransitionProvider value={{ transitionSceneToPath }}>
+            <RootsPage />
+          </PageSceneTransitionProvider>,
+        ),
+      },
+    ],
+    {
+      initialEntries: [
+        {
+          pathname: '/roots',
+          state: { fromRootsDive: true },
+        },
+      ],
+    },
+  )
+
+  return render(<RouterProvider router={router} />)
+}
+
 describe('RootsPage', () => {
   beforeEach(() => {
     vi.useFakeTimers()
@@ -54,6 +82,8 @@ describe('RootsPage', () => {
   afterEach(() => {
     vi.useRealTimers()
     window.matchMedia = originalMatchMedia
+    window.requestAnimationFrame = originalRequestAnimationFrame
+    window.cancelAnimationFrame = originalCancelAnimationFrame
   })
 
   it('waits for the exit transition before navigating home', async () => {
@@ -85,6 +115,44 @@ describe('RootsPage', () => {
     await vi.waitFor(() => {
       expect(router.state.location.pathname).toBe('/')
     })
+  })
+
+  it('fades the roots scene content in on mount', async () => {
+    const frameCallbacks = []
+
+    window.requestAnimationFrame = vi.fn((callback) => {
+      frameCallbacks.push(callback)
+      return frameCallbacks.length
+    })
+    window.cancelAnimationFrame = vi.fn()
+
+    renderRootsRoute()
+
+    const sceneContent = screen
+      .getByRole('button', { name: /return to home/i })
+      .parentElement
+
+    expect(getComputedStyle(sceneContent).opacity).toBe('0')
+    expect(getComputedStyle(sceneContent).transform).toContain('20px')
+
+    act(() => {
+      frameCallbacks.splice(0).forEach((callback) => callback())
+    })
+
+    await vi.waitFor(() => {
+      expect(getComputedStyle(sceneContent).opacity).toBe('1')
+      expect(getComputedStyle(sceneContent).transform).toContain('0')
+    })
+  })
+
+  it('does not revive the old roots entry slide when coming from home', () => {
+    renderRootsRouteFromHome()
+
+    const page = screen
+      .getByRole('heading', { name: /non-profit roots/i })
+      .parentElement
+
+    expect(page).toHaveAttribute('data-roots-phase', 'entered')
   })
 
   it('opens a portfolio dialog from a frame button and restores focus on close', async () => {

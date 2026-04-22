@@ -122,6 +122,14 @@ describe('Layout shared scene links', () => {
     expect(link).toHaveAttribute('tabindex', '-1')
   })
 
+  it('shows the work dirt layer only for the work scene', () => {
+    const homeRender = renderLayoutRoute('/')
+    expect(homeRender.container.querySelector('.work-dirt-layer')).toBeNull()
+
+    const workRender = renderLayoutRoute('/work')
+    expect(workRender.container.querySelector('.work-dirt-layer')).toBeTruthy()
+  })
+
   it('waits to mount the next route until the scene transition finishes', async () => {
     const { router } = renderLayoutRoute('/')
 

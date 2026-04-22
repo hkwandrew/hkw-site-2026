@@ -19,9 +19,16 @@ const CONTACT_BADGE_SCALE_X = (CONTACT_BADGE.width ?? 100) / 100
 const CONTACT_BADGE_SCALE_Y = (CONTACT_BADGE.height ?? 102) / 102
 
 const Sun = () => {
-  const { clearHomeHoverRegion, homeHoverRegion, isHome, setHomeHoverRegion } =
-    useHomeHover()
-  const isHoverActive = isHome && homeHoverRegion === HOME_HOVER_REGION.contact
+  const {
+    clearHomeHoverRegion,
+    homeHoverRegion,
+    isHome,
+    isHomeInteractive,
+    setHomeHoverRegion,
+  } = useHomeHover()
+  const canInteractWithHomeHover = isHomeInteractive ?? isHome
+  const isHoverActive =
+    canInteractWithHomeHover && homeHoverRegion === HOME_HOVER_REGION.contact
 
   const sunSvg = (
     <g
@@ -53,22 +60,22 @@ const Sun = () => {
     <Link
       to='/contact'
       onMouseEnter={() => {
-        if (isHome) {
+        if (canInteractWithHomeHover) {
           setHomeHoverRegion(HOME_HOVER_REGION.contact)
         }
       }}
       onMouseLeave={() => {
-        if (isHome) {
+        if (canInteractWithHomeHover) {
           clearHomeHoverRegion()
         }
       }}
       onFocus={() => {
-        if (isHome) {
+        if (canInteractWithHomeHover) {
           setHomeHoverRegion(HOME_HOVER_REGION.contact)
         }
       }}
       onBlur={() => {
-        if (isHome) {
+        if (canInteractWithHomeHover) {
           clearHomeHoverRegion()
         }
       }}

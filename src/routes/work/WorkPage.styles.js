@@ -1,6 +1,196 @@
-import styled from 'styled-components'
+import styled, { css, keyframes } from 'styled-components'
 import ArrowButton from '@/shared/ui/ArrowButton'
 import ViewContainer from '@/shared/ui/ViewContainer'
+
+const studyPaneSlideIn = keyframes`
+  from {
+    opacity: 0;
+    transform: translate3d(var(--study-pane-start), 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+`
+
+const studyPaneSlideOut = keyframes`
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate3d(var(--study-pane-end), 0, 0);
+  }
+`
+
+const marmotIdleFloat = keyframes`
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(0, -1.6px, 0);
+  }
+`
+
+const steamRiseLeft = keyframes`
+  0% {
+    opacity: 0;
+    transform: translate3d(-1px, 5px, 0) scale(0.82);
+  }
+
+  20% {
+    opacity: 0.5;
+  }
+
+  62% {
+    opacity: 0.26;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(-5px, -15px, 0) scale(1.08);
+  }
+`
+
+const steamRiseCenter = keyframes`
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 5px, 0) scale(0.8);
+  }
+
+  18% {
+    opacity: 0.56;
+  }
+
+  58% {
+    opacity: 0.28;
+    transform: translate3d(2px, -6px, 0) scale(0.94);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(4px, -16px, 0) scale(1.05);
+  }
+`
+
+const steamRiseRight = keyframes`
+  0% {
+    opacity: 0;
+    transform: translate3d(1px, 5px, 0) scale(0.78);
+  }
+
+  22% {
+    opacity: 0.48;
+  }
+
+  56% {
+    opacity: 0.22;
+    transform: translate3d(-2px, -6px, 0) scale(0.94);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(-4px, -15px, 0) scale(1.04);
+  }
+`
+
+const marmotBlink = keyframes`
+  0%,
+  8%,
+  32%,
+  100% {
+    transform: translateY(0) scaleY(1);
+  }
+
+  8.4%,
+  32.4% {
+    transform: translateY(0.45px) scaleY(0.42);
+  }
+
+  8.8%,
+  9.35%,
+  32.8%,
+  33.35% {
+    transform: translateY(0.9px) scaleY(0.08);
+  }
+
+  9.8%,
+  33.8% {
+    transform: translateY(0.2px) scaleY(0.66);
+  }
+`
+
+const leftEarWriggle = keyframes`
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  14% {
+    transform: rotate(-5deg) translateY(-0.75px);
+  }
+
+  22% {
+    transform: rotate(2.6deg) translateY(0.1px);
+  }
+
+  30% {
+    transform: rotate(-1.4deg) translateY(-0.35px);
+  }
+
+  38% {
+    transform: rotate(0deg);
+  }
+`
+
+const rightEarWriggle = keyframes`
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  12% {
+    transform: rotate(5.4deg) translateY(-0.55px);
+  }
+
+  20% {
+    transform: rotate(-2.4deg) translateY(0.05px);
+  }
+
+  28% {
+    transform: rotate(1.6deg) translateY(-0.3px);
+  }
+
+  36% {
+    transform: rotate(0deg);
+  }
+`
+
+const getStudyPaneMotion = ({ $direction, $state }) => {
+  const forward = $direction >= 0
+  const startOffset = forward ? '56px' : '-56px'
+  const endOffset = forward ? '-56px' : '56px'
+
+  if ($state === 'leaving') {
+    return css`
+      --study-pane-end: ${endOffset};
+      animation: ${studyPaneSlideOut} 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+      pointer-events: none;
+      z-index: 1;
+    `
+  }
+
+  return css`
+    --study-pane-start: ${startOffset};
+    animation: ${studyPaneSlideIn} 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    z-index: 2;
+  `
+}
 
 export const Page = styled(ViewContainer)`
   overflow: hidden;
@@ -30,7 +220,7 @@ export const MainContent = styled.div`
 
 export const StudyArea = styled.div`
   display: flex;
-  align-items: center;
+  // align-items: center;
   gap: 56px;
   width: min(100%, 1150px);
   min-height: 0;
@@ -48,11 +238,10 @@ export const StudyArea = styled.div`
   }
 `
 
-export const StudyText = styled.div`
+export const StudyTextStage = styled.div`
   flex: 0 0 365px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  display: grid;
+  align-content: start;
   min-width: 0;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
@@ -66,11 +255,44 @@ export const StudyText = styled.div`
   }
 `
 
+export const StudyText = styled.div`
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    gap: 16px;
+  }
+`
+
+export const AnimatedStudyText = styled(StudyText)`
+  ${getStudyPaneMotion}
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    ${({ $direction, $state }) => {
+    const forward = $direction >= 0
+    const startOffset = forward ? '32px' : '-32px'
+    const endOffset = forward ? '-32px' : '32px'
+
+    if ($state === 'leaving') {
+      return css`
+          --study-pane-end: ${endOffset};
+        `
+    }
+
+    return css`
+        --study-pane-start: ${startOffset};
+      `
+  }}
+  }
+`
+
 export const ClientName = styled.h2`
   font-size: 64px;
   font-weight: 600;
   line-height: 1;
-  letter-spacing: -0.02em;
   color: ${({ theme }) => theme.colors.orange.base};
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
@@ -79,12 +301,11 @@ export const ClientName = styled.h2`
 `
 
 export const Quote = styled.p`
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 500;
-  line-height: 1.19;
-  letter-spacing: -0.4px;
+  line-height: 1.2;
+  letter-spacing: -0.48px;
   color: ${({ theme }) => theme.colors.blue.dark};
-  font-style: italic;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     font-size: 18px;
@@ -123,9 +344,21 @@ export const ServiceTag = styled.li`
   }
 `
 
-export const HeroImage = styled.div`
+export const HeroStage = styled.div`
   flex: 1;
   min-width: 0;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  min-height: 0;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    width: 100%;
+  }
+`
+
+export const HeroImage = styled.div`
+  grid-area: 1 / 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -149,33 +382,59 @@ export const HeroImage = styled.div`
   }
 `
 
+export const AnimatedHeroImage = styled(HeroImage)`
+  ${getStudyPaneMotion}
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    ${({ $direction, $state }) => {
+    const forward = $direction >= 0
+    const startOffset = forward ? '32px' : '-32px'
+    const endOffset = forward ? '-32px' : '32px'
+
+    if ($state === 'leaving') {
+      return css`
+          --study-pane-end: ${endOffset};
+        `
+    }
+
+    return css`
+        --study-pane-start: ${startOffset};
+      `
+  }}
+  }
+`
+
 export const DesktopNavRail = styled.div`
   position: absolute;
-  bottom: 48px;
+  bottom: 12px;
   left: 50%;
   z-index: 3;
   display: flex;
   justify-content: center;
   width: min(calc(100% - 144px), 1296px);
-  padding: 0 4px 10px;
-  overflow-x: auto;
   transform: translateX(-50%);
   pointer-events: auto;
-  scrollbar-width: none;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     display: none;
   }
 `
 
+export const DesktopNavViewport = styled.div`
+  width: min(100%, ${({ $viewportWidth }) => `${$viewportWidth}px`});
+  overflow-x: hidden;
+  overflow-y: visible;
+  cursor: ${({ $dragging }) => ($dragging ? 'grabbing' : 'grab')};
+  touch-action: pan-y;
+  user-select: none;
+`
+
 export const DesktopNavStrip = styled.div`
+  overflow-y: hidden;
   display: flex;
-  gap: 12px;
+  gap: 24px;
   width: max-content;
+  will-change: transform;
 `
 
 export const MobileNavRail = styled.div`
@@ -208,15 +467,17 @@ export const NavButton = styled.button`
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
-  width: ${({ $compact }) => ($compact ? '56px' : '96px')};
-  height: ${({ $compact }) => ($compact ? '56px' : '96px')};
+  width: ${({ $layout }) => `${$layout.width}px`};
+  height: ${({ $layout }) => `${$layout.height}px`};
   padding: 0;
   border: none;
-  border-radius: ${({ $compact }) => ($compact ? '18px' : '28px')};
+  border-radius: ${({ $compact, $layout }) =>
+    `${Math.min($layout.width, $layout.height, $compact ? 18 : 28)}px`};
   background: transparent;
   cursor: pointer;
   pointer-events: auto;
   -webkit-tap-highlight-color: transparent;
+  transform: translate(${({ $layout }) => `${$layout.x}px, ${$layout.y}px`});
 
   &:focus-visible {
     outline: 2px solid ${({ theme }) => theme.colors.yellow.gold};
@@ -271,6 +532,74 @@ export const MarmotWrapper = styled.div`
   right: 114.84px;
   z-index: 2;
   pointer-events: none;
+
+  #marmot-character-idle,
+  #left-ear,
+  #right-ear,
+  #left-eye,
+  #right-eye,
+  #coffee-steam path {
+    transform-box: fill-box;
+    will-change: transform, opacity;
+  }
+
+  #marmot-character-idle {
+    transform-origin: center bottom;
+    animation: ${marmotIdleFloat} 5.4s ease-in-out 420ms infinite;
+  }
+
+  #left-ear {
+    transform-origin: center bottom;
+    animation: ${leftEarWriggle} 6.1s ease-in-out 560ms infinite;
+  }
+
+  #right-ear {
+    transform-origin: center bottom;
+    animation: ${rightEarWriggle} 5.8s ease-in-out 660ms infinite;
+  }
+
+  #left-eye,
+  #right-eye {
+    transform-origin: center;
+    animation: ${marmotBlink} 8.4s ease-in-out 720ms infinite;
+  }
+
+  #coffee-steam {
+    pointer-events: none;
+  }
+
+  #coffee-steam path {
+    opacity: 0;
+    transform-origin: center bottom;
+  }
+
+  #steam-wisp-1 {
+    animation: ${steamRiseLeft} 3.4s ease-out 620ms infinite;
+  }
+
+  #steam-wisp-2 {
+    animation: ${steamRiseCenter} 3.15s ease-out 920ms infinite;
+  }
+
+  #steam-wisp-3 {
+    animation: ${steamRiseRight} 2.95s ease-out 1.18s infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #marmot-character-idle,
+    #left-ear,
+    #right-ear,
+    #left-eye,
+    #right-eye,
+    #coffee-steam path {
+      animation: none;
+      transform: none;
+    }
+
+    #coffee-steam path {
+      opacity: 0;
+    }
+  }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
     right: 72px;

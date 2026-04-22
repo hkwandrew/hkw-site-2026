@@ -45,9 +45,9 @@ const StyledButton = styled.button`
 
   ${({ $variant }) => variants[$variant] || variants['nav-inactive']}
 
-  &:hover {
-    opacity: 0.9;
-  }
+  // &:hover {
+  //   opacity: 0.9;
+  // }
 
   &:focus-visible {
     outline: 2px solid ${({ theme }) => theme.colors.yellow.gold};

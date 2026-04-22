@@ -122,4 +122,16 @@ describe('HomePage', () => {
     expect(styles).not.toContain('#banner-text{animation:')
     expect(styles).not.toContain('#tow-line{animation:')
   })
+
+  it('renders the plane propeller with a perpendicular spin treatment', () => {
+    renderHomePage()
+
+    const styles = Array.from(document.head.querySelectorAll('style'))
+      .map((styleTag) => styleTag.textContent ?? '')
+      .join('\n')
+
+    expect(styles).toContain('scaleY(0.12)')
+    expect(styles).toContain('rotateX(90deg)')
+    expect(styles).not.toContain('transform:rotate(360deg)')
+  })
 })

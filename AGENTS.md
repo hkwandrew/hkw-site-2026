@@ -15,15 +15,15 @@ Portfolio/agency website built with React 19, Vite 8, and GSAP animations.
 
 ```
 src/
+├── app/                 # App shell, router, layout, shared landscape runtime
+├── routes/              # Route-owned pages, route config, scene specs, assets
 ├── components/          # Reusable components
-│   ├── characters/      # Marmot mascot variants
-│   └── ui/              # Buttons, typography, form fields
-├── pages/               # Route-level page components
 ├── hooks/               # Custom React hooks
 ├── context/             # React context providers
-├── data/                # Static data (services, case studies, testimonials)
+├── data/                # Static data
 ├── styles/              # Theme, global styles, animations
-└── assets/              # Images, SVGs, fonts
+├── assets/              # Shared images, SVGs, fonts
+└── __tests__/           # Vitest + Testing Library coverage and shared test utils
 ```
 
 ## Conventions
@@ -35,10 +35,13 @@ src/
 - **SVGs**: Import as React components via SVGR (`import { ReactComponent as Icon } from './icon.svg'` or `import Icon from './icon.svg?react'`)
 - **Components**: PascalCase filenames, one component per file
 - **No semicolons** in JS/JSX files (project convention)
+- **Routing ownership**: Keep app-level shell/router code in `src/app/*`. Keep page-specific code, route metadata, scene specs, and route assets inside the owning `src/routes/<route>/` folder, typically alongside that route's `route.js`.
+- **Testing**: Vitest + Testing Library are set up under `src/__tests__`. Use `src/__tests__/testUtils.jsx` when rendering themed components so tests inherit the shared `ThemeProvider`.
 
 ## Commands
 
 - `npm run dev` — Start dev server (port 5175)
 - `npm run build` — Production build
 - `npm run lint` — Run ESLint
+- `npm run test` — Run Vitest
 - `npm run preview` — Preview production build

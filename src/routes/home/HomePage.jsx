@@ -71,11 +71,17 @@ export default function Home() {
   const navigate = useNavigate()
   const [isRootsTransitionActive, setIsRootsTransitionActive] = useState(false)
   const rootsTransitionTimeoutRef = useRef(null)
-  const { clearHomeHoverRegion, homeHoverRegion, isHome, setHomeHoverRegion } =
-    useHomeHover()
+  const {
+    clearHomeHoverRegion,
+    homeHoverRegion,
+    isHome,
+    isHomeInteractive,
+    setHomeHoverRegion,
+  } = useHomeHover()
+  const canInteractWithHomeHover = isHomeInteractive ?? isHome
   const isStumpHoverActive =
     isRootsTransitionActive ||
-    (isHome && homeHoverRegion === HOME_HOVER_REGION.mascot)
+    (canInteractWithHomeHover && homeHoverRegion === HOME_HOVER_REGION.mascot)
 
   useEffect(
     () => () => {
@@ -90,7 +96,7 @@ export default function Home() {
   )
 
   const handleRootsClick = () => {
-    if (!isHome || isRootsTransitionActive) return
+    if (!canInteractWithHomeHover || isRootsTransitionActive) return
 
     preloadRootsPage()
 
@@ -125,8 +131,8 @@ export default function Home() {
       <ViewContainer $isActive={isActive}>
         <DesktopHome>
           <Content>
-            <Subtitle>HAPPY, KNOWLEDGABLE WORK</Subtitle>
-            <HeroText as='h1'>
+            <Subtitle as='h1'>HAPPY, KNOWLEDGABLE WORK</Subtitle>
+            <HeroText as='p'>
               We are a digital design and marketing studio based in Spokane,
               Washington. We build unique online experiences and engaging
               campaigns for non-profits and fun brands.
@@ -181,24 +187,24 @@ export default function Home() {
           aria-label='Enter Non-profit Roots'
           onClick={handleRootsClick}
           onFocus={() => {
-            if (isHome) {
+            if (canInteractWithHomeHover) {
               preloadRootsPage()
               setHomeHoverRegion(HOME_HOVER_REGION.mascot)
             }
           }}
           onBlur={() => {
-            if (isHome && !isRootsTransitionActive) {
+            if (canInteractWithHomeHover && !isRootsTransitionActive) {
               clearHomeHoverRegion()
             }
           }}
           onMouseEnter={() => {
-            if (isHome) {
+            if (canInteractWithHomeHover) {
               preloadRootsPage()
               setHomeHoverRegion(HOME_HOVER_REGION.mascot)
             }
           }}
           onMouseLeave={() => {
-            if (isHome && !isRootsTransitionActive) {
+            if (canInteractWithHomeHover && !isRootsTransitionActive) {
               clearHomeHoverRegion()
             }
           }}

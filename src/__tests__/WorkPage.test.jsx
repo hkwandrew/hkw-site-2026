@@ -1,13 +1,52 @@
 import { fireEvent, render, screen, within } from '@/__tests__/testUtils'
 import { describe, expect, it } from 'vitest'
 import WorkPage from '@/routes/work/WorkPage'
+import {
+  NAV_BUTTON_LAYOUT_DEFAULTS,
+  resolveNavButtonLayout,
+} from '@/routes/work/navButtonLayout'
 import caseStudies from '@/routes/work/caseStudies'
 
 const renderWorkPage = () => render(<WorkPage />)
 
 const getDesktopNav = () => screen.getByTestId('work-nav-desktop')
+const getActiveStudyPane = () => screen.getByTestId('work-study-active')
 
 describe('WorkPage', () => {
+  it('resolves per-study nav button layout overrides for desktop and mobile', () => {
+    const layout = {
+      desktop: {
+        width: 132,
+        height: 84,
+        x: 10,
+        y: -6,
+      },
+      mobile: {
+        width: 68,
+        height: 52,
+        x: -4,
+        y: 3,
+      },
+    }
+
+    expect(resolveNavButtonLayout()).toEqual(NAV_BUTTON_LAYOUT_DEFAULTS.desktop)
+    expect(resolveNavButtonLayout(undefined, true)).toEqual(
+      NAV_BUTTON_LAYOUT_DEFAULTS.mobile,
+    )
+    expect(resolveNavButtonLayout(layout)).toEqual(layout.desktop)
+    expect(resolveNavButtonLayout(layout, true)).toEqual(layout.mobile)
+    expect(
+      resolveNavButtonLayout({
+        desktop: {
+          width: 120,
+        },
+      }),
+    ).toEqual({
+      ...NAV_BUTTON_LAYOUT_DEFAULTS.desktop,
+      width: 120,
+    })
+  })
+
   it('renders one desktop nav button per case study in case-study order', () => {
     renderWorkPage()
 
@@ -72,7 +111,9 @@ describe('WorkPage', () => {
 
     fireEvent.click(within(nav).getByRole('button', { name: 'Show Conviva' }))
 
-    expect(screen.getByRole('heading', { name: 'Conviva' })).toBeInTheDocument()
+    expect(
+      within(getActiveStudyPane()).getByRole('heading', { name: 'Conviva' }),
+    ).toBeInTheDocument()
 
     celdfButton = within(nav).getByRole('button', { name: 'Show CELDF' })
     celdfIcon = getIcon(celdfButton)
@@ -113,8 +154,26 @@ describe('WorkPage', () => {
       within(getDesktopNav()).getByRole('button', { name: 'Show MA-CH' }),
     )
 
-    expect(screen.getByRole('heading', { name: 'MA-CH' })).toBeInTheDocument()
-    expect(screen.getByText('Web Design')).toBeInTheDocument()
+    expect(
+      within(getActiveStudyPane()).getByRole('heading', { name: 'MA-CH' }),
+    ).toBeInTheDocument()
+    expect(within(getActiveStudyPane()).getByText('Web Design')).toBeInTheDocument()
     expect(screen.getByRole('img', { name: 'MA-CH' })).toBeInTheDocument()
+  })
+
+  it('slides the desktop nav track when the active item moves beyond the first eight buttons', () => {
+    renderWorkPage()
+
+    const desktopNav = getDesktopNav()
+    const initialTransform = getComputedStyle(desktopNav).transform
+
+    fireEvent.click(
+      within(desktopNav).getByRole('button', { name: 'Show MediaBricks' }),
+    )
+
+    expect(getComputedStyle(desktopNav).transform).not.toBe(initialTransform)
+    expect(
+      within(getActiveStudyPane()).getByRole('heading', { name: 'MediaBricks' }),
+    ).toBeInTheDocument()
   })
 })

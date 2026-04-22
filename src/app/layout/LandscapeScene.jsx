@@ -17,7 +17,10 @@ const getHomeLayerLinkProps = (isInteractive) => ({
   tabIndex: isInteractive ? undefined : -1,
 })
 
-const LandscapeScene = ({ areHomeLayerLinksInteractive }) => (
+const LandscapeScene = ({
+  areHomeLayerLinksInteractive,
+  scenePathname,
+}) => (
   <svg
     xmlns='http://www.w3.org/2000/svg'
     xmlnsXlink='http://www.w3.org/1999/xlink'
@@ -55,7 +58,7 @@ const LandscapeScene = ({ areHomeLayerLinksInteractive }) => (
         <TreeMountain />
       </Link>
       <UpperField />
-      <DirtLayer />
+      <DirtLayer showWorkDirtLayer={scenePathname === '/work'} />
     </g>
   </svg>
 )

@@ -8,7 +8,9 @@ const BANNER_TOP_Y = 6.3243
 const BANNER_BOTTOM_Y = 53.963
 const BANNER_CENTER_Y = (BANNER_TOP_Y + BANNER_BOTTOM_Y) / 2
 const BANNER_SAMPLE_XS = [0, 34, 68, 102, 136, 170, 204, 232, 252, 266, BANNER_RIGHT_X]
-const BANNER_WAVE_DURATION = 5.4
+const DEFAULT_PLANE_MOTION_DURATION_SECONDS = 3.2
+const PLANE_DESCENT_START_PROGRESS = 0.2
+const PLANE_MOBILE_BREAKPOINT_PX = 767
 const BANNER_WAVE_LOOP_PHASE = Math.PI * 4
 const BANNER_TEXT_SAMPLE_DELTA = 4
 const BANNER_GLYPH_VERTICAL_ADJUSTMENTS = {
@@ -18,6 +20,29 @@ const BANNER_GLYPH_VERTICAL_ADJUSTMENTS = {
 }
 
 const formatValue = (value) => Number(value.toFixed(3))
+
+const parseDurationSeconds = (
+    durationValue,
+    fallbackDuration = DEFAULT_PLANE_MOTION_DURATION_SECONDS,
+) => {
+    const parsedDuration = Number.parseFloat(durationValue)
+
+    return Number.isFinite(parsedDuration) && parsedDuration > 0
+        ? parsedDuration
+        : fallbackDuration
+}
+
+export const getBannerWaveMotionConfig = (planeMotionDurationValue) => {
+    const duration = parseDurationSeconds(planeMotionDurationValue)
+    const startPhase =
+        BANNER_WAVE_LOOP_PHASE * (1 - PLANE_DESCENT_START_PROGRESS)
+
+    return {
+        duration,
+        endPhase: startPhase + BANNER_WAVE_LOOP_PHASE,
+        startPhase,
+    }
+}
 
 const buildCurveCommands = (points) => {
     let commands = ''
@@ -42,7 +67,7 @@ const buildCurveCommands = (points) => {
     return commands
 }
 
-const getWaveOffset = (x, phase, intensity = 1) => {
+export const getWaveOffset = (x, phase, intensity = 1) => {
     if (!intensity) {
         return 0
     }
@@ -116,6 +141,7 @@ const Plane = () => {
     useGSAP(
         () => {
             if (
+                !planeRef.current ||
                 !bannerShapeRef.current ||
                 !bannerClipRef.current ||
                 !bannerCenterPathRef.current ||
@@ -186,22 +212,42 @@ const Plane = () => {
 
             const media = gsap.matchMedia()
 
-            media.add('(prefers-reduced-motion: no-preference)', () => {
-                const waveState = { phase: 0 }
-                const waveTween = gsap.to(waveState, {
-                    duration: BANNER_WAVE_DURATION,
-                    ease: 'none',
-                    onUpdate: () => {
-                        applyBannerWave(waveState.phase, 1)
-                    },
-                    phase: BANNER_WAVE_LOOP_PHASE,
-                    repeat: -1,
-                })
+            media.add(
+                {
+                    isMobile: `(max-width: ${PLANE_MOBILE_BREAKPOINT_PX}px)`,
+                    motionOk: '(prefers-reduced-motion: no-preference)',
+                },
+                ({ conditions }) => {
+                    if (!conditions?.motionOk) {
+                        applyBannerWave(0, 0)
+                        return undefined
+                    }
 
-                return () => {
-                    waveTween.kill()
+                    const { duration, endPhase, startPhase } =
+                        getBannerWaveMotionConfig(
+                            window
+                                .getComputedStyle(planeRef.current)
+                                .getPropertyValue('--plane-motion-duration'),
+                        )
+                    const waveState = { phase: startPhase }
+
+                    applyBannerWave(waveState.phase, 1)
+
+                    const waveTween = gsap.to(waveState, {
+                        duration,
+                        ease: 'none',
+                        onUpdate: () => {
+                            applyBannerWave(waveState.phase, 1)
+                        },
+                        phase: endPhase,
+                        repeat: -1,
+                    })
+
+                    return () => {
+                        waveTween.kill()
+                    }
                 }
-            })
+            )
 
             return () => {
                 media.revert()

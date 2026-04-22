@@ -23,6 +23,7 @@ import inclusivelyNavDefault from './assets/work-nav/inclusively-default.png'
 import optableNavDefault from './assets/work-nav/optable-default.svg'
 import maChNavDefault from './assets/work-nav/ma-ch-default.png'
 
+// Optional navButton overrides let each study tune desktop/mobile button size and offset.
 const caseStudies = [
   {
     id: 'celdf',
@@ -33,6 +34,20 @@ const caseStudies = [
     services: ['Website Design', 'Graphic Design', 'Branding', 'Logo Design'],
     image: celdfImg,
     navIcon: celdfNavDefault,
+    navButton: {
+      desktop: {
+        width: 112,
+        height: 127,
+        x: 0,
+        y: 43,
+      },
+      mobile: {
+        width: 56,
+        height: 56,
+        x: 0,
+        y: 0,
+      },
+    },
   },
   {
     id: 'voxus',
@@ -43,6 +58,20 @@ const caseStudies = [
     services: ['Website Design', 'Web Development', 'Branding'],
     image: voxusImg,
     navIcon: voxusNavDefault,
+    navButton: {
+      desktop: {
+        width: 132,
+        height: 162,
+        x: 0,
+        y: 36,
+      },
+      mobile: {
+        width: 56,
+        height: 56,
+        x: 0,
+        y: 0,
+      },
+    },
   },
   {
     id: 'lumiere',
@@ -53,6 +82,20 @@ const caseStudies = [
     services: ['Logo Design', 'Website Design', 'Collateral Design', 'Website Development', 'Branding'],
     image: lumiereImg,
     navIcon: lumiereNavDefault,
+    navButton: {
+      desktop: {
+        width: 162,
+        height: 162,
+        x: 0,
+        y: 40,
+      },
+      mobile: {
+        width: 56,
+        height: 56,
+        x: 0,
+        y: 0,
+      },
+    },
   },
   {
     id: 'rogue-heart',
@@ -63,6 +106,20 @@ const caseStudies = [
     services: ['Website Design', 'Website Development'],
     image: rogueHeartImg,
     navIcon: rogueHeartNavDefault,
+    navButton: {
+      desktop: {
+        width: 146.136,
+        height: 176.207,
+        x: 0,
+        y: 30,
+      },
+      mobile: {
+        width: 56,
+        height: 56,
+        x: 0,
+        y: 0,
+      },
+    },
   },
   {
     id: 'conviva',
@@ -73,6 +130,20 @@ const caseStudies = [
     services: ['Web Design', 'Illustration', 'Collateral Design', 'Branding', 'Physical Spaces', 'Email Marketing', 'SEO', 'SEM', 'Content Creation'],
     image: convivaImg,
     navIcon: convivaNavDefault,
+    navButton: {
+      desktop: {
+        width: 125,
+        height: 125,
+        x: 0,
+        y: 50,
+      },
+      mobile: {
+        width: 56,
+        height: 56,
+        x: 0,
+        y: 0,
+      },
+    },
   },
   {
     id: 'scar',
@@ -83,6 +154,20 @@ const caseStudies = [
     services: ['Logo Design', 'Web Design', 'Collateral Design', 'Branding', 'Web Development'],
     image: scarImg,
     navIcon: scarNavDefault,
+    navButton: {
+      desktop: {
+        width: 114.086,
+        height: 204.45,
+        x: 0,
+        y: 10,
+      },
+      mobile: {
+        width: 56,
+        height: 56,
+        x: 0,
+        y: 0,
+      },
+    },
   },
   {
     id: 'computercare',
@@ -93,6 +178,20 @@ const caseStudies = [
     services: ['Web Design', 'Web Development'],
     image: computerCareImg,
     navIcon: computerCareDefault,
+    navButton: {
+      desktop: {
+        width: 155.89,
+        height: 94.18,
+        x: 0,
+        y: 65,
+      },
+      mobile: {
+        width: 56,
+        height: 56,
+        x: 0,
+        y: 0,
+      },
+    },
   },
   {
     id: 'reltio',
@@ -102,6 +201,20 @@ const caseStudies = [
     services: ['Web Design', 'Web Development'],
     image: reltioImg,
     navIcon: reltioNavDefault,
+    navButton: {
+      desktop: {
+        width: 162,
+        height: 162,
+        x: 0,
+        y: 30,
+      },
+      mobile: {
+        width: 56,
+        height: 56,
+        x: 0,
+        y: 0,
+      },
+    },
   },
   {
     id: 'mediabricks',
@@ -112,6 +225,20 @@ const caseStudies = [
     services: ['Logo Design'],
     image: mediabricksImg,
     navIcon: mediabricksNavDefault,
+    navButton: {
+      desktop: {
+        width: 162,
+        height: 162,
+        x: 0,
+        y: 20,
+      },
+      mobile: {
+        width: 56,
+        height: 56,
+        x: 0,
+        y: 0,
+      },
+    },
   },
   {
     id: 'inclusively',
@@ -122,6 +249,20 @@ const caseStudies = [
     services: ['Logo Redesign', 'Web Design', 'Illustration System', 'Web Development', 'Animation'],
     image: inclusivelyImg,
     navIcon: inclusivelyNavDefault,
+    navButton: {
+      desktop: {
+        width: 74,
+        height: 125,
+        x: 0,
+        y: 35,
+      },
+      mobile: {
+        width: 56,
+        height: 56,
+        x: 0,
+        y: 0,
+      },
+    },
   },
   {
     id: 'optable',
@@ -132,6 +273,20 @@ const caseStudies = [
     services: ['Web Design', 'Illustration'],
     image: optableImg,
     navIcon: optableNavDefault,
+    navButton: {
+      desktop: {
+        width: 115,
+        height: 115,
+        x: 0,
+        y: 45,
+      },
+      mobile: {
+        width: 56,
+        height: 56,
+        x: 0,
+        y: 0,
+      },
+    },
   },
   {
     id: 'ma-ch',
@@ -142,6 +297,20 @@ const caseStudies = [
     services: ['Web Design'],
     image: maChImg,
     navIcon: maChNavDefault,
+    navButton: {
+      desktop: {
+        width: 120,
+        height: 120,
+        x: 0,
+        y: 35,
+      },
+      mobile: {
+        width: 56,
+        height: 56,
+        x: 0,
+        y: 0,
+      },
+    },
   },
 ]
 
