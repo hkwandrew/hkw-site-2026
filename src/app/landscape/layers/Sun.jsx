@@ -59,6 +59,7 @@ const Sun = () => {
   return (
     <Link
       to='/contact'
+      aria-hidden={canInteractWithHomeHover ? undefined : true}
       onMouseEnter={() => {
         if (canInteractWithHomeHover) {
           setHomeHoverRegion(HOME_HOVER_REGION.contact)
@@ -79,6 +80,10 @@ const Sun = () => {
           clearHomeHoverRegion()
         }
       }}
+      style={{
+        pointerEvents: canInteractWithHomeHover ? 'auto' : 'none',
+      }}
+      tabIndex={canInteractWithHomeHover ? undefined : -1}
     >
       {sunSvg}
     </Link>

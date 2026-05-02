@@ -102,6 +102,14 @@ const GlobalStyle = createGlobalStyle`
     list-style: none;
   }
 
+  a[style='pointer-events: auto']:focus,
+  a[style='pointer-events: none']:focus,
+  svg a:focus,
+  svg path:focus,
+  svg g:focus {
+    outline: none;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       animation-duration: 0.01ms !important;

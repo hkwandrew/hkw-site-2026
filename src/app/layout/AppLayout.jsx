@@ -13,6 +13,7 @@ const AppLayout = () => {
     mainRef,
     headerContentPath,
     headerNavPath,
+    isPageLabelRevealed,
     scenePathname,
     shouldShowHeader,
     isRouteContentRevealed,
@@ -33,6 +34,7 @@ const AppLayout = () => {
           {shouldShowHeader ? (
             <Header
               contentPathname={headerContentPath}
+              isPageLabelReady={isPageLabelRevealed}
               navPathname={headerNavPath}
             />
           ) : null}

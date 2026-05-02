@@ -32,7 +32,7 @@ export const ROOTS_SCENE_STATE = {
     wrapper: { scaleX: 1.16, scaleY: 1.16 },
   },
   dirtLayer: {
-    container: { x: 1181, y: 23 },
+    container: { x: 1308, y: 23 },
     wrapper: { scaleX: 1, scaleY: 1 },
   },
 }

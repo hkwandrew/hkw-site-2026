@@ -1,12 +1,24 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router'
-import styled, { useTheme } from 'styled-components'
+import styled, { css, keyframes, useTheme } from 'styled-components'
 import logo from '@/assets/images/logo.svg'
 import { getPageLabelForPath } from '@/app/router/routeRegistry'
 import MobileNavMenu from './MobileNavMenu'
 import NavMenu from './NavMenu'
 
+const pageLabelFadeIn = keyframes`
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+`
+
 const StyledHeader = styled.header`
+  max-width: 1440px;
+  margin-inline: auto;
   position: fixed;
   top: 0;
   left: 0;
@@ -34,7 +46,7 @@ const StyledHeader = styled.header`
 const BrandBlock = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: ${({ $isServicesPage }) => ($isServicesPage ? '72px' : '20px')};
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     gap: 0;
@@ -72,6 +84,10 @@ const PageLabel = styled.div`
     'wght' ${({ theme }) => theme.font.weight.bold};
   color: ${({ $isAboutPage, theme }) =>
     $isAboutPage ? theme.colors.orange.base : theme.colors.white};
+  opacity: ${({ $isActive }) => ($isActive ? 1 : 0)};
+  animation: ${({ $isActive }) =>
+    $isActive ? css`${pageLabelFadeIn} 500ms ease both` : 'none'};
+  will-change: opacity;
 
   translate: ${({ $isServicesPage }) => ($isServicesPage ? '10px 0' : '0')};
 
@@ -86,13 +102,18 @@ const MobilePageLabel = styled.div`
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     display: block;
     margin-top: 6px;
-    color: ${({ theme }) => theme.colors.orange.base};
-    font-size: 20px;
+    color: ${({ $isAboutPage, theme }) =>
+      $isAboutPage ? theme.colors.orange.base : theme.colors.white};
+    opacity: ${({ $isActive }) => ($isActive ? 1 : 0)};
+    animation: ${({ $isActive }) =>
+      $isActive ? css`${pageLabelFadeIn} 500ms ease both` : 'none'};
+    will-change: opacity;
+    font-size: 24px;
     line-height: 1.3;
     text-transform: uppercase;
     font-variation-settings:
       'wdth' 68,
-      'wght' ${({ theme }) => theme.font.weight.bold};
+      'wght' ${({ theme }) => theme.font.weight.semibold};
   }
 `
 
@@ -123,7 +144,7 @@ const usePhoneViewport = (mobileBreakpoint) => {
   return isPhoneViewport
 }
 
-const Header = ({ contentPathname, navPathname }) => {
+const Header = ({ contentPathname, isPageLabelReady = true, navPathname }) => {
   const theme = useTheme()
   const location = useLocation()
   const contentPath = contentPathname ?? location.pathname
@@ -131,16 +152,20 @@ const Header = ({ contentPathname, navPathname }) => {
   const pageLabel = getPageLabelForPath(contentPath)
   const isServicesPage = contentPath === '/services'
   const isAboutPage = contentPath === '/about'
+  const isPageLabelActive = isPageLabelReady
   const isPhoneViewport = usePhoneViewport(theme.breakpoints.mobile)
 
   return (
     <StyledHeader>
-      <BrandBlock>
+      <BrandBlock $isServicesPage={isServicesPage}>
         <HKWLogo to='/' $isServicesPage={isServicesPage}>
           <LogoImg src={logo} alt='HKW' />
         </HKWLogo>
         {pageLabel && (
           <PageLabel
+            aria-hidden={!isPageLabelActive}
+            key={contentPath}
+            $isActive={isPageLabelActive}
             $isAboutPage={isAboutPage}
             $isServicesPage={isServicesPage}
           >
@@ -148,7 +173,14 @@ const Header = ({ contentPathname, navPathname }) => {
           </PageLabel>
         )}
         {isPhoneViewport && isAboutPage && pageLabel ? (
-          <MobilePageLabel>{pageLabel}</MobilePageLabel>
+          <MobilePageLabel
+            aria-hidden={!isPageLabelActive}
+            key={contentPath}
+            $isActive={isPageLabelActive}
+            $isAboutPage={isAboutPage}
+          >
+            {pageLabel}
+          </MobilePageLabel>
         ) : null}
       </BrandBlock>
 

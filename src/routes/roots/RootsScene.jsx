@@ -17,6 +17,8 @@ const Root = styled.section`
   position: absolute;
   inset: 0;
   width: 100%;
+  max-width: 1440px;
+  margin-inline: auto;
   height: 100dvh;
   overflow: hidden;
   pointer-events: auto;

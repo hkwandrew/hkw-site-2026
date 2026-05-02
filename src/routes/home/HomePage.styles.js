@@ -8,6 +8,8 @@ import {
 const MASCOT_HOVER_ART = getHomeHoverRegionPosition(HOME_HOVER_REGION.mascot)
 export const ROOTS_DROP_DURATION_MS = 420
 const ROOTS_DROP_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)'
+const MARMOT_BURIED_OFFSET_PX = 280
+const MARMOT_BURIED_SCALE = 0.985
 
 const riseIn = keyframes`
   from {
@@ -24,7 +26,8 @@ const riseIn = keyframes`
 const marmotEmerge = keyframes`
   0% {
     opacity: 1;
-    transform: translate3d(0, 280px, 0) scale(0.985);
+    transform: translate3d(0, ${MARMOT_BURIED_OFFSET_PX}px, 0)
+      scale(${MARMOT_BURIED_SCALE});
   }
 
   58% {
@@ -35,6 +38,24 @@ const marmotEmerge = keyframes`
   100% {
     opacity: 1;
     transform: translate3d(0, 0, 0) scale(1);
+  }
+`
+
+const marmotDescend = keyframes`
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  42% {
+    opacity: 1;
+    transform: translate3d(0, -6px, 0) scale(1.003);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, ${MARMOT_BURIED_OFFSET_PX}px, 0)
+      scale(${MARMOT_BURIED_SCALE});
   }
 `
 
@@ -515,23 +536,15 @@ export const MarmotCharacterWrap = styled.div`
   }
 
   #marmot-character-intro {
-    opacity: ${({ $isTransitioning }) => ($isTransitioning ? 0.98 : 1)};
-    transform: translate3d(
-        0,
-        ${({ $isTransitioning }) => ($isTransitioning ? '152px' : '0')},
-        0
-      )
-      scale(${({ $isTransitioning }) => ($isTransitioning ? 0.93 : 1)});
-    transition:
-      transform ${ROOTS_DROP_DURATION_MS}ms ${ROOTS_DROP_EASE},
-      opacity ${ROOTS_DROP_DURATION_MS}ms ${ROOTS_DROP_EASE};
+    transform-origin: center bottom;
   }
 
   ${({ $isTransitioning }) =>
     $isTransitioning
       ? css`
           #marmot-character-intro {
-            animation: none;
+            animation: ${marmotDescend} ${ROOTS_DROP_DURATION_MS}ms
+              ${ROOTS_DROP_EASE} both;
           }
 
           #marmot-character-idle,
@@ -596,8 +609,9 @@ export const StumpTrigger = styled.button`
   height: 172px;
   border-radius: 50%;
   background: transparent;
-  pointer-events: auto;
-  cursor: pointer;
+  pointer-events: ${({ $isInteractive }) =>
+    $isInteractive ? 'auto' : 'none'};
+  cursor: ${({ $isInteractive }) => ($isInteractive ? 'pointer' : 'default')};
 
   &:focus-visible {
     outline: 3px solid ${({ theme }) => theme.colors.yellow.light};
@@ -718,7 +732,7 @@ export const PlaneTrack = styled.div`
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    top: 56px;
+    top: 12px;
     left: clamp(92px, 29.26vw, 115px);
     animation: none;
   }

@@ -185,6 +185,7 @@ export default function Home() {
         <StumpTrigger
           type='button'
           aria-label='Enter Non-profit Roots'
+          disabled={!canInteractWithHomeHover}
           onClick={handleRootsClick}
           onFocus={() => {
             if (canInteractWithHomeHover) {
@@ -208,6 +209,7 @@ export default function Home() {
               clearHomeHoverRegion()
             }
           }}
+          $isInteractive={canInteractWithHomeHover}
         />
         <MarmotCharacterWrap $isTransitioning={isRootsTransitionActive}>
           <HomeMarmot />

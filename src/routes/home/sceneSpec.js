@@ -32,7 +32,7 @@ export const HOME_SCENE_STATE = {
     wrapper: { scaleX: 1, scaleY: 1 },
   },
   dirtLayer: {
-    container: { x: 1181, y: 1100 },
+    container: { x: 1308, y: 1100 },
     wrapper: { scaleX: 1, scaleY: 1 },
   },
 }

@@ -4,6 +4,7 @@ import {
   useMemo,
   useRef,
   useState,
+  useSyncExternalStore,
 } from 'react'
 import {
   SCENE_TRANSITION_DURATION_MS,
@@ -15,6 +16,25 @@ import {
   animateSharedSceneTransition,
   applySharedSceneState,
 } from '@/app/landscape/runtime/sharedSceneRuntime'
+
+const HOME_HOVER_DEVICE_QUERY = '(hover: hover) and (pointer: fine)'
+
+const canUseHomeHoverRegions = () =>
+  typeof window !== 'undefined' &&
+  window.matchMedia?.(HOME_HOVER_DEVICE_QUERY).matches === true
+
+const subscribeToHomeHoverCapability = (onChange) => {
+  if (typeof window === 'undefined' || !window.matchMedia) {
+    return () => {}
+  }
+
+  const mediaQuery = window.matchMedia(HOME_HOVER_DEVICE_QUERY)
+  mediaQuery.addEventListener('change', onChange)
+
+  return () => {
+    mediaQuery.removeEventListener('change', onChange)
+  }
+}
 
 const useLandscapeTransitionController = (pathname) => {
   const mainRef = useRef(null)
@@ -28,6 +48,11 @@ const useLandscapeTransitionController = (pathname) => {
   const [homeHoverRegion, setHomeHoverRegion] = useState(null)
   const [pendingNavPath, setPendingNavPath] = useState(null)
   const [revealedContentPath, setRevealedContentPath] = useState(pathname)
+  const canUseHoverRegions = useSyncExternalStore(
+    subscribeToHomeHoverCapability,
+    canUseHomeHoverRegions,
+    () => false,
+  )
 
   const pageKey = getPageKeyForPath(pathname)
   const isHome = pathname === '/'
@@ -36,7 +61,9 @@ const useLandscapeTransitionController = (pathname) => {
   const headerNavPath = scenePathname
   const shouldShowHeader = headerContentPath !== '/roots'
   const isRouteContentRevealed = revealedContentPath === pathname
-  const areHomeLayerLinksInteractive = isHome && isRouteContentRevealed
+  const isPageLabelRevealed = isRouteContentRevealed && pendingNavPath === null
+  const areHomeLayerLinksInteractive =
+    isHome && isRouteContentRevealed && canUseHoverRegions
 
   const setSceneTransitionKey = useCallback((fromPath, toPath) => {
     const mainElement = mainRef.current
@@ -197,6 +224,7 @@ const useLandscapeTransitionController = (pathname) => {
     mainRef,
     headerContentPath,
     headerNavPath,
+    isPageLabelRevealed,
     scenePathname,
     shouldShowHeader,
     isRouteContentRevealed,

@@ -8,6 +8,15 @@ import Sun from '@/app/landscape/layers/Sun'
 import TreeMountain from '@/app/landscape/layers/TreeMountain'
 import UpperField from '@/app/landscape/layers/UpperField'
 import WhiteSand from '@/app/landscape/layers/WhiteSand'
+import styled from 'styled-components'
+
+const LandscapeSceneWrapper = styled.svg`
+  width: 100%;
+  height: auto;
+  max-width: 1440px;
+  margin-inline: auto;
+  overflow: visible;
+`
 
 const getHomeLayerLinkProps = (isInteractive) => ({
   'aria-hidden': isInteractive ? undefined : true,
@@ -17,11 +26,8 @@ const getHomeLayerLinkProps = (isInteractive) => ({
   tabIndex: isInteractive ? undefined : -1,
 })
 
-const LandscapeScene = ({
-  areHomeLayerLinksInteractive,
-  scenePathname,
-}) => (
-  <svg
+const LandscapeScene = ({ areHomeLayerLinksInteractive, scenePathname }) => (
+  <LandscapeSceneWrapper
     xmlns='http://www.w3.org/2000/svg'
     xmlnsXlink='http://www.w3.org/1999/xlink'
     id='scene-svg'
@@ -42,10 +48,7 @@ const LandscapeScene = ({
       >
         <BlueMountain />
       </Link>
-      <Link
-        to='/work'
-        {...getHomeLayerLinkProps(areHomeLayerLinksInteractive)}
-      >
+      <Link to='/work' {...getHomeLayerLinkProps(areHomeLayerLinksInteractive)}>
         <GoldMountain />
       </Link>
       <WhiteSand />
@@ -60,7 +63,7 @@ const LandscapeScene = ({
       <UpperField />
       <DirtLayer showWorkDirtLayer={scenePathname === '/work'} />
     </g>
-  </svg>
+  </LandscapeSceneWrapper>
 )
 
 export default LandscapeScene

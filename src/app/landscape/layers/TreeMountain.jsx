@@ -2,7 +2,10 @@ import { useHomeHover } from '@/routes/home/homeHoverContext'
 import { getHomeHoverRegionPosition } from '@/routes/home/homeHoverConfig'
 import { HOME_HOVER_REGION } from '@/routes/home/homeHoverRegions'
 
-const HOVER_POSITION = getHomeHoverRegionPosition(HOME_HOVER_REGION.treeMountain)
+const SERVICES_HOVER_REGION = HOME_HOVER_REGION.dkBlueMountain
+const TREE_HOVER_POSITION = getHomeHoverRegionPosition(
+  HOME_HOVER_REGION.treeMountain,
+)
 
 const TreeMountain = ({ transform, ...props }) => {
   const {
@@ -14,8 +17,7 @@ const TreeMountain = ({ transform, ...props }) => {
   } = useHomeHover()
   const canInteractWithHomeHover = isHomeInteractive ?? isHome
   const isHoverActive =
-    canInteractWithHomeHover &&
-    homeHoverRegion === HOME_HOVER_REGION.treeMountain
+    canInteractWithHomeHover && homeHoverRegion === SERVICES_HOVER_REGION
 
   return (
     <g transform={transform} {...props}>
@@ -117,7 +119,7 @@ const TreeMountain = ({ transform, ...props }) => {
                 fill='transparent'
                 onMouseEnter={() => {
                   if (canInteractWithHomeHover) {
-                    setHomeHoverRegion(HOME_HOVER_REGION.treeMountain)
+                    setHomeHoverRegion(SERVICES_HOVER_REGION)
                   }
                 }}
                 onMouseLeave={() => {
@@ -136,7 +138,7 @@ const TreeMountain = ({ transform, ...props }) => {
       </g>
       <g
         id='tree-mouintain-hover'
-        transform={`translate(${HOVER_POSITION.x} ${HOVER_POSITION.y})`}
+        transform={`translate(${TREE_HOVER_POSITION.x} ${TREE_HOVER_POSITION.y})`}
         pointerEvents='none'
         style={{
           opacity: isHoverActive ? 1 : 0,
