@@ -3,6 +3,7 @@ import { MemoryRouter } from 'react-router'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { HomeHoverProvider } from '@/routes/home/homeHoverContext'
 import HomePage from '@/routes/home/HomePage'
+import { ROOTS_DROP_DURATION_MS } from '@/routes/home/HomePage.styles'
 
 const mockNavigate = vi.fn()
 const originalMatchMedia = window.matchMedia
@@ -73,12 +74,30 @@ describe('HomePage', () => {
     expect(mockNavigate).not.toHaveBeenCalled()
 
     act(() => {
-      vi.advanceTimersByTime(420)
+      vi.advanceTimersByTime(ROOTS_DROP_DURATION_MS)
     })
 
     expect(mockNavigate).toHaveBeenCalledWith('/roots', {
       state: { fromRootsDive: true },
     })
+  })
+
+  it('starts a dedicated marmot exit animation during the roots transition', () => {
+    renderHomePage()
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: /enter non-profit roots/i,
+      }),
+    )
+
+    const introGroup = document.querySelector('#marmot-character-intro')
+
+    expect(introGroup).not.toBeNull()
+    expect(getComputedStyle(introGroup).animationName).not.toBe('none')
+    expect(getComputedStyle(introGroup).animationDuration).toBe(
+      `${ROOTS_DROP_DURATION_MS}ms`,
+    )
   })
 
   it('activates the roots hover region on focus and mouse enter', () => {

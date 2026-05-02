@@ -1,4 +1,4 @@
-import { act, render, screen, withTheme } from '@/__tests__/testUtils'
+import { act, render, screen, waitFor, withTheme } from '@/__tests__/testUtils'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { usePageSceneTransition } from '@/app/landscape/pageSceneTransition'
@@ -177,6 +177,35 @@ describe('Layout shared scene links', () => {
     })
 
     expect(screen.getByText('Home route body')).toBeInTheDocument()
+  })
+
+  it('hides the page label while waiting to reveal the next route', async () => {
+    const { router } = renderLayoutRoute('/services')
+
+    await waitFor(() => {
+      expect(getComputedStyle(screen.getByText('Our Specialties')).opacity).toBe(
+        '1',
+      )
+    })
+
+    await act(async () => {
+      await router.navigate('/work')
+    })
+
+    expect(screen.queryByText('Work route body')).not.toBeInTheDocument()
+    expect(getComputedStyle(screen.getByText('Our Specialties')).opacity).toBe(
+      '0',
+    )
+
+    await act(async () => {
+      completePendingSceneTransition?.()
+    })
+
+    expect(screen.getByText('Work route body')).toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(getComputedStyle(screen.getByText('Our Work')).opacity).toBe('1')
+    })
   })
 
   it('updates the nav immediately for an about to work pending transition', async () => {

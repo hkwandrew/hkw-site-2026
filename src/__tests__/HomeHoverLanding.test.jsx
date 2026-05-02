@@ -18,6 +18,7 @@ import Layout from '@/app/layout/AppLayout'
 const originalMatchMedia = window.matchMedia
 const originalResizeObserver = window.ResizeObserver
 let completePendingSceneTransition = null
+let canUseHoverRegions = true
 
 const renderLayoutRoute = (initialPath) => {
   const router = createMemoryRouter(
@@ -51,6 +52,7 @@ const renderLayoutRoute = (initialPath) => {
 describe('Home hover landing state', () => {
   beforeEach(() => {
     completePendingSceneTransition = null
+    canUseHoverRegions = true
     sharedSceneRuntimeMocks.animateSharedSceneTransition.mockReset()
     sharedSceneRuntimeMocks.applySharedSceneState.mockReset()
     sharedSceneRuntimeMocks.animateSharedSceneTransition.mockImplementation(
@@ -60,7 +62,10 @@ describe('Home hover landing state', () => {
       },
     )
     window.matchMedia = vi.fn().mockImplementation((query) => ({
-      matches: false,
+      matches:
+        query === '(hover: hover) and (pointer: fine)'
+          ? canUseHoverRegions
+          : false,
       media: query,
       addEventListener: vi.fn(),
       removeEventListener: vi.fn(),
@@ -115,5 +120,31 @@ describe('Home hover landing state', () => {
       pointerEvents: 'auto',
     })
     expect(blueMountainHoverGroup).toHaveStyle({ opacity: '1' })
+  })
+
+  it('keeps home hover regions inactive on devices without hover support', () => {
+    canUseHoverRegions = false
+
+    const { container } = renderLayoutRoute('/')
+
+    const aboutRegionLink = container.querySelector('a[href="/about"]')
+    const blueMountainHitbox = container.querySelector(
+      '#blue-mountain-hover-hitbox',
+    )
+    const blueMountainHoverGroup = container.querySelector(
+      '#blue-mountain-hover-art',
+    )?.parentElement
+
+    expect(aboutRegionLink).toHaveAttribute('aria-hidden', 'true')
+    expect(aboutRegionLink).toHaveAttribute('tabindex', '-1')
+    expect(aboutRegionLink).toHaveStyle({ pointerEvents: 'none' })
+    expect(blueMountainHitbox).toHaveStyle({
+      cursor: 'default',
+      pointerEvents: 'none',
+    })
+
+    fireEvent.mouseEnter(blueMountainHitbox)
+
+    expect(blueMountainHoverGroup).toHaveStyle({ opacity: '0' })
   })
 })

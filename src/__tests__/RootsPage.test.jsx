@@ -20,6 +20,17 @@ const createMatchMedia = (matches) =>
     dispatchEvent: vi.fn(),
   }))
 
+const createReducedMotionMatchMedia = (matches) =>
+  vi.fn().mockImplementation((query) => ({
+    matches: query === '(prefers-reduced-motion: reduce)' ? matches : false,
+    media: query,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  }))
+
 const renderRootsRoute = () => {
   const transitionSceneToPath = vi.fn()
   const router = createMemoryRouter(
@@ -143,6 +154,113 @@ describe('RootsPage', () => {
       expect(getComputedStyle(sceneContent).opacity).toBe('1')
       expect(getComputedStyle(sceneContent).transform).toContain('0')
     })
+  })
+
+  it('moves the roots marmot eye highlights toward the mouse while the dark eyes stay fixed', async () => {
+    window.requestAnimationFrame = vi.fn(() => 1)
+    window.cancelAnimationFrame = vi.fn()
+
+    renderRootsRoute()
+
+    const marmot = document.querySelector('[data-roots-marmot]')
+    const pupils = document.querySelectorAll('[data-roots-pupil]')
+    const eyeCores = document.querySelectorAll('[data-roots-eye-core]')
+
+    expect(marmot).not.toBeNull()
+    expect(pupils).toHaveLength(2)
+    expect(eyeCores).toHaveLength(2)
+
+    marmot.getBoundingClientRect = vi.fn(() => ({
+      left: 100,
+      top: 120,
+      width: 404,
+      height: 262,
+      right: 504,
+      bottom: 382,
+      x: 100,
+      y: 120,
+      toJSON: () => {},
+    }))
+
+    act(() => {
+      fireEvent.mouseMove(window, {
+        clientX: 504,
+        clientY: 120,
+      })
+    })
+
+    await vi.waitFor(() => {
+      expect(pupils[0]).toHaveStyle({
+        transform: 'translate(2.6px, -1px) scale(1.5)',
+      })
+      expect(pupils[1]).toHaveStyle({
+        transform: 'translate(3.5px, -1px) scale(1.5)',
+      })
+      expect(eyeCores[0]).not.toHaveAttribute('style')
+      expect(eyeCores[1]).not.toHaveAttribute('style')
+    })
+  })
+
+  it('leaves the roots marmot pupils centered when reduced motion is preferred', async () => {
+    window.matchMedia = createReducedMotionMatchMedia(true)
+    window.requestAnimationFrame = vi.fn(() => 1)
+    window.cancelAnimationFrame = vi.fn()
+
+    renderRootsRoute()
+
+    const marmot = document.querySelector('[data-roots-marmot]')
+    const pupils = document.querySelectorAll('[data-roots-pupil]')
+
+    expect(marmot).not.toBeNull()
+    expect(pupils).toHaveLength(2)
+
+    marmot.getBoundingClientRect = vi.fn(() => ({
+      left: 100,
+      top: 120,
+      width: 404,
+      height: 262,
+      right: 504,
+      bottom: 382,
+      x: 100,
+      y: 120,
+      toJSON: () => {},
+    }))
+
+    act(() => {
+      fireEvent.mouseMove(window, {
+        clientX: 504,
+        clientY: 120,
+      })
+    })
+
+    await vi.waitFor(() => {
+      expect(pupils[0]).not.toHaveAttribute('style')
+      expect(pupils[1]).not.toHaveAttribute('style')
+    })
+  })
+
+  it('renders a softened original-path coffee steam plume', () => {
+    window.requestAnimationFrame = vi.fn(() => 1)
+    window.cancelAnimationFrame = vi.fn()
+
+    renderRootsRoute()
+
+    const steam = document.querySelector('[data-roots-coffee-steam]')
+    const plume = document.querySelector('[data-roots-steam-plume]')
+    const steamLayers = document.querySelectorAll(
+      '[data-roots-steam-glow], [data-roots-steam-core]',
+    )
+
+    expect(steam).not.toBeNull()
+    expect(steam).toHaveAttribute('aria-hidden', 'true')
+    expect(steam.tagName.toLowerCase()).toBe('g')
+    expect(steam).toHaveAttribute('mask', 'url(#mask0_5080_153)')
+    expect(plume).not.toBeNull()
+    expect(document.querySelectorAll('[data-roots-vapor]')).toHaveLength(0)
+    expect(steamLayers).toHaveLength(2)
+    expect(document.head.textContent).toMatch(
+      /\[data-roots-steam-plume\][^{]*{[^}]*4\.8s linear/,
+    )
   })
 
   it('does not revive the old roots entry slide when coming from home', () => {
