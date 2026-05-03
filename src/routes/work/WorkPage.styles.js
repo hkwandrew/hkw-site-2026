@@ -1,5 +1,6 @@
 import styled, { css, keyframes } from 'styled-components'
 import ArrowButton from '@/shared/ui/ArrowButton'
+import { applyTypography } from '@/shared/ui/Typography'
 import ViewContainer from '@/shared/ui/ViewContainer'
 
 const studyPaneSlideIn = keyframes`
@@ -290,8 +291,7 @@ export const AnimatedStudyText = styled(StudyText)`
 `
 
 export const ClientName = styled.h2`
-  font-size: 64px;
-  font-weight: 600;
+  ${applyTypography('h2')}
   line-height: 1;
   color: ${({ theme }) => theme.colors.orange.base};
 
@@ -301,10 +301,7 @@ export const ClientName = styled.h2`
 `
 
 export const Quote = styled.p`
-  font-size: 24px;
-  font-weight: 500;
-  line-height: 1.2;
-  letter-spacing: -0.48px;
+  ${applyTypography('h5')}
   color: ${({ theme }) => theme.colors.blue.dark};
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
@@ -313,8 +310,7 @@ export const Quote = styled.p`
 `
 
 export const Attribution = styled.p`
-  font-size: 18px;
-  font-weight: 400;
+  ${applyTypography('bodyMedium')}
   font-style: italic;
   color: ${({ theme }) => theme.colors.blue.dark};
   opacity: 0.8;
@@ -334,8 +330,11 @@ export const Services = styled.ul`
 `
 
 export const ServiceTag = styled.li`
-  font-size: 18px;
-  font-weight: 600;
+  ${applyTypography('bodyMedium')}
+  font-weight: ${({ theme }) => theme.font.weight.semibold};
+  font-variation-settings:
+    'wdth' ${({ theme }) => theme.typography.bodyMedium.width},
+    'wght' ${({ theme }) => theme.font.weight.semibold};
   line-height: 1.5;
   color: ${({ theme }) => theme.colors.blue.dark};
 
@@ -500,13 +499,13 @@ export const NavIconLayer = styled.img`
   object-fit: contain;
   mix-blend-mode: darken;
   pointer-events: none;
-  filter: ${({ $current }) =>
-    $current ? 'drop-shadow(-3px 5px 0 #D0471B)' : 'none'};
+  filter: ${({ $current, theme }) =>
+    $current ? `drop-shadow(-3px 5px 0 ${theme.colors.orange.base})` : 'none'};
   transition: filter 200ms ease;
 
   ${NavButton}:hover &,
   ${NavButton}:focus-visible & {
-    filter: drop-shadow(-3px 5px 0 #D0471B);
+    filter: drop-shadow(-3px 5px 0 ${({ theme }) => theme.colors.orange.base});
   }
 `
 

@@ -1,5 +1,6 @@
 import styled from 'styled-components'
 import PillButton from '@/shared/ui/PillButton'
+import { applyTypography } from '@/shared/ui/Typography'
 
 const PHONE_BREAKPOINT = ({ theme }) => theme.breakpoints.mobile
 
@@ -52,19 +53,17 @@ export const Title = styled.h1`
   margin: 0;
   color: ${({ theme }) => theme.colors.yellow.light};
   text-align: center;
+  ${applyTypography('h4')}
+  font-variation-settings:
+    'wdth' ${({ theme }) => theme.font.width.condensed},
+    'wght' ${({ theme }) => theme.font.weight.medium};
   text-transform: uppercase;
-  font-family: ${({ theme }) => theme.font.family};
-  font-variation-settings: 'wdth' 68;
-  font-size: clamp(24px, 4vw, 40px);
-  font-weight: ${({ theme }) => theme.font.weight.medium};
 `
 
 export const Subtitle = styled.p`
   color: ${({ theme }) => theme.colors.white};
   text-align: center;
-  font-family: ${({ theme }) => theme.font.family};
-  font-size: 16px;
-  font-weight: ${({ theme }) => theme.font.weight.regular};
+  ${applyTypography('bodySmall')}
   line-height: calc(29 / 16);
 `
 
@@ -83,26 +82,16 @@ export const SubmitRow = styled.div`
 `
 
 export const SubmitButton = styled(PillButton)`
-  width: 145px;
-  min-width: 145px;
-  height: 47px;
-  padding: 0 20px;
-  font-size: 20px;
-  line-height: 1;
-  font-variation-settings: 'wdth' 68;
+  width: ${({ theme }) => theme.components.formButton.width};
+  min-width: ${({ theme }) => theme.components.formButton.width};
+  height: ${({ theme }) => theme.components.formButton.height};
 `
 
 export const RequiredNote = styled.p`
   margin: ${({ $layout }) => ($layout === 'phone' ? '2px 0 0' : '14px 0 0')};
   color: ${({ theme }) => theme.colors.white};
   text-align: center;
-  font-family: ${({ theme }) => theme.font.family};
-  font-size: 16px;
-  font-weight: ${({ theme }) => theme.font.weight.medium};
-  line-height: calc(24 / 16);
-  text-transform: uppercase;
-  letter-spacing: 1.6px;
-  font-variation-settings: 'wdth' 68;
+  ${applyTypography('label')}
 `
 
 export const PhoneStage = styled.section`
@@ -154,10 +143,6 @@ export const PhoneSubtitle = styled(Subtitle)`
 
 export const PhoneTitle = styled(Title)`
   @media (max-width: ${PHONE_BREAKPOINT}) {
-    font-size: 24px;
-    line-height: calc(26 / 24);
-    font-variation-settings:
-      'wght' 600,
-      'wdth' 68;
+    ${applyTypography('pillButton')}
   }
 `

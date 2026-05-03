@@ -1,8 +1,10 @@
 import { useEffect, useId, useLayoutEffect, useRef } from 'react'
 import styled from 'styled-components'
 import ArrowButton from '@/shared/ui/ArrowButton'
+import { applyTypography } from '@/shared/ui/Typography'
 import RootsMarmot from './RootsMarmot'
 import frameBackground from './assets/roots-slider/frame.png'
+import PillButton from '@/shared/ui/PillButton'
 
 const Overlay = styled.div`
   position: absolute;
@@ -25,6 +27,12 @@ const Dialog = styled.div`
   color: ${({ theme }) => theme.colors.blue.dark};
 
   &::before {
+    content: '';
+    background: #fcfae5;
+    position: absolute;
+    inset: 0;
+  }
+  &::after {
     content: '';
     position: absolute;
     inset: 0;
@@ -72,32 +80,11 @@ const HorizontalFrame = styled(FrameSide)`
   transform-origin: center;
 `
 
-const ClosePill = styled.button`
+const ClosePill = styled(PillButton)`
   position: absolute;
-  top: 30px;
-  right: 34px;
+  top: 54px;
+  right: 70px;
   z-index: 3;
-  min-width: 96px;
-  padding: 16px 21px 14px;
-  border-radius: 999px;
-  background: ${({ theme }) => theme.colors.orange.base};
-  color: ${({ theme }) => theme.colors.white};
-  font-family: ${({ theme }) => theme.font.family};
-  font-size: 24px;
-  line-height: 1.08;
-  text-transform: uppercase;
-  font-variation-settings:
-    'wdth' 75,
-    'wght' ${({ theme }) => theme.font.weight.semibold};
-  transition:
-    transform 180ms ease,
-    background 180ms ease,
-    box-shadow 180ms ease;
-
-  &:hover {
-    background: ${({ theme }) => theme.colors.orange.dark};
-    transform: translateY(-2px);
-  }
 
   &:focus-visible {
     outline: 3px solid ${({ theme }) => theme.colors.yellow.gold};
@@ -109,7 +96,7 @@ const ClosePill = styled.button`
     right: 18px;
     min-width: 84px;
     padding: 13px 17px 12px;
-    font-size: 20px;
+    ${applyTypography('smallButton')}
   }
 `
 
@@ -215,9 +202,8 @@ const Copy = styled.div`
 
 const Title = styled.h2`
   margin: 0;
-  font-size: 48px;
+  ${applyTypography('h3')}
   line-height: 1;
-  letter-spacing: -0.02em;
   font-variation-settings:
     'wdth' 90,
     'wght' ${({ theme }) => theme.font.weight.semibold};
@@ -236,9 +222,9 @@ const QuoteBlock = styled.div`
 
 const Quote = styled.p`
   margin: 0;
-  font-size: 20px;
+  ${applyTypography('formButton')}
   line-height: 1.19;
-  letter-spacing: -0.4px;
+  text-transform: none;
   font-style: italic;
   font-variation-settings:
     'wdth' 100,
@@ -254,7 +240,7 @@ const Quote = styled.p`
 
 const Attribution = styled.p`
   margin: 0;
-  font-size: 18px;
+  ${applyTypography('bodyMedium')}
   line-height: 1.1;
   font-style: italic;
   opacity: ${({ $placeholder }) => ($placeholder ? 0.6 : 0.8)};
@@ -275,11 +261,8 @@ const Roles = styled.div`
 
 const RolesLabel = styled.p`
   margin: 0;
-  font-size: 18px;
+  ${applyTypography('bodyMedium')}
   line-height: 1.3;
-  font-variation-settings:
-    'wdth' 100,
-    'wght' ${({ theme }) => theme.font.weight.regular};
 `
 
 const RolesList = styled.ul`
@@ -292,7 +275,7 @@ const RolesList = styled.ul`
 `
 
 const Role = styled.li`
-  font-size: 18px;
+  ${applyTypography('bodyMedium')}
   line-height: 1.5;
   font-variation-settings:
     'wdth' 100,
@@ -353,10 +336,10 @@ const MarmotAccent = styled.div`
   position: absolute;
   right: 18px;
   bottom: 0;
-  z-index: 0;
-  width: min(26vw, 264px);
+  ${'' /* z-index: 0; */}
+  width: 446px;
   pointer-events: none;
-  opacity: 0.98;
+  opacity: 1;
 
   > * {
     width: 100%;
@@ -457,59 +440,12 @@ export default function RootsPortfolioSlider({
         aria-modal='true'
         aria-labelledby={titleId}
       >
-        {/* <FrameChrome aria-hidden='true'>
-          <FrameSide
-            src={frameLeft}
-            alt=''
-            $top='-44px'
-            $left='-175px'
-            $width='205px'
-            $height='1099px'
-            $mobileTop='-2.4%'
-            $mobileLeft='-9%'
-            $mobileWidth='16%'
-            $mobileHeight='105%'
-          />
-          <FrameSide
-            src={frameRight}
-            alt=''
-            $top='-1.33%'
-            $right='-12.26%'
-            $width='14.25%'
-            $height='110.18%'
-            $mobileTop='-1.2%'
-            $mobileRight='-9%'
-            $mobileWidth='16%'
-            $mobileHeight='104%'
-          />
-          <HorizontalFrame
-            src={frameHorizontal}
-            alt=''
-            $top='-23.95%'
-            $left='-1.92%'
-            $width='103.85%'
-            $height='26.5%'
-            $mobileTop='-14%'
-            $mobileLeft='-3%'
-            $mobileWidth='106%'
-            $mobileHeight='18%'
-          />
-          <HorizontalFrame
-            src={frameHorizontal}
-            alt=''
-            $bottom='-23.05%'
-            $left='-1.92%'
-            $width='103.85%'
-            $height='26.5%'
-            $flipY
-            $mobileBottom='-14%'
-            $mobileLeft='-3%'
-            $mobileWidth='106%'
-            $mobileHeight='18%'
-          />
-        </FrameChrome> */}
-
-        <ClosePill ref={closeRef} type='button' onClick={onClose}>
+        <ClosePill
+          ref={closeRef}
+          variant='close'
+          type='button'
+          onClick={onClose}
+        >
           Close
         </ClosePill>
 
@@ -562,7 +498,6 @@ export default function RootsPortfolioSlider({
             onClick={onNext}
           />
         </NavCluster>
-
         <MarmotAccent aria-hidden='true'>
           <RootsMarmot />
         </MarmotAccent>

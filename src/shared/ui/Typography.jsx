@@ -1,15 +1,48 @@
 import styled, { css } from 'styled-components'
 
 const applyTypography = (key) => css`
-  font-family: ${({ theme }) => theme.font.family};
-  font-size: ${({ theme }) => theme.typography[key].size};
-  font-weight: ${({ theme }) => theme.typography[key].weight};
-  font-variation-settings: 'wdth' ${({ theme }) => theme.typography[key].width};
-  line-height: ${({ theme }) => theme.typography[key].lineHeight};
-  letter-spacing: ${({ theme }) => theme.typography[key].letterSpacing};
-  ${({ theme }) =>
-    theme.typography[key].textTransform &&
-    css`text-transform: ${theme.typography[key].textTransform};`}
+  ${({ theme }) => {
+    const type = theme.typography[key]
+
+    if (!type) return ''
+
+    const variationSettings = [
+      type.width !== undefined ? `'wdth' ${type.width}` : null,
+      type.weight !== undefined ? `'wght' ${type.weight}` : null,
+    ].filter(Boolean)
+
+    return css`
+      font-family: ${theme.font.family};
+      ${type.size !== undefined &&
+      css`
+        font-size: ${type.size};
+      `}
+      ${type.weight !== undefined &&
+      css`
+        font-weight: ${type.weight};
+      `}
+      ${variationSettings.length > 0 &&
+      css`
+        font-variation-settings: ${variationSettings.join(', ')};
+      `}
+      ${type.lineHeight !== undefined &&
+      css`
+        line-height: ${type.lineHeight};
+      `}
+      ${type.letterSpacing !== undefined &&
+      css`
+        letter-spacing: ${type.letterSpacing};
+      `}
+      ${type.textTransform &&
+      css`
+        text-transform: ${type.textTransform};
+      `}
+      ${type.textBox &&
+      css`
+        text-box: ${type.textBox};
+      `}
+    `
+  }}
 `
 
 export const Display = styled.h1`

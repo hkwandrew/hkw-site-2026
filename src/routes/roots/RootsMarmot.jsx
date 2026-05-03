@@ -1,29 +1,57 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useId, useRef } from 'react'
 import styled, { keyframes } from 'styled-components'
 
 const ROOTS_MARMOT_VIEWBOX_WIDTH = 404
 const ROOTS_MARMOT_VIEWBOX_HEIGHT = 262
 const ROOTS_MARMOT_REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
-const ROOTS_MARMOT_PUPIL_SCALE = 1.75
+const ROOTS_MARMOT_PUPIL_SCALE = 2.25
+const RIGHT_EYE_CORE_PATH =
+  'M239.563 67.6691C242.515 67.2443 244.499 64.0649 243.996 60.5676C243.493 57.0704 240.692 54.5797 237.741 55.0045C234.789 55.4293 232.805 58.6087 233.308 62.106C233.811 65.6032 236.612 68.0939 239.563 67.6691Z'
+const LEFT_EYE_CORE_PATH =
+  'M175.019 72.8976C176.295 72.714 176.979 70.1289 176.546 67.1236C176.114 64.1183 174.729 61.8309 173.453 62.0145C172.177 62.1981 171.493 64.7833 171.926 67.7886C172.358 70.7939 173.743 73.0813 175.019 72.8976Z'
+
+const formatTranslateValue = (value) => {
+  const roundedValue = Math.round(value * 10) / 10
+
+  return Object.is(roundedValue, -0) ? 0 : roundedValue
+}
+
 const PUPIL_CONFIG = {
   right: {
-    centerX: 239.563,
-    centerY: 61.337,
-    maxX: 2.8,
-    maxY: 2.8,
+    eyeCenterX: 237.563,
+    eyeCenterY: 63.337,
+    catchlightCenterX: 236.497,
+    catchlightCenterY: 64.753,
+    maxX: 2.9,
+    maxY: 3,
   },
   left: {
-    centerX: 175.019,
-    centerY: 67.456,
-    maxX: 3.6,
-    maxY: 3.6,
+    eyeCenterX: 175.019,
+    eyeCenterY: 67.456,
+    catchlightCenterX: 174.633,
+    catchlightCenterY: 70.125,
+    maxX: 1.1,
+    maxY: 1.8,
   },
 }
+
+const getPupilRestOffset = ({
+  eyeCenterX,
+  eyeCenterY,
+  catchlightCenterX,
+  catchlightCenterY,
+}) => ({
+  x: formatTranslateValue(eyeCenterX - catchlightCenterX),
+  y: formatTranslateValue(eyeCenterY - catchlightCenterY),
+})
+
+const getScaledPupilTransform = (x, y) =>
+  `translate(${formatTranslateValue(x)}px, ${formatTranslateValue(y)}px) scale(${ROOTS_MARMOT_PUPIL_SCALE})`
 
 const steamPathDrift = keyframes`
   0% {
     opacity: 0;
-    transform: translate3d(0, 4px, 0) scale(0.99);
+    transform: translate3d(0, 14px, 0) scale(0.99);
   }
 
   22% {
@@ -68,9 +96,19 @@ const Marmot = styled.svg`
   [data-roots-pupil] {
     transform-box: fill-box;
     transform-origin: center;
-    transform: scale(${ROOTS_MARMOT_PUPIL_SCALE});
-    transition: transform 120ms ease-out;
+    transform: translate(var(--roots-pupil-rest-x), var(--roots-pupil-rest-y))
+      scale(${ROOTS_MARMOT_PUPIL_SCALE});
     will-change: transform;
+  }
+
+  [data-roots-pupil='right'] {
+    --roots-pupil-rest-x: ${getPupilRestOffset(PUPIL_CONFIG.right).x}px;
+    --roots-pupil-rest-y: ${getPupilRestOffset(PUPIL_CONFIG.right).y}px;
+  }
+
+  [data-roots-pupil='left'] {
+    --roots-pupil-rest-x: ${getPupilRestOffset(PUPIL_CONFIG.left).x}px;
+    --roots-pupil-rest-y: ${getPupilRestOffset(PUPIL_CONFIG.left).y}px;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -82,38 +120,35 @@ const Marmot = styled.svg`
     }
 
     [data-roots-pupil] {
-      transition: none;
       will-change: auto;
     }
   }
 `
 
-const formatTranslateValue = (value) => {
-  const roundedValue = Math.round(value * 10) / 10
-
-  return Object.is(roundedValue, -0) ? 0 : roundedValue
-}
-
 const getPupilTransform = ({
   pointerX,
   pointerY,
-  centerX,
-  centerY,
+  eyeCenterX,
+  eyeCenterY,
+  catchlightCenterX,
+  catchlightCenterY,
   maxX,
   maxY,
 }) => {
-  const xDelta = pointerX - centerX
-  const yDelta = pointerY - centerY
+  const restX = eyeCenterX - catchlightCenterX
+  const restY = eyeCenterY - catchlightCenterY
+  const xDelta = pointerX - eyeCenterX
+  const yDelta = pointerY - eyeCenterY
   const distance = Math.hypot(xDelta, yDelta)
 
   if (distance === 0) {
-    return `scale(${ROOTS_MARMOT_PUPIL_SCALE})`
+    return getScaledPupilTransform(restX, restY)
   }
 
-  const x = formatTranslateValue((xDelta / distance) * maxX)
-  const y = formatTranslateValue((yDelta / distance) * maxY)
+  const x = restX + (xDelta / distance) * maxX
+  const y = restY + (yDelta / distance) * maxY
 
-  return `translate(${x}px, ${y}px) scale(${ROOTS_MARMOT_PUPIL_SCALE})`
+  return getScaledPupilTransform(x, y)
 }
 
 const resetPupils = (marmot) => {
@@ -124,6 +159,9 @@ const resetPupils = (marmot) => {
 
 const RootsMarmot = () => {
   const marmotRef = useRef(null)
+  const clipPathPrefix = useId().replace(/:/g, '')
+  const rightEyeClipId = `roots-marmot-${clipPathPrefix}-right-eye-clip`
+  const leftEyeClipId = `roots-marmot-${clipPathPrefix}-left-eye-clip`
 
   useEffect(() => {
     const marmot = marmotRef.current
@@ -269,28 +307,28 @@ const RootsMarmot = () => {
       />
       <path
         data-roots-eye-core='right'
-        d='M239.563 67.6691C242.515 67.2443 244.499 64.0649 243.996 60.5676C243.493 57.0704 240.692 54.5797 237.741 55.0045C234.789 55.4293 232.805 58.6087 233.308 62.106C233.811 65.6032 236.612 68.0939 239.563 67.6691Z'
+        d={RIGHT_EYE_CORE_PATH}
         fill='#2B1E15'
       />
+      {/* <g clipPath={`url(#${rightEyeClipId})`}> */}
       <path
         data-roots-pupil='right'
         d='M236.497 65.9339C237.15 65.9339 237.679 65.4051 237.679 64.7528C237.679 64.1005 237.15 63.5717 236.497 63.5717C235.845 63.5717 235.316 64.1005 235.316 64.7528C235.316 65.4051 235.845 65.9339 236.497 65.9339Z'
         fill='white'
       />
+      {/* </g> */}
       <path
         d='M172.608 57.5827L168.713 61.4071C168.713 61.4071 172.481 59.1012 174.45 63.9802C176.404 68.8732 176.727 71.137 176.727 71.137C176.727 71.137 177.36 62.068 172.608 57.5686V57.5827Z'
         fill='#2B1E15'
       />
-      <path
-        data-roots-eye-core='left'
-        d='M175.019 72.8976C176.295 72.714 176.979 70.1289 176.546 67.1236C176.114 64.1183 174.729 61.8309 173.453 62.0145C172.177 62.1981 171.493 64.7833 171.926 67.7886C172.358 70.7939 173.743 73.0813 175.019 72.8976Z'
-        fill='#2B1E15'
-      />
-      <path
-        data-roots-pupil='left'
-        d='M174.633 71.2495C175.254 71.2495 175.757 70.7459 175.757 70.1247C175.757 69.5034 175.254 68.9998 174.633 68.9998C174.011 68.9998 173.508 69.5034 173.508 70.1247C173.508 70.7459 174.011 71.2495 174.633 71.2495Z'
-        fill='white'
-      />
+      <path data-roots-eye-core='left' d={LEFT_EYE_CORE_PATH} fill='#2B1E15' />
+      <g clipPath={`url(#${leftEyeClipId})`}>
+        <path
+          data-roots-pupil='left'
+          d='M174.633 71.2495C175.254 71.2495 175.757 70.7459 175.757 70.1247C175.757 69.5034 175.254 68.9998 174.633 68.9998C174.011 68.9998 173.508 69.5034 173.508 70.1247C173.508 70.7459 174.011 71.2495 174.633 71.2495Z'
+          fill='white'
+        />
+      </g>
       <path
         d='M199.407 120.095C199.407 120.095 192.939 123.695 191.041 124.763L192.897 131.555L207.534 130.163L208.94 123.821C203.33 122.907 199.407 120.095 199.407 120.095Z'
         fill='#F3F3F3'
@@ -340,6 +378,12 @@ const RootsMarmot = () => {
         fill='#415441'
       />
       <defs>
+        <clipPath id={rightEyeClipId}>
+          <path d={RIGHT_EYE_CORE_PATH} />
+        </clipPath>
+        <clipPath id={leftEyeClipId}>
+          <path d={LEFT_EYE_CORE_PATH} />
+        </clipPath>
         <filter
           id='rootsCoffeeSteamBlur'
           x='332'

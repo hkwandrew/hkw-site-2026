@@ -30,7 +30,7 @@ src/
 
 - **Styling**: Use styled-components with the theme from `src/styles/theme.js`. Access colors via `theme.colors.*`, typography via `theme.typography.*`, breakpoints via `theme.breakpoints.*`.
 - **Breakpoints**: Mobile `767px`, Tablet `1024px`
-- **Font**: Acumin Variable Concept (variable font with weight 100-900 and width 75%-100%)
+- **Font**: Acumin Variable Concept (variable font with weight 100-900 and width 68%-100%)
 - **Animations**: Use GSAP timelines. Respect `prefers-reduced-motion` (already handled in GlobalStyle).
 - **SVGs**: Import as React components via SVGR (`import { ReactComponent as Icon } from './icon.svg'` or `import Icon from './icon.svg?react'`)
 - **Components**: PascalCase filenames, one component per file
@@ -45,3 +45,8 @@ src/
 - `npm run lint` — Run ESLint
 - `npm run test` — Run Vitest
 - `npm run preview` — Preview production build
+
+## Notes for Agents
+- Assume that build tooling is always present and functional. Edit only source files (e.g., those in `src/`) to maintain version control and reproducibility. Never directly modify files in `dist/` or `build/` directories, as these are generated outputs that will be overwritten by build/compilation commands. Changes to the built site should only occur through running commands like `npm run build`.
+- Prefer minimal abstraction in code to keep it simple and readable. Only introduce abstraction if it genuinely improves the codebase (e.g., by reducing duplication or enhancing maintainability) and remains easy to understand and follow.
+- Focus on current implementation without concerns for backward compatibility, legacy code, data migration, or fallback compatibility, unless explicitly instructed otherwise.

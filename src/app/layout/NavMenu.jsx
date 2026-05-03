@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router'
 import styled from 'styled-components'
 import { NAV_ITEMS } from '@/app/router/routeRegistry'
+import { applyTypography } from '@/shared/ui/Typography'
 
 const Content = styled.div`
   position: relative;
@@ -37,11 +38,13 @@ const Pill = styled.div`
 const Items = styled.ul`
   display: flex;
   background-color: ${({ theme }) => theme.colors.orange.dark};
-  border-radius: 9999px;
+  gap: ${({ theme }) => theme.components.navTabs.gap};
+  min-height: ${({ theme }) => theme.components.navTabs.containerHeight};
+  border-radius: ${({ theme }) => theme.components.navTabs.borderRadius};
 `
 
 const Item = styled.li`
-  border-radius: 9999px;
+  border-radius: ${({ theme }) => theme.components.navTabs.borderRadius};
   z-index: 1;
 `
 
@@ -52,14 +55,10 @@ const StyledNavLink = styled(Link)`
   align-items: center;
   justify-content: space-between;
 
-  padding: 18px 21px;
-  text-box: trim-both cap alphabetic;
-  text-transform: uppercase;
-
-  font-variation-settings: "wdth" 68, "wght" ${({ theme }) => theme.font.weight.medium};
-  font-size: 24px;
-  line-height: 26px;
-  border-radius: 9999px;
+  min-height: ${({ theme }) => theme.components.navTabs.itemHeight};
+  padding: ${({ theme }) => theme.components.navTabs.itemPadding};
+  ${applyTypography('navButton')}
+  border-radius: ${({ theme }) => theme.components.navTabs.borderRadius};
 
   color: ${({ theme }) => theme.colors.yellow.light};
 
@@ -79,7 +78,9 @@ const StyledNavLink = styled(Link)`
     user-select: none;
     pointer-events: none;
 
-    font-variation-settings: "wdth" 68, "wght" ${({ theme }) => theme.font.weight.bold};
+    font-variation-settings:
+      'wdth' ${({ theme }) => theme.typography.navButton.width},
+      'wght' ${({ theme }) => theme.typography.navButton.activeWeight};
     transition: none;
   }
 
@@ -91,15 +92,21 @@ const StyledNavLink = styled(Link)`
 
   &[aria-current='page'] {
     color: ${({ theme }) => theme.colors.white};
-    font-variation-settings: "wdth" 68, "wght" ${({ theme }) => theme.font.weight.bold};
+    font-weight: ${({ theme }) => theme.typography.navButton.activeWeight};
+    font-variation-settings:
+      'wdth' ${({ theme }) => theme.typography.navButton.width},
+      'wght' ${({ theme }) => theme.typography.navButton.activeWeight};
   }
 
   &:not([aria-current='page']):hover {
-    border-radius: 9999px;
+    border-radius: ${({ theme }) => theme.components.navTabs.borderRadius};
     background-color: ${({ theme }) => theme.colors.orange.base};
     color: ${({ theme }) => theme.colors.white};
 
-    font-variation-settings: "wdth" 68, "wght" ${({ theme }) => theme.font.weight.bold};
+    font-weight: ${({ theme }) => theme.typography.navButton.activeWeight};
+    font-variation-settings:
+      'wdth' ${({ theme }) => theme.typography.navButton.width},
+      'wght' ${({ theme }) => theme.typography.navButton.activeWeight};
 
     transition:
       font-variation-settings 0.15s ease,

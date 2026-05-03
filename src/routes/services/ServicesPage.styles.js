@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { BodyMedium } from '@/shared/ui/Typography'
+import { BodyMedium, applyTypography } from '@/shared/ui/Typography'
 
 export const ServiceList = styled.ul`
   display: flex;
@@ -14,12 +14,11 @@ export const ServiceList = styled.ul`
 `
 
 export const ServiceItem = styled.li`
-  font-family: ${({ theme }) => theme.font.family};
-  font-size: clamp(32px, 5vw, 64px);
-  text-box: trim-both cap alphabetic;
+  ${applyTypography('h2')}
   font-weight: ${({ theme }) => theme.font.weight.regular};
-  line-height: 1.2;
-  letter-spacing: -0.02em;
+  font-variation-settings:
+    'wdth' ${({ theme }) => theme.typography.h2.width},
+    'wght' ${({ theme }) => theme.font.weight.regular};
   color: ${({ $isActive, theme }) =>
     $isActive ? theme.colors.yellow.gold : theme.colors.blue.light};
   cursor: default;
@@ -114,13 +113,11 @@ export const MobileTitle = styled.h2`
   top: 124px;
   margin: 0;
   color: ${({ theme }) => theme.colors.yellow.light};
-  font-family: ${({ theme }) => theme.font.family};
-  font-size: 20px;
-  line-height: 1.2;
+  ${applyTypography('formButton')}
+  font-weight: ${({ theme }) => theme.font.weight.semibold};
   font-variation-settings:
-    'wdth' 68,
+    'wdth' ${({ theme }) => theme.typography.formButton.width},
     'wght' 600;
-  text-transform: uppercase;
 `
 
 export const MobileLayout = styled.div`
@@ -150,7 +147,7 @@ export const MobileItem = styled.li`
       ${({ $isActive, theme }) =>
         $isActive ? theme.font.weight.semibold : theme.font.weight.regular};
   color: ${({ $isActive, theme }) =>
-    $isActive ? theme.colors.yellow.gold : '#c0ddfa'};
+    $isActive ? theme.colors.yellow.gold : theme.colors.blue.pale};
   cursor: pointer;
   transition: color 200ms ease;
   width: fit-content;

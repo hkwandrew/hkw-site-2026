@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router'
 import styled, { css, keyframes, useTheme } from 'styled-components'
 import logo from '@/assets/images/logo.svg'
 import { getPageLabelForPath } from '@/app/router/routeRegistry'
+import { applyTypography } from '@/shared/ui/Typography'
 import MobileNavMenu from './MobileNavMenu'
 import NavMenu from './NavMenu'
 
@@ -76,12 +77,11 @@ const LogoImg = styled.img`
 `
 
 const PageLabel = styled.div`
-  font-size: 24px;
-  line-height: 26px;
-  text-transform: uppercase;
+  ${applyTypography('navButton')}
+  font-weight: ${({ theme }) => theme.typography.navButton.activeWeight};
   font-variation-settings:
-    'wdth' 68,
-    'wght' ${({ theme }) => theme.font.weight.bold};
+    'wdth' ${({ theme }) => theme.typography.navButton.width},
+    'wght' ${({ theme }) => theme.typography.navButton.activeWeight};
   color: ${({ $isAboutPage, theme }) =>
     $isAboutPage ? theme.colors.orange.base : theme.colors.white};
   opacity: ${({ $isActive }) => ($isActive ? 1 : 0)};
@@ -108,12 +108,11 @@ const MobilePageLabel = styled.div`
     animation: ${({ $isActive }) =>
       $isActive ? css`${pageLabelFadeIn} 500ms ease both` : 'none'};
     will-change: opacity;
-    font-size: 24px;
-    line-height: 1.3;
-    text-transform: uppercase;
+    ${applyTypography('navButton')}
+    font-weight: ${({ theme }) => theme.typography.navButton.activeWeight};
     font-variation-settings:
-      'wdth' 68,
-      'wght' ${({ theme }) => theme.font.weight.semibold};
+      'wdth' ${({ theme }) => theme.typography.navButton.width},
+      'wght' ${({ theme }) => theme.typography.navButton.activeWeight};
   }
 `
 

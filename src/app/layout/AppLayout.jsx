@@ -16,7 +16,7 @@ const AppLayout = () => {
     isPageLabelRevealed,
     scenePathname,
     shouldShowHeader,
-    isRouteContentRevealed,
+    shouldRenderRouteContent,
     areHomeLayerLinksInteractive,
     transitionContextValue,
     homeHoverContextValue,
@@ -44,7 +44,7 @@ const AppLayout = () => {
             scenePathname={scenePathname}
           />
 
-          {isRouteContentRevealed ? (
+          {shouldRenderRouteContent ? (
             <Suspense fallback={null}>
               <Outlet />
             </Suspense>

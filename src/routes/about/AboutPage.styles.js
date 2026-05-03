@@ -1,6 +1,7 @@
 import styled, { css, keyframes } from 'styled-components'
 import { SCENE_TRANSITION_DURATION_MS } from '@/app/landscape/sceneRegistry'
 import ViewContainer from '@/shared/ui/ViewContainer'
+import { applyTypography } from '@/shared/ui/Typography'
 
 const bob = keyframes`
   0%, 100% {
@@ -171,9 +172,8 @@ export const DesktopIntroCopy = styled.div`
   text-align: center;
 
   p {
-    font-size: clamp(18px, 1.38vw, 20px);
+    ${applyTypography('bodyMedium')}
     line-height: 1.6;
-    font-variation-settings: 'wdth' 100, 'wght' 400;
   }
 
   p + p {
@@ -181,7 +181,10 @@ export const DesktopIntroCopy = styled.div`
   }
 
   strong {
-    font-variation-settings: 'wdth' 100, 'wght' 600;
+    font-weight: ${({ theme }) => theme.font.weight.semibold};
+    font-variation-settings:
+      'wdth' ${({ theme }) => theme.typography.bodyMedium.width},
+      'wght' ${({ theme }) => theme.font.weight.semibold};
   }
 `
 
@@ -256,18 +259,20 @@ export const DesktopQuote = styled.div`
 
 export const DesktopQuoteText = styled.p`
   margin: 0;
-  font-size: clamp(22px, 1.67vw, 24px);
+  ${applyTypography('h5')}
   line-height: 1.33;
   font-style: italic;
-  font-variation-settings: 'wdth' 100, 'wght' 500;
   ${({ $layer }) => desktopQuotePalette[$layer]}
 `
 
 export const DesktopQuoteName = styled.p`
   margin: 25px 0 0;
-  font-size: clamp(19px, 1.39vw, 20px);
+  ${applyTypography('formButton')}
   line-height: 0.8;
-  font-variation-settings: 'wdth' 100, 'wght' 500;
+  text-transform: none;
+  font-variation-settings:
+    'wdth' ${({ theme }) => theme.font.width.normal},
+    'wght' ${({ theme }) => theme.font.weight.medium};
   ${({ $layer }) => desktopMetaPalette[$layer]}
 `
 
@@ -276,9 +281,8 @@ export const DesktopQuoteMeta = styled.p`
   display: flex;
   flex-direction: column;
   gap: 14px;
-  font-size: clamp(17px, 1.25vw, 18px);
+  ${applyTypography('bodyMedium')}
   line-height: 7px;
-  font-variation-settings: 'wdth' 100, 'wght' 400;
   ${({ $layer }) => desktopMetaPalette[$layer]}
 `
 
@@ -357,9 +361,7 @@ export const MobileIntroCopy = styled.div`
   text-align: center;
 
   p {
-    font-size: 16px;
-    line-height: 1.4;
-    font-variation-settings: 'wdth' 100, 'wght' 400;
+    ${applyTypography('bodySmall')}
   }
 
   p + p {
@@ -367,7 +369,10 @@ export const MobileIntroCopy = styled.div`
   }
 
   strong {
-    font-variation-settings: 'wdth' 100, 'wght' 600;
+    font-weight: ${({ theme }) => theme.font.weight.semibold};
+    font-variation-settings:
+      'wdth' ${({ theme }) => theme.typography.bodySmall.width},
+      'wght' ${({ theme }) => theme.font.weight.semibold};
   }
 `
 
@@ -401,19 +406,25 @@ export const MobileQuoteText = styled.p`
   margin: 0;
   color: ${({ $isFinal, theme }) =>
     $isFinal ? theme.colors.orange.base : theme.colors.white};
-  font-size: 20px;
+  ${applyTypography('formButton')}
   line-height: 1.3;
   font-style: italic;
-  font-variation-settings: 'wdth' 100, 'wght' 500;
+  text-transform: none;
+  font-variation-settings:
+    'wdth' ${({ theme }) => theme.font.width.normal},
+    'wght' ${({ theme }) => theme.font.weight.medium};
 `
 
 export const MobileQuoteName = styled.p`
   margin: 12px 0 0;
   color: ${({ $isFinal, theme }) =>
     $isFinal ? theme.colors.blue.dark : theme.colors.blue.light};
-  font-size: 18px;
+  ${applyTypography('bodyMedium')}
   line-height: 0.9;
-  font-variation-settings: 'wdth' 100, 'wght' 500;
+  font-weight: ${({ theme }) => theme.font.weight.medium};
+  font-variation-settings:
+    'wdth' ${({ theme }) => theme.typography.bodyMedium.width},
+    'wght' ${({ theme }) => theme.font.weight.medium};
 `
 
 export const MobileQuoteMeta = styled.p`
@@ -423,9 +434,8 @@ export const MobileQuoteMeta = styled.p`
   gap: 6px;
   color: ${({ $isFinal, theme }) =>
     $isFinal ? theme.colors.blue.dark : theme.colors.blue.light};
-  font-size: 16px;
+  ${applyTypography('bodySmall')}
   line-height: 1.15;
-  font-variation-settings: 'wdth' 100, 'wght' 400;
 `
 
 export const MobileSwipeHint = styled.div`

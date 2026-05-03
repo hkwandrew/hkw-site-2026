@@ -59,6 +59,9 @@ export const getPageKeyForPath = (pathname) =>
 export const getPageLabelForPath = (pathname) =>
   getRouteDefinitionForPath(pathname)?.label ?? ''
 
+export const getRouteContentRevealLeadMs = (pathname) =>
+  getRouteDefinitionForPath(pathname)?.contentRevealLeadMs ?? 0
+
 export const getTransitionKey = (fromPath, toPath) => {
   const fromRoute = getRouteDefinitionForPath(fromPath)
   const toRoute = getRouteDefinitionForPath(toPath)

@@ -12,6 +12,7 @@ import {
   resolveSceneStateForPath,
   resolveSceneTransition,
 } from '@/app/landscape/sceneRegistry'
+import { getRouteContentRevealLeadMs } from '@/app/router/routeRegistry'
 import {
   animateSharedSceneTransition,
   applySharedSceneState,
@@ -45,9 +46,11 @@ const useLandscapeTransitionController = (pathname) => {
   const completedScenePathRef = useRef(pathname)
   const locationPathRef = useRef(pathname)
   const homeHoverClearTimeoutRef = useRef(null)
+  const routeContentRevealTimeoutRef = useRef(null)
   const [homeHoverRegion, setHomeHoverRegion] = useState(null)
   const [pendingNavPath, setPendingNavPath] = useState(null)
   const [revealedContentPath, setRevealedContentPath] = useState(pathname)
+  const [earlyRevealedContentPath, setEarlyRevealedContentPath] = useState(null)
   const canUseHoverRegions = useSyncExternalStore(
     subscribeToHomeHoverCapability,
     canUseHomeHoverRegions,
@@ -61,6 +64,8 @@ const useLandscapeTransitionController = (pathname) => {
   const headerNavPath = scenePathname
   const shouldShowHeader = headerContentPath !== '/roots'
   const isRouteContentRevealed = revealedContentPath === pathname
+  const shouldRenderRouteContent =
+    isRouteContentRevealed || earlyRevealedContentPath === pathname
   const isPageLabelRevealed = isRouteContentRevealed && pendingNavPath === null
   const areHomeLayerLinksInteractive =
     isHome && isRouteContentRevealed && canUseHoverRegions
@@ -90,6 +95,7 @@ const useLandscapeTransitionController = (pathname) => {
     if (locationPathRef.current === nextPath) {
       queueMicrotask(() => {
         setRevealedContentPath(nextPath)
+        setEarlyRevealedContentPath(null)
       })
     }
   }, [])
@@ -103,6 +109,39 @@ const useLandscapeTransitionController = (pathname) => {
       homeHoverClearTimeoutRef.current = null
     }
   }, [])
+
+  const clearRouteContentRevealTimer = useCallback(() => {
+    if (
+      routeContentRevealTimeoutRef.current !== null &&
+      typeof window !== 'undefined'
+    ) {
+      window.clearTimeout(routeContentRevealTimeoutRef.current)
+      routeContentRevealTimeoutRef.current = null
+    }
+  }, [])
+
+  const scheduleRouteContentLeadReveal = useCallback(
+    (nextPath, durationMs) => {
+      const revealLeadMs = getRouteContentRevealLeadMs(nextPath)
+
+      if (!revealLeadMs || typeof window === 'undefined') return
+
+      const revealDelayMs = Math.max(durationMs - revealLeadMs, 0)
+
+      clearRouteContentRevealTimer()
+      routeContentRevealTimeoutRef.current = window.setTimeout(() => {
+        routeContentRevealTimeoutRef.current = null
+
+        if (
+          locationPathRef.current === nextPath &&
+          activeTargetPathRef.current === nextPath
+        ) {
+          setEarlyRevealedContentPath(nextPath)
+        }
+      }, revealDelayMs)
+    },
+    [clearRouteContentRevealTimer],
+  )
 
   const requestHomeHoverRegion = useCallback(
     (nextRegion) => {
@@ -139,7 +178,9 @@ const useLandscapeTransitionController = (pathname) => {
       if (!mainElement || !nextSceneState) return false
 
       cancelPendingHomeHoverClear()
+      clearRouteContentRevealTimer()
       setHomeHoverRegion(null)
+      setEarlyRevealedContentPath(null)
 
       queueMicrotask(() => {
         setPendingNavPath(nextPath)
@@ -162,6 +203,8 @@ const useLandscapeTransitionController = (pathname) => {
         return true
       }
 
+      scheduleRouteContentLeadReveal(nextPath, transitionConfig.durationMs)
+
       activeSceneTimelineRef.current = animateSharedSceneTransition({
         rootElement: mainElement,
         targetState: transitionConfig.targetState,
@@ -174,7 +217,13 @@ const useLandscapeTransitionController = (pathname) => {
 
       return true
     },
-    [cancelPendingHomeHoverClear, finishSceneTransition, setSceneTransitionKey],
+    [
+      cancelPendingHomeHoverClear,
+      clearRouteContentRevealTimer,
+      finishSceneTransition,
+      scheduleRouteContentLeadReveal,
+      setSceneTransitionKey,
+    ],
   )
 
   useLayoutEffect(() => {
@@ -202,6 +251,7 @@ const useLandscapeTransitionController = (pathname) => {
     if (completedScenePathRef.current === pathname) {
       queueMicrotask(() => {
         setRevealedContentPath(pathname)
+        setEarlyRevealedContentPath(null)
       })
       return
     }
@@ -214,9 +264,12 @@ const useLandscapeTransitionController = (pathname) => {
       completedScenePathRef.current = pathname
       queueMicrotask(() => {
         setRevealedContentPath(pathname)
+        setEarlyRevealedContentPath(null)
       })
     }
   }, [pathname, transitionSceneToPath])
+
+  useLayoutEffect(() => clearRouteContentRevealTimer, [clearRouteContentRevealTimer])
 
   return {
     SCENE_TRANSITION_DURATION_MS,
@@ -228,6 +281,7 @@ const useLandscapeTransitionController = (pathname) => {
     scenePathname,
     shouldShowHeader,
     isRouteContentRevealed,
+    shouldRenderRouteContent,
     areHomeLayerLinksInteractive,
     transitionContextValue: useMemo(
       () => ({ transitionSceneToPath }),

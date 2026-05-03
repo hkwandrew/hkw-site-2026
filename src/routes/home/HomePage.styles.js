@@ -1,5 +1,5 @@
 import styled, { css, keyframes } from 'styled-components'
-import { BodySmall, H4, Label } from '@/shared/ui/Typography'
+import { BodySmall, H4, Label, applyTypography } from '@/shared/ui/Typography'
 import { HOME_HOVER_REGION } from './homeHoverRegions'
 import {
   getHomeHoverRegionPosition,
@@ -331,8 +331,9 @@ export const Content = styled.div`
 
 export const Subtitle = styled.p`
   color: ${({ theme }) => theme.colors.yellow.gold};
-  font-size: 20px;
+  ${applyTypography('formButton')}
   line-height: 1.3;
+  text-transform: none;
   font-variation-settings:
     'wdth' 90,
     'wght' 700;
@@ -668,9 +669,7 @@ export const MobileHero = styled.p`
   width: min(353px, calc(100vw - 37px));
   max-width: 353px;
   color: ${({ theme }) => theme.colors.yellow.light};
-  font-size: 18px;
-  line-height: 1.4;
-  letter-spacing: -0.02em;
+  ${applyTypography('bodyMedium')}
 `
 
 export const MobileRoles = styled.div`
@@ -683,7 +682,7 @@ export const MobileRole = styled.span`
   display: block;
   width: fit-content;
   color: ${({ theme }) => theme.colors.orange.base};
-  font-size: 16px;
+  ${applyTypography('bodySmall')}
   line-height: 40px;
   text-decoration: underline;
   text-decoration-thickness: 1px;
@@ -705,9 +704,6 @@ export const MobileFooterText = styled(BodySmall)`
   color: ${({ theme }) => theme.colors.yellow.light};
   font-size: 14px;
   line-height: 1.45;
-  font-variation-settings:
-    'wdth' 100,
-    'wght' 300;
 
   a {
     text-decoration: underline;

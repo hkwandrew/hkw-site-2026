@@ -2,17 +2,23 @@ const theme = {
   colors: {
     orange: {
       dark: '#A53213',
+      deep: '#BD390F',
       base: '#D0471B',
+    },
+    red: {
+      tabBorder: '#BE3638',
     },
     yellow: {
       gold: '#FA9C38',
       light: '#FCFAE5',
     },
+    peach: '#FEE3CA',
     blue: {
       dark: '#1C2D38',
       light: '#AFD3FC',
       medium: '#80BFFF',
       medDark: '#5495D6',
+      pale: '#C0DDFA',
     },
     green: '#415441',
     brown: {
@@ -32,7 +38,7 @@ const theme = {
       bold: 700,
     },
     width: {
-      condensed: 75,
+      condensed: 68,
       normal: 100,
     },
   },
@@ -95,32 +101,45 @@ const theme = {
     },
     bodySmall: {
       size: '16px',
-      weight: 300,
-      lineHeight: 1.625,
-      textBox: 'trim-both cap alphabetic'
+      weight: 400,
+      width: 100,
+      lineHeight: 1.4,
+      letterSpacing: '0',
     },
-    buttonLarge: {
+    navButton: {
       size: '24px',
       weight: 500,
-      width: 75,
-      lineHeight: 1.0,
-      letterSpacing: '-0.02em',
+      activeWeight: 600,
+      width: 68,
+      lineHeight: '26px',
+      letterSpacing: '0',
       textTransform: 'uppercase',
+      textBox: 'trim-both cap alphabetic',
     },
-    buttonMedium: {
-      size: '18px',
+    pillButton: {
+      size: '24px',
+      weight: 600,
+      width: 68,
+      lineHeight: '26px',
+      letterSpacing: '0',
+      textTransform: 'uppercase',
+      textBox: 'trim-both cap alphabetic',
+    },
+    formButton: {
+      size: '20px',
       weight: 500,
-      width: 75,
-      lineHeight: 1.0,
-      letterSpacing: '-0.02em',
+      activeWeight: 600,
+      width: 68,
+      lineHeight: '1',
+      letterSpacing: '0',
       textTransform: 'uppercase',
     },
-    buttonSmall: {
+    smallButton: {
       size: '16px',
       weight: 500,
-      width: 75,
-      lineHeight: 1.0,
-      letterSpacing: '-0.02em',
+      width: 68,
+      lineHeight: '1',
+      letterSpacing: '0',
       textTransform: 'uppercase',
     },
     label: {
@@ -130,6 +149,26 @@ const theme = {
       lineHeight: 1.5,
       letterSpacing: '1.6px',
       textTransform: 'uppercase',
+    },
+  },
+  components: {
+    pillButton: {
+      borderRadius: '9999px',
+      padding: '18px 21px',
+      gap: '8px',
+    },
+    formButton: {
+      borderRadius: '99px',
+      padding: '14px 20px',
+      width: '145px',
+      height: '47px',
+    },
+    navTabs: {
+      borderRadius: '9999px',
+      containerHeight: '53px',
+      itemHeight: '52px',
+      itemPadding: '18px 21px',
+      gap: '1px',
     },
   },
   transition: {

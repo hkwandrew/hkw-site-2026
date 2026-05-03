@@ -2,7 +2,6 @@ import { useEffect, useId, useRef, useState } from 'react'
 import styled, { css } from 'styled-components'
 import { applyTypography } from './Typography'
 
-const CONTACT_INVALID_FILL = '#FEE3CA'
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -58,7 +57,7 @@ const controlBase = css`
 
 const invalidControlStyles = css`
   border-color: ${({ theme }) => theme.colors.brown.brick};
-  background: ${CONTACT_INVALID_FILL};
+  background: ${({ theme }) => theme.colors.peach};
 `
 
 const StyledInput = styled.input`
