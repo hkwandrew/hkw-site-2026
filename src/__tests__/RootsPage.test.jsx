@@ -191,11 +191,17 @@ describe('RootsPage', () => {
 
     await vi.waitFor(() => {
       expect(pupils[0]).toHaveStyle({
-        transform: 'translate(2.6px, -1px) scale(1.5)',
+        transform: 'translate(5px, -4.2px) scale(2.25)',
       })
       expect(pupils[1]).toHaveStyle({
-        transform: 'translate(3.5px, -1px) scale(1.5)',
+        transform: 'translate(1.4px, -3.2px) scale(2.25)',
       })
+      expect(pupils[0].parentElement.getAttribute('clip-path')).toMatch(
+        /^url\(#.+\)$/,
+      )
+      expect(pupils[1].parentElement.getAttribute('clip-path')).toMatch(
+        /^url\(#.+\)$/,
+      )
       expect(eyeCores[0]).not.toHaveAttribute('style')
       expect(eyeCores[1]).not.toHaveAttribute('style')
     })
@@ -259,7 +265,7 @@ describe('RootsPage', () => {
     expect(document.querySelectorAll('[data-roots-vapor]')).toHaveLength(0)
     expect(steamLayers).toHaveLength(2)
     expect(document.head.textContent).toMatch(
-      /\[data-roots-steam-plume\][^{]*{[^}]*4\.8s linear/,
+      /\[data-roots-steam-plume\][^{]*{[^}]*7\.3s linear/,
     )
   })
 
