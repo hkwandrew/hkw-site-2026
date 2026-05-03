@@ -1,4 +1,4 @@
-import{a as e,d as t,f as n,h as r,p as i,t as a}from"./Typography-XsqDJP3p.js";import{c as o,o as s,s as c}from"./index-DP5FVc2h.js";import{t as l}from"./usePageActive-DGYdO1Xh.js";import{t as u}from"./ViewContainer-yW59b2Po.js";var d=i(),f=r(n(),1),p=[{name:`Strategy`,description:`Crafting clever plans is our jam! We bring a deep business acumen to the table to map out strategies that turn your goals into reality.`},{name:`Branding`,description:`We build brands with backbone. From positioning to visual identity, we  craft cohesive systems that help you stand out and stay memorable.`},{name:`Graphic Design`,description:`Design that does more than look good — it works hard. We create thoughtful,  polished visuals that communicate clearly and elevate your message.`},{name:`Web Design`,description:`Beautiful meets functional. We design websites that feel intuitive, reflect your  brand, and guide users exactly where they need to go.`},{name:`UI/UX`,description:`People first, always. We design seamless digital experiences that balance  usability, accessibility, and delight at every interaction.`},{name:`Website Development`,description:`Where strategy and design come to life. We build fast, responsive, scalable  websites that perform just as beautifully as they look.`},{name:`Online Marketing`,description:`Smart tactics, real results. We create data-informed campaigns that connect  with your audience and move the needle where it counts.`},{name:`Creative Direction`,description:`Big-picture thinking with sharp execution. We shape cohesive creative visions that keep every touchpoint aligned and impactful.`}],m=t.ul`
+import{a as e,d as t,f as n,h as r,p as i,t as a}from"./Typography-XsqDJP3p.js";import{c as o,o as s,s as c}from"./index-na4JmzfJ.js";import{t as l}from"./usePageActive-DGYdO1Xh.js";import{t as u}from"./ViewContainer-yW59b2Po.js";var d=i(),f=r(n(),1),p=[{name:`Strategy`,description:`Crafting clever plans is our jam! We bring a deep business acumen to the table to map out strategies that turn your goals into reality.`},{name:`Branding`,description:`We build brands with backbone. From positioning to visual identity, we  craft cohesive systems that help you stand out and stay memorable.`},{name:`Graphic Design`,description:`Design that does more than look good — it works hard. We create thoughtful,  polished visuals that communicate clearly and elevate your message.`},{name:`Web Design`,description:`Beautiful meets functional. We design websites that feel intuitive, reflect your  brand, and guide users exactly where they need to go.`},{name:`UI/UX`,description:`People first, always. We design seamless digital experiences that balance  usability, accessibility, and delight at every interaction.`},{name:`Website Development`,description:`Where strategy and design come to life. We build fast, responsive, scalable  websites that perform just as beautifully as they look.`},{name:`Online Marketing`,description:`Smart tactics, real results. We create data-informed campaigns that connect  with your audience and move the needle where it counts.`},{name:`Creative Direction`,description:`Big-picture thinking with sharp execution. We shape cohesive creative visions that keep every touchpoint aligned and impactful.`}],m=t.ul`
   display: flex;
   flex-direction: column;
   gap: 48px;
@@ -51,6 +51,21 @@ import{a as e,d as t,f as n,h as r,p as i,t as a}from"./Typography-XsqDJP3p.js";
   position: absolute;
   right: 145.85px;
   bottom: 0;
+
+  svg {
+    display: block;
+  }
+
+  @media (min-width: calc(${({theme:e})=>e.breakpoints.mobile} + 1px)) and (max-height: 820px) {
+    right: 5.32%;
+    bottom: -2.52%;
+    width: 258px;
+
+    svg {
+      width: 100%;
+      height: auto;
+    }
+  }
 
   @media (max-width: ${({theme:e})=>e.breakpoints.mobile}) {
     display: none;
