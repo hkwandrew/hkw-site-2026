@@ -14,6 +14,7 @@ import { usePageSceneTransition } from '@/app/landscape/pageSceneTransition'
 const {
   applySharedSceneState,
   animateSharedSceneTransition,
+  sceneViewportMobileQuery,
   transitionControls,
 } = vi.hoisted(() => {
   const transitionControls = []
@@ -30,6 +31,7 @@ const {
 
       return control
     }),
+    sceneViewportMobileQuery: '(max-width: 767px)',
     transitionControls,
   }
 })
@@ -37,6 +39,7 @@ const {
 vi.mock('@/app/landscape/runtime/sharedSceneRuntime', () => ({
   applySharedSceneState,
   animateSharedSceneTransition,
+  SCENE_VIEWPORT_MOBILE_QUERY: sceneViewportMobileQuery,
 }))
 
 const originalMatchMedia = window.matchMedia

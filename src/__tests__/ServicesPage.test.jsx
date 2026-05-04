@@ -20,7 +20,7 @@ describe('ServicesPage', () => {
       normalizedText(services[0].description),
     )
 
-    fireEvent.mouseEnter(screen.getAllByText(services[1].name)[0])
+    fireEvent.mouseEnter(screen.getByText(services[1].name))
 
     const updatedDescription = screen.getByRole('region', {
       name: `${services[1].name} service description`,
@@ -34,19 +34,24 @@ describe('ServicesPage', () => {
     )
   })
 
-  it('updates the mobile description when a service is tapped', () => {
+  it('updates the active description when a service is tapped', () => {
     render(<ServicesPage />)
 
     const selectedDescription = screen.getByRole('region', {
-      name: /selected service description/i,
+      name: `${services[0].name} service description`,
     })
 
     expect(selectedDescription).toHaveTextContent(
       normalizedText(services[0].description),
     )
 
-    fireEvent.click(screen.getAllByText(services[2].name)[1])
+    fireEvent.click(screen.getByText(services[2].name))
 
+    expect(
+      screen.getByRole('region', {
+        name: `${services[2].name} service description`,
+      }),
+    ).toBeInTheDocument()
     expect(selectedDescription).toHaveTextContent(
       normalizedText(services[2].description),
     )

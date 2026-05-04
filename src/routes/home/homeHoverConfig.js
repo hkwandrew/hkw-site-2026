@@ -14,8 +14,8 @@ const HOME_HOVER_POSITION_REGISTRY = Object.freeze({
     height: 102,
   }),
   [HOME_HOVER_REGION.dkBlueMountain]: Object.freeze({
-    x: -200,
-    y: -300,
+    x: 1903.5,
+    y: 400.000031,
   }),
   [HOME_HOVER_REGION.goldMountain]: Object.freeze({
     x: 1500,

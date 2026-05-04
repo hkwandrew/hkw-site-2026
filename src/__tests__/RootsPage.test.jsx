@@ -3,6 +3,7 @@ import { act, fireEvent, render, screen, withTheme } from '@/__tests__/testUtils
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { PageSceneTransitionProvider } from '@/app/landscape/pageSceneTransition'
 import RootsPage from '@/routes/roots/RootsPage'
+import ROOTS_PORTFOLIO_ITEMS from '@/routes/roots/rootsPortfolio'
 import { ROOTS_SCENE_TRANSITION_DURATION_MS } from '@/routes/roots/useRootsPageTransition'
 
 const originalMatchMedia = window.matchMedia
@@ -191,7 +192,7 @@ describe('RootsPage', () => {
 
     await vi.waitFor(() => {
       expect(pupils[0]).toHaveStyle({
-        transform: 'translate(5px, -4.2px) scale(2.25)',
+        transform: 'translate(3.8px, -2.5px) scale(2.25)',
       })
       expect(pupils[1]).toHaveStyle({
         transform: 'translate(1.4px, -3.2px) scale(2.25)',
@@ -290,6 +291,8 @@ describe('RootsPage', () => {
     const closeButton = screen.getByRole('button', { name: /close/i })
 
     expect(dialog).toBeInTheDocument()
+    expect(dialog).toHaveAttribute('data-roots-example', 'celdf')
+    expect(dialog).toHaveAttribute('data-roots-example-region', 'dialog')
     expect(closeButton).toHaveFocus()
 
     fireEvent.click(closeButton)
@@ -339,14 +342,32 @@ describe('RootsPage', () => {
 
     renderRootsRoute()
 
-    fireEvent.click(
-      screen.getByRole('button', { name: /open community whistle/i }),
-    )
+    const trigger = screen.getByRole('button', { name: /open community whistle/i })
+
+    expect(trigger).toHaveAttribute('data-roots-example', 'community-whistle')
+    expect(trigger).toHaveAttribute('data-roots-example-region', 'mobile-frame')
+
+    fireEvent.click(trigger)
 
     await vi.waitFor(() => {
       expect(
         screen.getByRole('dialog', { name: /community whistle/i }),
       ).toBeInTheDocument()
     })
+  })
+
+  it('exposes each desktop roots frame id as a data attribute', () => {
+    renderRootsRoute()
+
+    const frameButtons = document.querySelectorAll('button[data-roots-example]')
+
+    expect(
+      Array.from(frameButtons).map((button) => button.dataset.rootsExample),
+    ).toEqual(ROOTS_PORTFOLIO_ITEMS.map((item) => item.id))
+    expect(
+      Array.from(frameButtons).every(
+        (button) => button.dataset.rootsExampleRegion === 'desktop-frame',
+      ),
+    ).toBe(true)
   })
 })

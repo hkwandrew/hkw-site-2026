@@ -11,8 +11,8 @@ describe('home hover registry', () => {
     expect(
       getHomeHoverRegionPosition(HOME_HOVER_REGION.dkBlueMountain),
     ).toEqual({
-      x: -575,
-      y: -300,
+      x: 2280.5,
+      y: 400.000031,
     })
     expect(getHomeHoverRegionPosition(HOME_HOVER_REGION.goldMountain)).toEqual({
       x: 1500,
@@ -21,8 +21,8 @@ describe('home hover registry', () => {
       height: 397,
     })
     expect(getHomeHoverRegionPosition(HOME_HOVER_REGION.treeMountain)).toEqual({
-      x: 1191.222193,
-      y: 224.1088,
+      x: 1201.222193,
+      y: 233.24,
     })
   })
 

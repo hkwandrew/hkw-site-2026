@@ -16,24 +16,34 @@ import { getRouteContentRevealLeadMs } from '@/app/router/routeRegistry'
 import {
   animateSharedSceneTransition,
   applySharedSceneState,
+  SCENE_VIEWPORT_MOBILE_QUERY,
 } from '@/app/landscape/runtime/sharedSceneRuntime'
 
 const HOME_HOVER_DEVICE_QUERY = '(hover: hover) and (pointer: fine)'
 
 const canUseHomeHoverRegions = () =>
   typeof window !== 'undefined' &&
-  window.matchMedia?.(HOME_HOVER_DEVICE_QUERY).matches === true
+  window.matchMedia?.(HOME_HOVER_DEVICE_QUERY).matches === true &&
+  window.matchMedia?.(SCENE_VIEWPORT_MOBILE_QUERY).matches !== true
 
 const subscribeToHomeHoverCapability = (onChange) => {
   if (typeof window === 'undefined' || !window.matchMedia) {
     return () => {}
   }
 
-  const mediaQuery = window.matchMedia(HOME_HOVER_DEVICE_QUERY)
-  mediaQuery.addEventListener('change', onChange)
+  const mediaQueries = [
+    window.matchMedia(HOME_HOVER_DEVICE_QUERY),
+    window.matchMedia(SCENE_VIEWPORT_MOBILE_QUERY),
+  ]
+
+  mediaQueries.forEach((mediaQuery) => {
+    mediaQuery.addEventListener('change', onChange)
+  })
 
   return () => {
-    mediaQuery.removeEventListener('change', onChange)
+    mediaQueries.forEach((mediaQuery) => {
+      mediaQuery.removeEventListener('change', onChange)
+    })
   }
 }
 
@@ -268,6 +278,36 @@ const useLandscapeTransitionController = (pathname) => {
       })
     }
   }, [pathname, transitionSceneToPath])
+
+  useLayoutEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) {
+      return undefined
+    }
+
+    const mediaQuery = window.matchMedia(SCENE_VIEWPORT_MOBILE_QUERY)
+    const applyCurrentViewportSceneState = () => {
+      const mainElement = mainRef.current
+      const targetPath =
+        activeTargetPathRef.current ?? currentScenePathRef.current ?? pathname
+      const sceneState = resolveSceneStateForPath(targetPath)
+
+      if (!mainElement || !sceneState) return
+
+      activeSceneTimelineRef.current?.kill()
+      activeSceneTimelineRef.current = null
+      applySharedSceneState(mainElement, sceneState)
+
+      if (activeTargetPathRef.current) {
+        finishSceneTransition(targetPath)
+      }
+    }
+
+    mediaQuery.addEventListener('change', applyCurrentViewportSceneState)
+
+    return () => {
+      mediaQuery.removeEventListener('change', applyCurrentViewportSceneState)
+    }
+  }, [finishSceneTransition, pathname])
 
   useLayoutEffect(() => clearRouteContentRevealTimer, [clearRouteContentRevealTimer])
 

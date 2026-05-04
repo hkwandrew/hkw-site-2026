@@ -439,6 +439,8 @@ export default function RootsPortfolioSlider({
         role='dialog'
         aria-modal='true'
         aria-labelledby={titleId}
+        data-roots-example={item.id}
+        data-roots-example-region='dialog'
       >
         <ClosePill
           ref={closeRef}

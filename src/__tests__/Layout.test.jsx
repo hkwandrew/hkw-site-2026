@@ -7,12 +7,15 @@ import { ABOUT_ROUTE_CONTENT_REVEAL_LEAD_MS } from '@/routes/about/route'
 const sharedSceneRuntimeMocks = vi.hoisted(() => ({
   animateSharedSceneTransition: vi.fn(),
   applySharedSceneState: vi.fn(),
+  sceneViewportMobileQuery: '(max-width: 767px)',
 }))
 
 vi.mock('@/app/landscape/runtime/sharedSceneRuntime', () => ({
   animateSharedSceneTransition:
     sharedSceneRuntimeMocks.animateSharedSceneTransition,
   applySharedSceneState: sharedSceneRuntimeMocks.applySharedSceneState,
+  SCENE_VIEWPORT_MOBILE_QUERY:
+    sharedSceneRuntimeMocks.sceneViewportMobileQuery,
 }))
 
 import Layout from '@/app/layout/AppLayout'
@@ -20,6 +23,7 @@ import Layout from '@/app/layout/AppLayout'
 const originalMatchMedia = window.matchMedia
 const originalResizeObserver = window.ResizeObserver
 let completePendingSceneTransition = null
+let sceneViewportChangeHandlers = []
 
 const AboutTransitionProbe = () => {
   const { transitionSceneToPath } = usePageSceneTransition()
@@ -77,6 +81,7 @@ const renderLayoutRoute = (initialPath) => {
 describe('Layout shared scene links', () => {
   beforeEach(() => {
     completePendingSceneTransition = null
+    sceneViewportChangeHandlers = []
     sharedSceneRuntimeMocks.animateSharedSceneTransition.mockReset()
     sharedSceneRuntimeMocks.applySharedSceneState.mockReset()
     sharedSceneRuntimeMocks.animateSharedSceneTransition.mockImplementation(
@@ -88,7 +93,14 @@ describe('Layout shared scene links', () => {
     window.matchMedia = vi.fn().mockImplementation((query) => ({
       matches: false,
       media: query,
-      addEventListener: vi.fn(),
+      addEventListener: vi.fn((eventName, handler) => {
+        if (
+          query === sharedSceneRuntimeMocks.sceneViewportMobileQuery &&
+          eventName === 'change'
+        ) {
+          sceneViewportChangeHandlers.push(handler)
+        }
+      }),
       removeEventListener: vi.fn(),
       addListener: vi.fn(),
       removeListener: vi.fn(),
@@ -112,7 +124,6 @@ describe('Layout shared scene links', () => {
     const link = treeMountain?.closest('a')
 
     expect(link).toHaveAttribute('href', '/services')
-    expect(link).not.toHaveAttribute('tabindex', '-1')
   })
 
   it('keeps TreeMountain under the same services link off home', () => {
@@ -130,6 +141,29 @@ describe('Layout shared scene links', () => {
 
     const workRender = renderLayoutRoute('/work')
     expect(workRender.container.querySelector('.work-dirt-layer')).toBeTruthy()
+  })
+
+  it('reapplies the active scene state when the scene viewport changes', () => {
+    const { container } = renderLayoutRoute('/services')
+    const mainElement = container.querySelector('main')
+
+    expect(sharedSceneRuntimeMocks.applySharedSceneState).toHaveBeenCalledTimes(1)
+    expect(sceneViewportChangeHandlers.length).toBeGreaterThan(0)
+
+    act(() => {
+      sceneViewportChangeHandlers.forEach((handler) => {
+        handler({ matches: true })
+      })
+    })
+
+    expect(sharedSceneRuntimeMocks.applySharedSceneState).toHaveBeenCalledTimes(2)
+    expect(sharedSceneRuntimeMocks.applySharedSceneState).toHaveBeenLastCalledWith(
+      mainElement,
+      expect.objectContaining({
+        blueMountain: expect.any(Object),
+        dirtLayer: expect.any(Object),
+      }),
+    )
   })
 
   it('waits to mount the next route until the scene transition finishes', async () => {

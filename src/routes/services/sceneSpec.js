@@ -26,10 +26,20 @@ export const SERVICES_SCENE_STATE = {
   upperField: {
     container: { x: 2041.826439, y: 1585.616759 },
     wrapper: { scaleX: 2, scaleY: 2 },
+    viewports: {
+      mobile: {
+        container: { x: 2041.826439, y: '260%' },
+      },
+    },
   },
   whiteSand: {
     container: { x: 2005, y: 1800 },
     wrapper: { scaleX: 1, scaleY: 1 },
+    viewports: {
+      mobile: {
+        container: { x: 2005, y: '260%' },
+      },
+    },
   },
   dirtLayer: {
     container: { x: 1181, y: 1100 },

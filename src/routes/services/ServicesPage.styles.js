@@ -9,7 +9,13 @@ export const ServiceList = styled.ul`
   padding-top: 258.982px;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    display: none;
+    position: absolute;
+    left: 19px;
+    top: 190px;
+    gap: 16px;
+    width: 184px;
+    padding: 0;
+    z-index: 2;
   }
 `
 
@@ -28,6 +34,20 @@ export const ServiceItem = styled.li`
   &:hover {
     color: ${({ theme }) => theme.colors.yellow.gold};
   }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    font-family: ${({ theme }) => theme.font.family};
+    font-size: 24px;
+    line-height: 1.25;
+    letter-spacing: -0.48px;
+    font-weight: ${({ theme }) => theme.font.weight.regular};
+    font-variation-settings:
+      'wdth' 100,
+      'wght' ${({ theme }) => theme.font.weight.regular};
+    color: ${({ $isActive, theme }) =>
+      $isActive ? theme.colors.yellow.gold : theme.colors.blue.light};
+    width: fit-content;
+  }
 `
 
 export const Description = styled.section`
@@ -35,8 +55,14 @@ export const Description = styled.section`
   right: 5%;
   top: 302px;
   width: 454px;
-  opacity: ${({ $visible }) => ($visible ? 1 : 0)};
   transition: opacity 500ms ease-in-out;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    right: 19px;
+    top: 252px;
+    width: 165px;
+    z-index: 2;
+  }
 `
 
 export const DescriptionEyebrow = styled.p`
@@ -51,6 +77,10 @@ export const DescriptionEyebrow = styled.p`
   line-height: 26px;
   text-align: right;
   text-box: ${({ theme }) => theme.typography.textBox};
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    display: none;
+  }
 `
 
 export const DescriptionText = styled(BodyMedium)`
@@ -59,6 +89,16 @@ export const DescriptionText = styled(BodyMedium)`
   font-size: 20px;
   line-height: 1.4;
   text-box: ${({ theme }) => theme.typography.textBox};
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    color: ${({ theme }) => theme.colors.yellow.gold};
+    font-size: 16px;
+    line-height: 1.25;
+    text-align: left;
+    font-variation-settings:
+      'wdth' 100,
+      'wght' ${({ theme }) => theme.font.weight.regular};
+  }
 `
 
 export const TopHatMarmotWrapper = styled.div`
@@ -82,11 +122,21 @@ export const TopHatMarmotWrapper = styled.div`
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    display: none;
+    right: -10px;
+    bottom: -3%;
+    width: min(49vw, 193px);
+    z-index: 1;
+    transform: scaleX(-1);
+    transform-origin: center bottom;
+
+    svg {
+      width: 100%;
+      height: auto;
+    }
   }
 `
 
-export const DesktopServices = styled.div`
+export const ServicesStage = styled.div`
   position: relative;
   width: 100%;
   flex: 1;
@@ -94,40 +144,17 @@ export const DesktopServices = styled.div`
   pointer-events: auto;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    display: none;
+    overflow: hidden;
+    background-image: linear-gradient(
+      to bottom,
+      transparent 0 360px,
+      ${({ theme }) => theme.colors.blue.dark} 360px 100%
+    );
   }
 `
 
-export const MobileServices = styled.div`
-  position: relative;
-  width: 100%;
-  flex: 1;
-  height: 100%;
-  overflow: hidden;
-  pointer-events: auto;
-  background: ${({ theme }) => theme.colors.blue.dark};
-
-  @media (min-width: calc(${({ theme }) => theme.breakpoints.mobile} + 1px)) {
-    display: none;
-  }
-`
-
-export const MobileSceneWrap = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 260px;
-  pointer-events: none;
-  z-index: 0;
-`
-
-export const MobileSceneSvg = styled.svg`
-  width: 100%;
-  height: 100%;
-`
-
-export const MobileTitle = styled.h2`
+export const ServicesTitle = styled.h2`
+  display: none;
   position: absolute;
   left: 19px;
   top: 142px;
@@ -140,69 +167,9 @@ export const MobileTitle = styled.h2`
     'wght' 600;
   line-height: 24px;
   text-box: ${({ theme }) => theme.typography.textBox};
-`
 
-export const MobileLayout = styled.div`
-  position: absolute;
-  inset: 0;
-  padding: 0 19px;
-`
-
-export const MobileList = styled.ul`
-  position: absolute;
-  left: 19px;
-  top: 190px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  width: 184px;
-`
-
-export const MobileItem = styled.li`
-  font-family: ${({ theme }) => theme.font.family};
-  font-size: 24px;
-  line-height: 1.25;
-  letter-spacing: -0.02em;
-  font-weight: ${({ theme }) => theme.font.weight.regular};
-  font-variation-settings:
-    'wdth' 100,
-    'wght' ${({ theme }) => theme.font.weight.regular};
-  color: ${({ $isActive, theme }) =>
-    $isActive ? theme.colors.yellow.gold : theme.colors.blue.pale};
-  cursor: pointer;
-  transition: color 200ms ease;
-  width: fit-content;
-
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      color: ${({ theme }) => theme.colors.yellow.gold};
-    }
-  }
-`
-
-export const MobileDescription = styled.div`
-  position: absolute;
-  right: 19px;
-  top: 252px;
-  width: 165px;
-  color: ${({ theme }) => theme.colors.yellow.gold};
-  font-family: ${({ theme }) => theme.font.family};
-  font-size: 16px;
-  line-height: 1.25;
-  font-variation-settings:
-    'wdth' 100,
-    'wght' 400;
-`
-
-export const MobileMarmot = styled.div`
-  position: absolute;
-  right: -10px;
-  bottom: -3%;
-  width: min(49vw, 193px);
-  pointer-events: none;
-
-  svg {
-    width: 100%;
-    height: auto;
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    display: block;
+    z-index: 2;
   }
 `

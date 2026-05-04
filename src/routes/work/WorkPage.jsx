@@ -112,6 +112,8 @@ const renderNavButtons = (currentIndex, handleSelect, compact = false) =>
         aria-label={`Show ${caseStudy.name}`}
         aria-current={isCurrent ? 'true' : undefined}
         data-nav-kind={hasIcon ? 'icon' : 'dot'}
+        data-work-example={caseStudy.id}
+        data-work-example-region={compact ? 'mobile-nav' : 'desktop-nav'}
         $compact={compact}
         $layout={navButtonLayout}
         onClick={() => handleSelect(itemIndex)}
@@ -143,6 +145,8 @@ const renderStudyPane = (study, state, direction) => {
       $direction={direction}
       aria-hidden={state === 'leaving' ? 'true' : undefined}
       data-study-pane={state}
+      data-work-example={study.id}
+      data-work-example-region='copy'
       data-testid={state === 'active' ? 'work-study-active' : undefined}
     >
       <ClientName>{study.name}</ClientName>
@@ -167,6 +171,8 @@ const renderHeroPane = (study, state, direction) => {
       $direction={direction}
       aria-hidden={state === 'leaving' ? 'true' : undefined}
       data-study-pane={state}
+      data-work-example={study.id}
+      data-work-example-region='hero'
     >
       <img src={study.image} alt={study.name} />
     </AnimatedHeroImage>

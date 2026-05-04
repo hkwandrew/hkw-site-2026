@@ -89,7 +89,7 @@ describe('shared scene runtime viewport state', () => {
 
     expect(root.querySelector('#tree-mountain__wrapper')).toHaveAttribute(
       'transform',
-      'scale(0.48,0.48)',
+      'scale(1.84,1.82)',
     )
   })
 
@@ -137,7 +137,7 @@ describe('shared scene runtime viewport state', () => {
 
     expect(root.querySelector('#tree-mountain__wrapper')).toHaveAttribute(
       'transform',
-      'scale(0.48,0.48)',
+      'scale(1.84,1.82)',
     )
 
     timeline.kill()
@@ -160,7 +160,7 @@ describe('shared scene runtime viewport state', () => {
 
     expect(root.querySelector('#dirt-layer__container')).toHaveAttribute(
       'transform',
-      'translate(654,660)',
+      'translate(654,230)',
     )
 
     timeline.kill()

@@ -5,12 +5,15 @@ import { act, fireEvent, render, withTheme } from '@/__tests__/testUtils'
 const sharedSceneRuntimeMocks = vi.hoisted(() => ({
   animateSharedSceneTransition: vi.fn(),
   applySharedSceneState: vi.fn(),
+  sceneViewportMobileQuery: '(max-width: 767px)',
 }))
 
 vi.mock('@/app/landscape/runtime/sharedSceneRuntime', () => ({
   animateSharedSceneTransition:
     sharedSceneRuntimeMocks.animateSharedSceneTransition,
   applySharedSceneState: sharedSceneRuntimeMocks.applySharedSceneState,
+  SCENE_VIEWPORT_MOBILE_QUERY:
+    sharedSceneRuntimeMocks.sceneViewportMobileQuery,
 }))
 
 import Layout from '@/app/layout/AppLayout'
@@ -19,6 +22,7 @@ const originalMatchMedia = window.matchMedia
 const originalResizeObserver = window.ResizeObserver
 let completePendingSceneTransition = null
 let canUseHoverRegions = true
+let isMobileViewport = false
 
 const renderLayoutRoute = (initialPath) => {
   const router = createMemoryRouter(
@@ -53,6 +57,7 @@ describe('Home hover landing state', () => {
   beforeEach(() => {
     completePendingSceneTransition = null
     canUseHoverRegions = true
+    isMobileViewport = false
     sharedSceneRuntimeMocks.animateSharedSceneTransition.mockReset()
     sharedSceneRuntimeMocks.applySharedSceneState.mockReset()
     sharedSceneRuntimeMocks.animateSharedSceneTransition.mockImplementation(
@@ -65,6 +70,8 @@ describe('Home hover landing state', () => {
       matches:
         query === '(hover: hover) and (pointer: fine)'
           ? canUseHoverRegions
+          : query === sharedSceneRuntimeMocks.sceneViewportMobileQuery
+            ? isMobileViewport
           : false,
       media: query,
       addEventListener: vi.fn(),
@@ -127,7 +134,37 @@ describe('Home hover landing state', () => {
 
     const { container } = renderLayoutRoute('/')
 
-    const aboutRegionLink = container.querySelector('a[href="/about"]')
+    const aboutRegionLink = container
+      .querySelector('#blue-mountain__container')
+      ?.closest('a')
+    const blueMountainHitbox = container.querySelector(
+      '#blue-mountain-hover-hitbox',
+    )
+    const blueMountainHoverGroup = container.querySelector(
+      '#blue-mountain-hover-art',
+    )?.parentElement
+
+    expect(aboutRegionLink).toHaveAttribute('aria-hidden', 'true')
+    expect(aboutRegionLink).toHaveAttribute('tabindex', '-1')
+    expect(aboutRegionLink).toHaveStyle({ pointerEvents: 'none' })
+    expect(blueMountainHitbox).toHaveStyle({
+      cursor: 'default',
+      pointerEvents: 'none',
+    })
+
+    fireEvent.mouseEnter(blueMountainHitbox)
+
+    expect(blueMountainHoverGroup).toHaveStyle({ opacity: '0' })
+  })
+
+  it('keeps home hover regions inactive on mobile viewport sizes', () => {
+    isMobileViewport = true
+
+    const { container } = renderLayoutRoute('/')
+
+    const aboutRegionLink = container
+      .querySelector('#blue-mountain__container')
+      ?.closest('a')
     const blueMountainHitbox = container.querySelector(
       '#blue-mountain-hover-hitbox',
     )

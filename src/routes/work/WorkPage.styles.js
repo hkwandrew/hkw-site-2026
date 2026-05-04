@@ -273,20 +273,20 @@ export const AnimatedStudyText = styled(StudyText)`
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     ${({ $direction, $state }) => {
-    const forward = $direction >= 0
-    const startOffset = forward ? '32px' : '-32px'
-    const endOffset = forward ? '-32px' : '32px'
+      const forward = $direction >= 0
+      const startOffset = forward ? '32px' : '-32px'
+      const endOffset = forward ? '-32px' : '32px'
 
-    if ($state === 'leaving') {
-      return css`
+      if ($state === 'leaving') {
+        return css`
           --study-pane-end: ${endOffset};
         `
-    }
+      }
 
-    return css`
+      return css`
         --study-pane-start: ${startOffset};
       `
-  }}
+    }}
   }
 `
 
@@ -363,12 +363,22 @@ export const HeroImage = styled.div`
   justify-content: center;
   pointer-events: none;
 
+  [data-work-example='celdf'] img {
+    width: 800.175px;
+    height: 617.278px;
+    transform: rotate(-0.481deg);
+    aspect-ratio: 35/27;
+    translate: 0 20px;
+  }
+
   img {
-    width: min(100%, 720px);
+    ${
+      '' /* width: min(100%, 720px);
     max-height: 520px;
     object-fit: contain;
-    transform: rotate(-0.5deg);
-    filter: drop-shadow(4px 8px 16px rgba(0, 0, 0, 0.2));
+    transform: rotate(-0.5deg); */
+    }
+    ${'' /* filter: drop-shadow(4px 8px 16px rgba(0, 0, 0, 0.2)); */}
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
@@ -386,20 +396,20 @@ export const AnimatedHeroImage = styled(HeroImage)`
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     ${({ $direction, $state }) => {
-    const forward = $direction >= 0
-    const startOffset = forward ? '32px' : '-32px'
-    const endOffset = forward ? '-32px' : '32px'
+      const forward = $direction >= 0
+      const startOffset = forward ? '32px' : '-32px'
+      const endOffset = forward ? '-32px' : '32px'
 
-    if ($state === 'leaving') {
-      return css`
+      if ($state === 'leaving') {
+        return css`
           --study-pane-end: ${endOffset};
         `
-    }
+      }
 
-    return css`
+      return css`
         --study-pane-start: ${startOffset};
       `
-  }}
+    }}
   }
 `
 
@@ -516,7 +526,9 @@ export const FallbackDot = styled.span`
   background: ${({ $current, theme }) =>
     $current ? theme.colors.orange.base : theme.colors.blue.dark};
   opacity: ${({ $current }) => ($current ? 1 : 0.28)};
-  transition: opacity 200ms ease, background-color 200ms ease;
+  transition:
+    opacity 200ms ease,
+    background-color 200ms ease;
 
   ${NavButton}:hover &,
   ${NavButton}:focus-visible & {

@@ -15,13 +15,6 @@ const ViewContainer = styled.div`
     transform 500ms ease;
   z-index: ${({ $isActive }) => ($isActive ? 2 : 1)};
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    background-image: linear-gradient(
-      to top,
-      ${({ theme }) => theme.colors.green} 40%,
-      transparent 40%
-    );
-  }
 `
 
 export default ViewContainer

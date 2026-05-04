@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, within } from '@/__tests__/testUtils'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@/__tests__/testUtils'
 import { describe, expect, it } from 'vitest'
 import WorkPage from '@/routes/work/WorkPage'
 import {
@@ -56,6 +62,31 @@ describe('WorkPage', () => {
     expect(buttons.map((button) => button.getAttribute('aria-label'))).toEqual(
       caseStudies.map((study) => `Show ${study.name}`),
     )
+    expect(buttons.map((button) => button.dataset.workExample)).toEqual(
+      caseStudies.map((study) => study.id),
+    )
+  })
+
+  it('exposes the active case study id on work copy and hero panes', () => {
+    renderWorkPage()
+
+    expect(getActiveStudyPane()).toHaveAttribute('data-work-example', 'celdf')
+    expect(getActiveStudyPane()).toHaveAttribute(
+      'data-work-example-region',
+      'copy',
+    )
+    expect(
+      screen.getByRole('img', { name: 'CELDF' }).parentElement,
+    ).toHaveAttribute('data-work-example', 'celdf')
+
+    fireEvent.click(
+      within(getDesktopNav()).getByRole('button', { name: 'Show Conviva' }),
+    )
+
+    expect(getActiveStudyPane()).toHaveAttribute('data-work-example', 'conviva')
+    expect(
+      screen.getByRole('img', { name: 'Conviva' }).parentElement,
+    ).toHaveAttribute('data-work-example', 'conviva')
   })
 
   it('renders icon buttons for mapped studies and dot fallback buttons for missing icons', () => {
@@ -161,7 +192,7 @@ describe('WorkPage', () => {
     expect(screen.getByRole('img', { name: 'MA-CH' })).toBeInTheDocument()
   })
 
-  it('slides the desktop nav track when the active item moves beyond the first eight buttons', () => {
+  it('slides the desktop nav track when the active item moves beyond the first eight buttons', async () => {
     renderWorkPage()
 
     const desktopNav = getDesktopNav()
@@ -171,7 +202,9 @@ describe('WorkPage', () => {
       within(desktopNav).getByRole('button', { name: 'Show MediaBricks' }),
     )
 
-    expect(getComputedStyle(desktopNav).transform).not.toBe(initialTransform)
+    await waitFor(() => {
+      expect(getComputedStyle(desktopNav).transform).not.toBe(initialTransform)
+    })
     expect(
       within(getActiveStudyPane()).getByRole('heading', { name: 'MediaBricks' }),
     ).toBeInTheDocument()

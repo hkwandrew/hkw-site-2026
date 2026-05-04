@@ -216,17 +216,27 @@ const MobileFrames = styled.div`
   }
 `
 
-const MobileMarmotAccent = styled.div`
+const RootsMarmotLayer = styled.div`
   position: absolute;
-  right: -14px;
-  bottom: 14px;
-  z-index: 0;
-  width: min(52vw, 186px);
+  right: -1.56px;
+  bottom: 0;
+  z-index: 1;
+  width: 404px;
   pointer-events: none;
+  opacity: ${({ $isVisible }) => ($isVisible ? 1 : 0)};
+  transition: opacity 180ms ease;
 
   > * {
+    position: static;
     width: 100%;
     height: auto;
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    right: -14px;
+    bottom: 14px;
+    width: min(52vw, 186px);
+    z-index: 0;
   }
 `
 
@@ -400,6 +410,8 @@ export default function RootsScene({ sceneRef }) {
                   aria-label={`Open ${item.title}`}
                   aria-haspopup='dialog'
                   aria-expanded={isSliderOpen && activeItem.id === item.id}
+                  data-roots-example={item.id}
+                  data-roots-example-region='mobile-frame'
                   onClick={() => openPortfolio(itemIndex, item.id)}
                   disabled={isSliderOpen}
                 >
@@ -409,9 +421,6 @@ export default function RootsScene({ sceneRef }) {
             })}
           </MobileFrames>
 
-          <MobileMarmotAccent aria-hidden='true'>
-            <RootsMarmot />
-          </MobileMarmotAccent>
         </MobileScene>
       ) : (
         <DesktopScene aria-hidden={isSliderOpen} $isActive={isActive}>
@@ -438,6 +447,8 @@ export default function RootsScene({ sceneRef }) {
                 aria-haspopup='dialog'
                 aria-expanded={isSliderOpen && activeItem.id === item.id}
                 data-active={isSliderOpen && activeItem.id === item.id}
+                data-roots-example={item.id}
+                data-roots-example-region='desktop-frame'
                 $left={item.desktopFrame.left}
                 $top={item.desktopFrame.top}
                 $width={item.desktopFrame.width}
@@ -449,9 +460,12 @@ export default function RootsScene({ sceneRef }) {
             )
           })}
 
-          <RootsMarmot />
         </DesktopScene>
       )}
+
+      <RootsMarmotLayer aria-hidden='true' $isVisible={!isSliderOpen}>
+        <RootsMarmot />
+      </RootsMarmotLayer>
 
       {isSliderOpen ? (
         <RootsPortfolioSlider
