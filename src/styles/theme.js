@@ -150,6 +150,7 @@ const theme = {
       letterSpacing: '1.6px',
       textTransform: 'uppercase',
     },
+    textBox: 'trim-both cap alphabetic',
   },
   components: {
     pillButton: {

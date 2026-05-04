@@ -20,7 +20,7 @@ export const SERVICES_SCENE_STATE = {
     wrapper: { scaleX: 2, scaleY: 2 },
   },
   treeMountain: {
-    container: { x: 1412.639424, y: 845.9524 },
+    container: { x: -2680, y: -523 },
     wrapper: { scaleX: 2.93, scaleY: 2.34 },
   },
   upperField: {
@@ -34,6 +34,11 @@ export const SERVICES_SCENE_STATE = {
   dirtLayer: {
     container: { x: 1181, y: 1100 },
     wrapper: { scaleX: 1, scaleY: 1 },
+    viewports: {
+      mobile: {
+        container: { x: 0, y: '260%' },
+      },
+    },
   },
 }
 

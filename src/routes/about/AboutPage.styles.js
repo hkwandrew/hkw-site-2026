@@ -84,7 +84,9 @@ const ABOUT_PAGE_MOBILE_SLIDE_DISTANCE = '100dvh'
 const ABOUT_PAGE_SLIDE_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)'
 
 export const Page = styled(ViewContainer)`
-  overflow: hidden;
+  overflow: visible;
+  ${'' /* max-width: 1440px; */}
+  margin-inline: auto;
   pointer-events: auto;
   opacity: 1;
   transform: translate3d(
@@ -92,7 +94,8 @@ export const Page = styled(ViewContainer)`
     ${({ $isActive }) => ($isActive ? '0' : ABOUT_PAGE_SLIDE_DISTANCE)},
     0
   );
-  transition: transform ${SCENE_TRANSITION_DURATION_MS}ms ${ABOUT_PAGE_SLIDE_EASE};
+  transition: transform ${SCENE_TRANSITION_DURATION_MS}ms
+    ${ABOUT_PAGE_SLIDE_EASE};
   will-change: transform;
 
   &[data-about-phase='exiting'] {
@@ -106,7 +109,8 @@ export const Page = styled(ViewContainer)`
     scroll-snap-type: y mandatory;
     transform: translate3d(
       0,
-      ${({ $isActive }) => ($isActive ? '0' : ABOUT_PAGE_MOBILE_SLIDE_DISTANCE)},
+      ${({ $isActive }) =>
+        $isActive ? '0' : ABOUT_PAGE_MOBILE_SLIDE_DISTANCE},
       0
     );
 
@@ -225,9 +229,7 @@ export const DesktopCloudFloat = styled.div`
   will-change: transform;
 
   [data-about-scene][data-about-final-stage='true'] & {
-    animation: ${finalStageFloat}
-      var(--about-float-duration, 8s)
-      ease-in-out
+    animation: ${finalStageFloat} var(--about-float-duration, 8s) ease-in-out
       infinite;
     animation-delay: var(--about-float-delay, 0s);
   }
@@ -310,10 +312,8 @@ export const DesktopMascotFloat = styled.div`
   will-change: transform;
 
   [data-about-scene][data-about-final-stage='true'] & {
-    animation: ${finalStageMascotFloat}
-      var(--about-float-duration, 5.2s)
-      ease-in-out
-      infinite;
+    animation: ${finalStageMascotFloat} var(--about-float-duration, 5.2s)
+      ease-in-out infinite;
     animation-delay: var(--about-float-delay, 0s);
   }
 `

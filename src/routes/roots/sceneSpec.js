@@ -20,7 +20,7 @@ export const ROOTS_SCENE_STATE = {
     wrapper: { scaleX: 1.18, scaleY: 1.18 },
   },
   treeMountain: {
-    container: { x: 1455.680149, y: 84 },
+    container: { x: -255.680149, y: -556 },
     wrapper: { scaleX: 1.26, scaleY: 1.26 },
   },
   upperField: {

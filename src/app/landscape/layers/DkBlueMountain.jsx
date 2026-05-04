@@ -28,13 +28,13 @@ const DkBlueMountain = () => (
       <path
         id='dk-blue-mountain'
         d={DK_BLUE_MOUNTAIN_PATH}
-        transform='translate(-2480.5,-700.000031)'
+        // transform='translate(-2480.5,-700.000031)'
         fill={theme.colors.blue.dark}
       />
     }
     hitboxId='dk-blue-mountain-hover-hitbox'
     hitboxPath={DK_BLUE_MOUNTAIN_PATH}
-    hitboxTransform='translate(-2480.5,-700.000031)'
+    // hitboxTransform='translate(-2480.5,-700.000031)'
   />
 )
 

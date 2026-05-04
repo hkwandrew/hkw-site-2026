@@ -20,7 +20,7 @@ export const ABOUT_SCENE_STATE = {
     wrapper: { scaleX: 0.8, scaleY: 0.8 },
   },
   treeMountain: {
-    container: { x: 957.933093, y: 1086.922845 },
+    container: { x: 55.680149, y: '100%' },
     wrapper: { scaleX: 0.8, scaleY: 0.8 },
   },
   upperField: {

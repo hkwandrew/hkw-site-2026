@@ -14,8 +14,13 @@ const ViewContainer = styled.div`
     opacity 500ms ease,
     transform 500ms ease;
   z-index: ${({ $isActive }) => ($isActive ? 2 : 1)};
+
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    padding: 0;
+    background-image: linear-gradient(
+      to top,
+      ${({ theme }) => theme.colors.green} 40%,
+      transparent 40%
+    );
   }
 `
 

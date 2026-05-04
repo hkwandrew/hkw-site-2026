@@ -28,7 +28,7 @@ export const CONTACT_SCENE_STATE = {
     wrapper: { scaleX: 0.8, scaleY: 0.8 },
   },
   treeMountain: {
-    container: { x: 1412.639424, y: 1798 },
+    container: { x: 55.680149, y: '100%' },
     wrapper: { scaleX: 0.8, scaleY: 0.8 },
   },
   upperField: {

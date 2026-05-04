@@ -6,7 +6,7 @@ export const ServiceList = styled.ul`
   flex-direction: column;
   gap: 48px;
   padding-left: 72px;
-  padding-top: 222px;
+  padding-top: 258.982px;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     display: none;
@@ -15,6 +15,7 @@ export const ServiceList = styled.ul`
 
 export const ServiceItem = styled.li`
   ${applyTypography('h2')}
+  text-box: ${({ theme }) => theme.typography.textBox};
   font-weight: ${({ theme }) => theme.font.weight.regular};
   font-variation-settings:
     'wdth' ${({ theme }) => theme.typography.h2.width},
@@ -29,13 +30,27 @@ export const ServiceItem = styled.li`
   }
 `
 
-export const Description = styled.div`
+export const Description = styled.section`
   position: absolute;
   right: 5%;
-  top: 30%;
+  top: 302px;
   width: 454px;
   opacity: ${({ $visible }) => ($visible ? 1 : 0)};
   transition: opacity 500ms ease-in-out;
+`
+
+export const DescriptionEyebrow = styled.p`
+  margin: 0 0 18px;
+  color: ${({ theme }) => theme.colors.blue.dark};
+  font-family: ${({ theme }) => theme.font.family};
+  font-size: 24px;
+  font-weight: ${({ theme }) => theme.font.weight.bold};
+  font-variation-settings:
+    'wdth' ${({ theme }) => theme.font.width.condensed},
+    'wght' ${({ theme }) => theme.font.weight.bold};
+  line-height: 26px;
+  text-align: right;
+  text-box: ${({ theme }) => theme.typography.textBox};
 `
 
 export const DescriptionText = styled(BodyMedium)`
@@ -43,13 +58,28 @@ export const DescriptionText = styled(BodyMedium)`
   text-align: right;
   font-size: 20px;
   line-height: 1.4;
-  text-box: trim-both cap alphabetic;
+  text-box: ${({ theme }) => theme.typography.textBox};
 `
 
 export const TopHatMarmotWrapper = styled.div`
   position: absolute;
   right: 145.85px;
   bottom: 0;
+
+  svg {
+    display: block;
+  }
+
+  @media (min-width: 768px) and (max-height: 820px) {
+    right: 5.32%;
+    bottom: -2.52%;
+    width: 258px;
+
+    svg {
+      width: 100%;
+      height: auto;
+    }
+  }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     display: none;
@@ -97,27 +127,19 @@ export const MobileSceneSvg = styled.svg`
   height: 100%;
 `
 
-export const MobileLogoBadge = styled.div`
-  position: absolute;
-  left: 23px;
-  top: 87px;
-  width: 69px;
-  height: 27px;
-  background: ${({ theme }) => theme.colors.blue.light};
-  z-index: 1;
-`
-
 export const MobileTitle = styled.h2`
   position: absolute;
   left: 19px;
-  top: 124px;
+  top: 142px;
   margin: 0;
-  color: ${({ theme }) => theme.colors.yellow.light};
+  color: ${({ theme }) => theme.colors.white};
   ${applyTypography('formButton')}
   font-weight: ${({ theme }) => theme.font.weight.semibold};
   font-variation-settings:
     'wdth' ${({ theme }) => theme.typography.formButton.width},
     'wght' 600;
+  line-height: 24px;
+  text-box: ${({ theme }) => theme.typography.textBox};
 `
 
 export const MobileLayout = styled.div`
@@ -132,7 +154,7 @@ export const MobileList = styled.ul`
   top: 190px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
   width: 184px;
 `
 
@@ -141,11 +163,10 @@ export const MobileItem = styled.li`
   font-size: 24px;
   line-height: 1.25;
   letter-spacing: -0.02em;
+  font-weight: ${({ theme }) => theme.font.weight.regular};
   font-variation-settings:
     'wdth' 100,
-    'wght'
-      ${({ $isActive, theme }) =>
-        $isActive ? theme.font.weight.semibold : theme.font.weight.regular};
+    'wght' ${({ theme }) => theme.font.weight.regular};
   color: ${({ $isActive, theme }) =>
     $isActive ? theme.colors.yellow.gold : theme.colors.blue.pale};
   cursor: pointer;
@@ -176,8 +197,8 @@ export const MobileDescription = styled.div`
 export const MobileMarmot = styled.div`
   position: absolute;
   right: -10px;
-  bottom: -4px;
-  width: 154px;
+  bottom: -3%;
+  width: min(49vw, 193px);
   pointer-events: none;
 
   svg {

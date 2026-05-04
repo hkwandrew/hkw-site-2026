@@ -1,28 +1,16 @@
 import styled, { css, keyframes } from 'styled-components'
-import { BodySmall, H4, Label, applyTypography } from '@/shared/ui/Typography'
+import { BodySmall, H4, applyTypography } from '@/shared/ui/Typography'
 import { HOME_HOVER_REGION } from './homeHoverRegions'
-import {
-  getHomeHoverRegionPosition,
-} from './homeHoverConfig'
+import { getHomeHoverRegionPosition } from './homeHoverConfig'
 
+// Shared timing and positioning
 const MASCOT_HOVER_ART = getHomeHoverRegionPosition(HOME_HOVER_REGION.mascot)
 export const ROOTS_DROP_DURATION_MS = 420
 const ROOTS_DROP_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)'
 const MARMOT_BURIED_OFFSET_PX = 280
 const MARMOT_BURIED_SCALE = 0.985
 
-const riseIn = keyframes`
-  from {
-    opacity: 0;
-    transform: translateY(18px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-`
-
+// Marmot motion
 const marmotEmerge = keyframes`
   0% {
     opacity: 1;
@@ -235,6 +223,7 @@ const rightEarWriggle = keyframes`
   }
 `
 
+// Plane motion
 const planeCrossPage = keyframes`
   from {
     transform: translate3d(calc(-100% - 80px), 0, 0);
@@ -305,16 +294,13 @@ const motionStreakPulse = keyframes`
   }
 `
 
+// Page shell and content
 export const DesktopHome = styled.div`
   position: relative;
   width: 100%;
   flex: 1;
   height: 100%;
   pointer-events: none;
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    display: none;
-  }
 `
 
 export const Content = styled.div`
@@ -327,9 +313,14 @@ export const Content = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    padding: 70% 20px 0;
+    position: unset;
+  }
 `
 
-export const Subtitle = styled.p`
+export const Title = styled.p`
   color: ${({ theme }) => theme.colors.yellow.gold};
   ${applyTypography('formButton')}
   line-height: 1.3;
@@ -337,8 +328,15 @@ export const Subtitle = styled.p`
   font-variation-settings:
     'wdth' 90,
     'wght' 700;
-
   display: block;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    font-size: 16px;
+    line-height: 1.625;
+    font-variation-settings:
+      'wdth' 68,
+      'wght' 600;
+  }
 `
 
 export const HeroText = styled(H4)`
@@ -348,6 +346,11 @@ export const HeroText = styled(H4)`
   font-weight: 400;
   letter-spacing: unset;
   max-width: 560.57px;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    font-size: 18px;
+    letter-spacing: -0.36px;
+  }
 `
 
 export const Footer = styled.footer`
@@ -371,45 +374,7 @@ export const FooterText = styled(BodySmall)`
   }
 `
 
-export const MobileHome = styled.div`
-  position: relative;
-  width: 100%;
-  flex: 1;
-  min-height: 100dvh;
-  overflow: hidden;
-  background: ${({ theme }) => theme.colors.yellow.light};
-
-  @media (min-width: calc(${({ theme }) => theme.breakpoints.mobile} + 1px)) {
-    display: none;
-  }
-`
-
-export const MobileSceneWrap = styled.div`
-  position: absolute;
-  top: 76px;
-  left: 0;
-  width: 100%;
-  height: calc(100% - 76px);
-  pointer-events: none;
-  z-index: 1;
-`
-
-export const MobileSceneSvg = styled.svg`
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-`
-
-export const MobileFieldFill = styled.div`
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 520px;
-  bottom: 0;
-  background: ${({ theme }) => theme.colors.green};
-  z-index: 2;
-`
-
+// Marmot scene
 export const HomeMarmotWrapper = styled.div`
   position: absolute;
   right: -75.38px;
@@ -517,10 +482,10 @@ export const HomeMarmotWrapper = styled.div`
   }
 
   @media (max-width: ${({ theme }) =>
-    theme.breakpoints.mobile}) and (max-height: 760px) {
-    right: -118px;
-    bottom: 76px;
-    width: min(446px, 122vw);
+      theme.breakpoints.mobile}) and (max-height: 760px) {
+    right: -127px;
+    bottom: -40px;
+    width: 457px;
   }
 `
 
@@ -588,7 +553,7 @@ export const StumpHoverOverlay = styled.div`
   transform: translate3d(
     0,
     ${({ $active, $isTransitioning }) =>
-    $isTransitioning ? '22px' : $active ? '0' : '10px'},
+      $isTransitioning ? '22px' : $active ? '0' : '10px'},
     0
   );
   transition:
@@ -610,8 +575,7 @@ export const StumpTrigger = styled.button`
   height: 172px;
   border-radius: 50%;
   background: transparent;
-  pointer-events: ${({ $isInteractive }) =>
-    $isInteractive ? 'auto' : 'none'};
+  pointer-events: ${({ $isInteractive }) => ($isInteractive ? 'auto' : 'none')};
   cursor: ${({ $isInteractive }) => ($isInteractive ? 'pointer' : 'default')};
 
   &:focus-visible {
@@ -627,90 +591,13 @@ export const StumpTrigger = styled.button`
   }
 
   @media (max-width: ${({ theme }) =>
-    theme.breakpoints.mobile}) and (max-height: 760px) {
+      theme.breakpoints.mobile}) and (max-height: 760px) {
     right: 124px;
     bottom: 93px;
   }
 `
 
-export const MobileCopy = styled.div`
-  position: absolute;
-  left: 20px;
-  top: 285px;
-  width: min(353px, calc(100vw - 37px));
-  z-index: 4;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  animation: ${riseIn} 700ms ease both;
-
-  @media (max-height: 660px) {
-    top: 264px;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    animation: none;
-  }
-`
-
-export const MobileKicker = styled(Label)`
-  display: block;
-  width: min(267px, calc(100vw - 40px));
-  color: ${({ theme }) => theme.colors.orange.base};
-  font-size: 16px;
-  line-height: calc(26 / 16);
-  font-variation-settings:
-    'wdth' 68,
-    'wght' 600;
-`
-
-export const MobileHero = styled.p`
-  margin: 0;
-  width: min(353px, calc(100vw - 37px));
-  max-width: 353px;
-  color: ${({ theme }) => theme.colors.yellow.light};
-  ${applyTypography('bodyMedium')}
-`
-
-export const MobileRoles = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-`
-
-export const MobileRole = styled.span`
-  display: block;
-  width: fit-content;
-  color: ${({ theme }) => theme.colors.orange.base};
-  ${applyTypography('bodySmall')}
-  line-height: 40px;
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 3px;
-`
-
-export const MobileFooter = styled.footer`
-  position: absolute;
-  left: 20px;
-  bottom: 146px;
-  z-index: 6;
-
-  @media (max-height: 760px) {
-    bottom: 112px;
-  }
-`
-
-export const MobileFooterText = styled(BodySmall)`
-  color: ${({ theme }) => theme.colors.yellow.light};
-  font-size: 14px;
-  line-height: 1.45;
-
-  a {
-    text-decoration: underline;
-    text-underline-offset: 2px;
-  }
-`
-
+// Plane scene
 export const PlaneTrack = styled.div`
   position: absolute;
   top: 47px;

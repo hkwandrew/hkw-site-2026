@@ -137,7 +137,7 @@ const renderStudyPane = (study, state, direction) => {
 
   return (
     <AnimatedStudyText
-    className={state}
+      className={state}
       key={`${state}-${study.id}`}
       $state={state}
       $direction={direction}
@@ -359,11 +359,11 @@ const WorkPage = () => {
             {renderStudyPane(study, 'active', transitionDirection)}
           </StudyTextStage>
 
-          <MobileNavRail>
+          {/* <MobileNavRail>
             <MobileNavStrip>
               {renderNavButtons(index, handleNavButtonSelect, true)}
             </MobileNavStrip>
-          </MobileNavRail>
+          </MobileNavRail> */}
 
           <HeroStage>
             {leavingStudy && renderHeroPane(leavingStudy, 'leaving', transitionDirection)}

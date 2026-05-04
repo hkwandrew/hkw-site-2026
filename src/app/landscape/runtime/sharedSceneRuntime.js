@@ -11,8 +11,14 @@
  */
 import gsap from 'gsap'
 import MorphSVGPlugin from 'gsap/MorphSVGPlugin'
+import theme from '@/styles/theme'
 
 gsap.registerPlugin(MorphSVGPlugin)
+
+export const SCENE_VIEWPORT_MOBILE_QUERY = `(max-width: ${theme.breakpoints.mobile})`
+
+const BASE_SCENE_VIEWPORT = 'base'
+const MOBILE_SCENE_VIEWPORT = 'mobile'
 
 const SCENE_LAYER_SELECTORS = Object.freeze({
     blueMountain: Object.freeze({
@@ -51,13 +57,49 @@ const SCENE_LAYER_SELECTORS = Object.freeze({
     }),
 })
 
-/** Matches `translate(x, y)` or `translate(x y)` with optional `px` units. */
-const TRANSLATE_PATTERN = /translate\(([-\d.]+)(?:px)?(?:,\s*|\s+)([-\d.]+)(?:px)?\)/
+/** Matches `translate(x, y)` or `translate(x y)` with optional `px`/`%` units. */
+const TRANSLATE_PATTERN =
+    /translate\(\s*([-+]?\d*\.?\d+(?:e[-+]?\d+)?)(px|%)?(?:,\s*|\s+)([-+]?\d*\.?\d+(?:e[-+]?\d+)?)(px|%)?\s*\)/i
 /** Matches `scale(x, y)` or `scale(x)` (uniform). */
 const SCALE_PATTERN = /scale\(([-\d.]+)(?:,\s*|\s+)?([-\d.]+)?\)/
+const PERCENT_PATTERN = /^([-+]?\d*\.?\d+(?:e[-+]?\d+)?)%$/i
 
 const toTranslate = ({ x, y }) => `translate(${x},${y})`
 const toScale = ({ scaleX, scaleY }) => `scale(${scaleX},${scaleY})`
+
+export const getSceneViewportKey = () => {
+    if (typeof window === 'undefined') return BASE_SCENE_VIEWPORT
+
+    if (window.matchMedia) {
+        return window.matchMedia(SCENE_VIEWPORT_MOBILE_QUERY).matches
+            ? MOBILE_SCENE_VIEWPORT
+            : BASE_SCENE_VIEWPORT
+    }
+
+    const mobileBreakpoint = Number.parseFloat(theme.breakpoints.mobile)
+
+    return window.innerWidth <= mobileBreakpoint
+        ? MOBILE_SCENE_VIEWPORT
+        : BASE_SCENE_VIEWPORT
+}
+
+const mergeViewportState = (baseState, viewportState) => ({
+    ...baseState,
+    ...(viewportState ?? {}),
+})
+
+const resolveLayerStateForViewport = (layerState, viewportKey) => {
+    const viewportState = layerState?.viewports?.[viewportKey]
+
+    if (!viewportState) return layerState
+
+    return {
+        ...layerState,
+        ...viewportState,
+        container: mergeViewportState(layerState.container, viewportState.container),
+        wrapper: mergeViewportState(layerState.wrapper, viewportState.wrapper),
+    }
+}
 
 const parseTranslate = (value, fallback) => {
     const match = value?.match(TRANSLATE_PATTERN)
@@ -65,8 +107,8 @@ const parseTranslate = (value, fallback) => {
     if (!match) return fallback
 
     return {
-        x: Number(match[1]),
-        y: Number(match[2]),
+        x: match[2] === '%' ? `${Number(match[1])}%` : Number(match[1]),
+        y: match[4] === '%' ? `${Number(match[3])}%` : Number(match[3]),
     }
 }
 
@@ -81,6 +123,69 @@ const parseScale = (value, fallback) => {
     }
 }
 
+const getSvgViewBox = (targetElement) => {
+    const svgElement = targetElement?.ownerSVGElement
+    const viewBox = svgElement
+        ?.getAttribute('viewBox')
+        ?.trim()
+        .split(/[\s,]+/)
+        .map(Number)
+
+    if (viewBox?.length === 4 && viewBox.every(Number.isFinite)) {
+        const [x, y, width, height] = viewBox
+
+        return { x, y, width, height }
+    }
+
+    return {
+        x: 0,
+        y: 0,
+        width: svgElement?.clientWidth ?? 0,
+        height: svgElement?.clientHeight ?? 0,
+    }
+}
+
+const getAncestorTranslateOffset = (targetElement) => {
+    const svgElement = targetElement?.ownerSVGElement
+    let node = targetElement?.parentElement
+    let x = 0
+    let y = 0
+
+    while (node && node !== svgElement) {
+        const translate = parseTranslate(node.getAttribute('transform'), null)
+
+        if (Number.isFinite(translate?.x)) x += translate.x
+        if (Number.isFinite(translate?.y)) y += translate.y
+
+        node = node.parentElement
+    }
+
+    return { x, y }
+}
+
+const resolveCoordinateValue = (value, axis, targetElement) => {
+    if (typeof value !== 'string') return value
+
+    const match = value.trim().match(PERCENT_PATTERN)
+
+    if (!match) return value
+
+    const percent = Number(match[1]) / 100
+    const viewBox = getSvgViewBox(targetElement)
+    const ancestorOffset = getAncestorTranslateOffset(targetElement)
+    const viewportValue =
+        axis === 'x'
+            ? viewBox.x + viewBox.width * percent
+            : viewBox.y + viewBox.height * percent
+
+    return viewportValue - ancestorOffset[axis]
+}
+
+const resolveTranslateStateForElement = (translateState, targetElement) => ({
+    x: resolveCoordinateValue(translateState.x, 'x', targetElement),
+    y: resolveCoordinateValue(translateState.y, 'y', targetElement),
+})
+
 const getLayerElements = (rootElement, selectors) => ({
     container: rootElement.querySelector(selectors.container),
     wrapper: rootElement.querySelector(selectors.wrapper),
@@ -90,7 +195,12 @@ const getLayerElements = (rootElement, selectors) => ({
 const setLayerState = (layerElements, layerState) => {
     layerElements.container?.setAttribute(
         'transform',
-        toTranslate(layerState.container),
+        toTranslate(
+            resolveTranslateStateForElement(
+                layerState.container,
+                layerElements.container,
+            ),
+        ),
     )
     layerElements.wrapper?.setAttribute('transform', toScale(layerState.wrapper))
 
@@ -164,10 +274,12 @@ const addPathTween = ({
 export const applySharedSceneState = (rootElement, sceneState) => {
     if (!rootElement || !sceneState) return
 
+    const viewportKey = getSceneViewportKey()
+
     Object.entries(SCENE_LAYER_SELECTORS).forEach(([layerKey, selectors]) => {
         setLayerState(
             getLayerElements(rootElement, selectors),
-            sceneState[layerKey],
+            resolveLayerStateForViewport(sceneState[layerKey], viewportKey),
         )
     })
 }
@@ -202,18 +314,31 @@ export const animateSharedSceneTransition = ({
         onComplete,
     })
 
+    const viewportKey = getSceneViewportKey()
+
     Object.entries(SCENE_LAYER_SELECTORS).forEach(([layerKey, selectors]) => {
         const layerElements = getLayerElements(rootElement, selectors)
+        const nextLayerState = resolveLayerStateForViewport(
+            targetState[layerKey],
+            viewportKey,
+        )
         const currentLayerState = readCurrentLayerState(
             layerElements,
-            targetState[layerKey],
+            nextLayerState,
         )
-        const nextLayerState = targetState[layerKey]
+        const currentContainerState = resolveTranslateStateForElement(
+            currentLayerState.container,
+            layerElements.container,
+        )
+        const nextContainerState = resolveTranslateStateForElement(
+            nextLayerState.container,
+            layerElements.container,
+        )
 
         addTransformTween({
             targetElement: layerElements.container,
-            fromValue: currentLayerState.container,
-            toValue: nextLayerState.container,
+            fromValue: currentContainerState,
+            toValue: nextContainerState,
             formatter: toTranslate,
             timeline,
         })

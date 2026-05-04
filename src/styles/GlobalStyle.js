@@ -55,22 +55,22 @@ const GlobalStyle = createGlobalStyle`
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     html, body, #root {
-      height: auto;
+      ${'' /* height: auto;
       min-height: 100%;
       overflow-x: hidden;
-      overflow-y: auto;
+      overflow-y: auto; */}
     }
 
     main {
-      min-height: 100dvh;
+      ${'' /* min-height: 100dvh; */}
     }
 
     #scene-svg {
-      display: none;
+      ${'' /* display: none; */}
     }
 
     main.about-page #scene-svg {
-      display: block !important;
+      ${'' /* display: block !important; */}
     }
   }
 

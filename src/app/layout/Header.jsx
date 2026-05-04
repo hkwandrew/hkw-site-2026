@@ -67,6 +67,7 @@ const HKWLogo = styled(Link)`
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     width: 76px;
     height: 38px;
+    background-color: transparent;
     border-radius: 2px;
   }
 `

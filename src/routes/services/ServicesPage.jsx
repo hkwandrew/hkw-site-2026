@@ -7,13 +7,13 @@ import ViewContainer from '@/shared/ui/ViewContainer'
 import services from './services'
 import {
   Description,
+  DescriptionEyebrow,
   DescriptionText,
   DesktopServices,
   MobileDescription,
   MobileItem,
   MobileLayout,
   MobileList,
-  MobileLogoBadge,
   MobileMarmot,
   MobileSceneSvg,
   MobileSceneWrap,
@@ -49,29 +49,19 @@ export default function Services() {
           ))}
         </ServiceList>
         {services.map((service, i) => (
-          <Description key={service.name} $visible={i === activeService}>
+          <Description
+            key={service.name}
+            $visible={i === activeService}
+            aria-hidden={i !== activeService}
+            aria-label={`${service.name} service description`}
+          >
+            <DescriptionEyebrow>{service.name.toUpperCase()}</DescriptionEyebrow>
             <DescriptionText>{service.description}</DescriptionText>
           </Description>
         ))}
       </DesktopServices>
 
-      <MobileServices aria-label='HKW services mobile view'>
-        <MobileSceneWrap aria-hidden='true'>
-          <MobileSceneSvg
-            viewBox='1380 150 980 700'
-            preserveAspectRatio='xMidYMin slice'
-          >
-            <path
-              d='M3960,0L0,0v1014h3975.5L3960,0Z'
-              transform='translate(-1.849932 0)'
-              fill='#fcfae5'
-            />
-            <BlueMountain />
-            <GoldMountain />
-            <TreeMountain />
-          </MobileSceneSvg>
-        </MobileSceneWrap>
-        <MobileLogoBadge />
+      {/* <MobileServices aria-label='HKW services mobile view'>
         <MobileTitle>OUR SPECIALTIES</MobileTitle>
         <MobileLayout>
           <MobileList>
@@ -86,12 +76,19 @@ export default function Services() {
             ))}
           </MobileList>
 
-          <MobileDescription>{activeEntry?.description}</MobileDescription>
+          <MobileDescription
+            role='region'
+            aria-label='Selected service description'
+            aria-live='polite'
+          >
+            {activeEntry?.description}
+          </MobileDescription>
         </MobileLayout>
         <MobileMarmot>
           <TopHatMarmot />
         </MobileMarmot>
-      </MobileServices>
+      </MobileServices> */}
     </ViewContainer>
+
   )
 }
