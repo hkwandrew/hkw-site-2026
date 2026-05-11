@@ -1,6 +1,6 @@
 export const WORK_SCENE_STATE = {
   blueMountain: {
-    container: { x: 1614.808069, y: 575.237842 },
+    container: { x: -2954.808069, y: -845.237842 },
     wrapper: { scaleX: 2.2, scaleY: 2.2 },
     pathD:
       'M886 1114.66C1146 821.5 1558 460 1818.25 337.25C1997.71 238.45 2066.63 230.22 2189.3 304.16C2378 454.5 3410 465 3979.5 1114.66H886Z',

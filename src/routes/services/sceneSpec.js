@@ -1,6 +1,6 @@
 export const SERVICES_SCENE_STATE = {
   blueMountain: {
-    container: { x: 2025.697877, y: 495 },
+    container: { x: -170, y: -198 },
     wrapper: { scaleX: 1.1, scaleY: 1.1 },
     pathD:
       'M886 1114.66C1146 821.5 1558 460 1818.25 337.25C1997.71 238.45 2066.63 230.22 2189.3 304.16C2378 454.5 3410 465 3979.5 1114.66H886Z',
@@ -24,8 +24,8 @@ export const SERVICES_SCENE_STATE = {
     wrapper: { scaleX: 2.93, scaleY: 2.34 },
   },
   upperField: {
-    container: { x: 2041.826439, y: 1585.616759 },
-    wrapper: { scaleX: 2, scaleY: 2 },
+    container: { x: 0, y: '200%' },
+    wrapper: { scaleX: 1.8, scaleY: 1.8 },
     viewports: {
       mobile: {
         container: { x: 2041.826439, y: '260%' },

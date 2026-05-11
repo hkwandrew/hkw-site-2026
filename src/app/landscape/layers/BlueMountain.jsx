@@ -26,7 +26,7 @@ const BlueMountain = () => (
       <path
         id='blue-mountain'
         d={BLUE_MOUNTAIN_PATH}
-        transform='translate(-1996.25,-625.516876)'
+        // transform='translate(-1996.25,-625.516876)'
         clipRule='evenodd'
         fill={theme.colors.blue.light}
         fillRule='evenodd'

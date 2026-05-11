@@ -1,6 +1,6 @@
 export const ROOTS_SCENE_STATE = {
   blueMountain: {
-    container: { x: 2014.808069, y: 120 },
+    container: { x: 18, y: '-100%' },
     wrapper: { scaleX: 1.22, scaleY: 1.18 },
     pathD:
       'M881.5 932.659C1065 579.41 1535.9 377.81 1706.18 314.81C1828.93 269.39 1876.07 265.61 1959.98 299.6C2155 375.41 3353.5 508.91 3975 932.659H881.5Z',
@@ -16,7 +16,7 @@ export const ROOTS_SCENE_STATE = {
     wrapper: { scaleX: 1.42, scaleY: 1.42 },
   },
   dkBlueMountain: {
-    container: { x: 2525.5, y: 156 },
+    container: { x: -140.5, y: -356 },
     wrapper: { scaleX: 1.18, scaleY: 1.18 },
   },
   treeMountain: {
