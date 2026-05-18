@@ -39,6 +39,7 @@ gsap.registerPlugin(Draggable)
 const DESKTOP_NAV_VISIBLE_COUNT = 8
 const DESKTOP_NAV_GAP = 24
 const DESKTOP_NAV_DRAG_THRESHOLD = 10
+const PAGE_REVEAL_DURATION_MS = 500
 const STUDY_TRANSITION_DURATION_MS = 420
 
 const normalizeIndex = (index, itemCount) =>
@@ -204,6 +205,8 @@ const WorkPage = () => {
   const [index, setIndex] = useState(0)
   const [desktopNavWindowStart, setDesktopNavWindowStart] = useState(0)
   const [isDesktopNavDragging, setIsDesktopNavDragging] = useState(false)
+  const [isForegroundEntryComplete, setIsForegroundEntryComplete] =
+    useState(false)
   const [shouldBlockNavClick, setShouldBlockNavClick] = useState(false)
   const [leavingIndex, setLeavingIndex] = useState(null)
   const [transitionDirection, setTransitionDirection] = useState(1)
@@ -232,6 +235,18 @@ const WorkPage = () => {
       ?.offset ?? 0
   const maxDesktopNavTrackOffset =
     desktopNavSnapPoints[desktopNavSnapPoints.length - 1]?.offset ?? 0
+
+  useEffect(() => {
+    if (!isActive) return undefined
+
+    const timer = window.setTimeout(() => {
+      setIsForegroundEntryComplete(true)
+    }, PAGE_REVEAL_DURATION_MS)
+
+    return () => {
+      window.clearTimeout(timer)
+    }
+  }, [isActive])
 
   useEffect(() => {
     if (leavingIndex === null) return undefined
@@ -407,6 +422,8 @@ const WorkPage = () => {
         viewBox='0 0 1440 1024'
         shapeRendering='geometricPrecision'
         textRendering='geometricPrecision'
+        $isActive={isActive}
+        $isEntryComplete={isForegroundEntryComplete}
       >
         <g transform='translate(-1181.222193 -8.108808)'>
           <path

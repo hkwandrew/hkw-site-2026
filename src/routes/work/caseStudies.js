@@ -138,8 +138,8 @@ const caseStudies = [
     image: rogueHeartImg,
     navIcon: rogueHeartNavDefault,
     heroImage: {
-      width: 640,
-      height: 432,
+      width: 715,
+      height: 483,
       aspectRatio: '715 / 483',
       maxWidth: 'none',
       x: 0,
@@ -172,19 +172,17 @@ const caseStudies = [
       'Branding',
       'Physical Spaces',
       'Email Marketing',
-      'SEO',
-      'SEM',
-      'Content Creation',
+      'SEO\, SEM\, Content Creation',
     ],
     image: convivaImg,
     navIcon: convivaNavDefault,
     heroImage: {
-      width: 500,
-      height: 420,
+      width: 537,
+      height: 451,
       aspectRatio: '537 / 451',
       maxWidth: 'none',
-      x: 20,
-      y: 20,
+      x: 80,
+      y: 100,
     },
     navButton: {
       desktop: {
@@ -216,11 +214,10 @@ const caseStudies = [
     image: scarImg,
     navIcon: scarNavDefault,
     heroImage: {
-      width: 620,
-      height: 346,
-      aspectRatio: '337 / 188',
-      maxWidth: 'none',
-      x: 0,
+      width: 647,
+      height: 376,
+      aspectRatio: '647 / 376',
+      x: 200,
       y: 54,
     },
     navButton: {
@@ -247,12 +244,11 @@ const caseStudies = [
     image: reltioImg,
     navIcon: reltioNavDefault,
     heroImage: {
-      width: 110,
-      height: 357,
-      aspectRatio: '49 / 159',
-      maxWidth: 'none',
-      x: 120,
-      y: 8,
+      width: 537,
+      height: 451,
+      aspectRatio: '537 / 451',
+      x: 280,
+      y: 110,
     },
     navButton: {
       desktop: {
@@ -285,12 +281,12 @@ const caseStudies = [
     image: inclusivelyImg,
     navIcon: inclusivelyNavDefault,
     heroImage: {
-      width: 500,
-      height: 382,
-      aspectRatio: '531 / 406',
+      width: 461,
+      height: 352,
+      aspectRatio: '203 / 155',
       maxWidth: 'none',
-      x: 20,
-      y: 42,
+      x: 100,
+      y: 100,
     },
     navButton: {
       desktop: {
@@ -316,12 +312,12 @@ const caseStudies = [
     image: optableImg,
     navIcon: optableNavDefault,
     heroImage: {
-      width: 453,
-      height: 380,
+      width: 537,
+      height: 451,
       aspectRatio: '537 / 451',
-      maxWidth: 'none',
-      x: 0,
-      y: 16,
+
+      x: 330,
+      y: 100,
     },
     navButton: {
       desktop: {
@@ -347,16 +343,15 @@ const caseStudies = [
     image: maChImg,
     navIcon: maChNavDefault,
     heroImage: {
-      width: 600,
-      height: 329,
-      aspectRatio: '325 / 178',
-      maxWidth: 'none',
-      x: 0,
-      y: 78,
+      width: 649.351,
+      height: 356,
+      aspectRatio: '649.351 / 356',
+      x: 235,
+      y: 88,
     },
     navButton: {
       desktop: {
-        width: 120,
+        width: 649,
         height: 120,
         x: 0,
         y: 35,

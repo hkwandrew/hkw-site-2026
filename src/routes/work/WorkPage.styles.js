@@ -206,7 +206,7 @@ const toCssAngle = (value, fallback) => {
 }
 
 const toHeroWidth = (value) => {
-  if (value === undefined) return `clamp(320px, calc(100vw - 660px), 780px)`
+  // if (value === undefined) return `clamp(320px, calc(100vw - 660px), 780px)`
 
   return toCssLength(value, 'auto')
 }
@@ -416,12 +416,10 @@ export const HeroStage = styled.div`
 
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
     flex: 1 1 auto;
-    ${'' /* height: 460px; */}
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     width: 100%;
-    ${'' /* height: 260px; */}
   }
 `
 
@@ -440,7 +438,6 @@ export const HeroImage = styled.div`
   img {
     display: block;
     width: 100%;
-    ${'' /* height: 100%; */}
     aspect-ratio: ${({ $layout }) => $layout?.aspectRatio ?? 'auto'};
     transform: rotate(
       ${({ $layout }) => toCssAngle($layout?.rotation, '0deg')}
@@ -448,7 +445,6 @@ export const HeroImage = styled.div`
     transform-origin: center;
     translate: ${({ $layout }) => toCssLength($layout?.x, '0')}
       ${({ $layout }) => toCssLength($layout?.y, '0')};
-    ${'' /* filter: drop-shadow(4px 8px 16px rgba(0, 0, 0, 0.2)); */}
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
@@ -497,6 +493,12 @@ export const WorkDirtForeground = styled.svg`
   height: auto;
   overflow: visible;
   pointer-events: none;
+  transform: translateY(
+    ${({ $isActive, $isEntryComplete }) =>
+      !$isActive && !$isEntryComplete ? '-20px' : '0'}
+  );
+  transition: transform 500ms ease;
+  will-change: transform;
 `
 
 export const DesktopNavRail = styled.div`
