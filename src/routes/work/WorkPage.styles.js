@@ -193,10 +193,29 @@ const getStudyPaneMotion = ({ $direction, $state }) => {
   `
 }
 
+const toCssLength = (value, fallback) => {
+  if (value === undefined) return fallback
+
+  return typeof value === 'number' ? `${value}px` : value
+}
+
+const toCssAngle = (value, fallback) => {
+  if (value === undefined) return fallback
+
+  return typeof value === 'number' ? `${value}deg` : value
+}
+
+const toHeroWidth = (value) => {
+  if (value === undefined) return `clamp(320px, calc(100vw - 660px), 780px)`
+
+  return toCssLength(value, 'auto')
+}
+
 export const Page = styled(ViewContainer)`
   overflow: hidden;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    background: ${({ theme }) => theme.colors.yellow.light};
     overflow-y: auto;
   }
 `
@@ -204,13 +223,13 @@ export const Page = styled(ViewContainer)`
 export const MainContent = styled.div`
   flex: 1;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: flex-start;
   min-height: 0;
-  padding: 190px 120px 186px;
+  padding: min(32.8125vh, 336px) 0 0 clamp(132px, 17.5vw, 252px);
 
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    padding: 180px 72px 190px;
+    padding: 252px 72px 190px clamp(132px, 17.5vw, 180px);
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
@@ -221,14 +240,16 @@ export const MainContent = styled.div`
 
 export const StudyArea = styled.div`
   display: flex;
-  // align-items: center;
-  gap: 56px;
-  width: min(100%, 1150px);
+  align-items: flex-start;
+  gap: 64px;
+  width: min(calc(100vw - clamp(132px, 17.5vw, 252px)), 1044px);
+  ${'' /* height: 489px; */}
   min-height: 0;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
     gap: 36px;
     width: min(100%, 1000px);
+    height: 460px;
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
@@ -236,40 +257,55 @@ export const StudyArea = styled.div`
     align-items: stretch;
     gap: 24px;
     width: 100%;
+    height: auto;
   }
 `
 
 export const StudyTextStage = styled.div`
-  flex: 0 0 365px;
+  ${'' /* flex: 0 0 365px; */}
   display: grid;
   align-content: start;
   min-width: 0;
+  ${'' /* min-height: 489px; */}
 
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
     flex-basis: 340px;
-  }
+    min-height: 460px;
+  ${'' /* } */}
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     flex-basis: auto;
     width: 100%;
     gap: 16px;
+    min-height: 0;
   }
 `
 
 export const StudyText = styled.div`
   grid-area: 1 / 1;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  display: grid;
+  grid-template-rows: auto auto auto 1fr;
+  row-gap: ${({ $compactCopy }) => ($compactCopy ? '40px' : '45px')};
   min-width: 0;
+  ${'' /* min-height: 489px; */}
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    gap: 16px;
+    row-gap: 16px;
+    min-height: 0;
   }
 `
 
 export const AnimatedStudyText = styled(StudyText)`
   ${getStudyPaneMotion}
+  display: flex;
+  flex-direction: column;
+  gap: 45px;
+
+  .quote-and-attribution {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     ${({ $direction, $state }) => {
@@ -291,8 +327,14 @@ export const AnimatedStudyText = styled(StudyText)`
 `
 
 export const ClientName = styled.h2`
-  ${applyTypography('h2')}
+  font-size: ${({ theme }) => theme.typography.h4.size};
+  text-box: ${({ theme }) => theme.typography.textBox};
+  font-weight: ${({ theme }) => theme.font.weight.bold};
+  font-variation-settings:
+    'wdth' ${({ theme }) => theme.font.width.condensed},
+    'wght' ${({ theme }) => theme.font.weight.bold};
   line-height: 1;
+  letter-spacing: -0.96px;
   color: ${({ theme }) => theme.colors.orange.base};
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
@@ -300,8 +342,19 @@ export const ClientName = styled.h2`
   }
 `
 
+export const QuoteAndAttribution = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  color: ${({ theme }) => theme.colors.blue.dark};
+`
+
 export const Quote = styled.p`
   ${applyTypography('h5')}
+  letter-spacing: -0.24px !important;
+  font-variation-settings:
+    'wdth' ${({ theme }) => theme.font.width.semicondensed},
+    'wght' ${({ theme }) => theme.font.weight.medium};
   color: ${({ theme }) => theme.colors.blue.dark};
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
@@ -310,7 +363,14 @@ export const Quote = styled.p`
 `
 
 export const Attribution = styled.p`
-  ${applyTypography('bodyMedium')}
+  font-size: ${({ theme }) => theme.typography.bodyMedium.size};
+  font-weight: ${({ theme }) => theme.font.weight.medium};
+  font-variation-settings:
+    'wdth' ${({ theme }) => theme.font.width.semicondensed},
+    'wght' ${({ theme }) => theme.font.weight.regular},
+    'slnt' ${({ theme }) => theme.font.slant.italic};
+  line-height: 1.1;
+
   font-style: italic;
   color: ${({ theme }) => theme.colors.blue.dark};
   opacity: 0.8;
@@ -326,14 +386,14 @@ export const Services = styled.ul`
   gap: 0;
   list-style: none;
   padding: 0;
-  margin: 0;
 `
 
 export const ServiceTag = styled.li`
-  ${applyTypography('bodyMedium')}
+  font-size: ${({ $compactCopy }) => ($compactCopy ? '16px' : '18px')};
+  letter-spacing: 0;
   font-weight: ${({ theme }) => theme.font.weight.semibold};
   font-variation-settings:
-    'wdth' ${({ theme }) => theme.typography.bodyMedium.width},
+    'wdth' ${({ theme }) => theme.font.width.regular},
     'wght' ${({ theme }) => theme.font.weight.semibold};
   line-height: 1.5;
   color: ${({ theme }) => theme.colors.blue.dark};
@@ -344,49 +404,65 @@ export const ServiceTag = styled.li`
 `
 
 export const HeroStage = styled.div`
-  flex: 1;
+  position: relative;
+  flex: 0 0 60.5%;
+  height: 841px;
   min-width: 0;
   display: grid;
-  align-items: center;
-  justify-items: center;
+  align-items: start;
+  justify-items: start;
   min-height: 0;
+  overflow: visible;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    flex: 1 1 auto;
+    ${'' /* height: 460px; */}
+  }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     width: 100%;
+    ${'' /* height: 260px; */}
   }
 `
 
 export const HeroImage = styled.div`
+  position: absolute;
+  inset: 0;
   grid-area: 1 / 1;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: flex-start;
   pointer-events: none;
-
-  [data-work-example='celdf'] img {
-    width: 800.175px;
-    height: 617.278px;
-    transform: rotate(-0.481deg);
-    aspect-ratio: 35/27;
-    translate: 0 20px;
-  }
+  overflow: visible;
+  width: ${({ $layout }) => toHeroWidth($layout?.width)};
+  max-width: ${({ $layout }) => toCssLength($layout?.maxWidth, 'none')};
 
   img {
-    ${
-      '' /* width: min(100%, 720px);
-    max-height: 520px;
-    object-fit: contain;
-    transform: rotate(-0.5deg); */
-    }
+    display: block;
+    width: 100%;
+    ${'' /* height: 100%; */}
+    aspect-ratio: ${({ $layout }) => $layout?.aspectRatio ?? 'auto'};
+    transform: rotate(
+      ${({ $layout }) => toCssAngle($layout?.rotation, '0deg')}
+    );
+    transform-origin: center;
+    translate: ${({ $layout }) => toCssLength($layout?.x, '0')}
+      ${({ $layout }) => toCssLength($layout?.y, '0')};
     ${'' /* filter: drop-shadow(4px 8px 16px rgba(0, 0, 0, 0.2)); */}
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    justify-content: flex-end;
+    position: relative;
+    align-items: flex-start;
+    justify-content: flex-start;
 
     img {
-      width: min(100%, 280px);
-      max-height: 220px;
+      width: min(100%, 360px);
+      max-width: 100%;
+      max-height: 260px;
+      object-fit: contain;
+      transform: none;
+      translate: 0 0;
     }
   }
 `
@@ -413,6 +489,16 @@ export const AnimatedHeroImage = styled(HeroImage)`
   }
 `
 
+export const WorkDirtForeground = styled.svg`
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  pointer-events: none;
+`
+
 export const DesktopNavRail = styled.div`
   position: absolute;
   bottom: 12px;
@@ -426,6 +512,12 @@ export const DesktopNavRail = styled.div`
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     display: none;
+  }
+
+  @media (min-width: ${({ theme }) =>
+      theme.breakpoints.mobile}) and (max-width: ${({ theme }) =>
+      theme.breakpoints.tablet}) {
+    bottom: -36px;
   }
 `
 
@@ -617,10 +709,7 @@ export const MarmotWrapper = styled.div`
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    top: 110px;
-    right: 12px;
-    transform: scale(0.74);
-    transform-origin: top right;
+    display: none;
   }
 `
 
@@ -629,9 +718,13 @@ export const DesktopArrowButton = styled(ArrowButton)`
   top: 50%;
   z-index: 3;
   pointer-events: auto;
-  transform: translateY(-50%);
+  transform: translateY(-100%);
 
-  ${({ $side }) => ($side === 'left' ? 'left: 24px;' : 'right: 24px;')}
+  ${({ $side }) => ($side === 'left' ? 'left: 68px;' : 'right: 68px;')}
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    ${({ $side }) => ($side === 'left' ? 'left: 24px;' : 'right: 24px;')}
+  }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     display: none;

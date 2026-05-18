@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import gsap from 'gsap'
 import Draggable from 'gsap/Draggable'
 import usePageActive from '@/shared/hooks/usePageActive'
+import DirtLayer from '@/app/landscape/layers/DirtLayer'
 import caseStudies from './caseStudies'
 import { resolveNavButtonLayout } from './navButtonLayout'
 import WorkMarmot from './WorkMarmot'
@@ -25,10 +26,12 @@ import {
   NavVisual,
   Page,
   Quote,
+  QuoteAndAttribution,
   ServiceTag,
   Services,
   StudyArea,
   StudyTextStage,
+  WorkDirtForeground,
 } from './WorkPage.styles'
 
 gsap.registerPlugin(Draggable)
@@ -89,15 +92,18 @@ const getDesktopNavSnapPoints = (widths, itemCount) => {
 }
 
 const getClosestDesktopNavSnapPoint = (offset, snapPoints) =>
-  snapPoints.reduce((closestPoint, point) => {
-    if (
-      Math.abs(point.offset - offset) < Math.abs(closestPoint.offset - offset)
-    ) {
-      return point
-    }
+  snapPoints.reduce(
+    (closestPoint, point) => {
+      if (
+        Math.abs(point.offset - offset) < Math.abs(closestPoint.offset - offset)
+      ) {
+        return point
+      }
 
-    return closestPoint
-  }, snapPoints[0] ?? { start: 0, offset: 0 })
+      return closestPoint
+    },
+    snapPoints[0] ?? { start: 0, offset: 0 },
+  )
 
 const renderNavButtons = (currentIndex, handleSelect, compact = false) =>
   caseStudies.map((caseStudy, itemIndex) => {
@@ -136,6 +142,8 @@ const renderNavButtons = (currentIndex, handleSelect, compact = false) =>
 
 const renderStudyPane = (study, state, direction) => {
   const attributionLabel = study.attribution.replace(/^[—-]\s*/, '')
+  const hasCompactCopy = Boolean(study.isCompact)
+  const hasDenseServices = study.services.length > 4
 
   return (
     <AnimatedStudyText
@@ -148,13 +156,24 @@ const renderStudyPane = (study, state, direction) => {
       data-work-example={study.id}
       data-work-example-region='copy'
       data-testid={state === 'active' ? 'work-study-active' : undefined}
+      $compactCopy={hasCompactCopy}
     >
-      <ClientName>{study.name}</ClientName>
-      <Quote>{study.quote}</Quote>
-      <Attribution>&mdash;{attributionLabel}</Attribution>
-      <Services>
+      <ClientName $compactCopy={hasCompactCopy}>{study.name}</ClientName>
+      <QuoteAndAttribution>
+        <Quote $compactCopy={hasCompactCopy}>{study.quote}</Quote>
+        <Attribution $compactCopy={hasCompactCopy}>
+          &mdash;{attributionLabel}
+        </Attribution>
+      </QuoteAndAttribution>
+      <Services $compactCopy={hasCompactCopy}>
         {study.services.map((service) => (
-          <ServiceTag key={`${study.id}-${state}-${service}`}>{service}</ServiceTag>
+          <ServiceTag
+            key={`${study.id}-${state}-${service}`}
+            $compactCopy={hasCompactCopy}
+            $denseServices={hasDenseServices}
+          >
+            {service}
+          </ServiceTag>
         ))}
       </Services>
     </AnimatedStudyText>
@@ -173,6 +192,7 @@ const renderHeroPane = (study, state, direction) => {
       data-study-pane={state}
       data-work-example={study.id}
       data-work-example-region='hero'
+      $layout={study.heroImage}
     >
       <img src={study.image} alt={study.name} />
     </AnimatedHeroImage>
@@ -285,8 +305,9 @@ const WorkPage = () => {
         setIsDesktopNavDragging(true)
       },
       onDragEnd() {
+        const currentX = draggable?.x ?? 0
         const nearestSnapPoint = getClosestDesktopNavSnapPoint(
-          -this.x,
+          -currentX,
           desktopNavSnapPoints,
         )
 
@@ -361,7 +382,8 @@ const WorkPage = () => {
       <MainContent>
         <StudyArea>
           <StudyTextStage>
-            {leavingStudy && renderStudyPane(leavingStudy, 'leaving', transitionDirection)}
+            {leavingStudy &&
+              renderStudyPane(leavingStudy, 'leaving', transitionDirection)}
             {renderStudyPane(study, 'active', transitionDirection)}
           </StudyTextStage>
 
@@ -372,11 +394,34 @@ const WorkPage = () => {
           </MobileNavRail> */}
 
           <HeroStage>
-            {leavingStudy && renderHeroPane(leavingStudy, 'leaving', transitionDirection)}
+            {leavingStudy &&
+              renderHeroPane(leavingStudy, 'leaving', transitionDirection)}
             {renderHeroPane(study, 'active', transitionDirection)}
           </HeroStage>
         </StudyArea>
       </MainContent>
+
+      <WorkDirtForeground
+        aria-hidden='true'
+        focusable='false'
+        viewBox='0 0 1440 1024'
+        shapeRendering='geometricPrecision'
+        textRendering='geometricPrecision'
+      >
+        <g transform='translate(-1181.222193 -8.108808)'>
+          <path
+            transform='translate(1200,190)'
+            d='M1788 1594.81L-192 1597.59V697.728C-166.196 700.073 -140.784 700.875 -114.511 699.024C-81.6699 696.679 -49.2198 691.866 -16.3006 689.583C18.3388 687.238 53.4474 687.793 88.1651 689.212C122.179 690.508 156.036 693.1 189.894 695.63C223.83 698.16 257.922 699.95 291.701 703.714C325.246 707.417 358.556 712.168 392.414 714.328C423.534 716.303 453.639 713.65 484.134 709.392C517.053 704.763 549.268 700.135 582.735 698.345C617.296 696.494 651.857 694.704 686.419 693.1C755.307 689.829 824.273 687.546 893.317 687.546C962.518 687.608 1031.72 690.323 1100.45 696.679C1131.81 699.58 1161.83 702.11 1193.5 700.999C1223.53 699.95 1253.47 696.803 1283.11 693.47C1327.21 688.472 1371.15 681.128 1415.96 684.399C1438.71 686.065 1461.15 689.583 1483.75 692.236C1505.41 694.766 1527.38 696.432 1549.2 698.037C1627.24 703.961 1710.51 706.8 1788 695.692V1594.81Z'
+            fill='#FB9D38'
+          ></path>
+          <g transform='translate(1181, 1000)'>
+            <DirtLayer
+              showWorkDirtLayer
+              containerId='work-dirt-foreground__container'
+            />
+          </g>
+        </g>
+      </WorkDirtForeground>
 
       <DesktopNavRail>
         <DesktopNavViewport

@@ -273,7 +273,7 @@ export const DesktopQuoteName = styled.p`
   line-height: 0.8;
   text-transform: none;
   font-variation-settings:
-    'wdth' ${({ theme }) => theme.font.width.normal},
+    'wdth' ${({ theme }) => theme.font.width.regular},
     'wght' ${({ theme }) => theme.font.weight.medium};
   ${({ $layer }) => desktopMetaPalette[$layer]}
 `
@@ -411,7 +411,7 @@ export const MobileQuoteText = styled.p`
   font-style: italic;
   text-transform: none;
   font-variation-settings:
-    'wdth' ${({ theme }) => theme.font.width.normal},
+    'wdth' ${({ theme }) => theme.font.width.regular},
     'wght' ${({ theme }) => theme.font.weight.medium};
 `
 

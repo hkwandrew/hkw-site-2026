@@ -18,9 +18,12 @@ const RootsDirtLayer = styled.g`
 
 const WorkDirtLayer = styled.g``
 
-const DirtLayer = ({ showWorkDirtLayer = false }) => {
+const DirtLayer = ({
+  showWorkDirtLayer = false,
+  containerId = 'dirt-layer__container',
+}) => {
   return (
-    <DirtLayerContainer id='dirt-layer__container'>
+    <DirtLayerContainer id={containerId}>
       {showWorkDirtLayer ? (
         <WorkDirtLayer
           className='work-dirt-layer'

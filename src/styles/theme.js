@@ -39,7 +39,11 @@ const theme = {
     },
     width: {
       condensed: 68,
-      normal: 100,
+      semicondensed: 90,
+      regular: 100,
+    },
+    slant: {
+      italic: '-12',
     },
   },
   typography: {
