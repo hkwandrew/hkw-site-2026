@@ -7,8 +7,7 @@ import scarImg from './assets/work/scar.png'
 import computerCareImg from './assets/work/computer-care.png'
 import inclusivelyImg from './assets/work/inclusively.png'
 import reltioImg from './assets/work/reltio.png'
-import optableImg from './assets/work/optable.png'
-import maChImg from './assets/work/ma-ch.png'
+// import optableImg from './assets/work/optable.png'
 import celdfNavDefault from './assets/work-nav/celdf-default.png'
 import voxusNavDefault from './assets/work-nav/voxus-pr-default.png'
 import lumiereNavDefault from './assets/work-nav/lumiere-default.png'
@@ -18,15 +17,16 @@ import scarNavDefault from './assets/work-nav/scar-default.png'
 import computerCareDefault from './assets/work-nav/computer-care-default.png'
 import reltioNavDefault from './assets/work-nav/reltio-default.png'
 import inclusivelyNavDefault from './assets/work-nav/inclusively-default.png'
-import optableNavDefault from './assets/work-nav/optable-default.svg'
-import maChNavDefault from './assets/work-nav/ma-ch-default.png'
+// import optableNavDefault from './assets/work-nav/optable-default.svg'
 
-// Layout values are offsets inside the shared desktop hero stage.
+// Hero image layout values are offsets inside the shared desktop hero stage.
+// Optional flexBasis/maxWidth values tune the desktop copy stage per study.
 const caseStudies = [
   {
     id: 'celdf',
     name: 'CELDF',
     isCompact: true,
+    flexBasis: 'calc(39.5% - 64px)',
     quote:
       '"HKW exceeded our expectations in their creative design and development of our branding, and in providing us with innovative web development and solutions."',
     attribution: 'Emelyn Lybarger, Outreach Coordinator',
@@ -39,7 +39,7 @@ const caseStudies = [
       aspectRatio: '800.18 / 617.28',
       maxWidth: 'none',
       rotation: -0.491,
-      x: -45,
+      x: -65,
       y: -55,
     },
     navButton: {
@@ -60,6 +60,7 @@ const caseStudies = [
   {
     id: 'voxus',
     name: 'Voxus PR',
+    flexBasis: 'calc(38.5% - 64px)',
     quote:
       '“We communicate for a living, but HKW helped us crystalize our brand message.”',
     attribution: 'Kevin Pedraja, Partner at Voxus PR',
@@ -172,7 +173,7 @@ const caseStudies = [
       'Branding',
       'Physical Spaces',
       'Email Marketing',
-      'SEO\, SEM\, Content Creation',
+      'SEO, SEM, Content Creation',
     ],
     image: convivaImg,
     navIcon: convivaNavDefault,
@@ -303,67 +304,37 @@ const caseStudies = [
       },
     },
   },
-  {
-    id: 'optable',
-    name: 'Optable',
-    quote: 'TBD',
-    attribution: 'TBD',
-    services: ['Web Design', 'Illustration'],
-    image: optableImg,
-    navIcon: optableNavDefault,
-    heroImage: {
-      width: 537,
-      height: 451,
-      aspectRatio: '537 / 451',
+  // {
+  //   id: 'optable',
+  //   name: 'Optable',
+  //   quote: 'TBD',
+  //   attribution: 'TBD',
+  //   services: ['Web Design', 'Illustration'],
+  //   image: optableImg,
+  //   navIcon: optableNavDefault,
+  //   heroImage: {
+  //     width: 537,
+  //     height: 451,
+  //     aspectRatio: '537 / 451',
 
-      x: 330,
-      y: 100,
-    },
-    navButton: {
-      desktop: {
-        width: 115,
-        height: 115,
-        x: 0,
-        y: 45,
-      },
-      mobile: {
-        width: 56,
-        height: 56,
-        x: 0,
-        y: 0,
-      },
-    },
-  },
-  {
-    id: 'ma-ch',
-    name: 'MA-CH',
-    quote: 'TBD',
-    attribution: 'TBD',
-    services: ['Web Design'],
-    image: maChImg,
-    navIcon: maChNavDefault,
-    heroImage: {
-      width: 649.351,
-      height: 356,
-      aspectRatio: '649.351 / 356',
-      x: 235,
-      y: 88,
-    },
-    navButton: {
-      desktop: {
-        width: 649,
-        height: 120,
-        x: 0,
-        y: 35,
-      },
-      mobile: {
-        width: 56,
-        height: 56,
-        x: 0,
-        y: 0,
-      },
-    },
-  },
+  //     x: 330,
+  //     y: 100,
+  //   },
+  //   navButton: {
+  //     desktop: {
+  //       width: 115,
+  //       height: 115,
+  //       x: 0,
+  //       y: 45,
+  //     },
+  //     mobile: {
+  //       width: 56,
+  //       height: 56,
+  //       x: 0,
+  //       y: 0,
+  //     },
+  //   },
+  // },
   {
     id: 'computercare',
     name: 'ComputerCare',

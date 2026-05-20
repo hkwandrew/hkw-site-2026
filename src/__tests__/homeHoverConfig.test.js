@@ -5,13 +5,13 @@ import { HOME_HOVER_REGION } from '@/routes/home/homeHoverRegions'
 describe('home hover registry', () => {
   it('returns the registered hover position for each mountain region', () => {
     expect(getHomeHoverRegionPosition(HOME_HOVER_REGION.blueMountain)).toEqual({
-      x: -279,
-      y: -326,
+      x: 1717.808069,
+      y: 299.237842,
     })
     expect(
       getHomeHoverRegionPosition(HOME_HOVER_REGION.dkBlueMountain),
     ).toEqual({
-      x: 2280.5,
+      x: 1903.5,
       y: 400.000031,
     })
     expect(getHomeHoverRegionPosition(HOME_HOVER_REGION.goldMountain)).toEqual({

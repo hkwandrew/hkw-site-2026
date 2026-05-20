@@ -40,18 +40,10 @@ const DESKTOP_NAV_VISIBLE_COUNT = 8
 const DESKTOP_NAV_GAP = 24
 const DESKTOP_NAV_DRAG_THRESHOLD = 10
 const PAGE_REVEAL_DURATION_MS = 500
-const STUDY_TRANSITION_DURATION_MS = 420
+const STUDY_FADE_DURATION_MS = 420
 
 const normalizeIndex = (index, itemCount) =>
   ((index % itemCount) + itemCount) % itemCount
-
-const getStudyDirection = (currentIndex, nextIndex, itemCount) => {
-  if (itemCount <= 1 || currentIndex === nextIndex) return 0
-  if (currentIndex === itemCount - 1 && nextIndex === 0) return 1
-  if (currentIndex === 0 && nextIndex === itemCount - 1) return -1
-
-  return nextIndex > currentIndex ? 1 : -1
-}
 
 const getDesktopNavWindowStart = (index, itemCount) => {
   const visibleCount = Math.min(DESKTOP_NAV_VISIBLE_COUNT, itemCount)
@@ -141,7 +133,7 @@ const renderNavButtons = (currentIndex, handleSelect, compact = false) =>
     )
   })
 
-const renderStudyPane = (study, state, direction) => {
+const renderStudyPane = (study, state) => {
   const attributionLabel = study.attribution.replace(/^[—-]\s*/, '')
   const hasCompactCopy = Boolean(study.isCompact)
   const hasDenseServices = study.services.length > 4
@@ -149,9 +141,8 @@ const renderStudyPane = (study, state, direction) => {
   return (
     <AnimatedStudyText
       className={state}
-      key={`${state}-${study.id}`}
+      key={study.id}
       $state={state}
-      $direction={direction}
       aria-hidden={state === 'leaving' ? 'true' : undefined}
       data-study-pane={state}
       data-work-example={study.id}
@@ -181,14 +172,13 @@ const renderStudyPane = (study, state, direction) => {
   )
 }
 
-const renderHeroPane = (study, state, direction) => {
+const renderHeroPane = (study, state) => {
   if (!study.image) return null
 
   return (
     <AnimatedHeroImage
-      key={`${state}-${study.id}`}
+      key={study.id}
       $state={state}
-      $direction={direction}
       aria-hidden={state === 'leaving' ? 'true' : undefined}
       data-study-pane={state}
       data-work-example={study.id}
@@ -203,18 +193,17 @@ const renderHeroPane = (study, state, direction) => {
 const WorkPage = () => {
   const isActive = usePageActive()
   const [index, setIndex] = useState(0)
+  const [displayIndex, setDisplayIndex] = useState(0)
+  const [studyPhase, setStudyPhase] = useState('active')
   const [desktopNavWindowStart, setDesktopNavWindowStart] = useState(0)
   const [isDesktopNavDragging, setIsDesktopNavDragging] = useState(false)
   const [isForegroundEntryComplete, setIsForegroundEntryComplete] =
     useState(false)
   const [shouldBlockNavClick, setShouldBlockNavClick] = useState(false)
-  const [leavingIndex, setLeavingIndex] = useState(null)
-  const [transitionDirection, setTransitionDirection] = useState(1)
   const desktopNavTrackRef = useRef(null)
   const desktopNavDraggableRef = useRef(null)
   const releaseNavClickBlockTimerRef = useRef(null)
-  const study = caseStudies[index]
-  const leavingStudy = leavingIndex === null ? null : caseStudies[leavingIndex]
+  const study = caseStudies[displayIndex]
   const desktopNavWidths = useMemo(
     () =>
       caseStudies.map(
@@ -249,16 +238,29 @@ const WorkPage = () => {
   }, [isActive])
 
   useEffect(() => {
-    if (leavingIndex === null) return undefined
+    if (studyPhase === 'leaving') {
+      const timer = window.setTimeout(() => {
+        setDisplayIndex(index)
+        setStudyPhase('entering')
+      }, STUDY_FADE_DURATION_MS)
 
-    const timer = window.setTimeout(() => {
-      setLeavingIndex(null)
-    }, STUDY_TRANSITION_DURATION_MS)
-
-    return () => {
-      window.clearTimeout(timer)
+      return () => {
+        window.clearTimeout(timer)
+      }
     }
-  }, [index, leavingIndex])
+
+    if (studyPhase === 'entering') {
+      const timer = window.setTimeout(() => {
+        setStudyPhase('active')
+      }, STUDY_FADE_DURATION_MS)
+
+      return () => {
+        window.clearTimeout(timer)
+      }
+    }
+
+    return undefined
+  }, [index, studyPhase])
 
   useEffect(() => {
     if (releaseNavClickBlockTimerRef.current) {
@@ -356,10 +358,7 @@ const WorkPage = () => {
 
     if (normalizedIndex === index) return
 
-    setLeavingIndex(index)
-    setTransitionDirection(
-      getStudyDirection(index, normalizedIndex, caseStudies.length),
-    )
+    setStudyPhase('leaving')
     setDesktopNavWindowStart(
       getDesktopNavWindowStart(normalizedIndex, caseStudies.length),
     )
@@ -396,10 +395,8 @@ const WorkPage = () => {
 
       <MainContent>
         <StudyArea>
-          <StudyTextStage>
-            {leavingStudy &&
-              renderStudyPane(leavingStudy, 'leaving', transitionDirection)}
-            {renderStudyPane(study, 'active', transitionDirection)}
+          <StudyTextStage $layout={study}>
+            {renderStudyPane(study, studyPhase)}
           </StudyTextStage>
 
           {/* <MobileNavRail>
@@ -409,9 +406,7 @@ const WorkPage = () => {
           </MobileNavRail> */}
 
           <HeroStage>
-            {leavingStudy &&
-              renderHeroPane(leavingStudy, 'leaving', transitionDirection)}
-            {renderHeroPane(study, 'active', transitionDirection)}
+            {renderHeroPane(study, studyPhase)}
           </HeroStage>
         </StudyArea>
       </MainContent>

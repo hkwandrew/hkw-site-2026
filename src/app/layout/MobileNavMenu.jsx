@@ -9,11 +9,12 @@ const ToggleButton = styled.button`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 22px;
   color: ${({ theme }) => theme.colors.blue.dark};
   pointer-events: auto;
   z-index: 90;
+  translate: 0 -16px;
 
   svg {
     width: 24px;

@@ -100,7 +100,8 @@ export default function Home() {
           </Content>
           <Footer>
             <FooterText>
-              &copy; 2026 HKW &nbsp;|&nbsp;{' '}
+              <span>&copy; 2026 HKW</span>
+              <span className='separator'> | </span>
               <a href='https://hkw.io/policy'>Policies</a>
             </FooterText>
           </Footer>

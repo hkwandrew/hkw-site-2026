@@ -324,7 +324,23 @@ export const MobilePanels = styled.div`
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}),
     (prefers-reduced-motion: reduce) {
     display: block;
+    position: relative;
   }
+`
+
+export const MobileStaticScene = styled.div`
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  height: 100dvh;
+  overflow: hidden;
+  pointer-events: none;
+`
+
+export const MobileQuotePanels = styled.div`
+  position: relative;
+  z-index: 2;
+  margin-top: -100dvh;
 `
 
 export const MobilePanel = styled.section`
@@ -337,10 +353,11 @@ export const MobilePanel = styled.section`
 
 export const MobileHeroCloud = styled.div`
   position: absolute;
-  left: 50%;
-  top: 126px;
+  top: 102px;
   z-index: 1;
-  width: max(148vw, 582px);
+  width: 820.974px;
+  height: 419.984px;
+  left: 50%;
   transform: translateX(-50%);
 
   svg {

@@ -315,7 +315,7 @@ export const Content = styled.div`
   gap: 8px;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    padding: 70% 20px 0;
+    padding: 57% 20px 0;
     position: unset;
   }
 `
@@ -359,9 +359,14 @@ export const Footer = styled.footer`
   left: 119px;
   z-index: 5;
   pointer-events: auto;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    padding: 215px 0 0 20px;
+    position: unset;
+  }
 `
 
-export const FooterText = styled(BodySmall)`
+export const FooterText = styled.div`
   color: ${({ theme }) => theme.colors.yellow.light};
 
   a {
@@ -372,18 +377,29 @@ export const FooterText = styled(BodySmall)`
     text-underline-offset: auto;
     text-underline-position: from-font;
   }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+
+    .separator {
+      display: none;
+    }
+  }
 `
 
 // Marmot scene
 export const HomeMarmotWrapper = styled.div`
   position: absolute;
-  right: -75.38px;
-  bottom: -36.36px;
+  right: -74.21px;
+  bottom: -40.61px;
   width: 681px;
   aspect-ratio: 681 / 453;
   z-index: 5;
   overflow: visible;
   pointer-events: none;
+  transform: rotate(-0.298deg);
 
   #marmot-character-intro,
   #marmot-character-idle,
@@ -476,15 +492,13 @@ export const HomeMarmotWrapper = styled.div`
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    right: -128px;
-    bottom: 100px;
     width: min(478px, 122vw);
   }
 
   @media (max-width: ${({ theme }) =>
       theme.breakpoints.mobile}) and (max-height: 760px) {
     right: -127px;
-    bottom: -40px;
+    bottom: -38px;
     width: 457px;
   }
 `
@@ -492,8 +506,7 @@ export const HomeMarmotWrapper = styled.div`
 export const MarmotCharacterWrap = styled.div`
   position: relative;
   z-index: 1;
-  width: 100%;
-  height: 100%;
+  transform: rotate(-0.298deg);
 
   svg {
     width: 100%;
@@ -537,6 +550,10 @@ export const MarmotCharacterWrap = styled.div`
       transform: none;
       opacity: 1;
     }
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    transform: rotate(-2.012deg);
   }
 `
 

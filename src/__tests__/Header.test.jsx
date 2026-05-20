@@ -62,6 +62,18 @@ describe('Header', () => {
     )
   })
 
+  it('uses the gold logo background on the work page', () => {
+    const { container } = renderHeader(['/work'], {
+      contentPathname: '/work',
+    })
+
+    const logoLink = container.querySelector('header > div a[href="/"]')
+
+    expect(getComputedStyle(logoLink).backgroundColor).toBe(
+      'rgb(250, 156, 56)',
+    )
+  })
+
   it('hides the page label immediately and fades it in when the page is ready', () => {
     const { rerender } = renderHeader(['/services'], {
       contentPathname: '/services',

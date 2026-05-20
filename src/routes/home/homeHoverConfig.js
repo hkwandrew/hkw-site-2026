@@ -4,8 +4,8 @@ const EMPTY_HOVER_POSITION = Object.freeze({})
 
 const HOME_HOVER_POSITION_REGISTRY = Object.freeze({
   [HOME_HOVER_REGION.blueMountain]: Object.freeze({
-    x: -279,
-    y: -326,
+    x: 1717.808069,
+    y: 299.237842,
   }),
   [HOME_HOVER_REGION.contact]: Object.freeze({
     x: -50,

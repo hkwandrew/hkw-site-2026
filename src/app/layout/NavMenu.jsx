@@ -39,7 +39,9 @@ const Items = styled.ul`
   display: flex;
   background-color: ${({ theme }) => theme.colors.orange.dark};
   gap: ${({ theme }) => theme.components.navTabs.gap};
-  min-height: ${({ theme }) => theme.components.navTabs.containerHeight};
+  ${
+    '' /* min-height: ${({ theme }) => theme.components.navTabs.containerHeight}; */
+  }
   border-radius: ${({ theme }) => theme.components.navTabs.borderRadius};
 `
 
@@ -50,12 +52,9 @@ const Item = styled.li`
 
 const StyledNavLink = styled(Link)`
   position: relative;
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
+  display: inline-block;
 
-  min-height: ${({ theme }) => theme.components.navTabs.itemHeight};
+  ${'' /* min-height: ${({ theme }) => theme.components.navTabs.itemHeight}; */}
   padding: ${({ theme }) => theme.components.navTabs.itemPadding};
   ${applyTypography('navButton')}
   border-radius: ${({ theme }) => theme.components.navTabs.borderRadius};
@@ -66,6 +65,11 @@ const StyledNavLink = styled(Link)`
     font-variation-settings 0.45s ease,
     color 0.45s ease,
     background-color 0.45s ease;
+
+  > span {
+    display: block;
+    text-box: ${({ theme }) => theme.typography.navButton.textBox};
+  }
 
   &::after {
     content: attr(data-text);
@@ -116,125 +120,125 @@ const StyledNavLink = styled(Link)`
 `
 
 const NavMenu = ({ activePathname }) => {
-    const location = useLocation()
-    const activePath = activePathname ?? location.pathname
-    const contentRef = useRef(null)
-    const menuRef = useRef(null)
+  const location = useLocation()
+  const activePath = activePathname ?? location.pathname
+  const contentRef = useRef(null)
+  const menuRef = useRef(null)
 
-    // Refs for each NavLink element (indexed to NAV_ITEMS)
-    const linkRefs = useRef([])
+  // Refs for each NavLink element (indexed to NAV_ITEMS)
+  const linkRefs = useRef([])
 
-    // Track whether we've ever displayed the pill. Used to avoid animating from "nothing".
-    const hasShownPillRef = useRef(false)
+  // Track whether we've ever displayed the pill. Used to avoid animating from "nothing".
+  const hasShownPillRef = useRef(false)
 
-    useLayoutEffect(() => {
-        const menuEl = menuRef.current
-        const contentEl = contentRef.current
-        if (!menuEl || !contentEl) return
+  useLayoutEffect(() => {
+    const menuEl = menuRef.current
+    const contentEl = contentRef.current
+    if (!menuEl || !contentEl) return
 
-        let rafId = 0
+    let rafId = 0
 
-        const setPill = () => {
-            rafId = 0
+    const setPill = () => {
+      rafId = 0
 
-            // Determine active index from current pathname.
-            // If there is no match (e.g. `/`), hide the pill (no active state).
-            const matchIndex = NAV_ITEMS.findIndex((item) => item.path === activePath)
+      // Determine active index from current pathname.
+      // If there is no match (e.g. `/`), hide the pill (no active state).
+      const matchIndex = NAV_ITEMS.findIndex((item) => item.path === activePath)
 
-            if (matchIndex === -1) {
-                contentEl.style.setProperty('--pill-o', '0')
+      if (matchIndex === -1) {
+        contentEl.style.setProperty('--pill-o', '0')
 
-                // Next time we show, treat it as a first-show (no travel animation).
-                hasShownPillRef.current = false
-                return
-            }
+        // Next time we show, treat it as a first-show (no travel animation).
+        hasShownPillRef.current = false
+        return
+      }
 
-            contentEl.style.setProperty('--pill-o', '1')
+      contentEl.style.setProperty('--pill-o', '1')
 
-            const activeLink = linkRefs.current[matchIndex]
-            if (!activeLink) return
+      const activeLink = linkRefs.current[matchIndex]
+      if (!activeLink) return
 
-            const menuRect = menuEl.getBoundingClientRect()
-            const linkRect = activeLink.getBoundingClientRect()
+      const menuRect = menuEl.getBoundingClientRect()
+      const linkRect = activeLink.getBoundingClientRect()
 
-            const nextX = linkRect.left - menuRect.left
-            const nextW = linkRect.width
-            const nextH = linkRect.height
+      const nextX = linkRect.left - menuRect.left
+      const nextW = linkRect.width
+      const nextH = linkRect.height
 
-            // If the pill was previously hidden, place it instantly at the target.
-            // Then re-enable transitions for subsequent link-to-link moves.
-            if (!hasShownPillRef.current) {
-                contentEl.style.setProperty('--pill-move-dur', '0s')
-                contentEl.style.setProperty('--pill-x', `${nextX}px`)
-                contentEl.style.setProperty('--pill-w', `${nextW}px`)
-                contentEl.style.setProperty('--pill-h', `${nextH}px`)
-                contentEl.style.setProperty('--pill-o', '1')
+      // If the pill was previously hidden, place it instantly at the target.
+      // Then re-enable transitions for subsequent link-to-link moves.
+      if (!hasShownPillRef.current) {
+        contentEl.style.setProperty('--pill-move-dur', '0s')
+        contentEl.style.setProperty('--pill-x', `${nextX}px`)
+        contentEl.style.setProperty('--pill-w', `${nextW}px`)
+        contentEl.style.setProperty('--pill-h', `${nextH}px`)
+        contentEl.style.setProperty('--pill-o', '1')
 
-                hasShownPillRef.current = true
+        hasShownPillRef.current = true
 
-                // Restore movement duration on the next frame so future moves animate.
-                window.requestAnimationFrame(() => {
-                    contentEl.style.setProperty('--pill-move-dur', '0.5s')
-                })
+        // Restore movement duration on the next frame so future moves animate.
+        window.requestAnimationFrame(() => {
+          contentEl.style.setProperty('--pill-move-dur', '0.5s')
+        })
 
-                return
-            }
+        return
+      }
 
-            // Drive the pill via CSS variables.
-            contentEl.style.setProperty('--pill-x', `${nextX}px`)
-            contentEl.style.setProperty('--pill-w', `${nextW}px`)
-            contentEl.style.setProperty('--pill-h', `${nextH}px`)
-        }
+      // Drive the pill via CSS variables.
+      contentEl.style.setProperty('--pill-x', `${nextX}px`)
+      contentEl.style.setProperty('--pill-w', `${nextW}px`)
+      contentEl.style.setProperty('--pill-h', `${nextH}px`)
+    }
 
-        const schedule = () => {
-            if (rafId) return
-            rafId = window.requestAnimationFrame(setPill)
-        }
+    const schedule = () => {
+      if (rafId) return
+      rafId = window.requestAnimationFrame(setPill)
+    }
 
-        // Initial positioning (pre-paint)
-        schedule()
+    // Initial positioning (pre-paint)
+    schedule()
 
-        // Keep pill aligned when layout/typography changes
-        const ro = new ResizeObserver(schedule)
-        ro.observe(menuEl)
+    // Keep pill aligned when layout/typography changes
+    const ro = new ResizeObserver(schedule)
+    ro.observe(menuEl)
 
-        window.addEventListener('resize', schedule)
+    window.addEventListener('resize', schedule)
 
-        // Variable font load can reflow after initial render
-        if (document.fonts?.ready) {
-            document.fonts.ready.then(schedule).catch(() => {})
-        }
+    // Variable font load can reflow after initial render
+    if (document.fonts?.ready) {
+      document.fonts.ready.then(schedule).catch(() => {})
+    }
 
-        return () => {
-            if (rafId) window.cancelAnimationFrame(rafId)
-            ro.disconnect()
-            window.removeEventListener('resize', schedule)
-        }
-    }, [activePath])
+    return () => {
+      if (rafId) window.cancelAnimationFrame(rafId)
+      ro.disconnect()
+      window.removeEventListener('resize', schedule)
+    }
+  }, [activePath])
 
-    return (
-        <nav>
-            <Content ref={contentRef}>
-                <Pill />
-                <Items ref={menuRef}>
-                    {NAV_ITEMS.map(({ label, path }, index) => (
-                        <Item key={path}>
-                            <StyledNavLink
-                                to={path}
-                                data-text={label}
-                                aria-current={activePath === path ? 'page' : undefined}
-                                ref={(el) => {
-                                    linkRefs.current[index] = el
-                                }}
-                            >
-                                {label}
-                            </StyledNavLink>
-                        </Item>
-                    ))}
-                </Items>
-            </Content>
-        </nav>
-    )
+  return (
+    <nav>
+      <Content ref={contentRef}>
+        <Pill />
+        <Items ref={menuRef}>
+          {NAV_ITEMS.map(({ label, path }, index) => (
+            <Item key={path}>
+              <StyledNavLink
+                to={path}
+                data-text={label}
+                aria-current={activePath === path ? 'page' : undefined}
+                ref={(el) => {
+                  linkRefs.current[index] = el
+                }}
+              >
+                <span>{label}</span>
+              </StyledNavLink>
+            </Item>
+          ))}
+        </Items>
+      </Content>
+    </nav>
+  )
 }
 
 export default NavMenu

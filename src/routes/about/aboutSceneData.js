@@ -8,13 +8,13 @@ import LightCloudRight from './assets/about-clouds/cloud-light-right.svg'
 import MidCloudCenter from './assets/about-clouds/cloud-mid-center.svg'
 import MidCloudLeft from './assets/about-clouds/cloud-mid-left.svg'
 import MidCloudRight from './assets/about-clouds/cloud-mid-right.svg'
+import DarkCloudMobile from './assets/about-clouds/about-dark-cloud-mobile.svg'
 
 export const ABOUT_DESIGN_FRAME = { width: 1440, height: 1024 }
 
 export const ABOUT_INTRO_COPY = [
   {
-    text:
-      "Great design isn't just about looking good\u2014it's about creating connection. At HKW, we bring curiosity, strategy, and care to every project, whether we're amplifying nonprofit missions or shaping distinctive brand voices.",
+    text: "Great design isn't just about looking good\u2014it's about creating connection. At HKW, we bring curiosity, strategy, and care to every project, whether we're amplifying nonprofit missions or shaping distinctive brand voices.",
   },
   {
     text: "But don't just take our word for it\u2014",
@@ -53,6 +53,11 @@ export const ABOUT_HERO_CLOUD = {
     stageOne:
       'M173.622 97.081C271.621 -38.4191 417.523 18.9585 460.761 49.2191C507.121 13.581 665.121 -58.9191 766.621 90.5812C925.634 72.5928 1053.63 311.093 750.634 368.093C750.634 368.093 718.634 459.357 654.134 483.593C598.636 522.6 486.634 510.815 486.634 510.815C461.816 508.736 444.539 503.556 429.636 500.6C429.636 500.6 342.636 494.1 311.136 416.6C222.636 431.1 199.136 416.6 132.636 383.6C100.693 356.608 74.6343 293.581 74.6343 293.581C-67.3656 211.581 8.63448 58.081 173.622 97.081Z',
   },
+}
+
+export const ABOUT_MOBILE_HERO_CLOUD = {
+  viewBox: '0 0 765 320',
+  path: 'M294.046 3.56152C326.009 -4.36894 358.451 1.271 381.265 17.2363C403.328 2.29258 433.918 -3.47024 464.488 3.02344C489.668 8.37205 511.762 21.2214 526.843 39.002C548.945 25.7358 577.685 21.3413 606.126 27.3828C646.8 36.0229 678.766 64.5923 686.429 98.2373L686.309 98.2988C737.945 111.003 772.342 153.711 763.048 197.464C753.754 241.216 702.456 267.544 648.733 256.132C647.306 255.829 645.795 255.421 644.266 255.096C622.32 302.234 561.365 327.377 498.366 313.995C450.556 303.839 411.306 272.942 395.889 234.179C387.892 234.189 379.871 233.43 372.009 231.871C371.462 231.896 370.915 231.919 370.368 231.938C356.249 271.157 318.039 303.342 270.576 315.118C208.034 330.635 146.247 307.629 122.728 261.33C121.21 261.707 119.712 262.166 118.295 262.518C64.9621 275.75 12.7914 251.23 2.03516 207.877C-8.72105 164.524 24.2411 120.716 75.4453 106.266L75.3232 106.208C81.8588 72.3627 112.865 42.7509 153.244 32.7324C181.479 25.727 210.363 29.1275 232.905 41.6113C247.389 23.3469 269.049 9.76348 294.046 3.56152Z',
 }
 
 export const ABOUT_DESKTOP_CLOUDS = [
@@ -387,7 +392,7 @@ export const ABOUT_MASCOT = {
 }
 
 export const ABOUT_MOBILE_QUOTE_CLOUD = {
-  src: DarkCloudCenter,
+  src: DarkCloudMobile,
 }
 
 export const ABOUT_MOBILE_PANELS = [

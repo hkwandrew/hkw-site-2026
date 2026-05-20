@@ -68,9 +68,7 @@ const expectedCaseStudyContent = [
       'Branding',
       'Physical Spaces',
       'Email Marketing',
-      'SEO',
-      'SEM',
-      'Content Creation',
+      'SEO, SEM, Content Creation',
     ],
   },
   {
@@ -108,27 +106,6 @@ const expectedCaseStudyContent = [
     ],
   },
   {
-    id: 'mediabricks',
-    name: 'MediaBricks',
-    quote: 'TBD',
-    attribution: 'TBD',
-    services: ['Logo Design'],
-  },
-  {
-    id: 'optable',
-    name: 'Optable',
-    quote: 'TBD',
-    attribution: 'TBD',
-    services: ['Web Design', 'Illustration'],
-  },
-  {
-    id: 'ma-ch',
-    name: 'MA-CH',
-    quote: 'TBD',
-    attribution: 'TBD',
-    services: ['Web Design'],
-  },
-  {
     id: 'computercare',
     name: 'ComputerCare',
     quote:
@@ -139,6 +116,69 @@ const expectedCaseStudyContent = [
 ]
 
 describe('WorkPage', () => {
+  const getStudy = (id) => caseStudies.find((study) => study.id === id)
+  const toCssLength = (value, fallback = 'none') =>
+    value === undefined || value === null || value === ''
+      ? fallback
+      : typeof value === 'number'
+        ? `${value}px`
+        : value
+  const normalizeAspectRatio = (value) => value.replaceAll(' ', '')
+  const normalizeCssFunction = (value) => value.replace(/\s+/g, '')
+  const getInjectedStyles = () =>
+    Array.from(document.querySelectorAll('style'))
+      .map((styleElement) => styleElement.textContent)
+      .join('\n')
+
+  const waitForActiveStudy = async (studyId) => {
+    await waitFor(() => {
+      expect(getActiveStudyPane()).toHaveAttribute('data-work-example', studyId)
+    }, { timeout: 2000 })
+  }
+
+  const waitForEnteringStudy = async (studyId) => {
+    await waitFor(() => {
+      const enteringPane = document.querySelector('[data-study-pane="entering"]')
+
+      expect(screen.queryByTestId('work-study-active')).not.toBeInTheDocument()
+      expect(enteringPane).toHaveAttribute('data-work-example', studyId)
+    }, { timeout: 2000 })
+  }
+
+  const selectDesktopStudy = async (study) => {
+    fireEvent.click(
+      within(getDesktopNav()).getByRole('button', {
+        name: `Show ${study.name}`,
+      }),
+    )
+
+    await waitForActiveStudy(study.id)
+  }
+
+  const expectHeroLayoutApplied = (studyId) => {
+    const study = getStudy(studyId)
+    const image = screen.getByRole('img', { name: study.name })
+    const heroPaneStyle = getComputedStyle(image.parentElement)
+    const imageStyle = getComputedStyle(image)
+
+    expect(heroPaneStyle.width).toBe(`${study.heroImage.width}px`)
+    expect(heroPaneStyle.maxWidth).toBe(
+      toCssLength(study.heroImage.maxWidth),
+    )
+    expect(normalizeAspectRatio(imageStyle.aspectRatio)).toBe(
+      normalizeAspectRatio(study.heroImage.aspectRatio),
+    )
+    expect(imageStyle.translate).toBe(
+      `${study.heroImage.x}px ${study.heroImage.y}px`,
+    )
+
+    if (study.heroImage.rotation !== undefined) {
+      expect(normalizeCssFunction(imageStyle.transform)).toBe(
+        `rotate(${study.heroImage.rotation}deg)`,
+      )
+    }
+  }
+
   it('resolves per-study nav button layout overrides for desktop and mobile', () => {
     const layout = {
       desktop: {
@@ -215,7 +255,7 @@ describe('WorkPage', () => {
     )
   })
 
-  it('exposes the active case study id on work copy and hero panes', () => {
+  it('exposes the active case study id on work copy and hero panes', async () => {
     renderWorkPage()
 
     expect(getActiveStudyPane()).toHaveAttribute('data-work-example', 'celdf')
@@ -231,76 +271,99 @@ describe('WorkPage', () => {
       within(getDesktopNav()).getByRole('button', { name: 'Show Conviva' }),
     )
 
+    await waitForActiveStudy('conviva')
+
     expect(getActiveStudyPane()).toHaveAttribute('data-work-example', 'conviva')
     expect(
       screen.getByRole('img', { name: 'Conviva' }).parentElement,
     ).toHaveAttribute('data-work-example', 'conviva')
   })
 
-  it('applies per-study hero image layout from case-study data', () => {
+  it('keeps the desktop copy stage on fallback sizing when values are blank or omitted', async () => {
     renderWorkPage()
 
-    const celdfStudy = caseStudies.find((study) => study.id === 'celdf')
-    const celdfImage = screen.getByRole('img', { name: 'CELDF' })
-    const celdfImageStyle = getComputedStyle(celdfImage)
+    const initialStudy = caseStudies[0]
+    const fallbackFlexBasis = 'calc(52.5% - 64px)'
+    const fallbackMaxWidth = '424px'
+    const initialStageStyle = getComputedStyle(getActiveStudyPane().parentElement)
 
-    expect(celdfStudy.heroImage).toEqual(
-      expect.objectContaining({
-        width: 760,
-        height: 589,
-        aspectRatio: '806 / 625',
-        maxWidth: 'none',
-        rotation: -0.481,
-        x: 0,
-        y: -18,
-      }),
+    expect(initialStageStyle.flexGrow).toBe('0')
+    expect(initialStageStyle.flexShrink).toBe('0')
+    expect(initialStageStyle.flexBasis).toBe(
+      toCssLength(initialStudy.flexBasis, fallbackFlexBasis),
     )
-    expect(celdfImageStyle.transform).toBe('rotate(-0.481deg)')
-    expect(celdfImageStyle.translate).toBe('0px -18px')
+    expect(initialStageStyle.maxWidth).toBe(
+      toCssLength(initialStudy.maxWidth, fallbackMaxWidth),
+    )
 
     fireEvent.click(
       within(getDesktopNav()).getByRole('button', { name: 'Show Lumiere Work' }),
     )
 
-    const lumiereStudy = caseStudies.find((study) => study.id === 'lumiere')
-    const lumiereImage = screen.getByRole('img', {
-      name: 'Lumiere Work',
-    })
-    const lumiereImageStyle = getComputedStyle(lumiereImage)
+    await waitForActiveStudy('lumiere')
 
-    expect(lumiereStudy.heroImage).toEqual(
-      expect.objectContaining({
-        width: 1277,
-        height: 841,
-        aspectRatio: '249 / 164',
-        maxWidth: 650,
-        rotation: 26,
-        x: 0,
-        y: -80,
-      }),
+    expect(
+      getComputedStyle(getActiveStudyPane().parentElement).flexBasis,
+    ).toBe(fallbackFlexBasis)
+    expect(getComputedStyle(getActiveStudyPane().parentElement).maxWidth).toBe(
+      fallbackMaxWidth,
     )
-    expect(lumiereImageStyle.transform).toBe('rotate(26deg)')
-    expect(lumiereImageStyle.translate).toBe('0px -80px')
+  })
+
+  it('applies active study text stage layout from case-study data', async () => {
+    const study = getStudy('voxus')
+    const previousFlexBasis = study.flexBasis
+    const previousMaxWidth = study.maxWidth
+
+    study.flexBasis = 312
+    study.maxWidth = 376
+
+    try {
+      renderWorkPage()
+
+      fireEvent.click(
+        within(getDesktopNav()).getByRole('button', { name: 'Show Voxus PR' }),
+      )
+
+      await waitForActiveStudy('voxus')
+
+      const stageStyle = getComputedStyle(getActiveStudyPane().parentElement)
+
+      expect(stageStyle.flexBasis).toBe('312px')
+      expect(stageStyle.maxWidth).toBe('376px')
+    } finally {
+      if (previousFlexBasis === undefined) {
+        delete study.flexBasis
+      } else {
+        study.flexBasis = previousFlexBasis
+      }
+
+      if (previousMaxWidth === undefined) {
+        delete study.maxWidth
+      } else {
+        study.maxWidth = previousMaxWidth
+      }
+    }
+  })
+
+  it('applies per-study hero image layout from case-study data', async () => {
+    renderWorkPage()
+
+    expectHeroLayoutApplied('celdf')
 
     fireEvent.click(
-      within(getDesktopNav()).getByRole('button', { name: 'Show MA-CH' }),
+      within(getDesktopNav()).getByRole('button', { name: 'Show Lumiere Work' }),
     )
 
-    const maChStudy = caseStudies.find((study) => study.id === 'ma-ch')
-    const maChImage = screen.getByRole('img', { name: 'MA-CH' })
-    const maChImageStyle = getComputedStyle(maChImage)
+    await waitForActiveStudy('lumiere')
+    expectHeroLayoutApplied('lumiere')
 
-    expect(maChStudy.heroImage).toEqual(
-      expect.objectContaining({
-        width: 600,
-        height: 329,
-        aspectRatio: '325 / 178',
-        maxWidth: 'none',
-        x: 0,
-        y: 78,
-      }),
+    fireEvent.click(
+      within(getDesktopNav()).getByRole('button', { name: 'Show ComputerCare' }),
     )
-    expect(maChImageStyle.translate).toBe('0px 78px')
+
+    await waitForActiveStudy('computercare')
+    expectHeroLayoutApplied('computercare')
   })
 
   it('renders icon buttons for mapped studies and dot fallback buttons for missing icons', () => {
@@ -337,7 +400,7 @@ describe('WorkPage', () => {
     })
   })
 
-  it('shows the active icon treatment for the current item and updates it after selection', () => {
+  it('shows the active icon treatment for the current item and updates it after selection', async () => {
     renderWorkPage()
 
     const nav = getDesktopNav()
@@ -355,6 +418,8 @@ describe('WorkPage', () => {
     expect(celdfButton).toHaveAttribute('aria-current', 'true')
 
     fireEvent.click(within(nav).getByRole('button', { name: 'Show Conviva' }))
+
+    await waitForActiveStudy('conviva')
 
     expect(
       within(getActiveStudyPane()).getByRole('heading', { name: 'Conviva' }),
@@ -392,18 +457,79 @@ describe('WorkPage', () => {
     )
   })
 
-  it('updates the visible study copy and hero image when a nav button is selected', () => {
+  it('updates the visible study copy and hero image when a nav button is selected', async () => {
     renderWorkPage()
 
-    fireEvent.click(
-      within(getDesktopNav()).getByRole('button', { name: 'Show MA-CH' }),
-    )
+    await selectDesktopStudy(getStudy('reltio'))
 
     expect(
-      within(getActiveStudyPane()).getByRole('heading', { name: 'MA-CH' }),
+      within(getActiveStudyPane()).getByRole('heading', { name: 'Reltio' }),
     ).toBeInTheDocument()
     expect(within(getActiveStudyPane()).getByText('Web Design')).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: 'MA-CH' })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'Reltio' })).toBeInTheDocument()
+  })
+
+  it('fades study panes without horizontal slide motion or layout shifts when changing items', async () => {
+    renderWorkPage()
+
+    const initialStage = getActiveStudyPane().parentElement
+    const initialStageStyle = getComputedStyle(initialStage)
+
+    fireEvent.click(
+      within(getDesktopNav()).getByRole('button', { name: 'Show Conviva' }),
+    )
+
+    const leavingPane = document.querySelector('[data-study-pane="leaving"]')
+
+    expect(screen.queryByTestId('work-study-active')).not.toBeInTheDocument()
+    expect(leavingPane).toHaveAttribute('data-work-example', 'celdf')
+    expect(getComputedStyle(initialStage).flexBasis).toBe(
+      initialStageStyle.flexBasis,
+    )
+    expect(getComputedStyle(initialStage).maxWidth).toBe(
+      initialStageStyle.maxWidth,
+    )
+    expect(getInjectedStyles()).not.toContain('translate3d(var(--study-pane-start)')
+    expect(getInjectedStyles()).not.toContain('translate3d(var(--study-pane-end)')
+
+    await waitForEnteringStudy('conviva')
+
+    const enteringPane = document.querySelector('[data-study-pane="entering"]')
+
+    expect(enteringPane).toHaveAttribute('data-work-example', 'conviva')
+    expect(getComputedStyle(enteringPane).animationName).not.toBe('none')
+
+    await waitForActiveStudy('conviva')
+  })
+
+  it('wraps from the last case study back to the first with the next arrow', async () => {
+    renderWorkPage()
+
+    const firstStudy = caseStudies[0]
+    const lastStudy = caseStudies.at(-1)
+
+    await selectDesktopStudy(lastStudy)
+
+    expect(getActiveStudyPane()).toHaveAttribute(
+      'data-work-example',
+      lastStudy.id,
+    )
+
+    fireEvent.click(
+      screen.getByRole('button', { name: /show next work item/i }),
+    )
+
+    await waitForActiveStudy(firstStudy.id)
+
+    expect(getActiveStudyPane()).toHaveAttribute(
+      'data-work-example',
+      firstStudy.id,
+    )
+    expect(
+      within(getActiveStudyPane()).getByRole('heading', {
+        name: firstStudy.name,
+      }),
+    ).toBeInTheDocument()
   })
 
   it('slides the desktop nav track when the active item moves beyond the first eight buttons', async () => {
@@ -424,6 +550,7 @@ describe('WorkPage', () => {
     await waitFor(() => {
       expect(getComputedStyle(desktopNav).transform).not.toBe(initialTransform)
     })
+    await waitForActiveStudy(firstStudyBeyondInitialWindow.id)
     expect(
       within(getActiveStudyPane()).getByRole('heading', {
         name: firstStudyBeyondInitialWindow.name,

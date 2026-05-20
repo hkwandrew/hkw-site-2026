@@ -8,6 +8,7 @@ import {
   ABOUT_DESKTOP_QUOTE_LAYOUTS,
   ABOUT_HERO_CLOUD,
   ABOUT_INTRO_COPY,
+  ABOUT_MOBILE_HERO_CLOUD,
   ABOUT_MOBILE_PANELS,
   ABOUT_MOBILE_QUOTE_CLOUD,
 } from './aboutSceneData'
@@ -35,11 +36,13 @@ import {
   MobilePanel,
   MobilePanelQuote,
   MobilePanels,
+  MobileQuotePanels,
   MobileQuoteCloud,
   MobileQuoteMeta,
   MobileQuoteName,
   MobileQuoteText,
   MobileSwipeHint,
+  MobileStaticScene,
   Page,
 } from './AboutPage.styles'
 
@@ -86,14 +89,14 @@ const DesktopHeroCloudSvg = () => (
 
 const MobileHeroCloudSvg = () => (
   <svg
-    viewBox='0 0 1450 622'
+    viewBox={ABOUT_MOBILE_HERO_CLOUD.viewBox}
     fill='none'
     preserveAspectRatio='none'
     xmlns='http://www.w3.org/2000/svg'
   >
     <path
       data-about-hero-path='mobile'
-      d={ABOUT_HERO_CLOUD.paths.stageOne}
+      d={ABOUT_MOBILE_HERO_CLOUD.path}
       fill='white'
     />
   </svg>
@@ -268,55 +271,59 @@ const AboutPage = () => {
       </DesktopScroller>
 
       <MobilePanels>
-        {ABOUT_MOBILE_PANELS.map((panel, index) => (
-          <MobilePanel key={panel.id} data-testid='about-mobile-panel'>
-            <MobileHeroCloud aria-hidden='true'>
-              <MobileHeroCloudSvg />
-            </MobileHeroCloud>
+        <MobileStaticScene data-testid='about-mobile-static-scene'>
+          <MobileHeroCloud aria-hidden='true'>
+            <MobileHeroCloudSvg />
+          </MobileHeroCloud>
 
-            <MobileIntroCopy>
-              {ABOUT_INTRO_COPY.map((paragraph, paragraphIndex) => (
-                <p key={`${panel.id}-${paragraphIndex}`}>
-                  {paragraph.lead ? <strong>{paragraph.lead}</strong> : null}
-                  {paragraph.text}
-                  {paragraph.emphasis ? (
-                    <strong>{paragraph.emphasis}</strong>
-                  ) : null}
-                </p>
-              ))}
-            </MobileIntroCopy>
+          <MobileIntroCopy>
+            {ABOUT_INTRO_COPY.map((paragraph, paragraphIndex) => (
+              <p key={`mobile-intro-${paragraphIndex}`}>
+                {paragraph.lead ? <strong>{paragraph.lead}</strong> : null}
+                {paragraph.text}
+                {paragraph.emphasis ? (
+                  <strong>{paragraph.emphasis}</strong>
+                ) : null}
+              </p>
+            ))}
+          </MobileIntroCopy>
 
-            <MobileQuoteCloud aria-hidden='true'>
-              <img src={ABOUT_MOBILE_QUOTE_CLOUD.src} alt='' />
-            </MobileQuoteCloud>
+          <MobileQuoteCloud aria-hidden='true'>
+            <img src={ABOUT_MOBILE_QUOTE_CLOUD.src} alt='' />
+          </MobileQuoteCloud>
+        </MobileStaticScene>
 
-            <MobilePanelQuote $isFinal={panel.isFinal}>
-              <MobileQuoteText $isFinal={panel.isFinal}>
-                &ldquo;{renderQuoteText(panel.quote)}&rdquo;
-              </MobileQuoteText>
-              <MobileQuoteName $isFinal={panel.isFinal}>
-                {panel.name}
-              </MobileQuoteName>
-              <MobileQuoteMeta $isFinal={panel.isFinal}>
-                {panel.roleLines.map((line) => (
-                  <span key={`${panel.id}-${line}`}>{line}</span>
-                ))}
-              </MobileQuoteMeta>
-            </MobilePanelQuote>
+        <MobileQuotePanels>
+          {ABOUT_MOBILE_PANELS.map((panel, index) => (
+            <MobilePanel key={panel.id} data-testid='about-mobile-panel'>
+              <MobilePanelQuote $isFinal={panel.isFinal}>
+                <MobileQuoteText $isFinal={panel.isFinal}>
+                  &ldquo;{renderQuoteText(panel.quote)}&rdquo;
+                </MobileQuoteText>
+                <MobileQuoteName $isFinal={panel.isFinal}>
+                  {panel.name}
+                </MobileQuoteName>
+                <MobileQuoteMeta $isFinal={panel.isFinal}>
+                  {panel.roleLines.map((line) => (
+                    <span key={`${panel.id}-${line}`}>{line}</span>
+                  ))}
+                </MobileQuoteMeta>
+              </MobilePanelQuote>
 
-            {index === 0 ? (
-              <MobileSwipeHint aria-hidden='true'>
-                <MobileSwipeCue />
-              </MobileSwipeHint>
-            ) : null}
+              {index === 0 ? (
+                <MobileSwipeHint aria-hidden='true'>
+                  <MobileSwipeCue />
+                </MobileSwipeHint>
+              ) : null}
 
-            {panel.isFinal ? (
-              <MobileMarmot aria-hidden='true'>
-                <MarmotCheer />
-              </MobileMarmot>
-            ) : null}
-          </MobilePanel>
-        ))}
+              {panel.isFinal ? (
+                <MobileMarmot aria-hidden='true'>
+                  <MarmotCheer />
+                </MobileMarmot>
+              ) : null}
+            </MobilePanel>
+          ))}
+        </MobileQuotePanels>
       </MobilePanels>
     </Page>
   )

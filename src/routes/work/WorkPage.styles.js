@@ -3,27 +3,23 @@ import ArrowButton from '@/shared/ui/ArrowButton'
 import { applyTypography } from '@/shared/ui/Typography'
 import ViewContainer from '@/shared/ui/ViewContainer'
 
-const studyPaneSlideIn = keyframes`
+const studyPaneFadeIn = keyframes`
   from {
     opacity: 0;
-    transform: translate3d(var(--study-pane-start), 0, 0);
   }
 
   to {
     opacity: 1;
-    transform: translate3d(0, 0, 0);
   }
 `
 
-const studyPaneSlideOut = keyframes`
+const studyPaneFadeOut = keyframes`
   from {
     opacity: 1;
-    transform: translate3d(0, 0, 0);
   }
 
   to {
     opacity: 0;
-    transform: translate3d(var(--study-pane-end), 0, 0);
   }
 `
 
@@ -172,29 +168,30 @@ const rightEarWriggle = keyframes`
   }
 `
 
-const getStudyPaneMotion = ({ $direction, $state }) => {
-  const forward = $direction >= 0
-  const startOffset = forward ? '56px' : '-56px'
-  const endOffset = forward ? '-56px' : '56px'
-
+const getStudyPaneMotion = ({ $state }) => {
   if ($state === 'leaving') {
     return css`
-      --study-pane-end: ${endOffset};
-      animation: ${studyPaneSlideOut} 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+      animation: ${studyPaneFadeOut} 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
       pointer-events: none;
       z-index: 1;
     `
   }
 
+  if ($state === 'entering') {
+    return css`
+      animation: ${studyPaneFadeIn} 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+      z-index: 2;
+    `
+  }
+
   return css`
-    --study-pane-start: ${startOffset};
-    animation: ${studyPaneSlideIn} 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    opacity: 1;
     z-index: 2;
   `
 }
 
 const toCssLength = (value, fallback) => {
-  if (value === undefined) return fallback
+  if (value === undefined || value === null || value === '') return fallback
 
   return typeof value === 'number' ? `${value}px` : value
 }
@@ -262,16 +259,19 @@ export const StudyArea = styled.div`
 `
 
 export const StudyTextStage = styled.div`
-  ${'' /* flex: 0 0 365px; */}
+  flex-grow: 0;
+  flex-shrink: 0;
+  flex-basis: ${({ $layout }) =>
+    toCssLength($layout?.flexBasis, 'calc(52.5% - 64px)')};
+  max-width: ${({ $layout }) => toCssLength($layout?.maxWidth, '424px')};
   display: grid;
   align-content: start;
   min-width: 0;
-  ${'' /* min-height: 489px; */}
 
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
     flex-basis: 340px;
     min-height: 460px;
-  ${'' /* } */}
+  }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     flex-basis: auto;
@@ -305,24 +305,6 @@ export const AnimatedStudyText = styled(StudyText)`
     display: flex;
     flex-direction: column;
     gap: 16px;
-  }
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    ${({ $direction, $state }) => {
-      const forward = $direction >= 0
-      const startOffset = forward ? '32px' : '-32px'
-      const endOffset = forward ? '-32px' : '32px'
-
-      if ($state === 'leaving') {
-        return css`
-          --study-pane-end: ${endOffset};
-        `
-      }
-
-      return css`
-        --study-pane-start: ${startOffset};
-      `
-    }}
   }
 `
 
@@ -465,24 +447,6 @@ export const HeroImage = styled.div`
 
 export const AnimatedHeroImage = styled(HeroImage)`
   ${getStudyPaneMotion}
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    ${({ $direction, $state }) => {
-      const forward = $direction >= 0
-      const startOffset = forward ? '32px' : '-32px'
-      const endOffset = forward ? '-32px' : '32px'
-
-      if ($state === 'leaving') {
-        return css`
-          --study-pane-end: ${endOffset};
-        `
-      }
-
-      return css`
-        --study-pane-start: ${startOffset};
-      `
-    }}
-  }
 `
 
 export const WorkDirtForeground = styled.svg`

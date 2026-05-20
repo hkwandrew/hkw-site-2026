@@ -28,6 +28,7 @@ export const HOME_SCENE_STATE = {
     wrapper: { scaleX: 1, scaleY: 1 },
     viewports: {
       mobile: {
+        container: { x: 2106, y: 325 },
         wrapper: { scaleX: 1.76, scaleY: 1.76 },
       },
     },
