@@ -1,4 +1,4 @@
-import{d as e,f as t,i as n,m as r,t as i,u as a}from"./Typography-nq1oAb16.js";import{t as o}from"./usePageActive-4pQivetK.js";import{t as s}from"./ViewContainer-GiLlZdH2.js";var c=t(),l=r(e(),1),u=[{name:`Strategy`,description:`Crafting clever plans is our jam! We bring a deep business acumen to the table to map out strategies that turn your goals into reality.`},{name:`Branding`,description:`We build brands with backbone. From positioning to visual identity, we  craft cohesive systems that help you stand out and stay memorable.`},{name:`Graphic Design`,description:`Design that does more than look good — it works hard. We create thoughtful,  polished visuals that communicate clearly and elevate your message.`},{name:`Web Design`,description:`Beautiful meets functional. We design websites that feel intuitive, reflect your  brand, and guide users exactly where they need to go.`},{name:`UI/UX`,description:`People first, always. We design seamless digital experiences that balance  usability, accessibility, and delight at every interaction.`},{name:`Website Development`,description:`Where strategy and design come to life. We build fast, responsive, scalable  websites that perform just as beautifully as they look.`},{name:`Online Marketing`,description:`Smart tactics, real results. We create data-informed campaigns that connect  with your audience and move the needle where it counts.`},{name:`Creative Direction`,description:`Big-picture thinking with sharp execution. We shape cohesive creative visions that keep every touchpoint aligned and impactful.`}],d=a.ul`
+import{d as e,l as t,p as n,r,t as i,u as a}from"./Typography-CF_lDptZ.js";import{t as o}from"./usePageActive-gAPt1h6n.js";import{t as s}from"./ViewContainer-CaKIXdlO.js";var c=e(),l=n(a(),1),u=[{name:`Strategy`,description:`Crafting clever plans is our jam! We bring a deep business acumen to the table to map out strategies that turn your goals into reality.`},{name:`Branding`,description:`We build brands with backbone. From positioning to visual identity, we  craft cohesive systems that help you stand out and stay memorable.`},{name:`Graphic Design`,description:`Design that does more than look good — it works hard. We create thoughtful,  polished visuals that communicate clearly and elevate your message.`},{name:`Web Design`,description:`Beautiful meets functional. We design websites that feel intuitive, reflect your  brand, and guide users exactly where they need to go.`},{name:`UI/UX`,description:`People first, always. We design seamless digital experiences that balance  usability, accessibility, and delight at every interaction.`},{name:`Website Development`,description:`Where strategy and design come to life. We build fast, responsive, scalable  websites that perform just as beautifully as they look.`},{name:`Online Marketing`,description:`Smart tactics, real results. We create data-informed campaigns that connect  with your audience and move the needle where it counts.`},{name:`Creative Direction`,description:`Big-picture thinking with sharp execution. We shape cohesive creative visions that keep every touchpoint aligned and impactful.`}],d=t.ul`
   display: flex;
   flex-direction: column;
   gap: 48px;
@@ -14,8 +14,8 @@ import{d as e,f as t,i as n,m as r,t as i,u as a}from"./Typography-nq1oAb16.js";
     padding: 0;
     z-index: 2;
   }
-`,f=a.li`
-  ${n(`h2`)}
+`,f=t.li`
+  ${r(`h2`)}
   text-box: ${({theme:e})=>e.typography.textBox};
   font-weight: ${({theme:e})=>e.font.weight.regular};
   font-variation-settings:
@@ -41,7 +41,7 @@ import{d as e,f as t,i as n,m as r,t as i,u as a}from"./Typography-nq1oAb16.js";
     color: ${({$isActive:e,theme:t})=>e?t.colors.yellow.gold:t.colors.blue.light};
     width: fit-content;
   }
-`,p=a.section`
+`,p=t.section`
   position: absolute;
   right: 5%;
   top: 302px;
@@ -54,7 +54,7 @@ import{d as e,f as t,i as n,m as r,t as i,u as a}from"./Typography-nq1oAb16.js";
     width: 165px;
     z-index: 2;
   }
-`,m=a.p`
+`,m=t.p`
   margin: 0 0 18px;
   color: ${({theme:e})=>e.colors.blue.dark};
   font-family: ${({theme:e})=>e.font.family};
@@ -70,7 +70,7 @@ import{d as e,f as t,i as n,m as r,t as i,u as a}from"./Typography-nq1oAb16.js";
   @media (max-width: ${({theme:e})=>e.breakpoints.mobile}) {
     display: none;
   }
-`,h=a(i)`
+`,h=t(i)`
   color: ${({theme:e})=>e.colors.blue.dark};
   text-align: right;
   font-size: 20px;
@@ -86,7 +86,7 @@ import{d as e,f as t,i as n,m as r,t as i,u as a}from"./Typography-nq1oAb16.js";
       'wdth' 100,
       'wght' ${({theme:e})=>e.font.weight.regular};
   }
-`,g=a.div`
+`,g=t.div`
   position: absolute;
   right: 145.85px;
   bottom: 0;
@@ -119,7 +119,7 @@ import{d as e,f as t,i as n,m as r,t as i,u as a}from"./Typography-nq1oAb16.js";
       height: auto;
     }
   }
-`,_=a.div`
+`,_=t.div`
   position: relative;
   width: 100%;
   flex: 1;
@@ -134,14 +134,14 @@ import{d as e,f as t,i as n,m as r,t as i,u as a}from"./Typography-nq1oAb16.js";
       ${({theme:e})=>e.colors.blue.dark} 360px 100%
     );
   }
-`,v=a.h2`
+`,v=t.h2`
   display: none;
   position: absolute;
   left: 19px;
   top: 142px;
   margin: 0;
   color: ${({theme:e})=>e.colors.white};
-  ${n(`formButton`)}
+  ${r(`formButton`)}
   font-weight: ${({theme:e})=>e.font.weight.semibold};
   font-variation-settings:
     'wdth' ${({theme:e})=>e.typography.formButton.width},
