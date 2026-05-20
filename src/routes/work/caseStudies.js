@@ -19,7 +19,7 @@ import reltioNavDefault from './assets/work-nav/reltio-default.png'
 import inclusivelyNavDefault from './assets/work-nav/inclusively-default.png'
 // import optableNavDefault from './assets/work-nav/optable-default.svg'
 
-// Hero image layout values are offsets inside the shared desktop hero stage.
+// Hero image desktop/mobile offsets tune art placement inside the shared stage.
 // Optional flexBasis/maxWidth values tune the desktop copy stage per study.
 const caseStudies = [
   {
@@ -39,8 +39,14 @@ const caseStudies = [
       aspectRatio: '800.18 / 617.28',
       maxWidth: 'none',
       rotation: -0.491,
-      x: -65,
-      y: -55,
+      desktop: {
+        x: -65,
+        y: -55,
+      },
+      mobile: {
+        x: 75,
+        y: -150,
+      },
     },
     navButton: {
       desktop: {
@@ -72,8 +78,14 @@ const caseStudies = [
       height: 677.632,
       aspectRatio: '641.456 / 677.632',
       maxWidth: 'none',
-      x: 40,
-      y: -135,
+      desktop: {
+        x: 40,
+        y: -135,
+      },
+      mobile: {
+        x: 0,
+        y: 0,
+      },
     },
     navButton: {
       desktop: {
@@ -94,6 +106,8 @@ const caseStudies = [
     id: 'lumiere',
     name: 'Lumiere Work',
     isCompact: true,
+    flexBasis: 'calc(44.5% - 64px)',
+    maxWidth: '395px',
     quote:
       '“HKW took something as abstract as consciousness-based leadership and translated it into a site that actually feels like the work: structured, luminous, and alive. Professional, thoughtful, and a pleasure to collaborate with from start to finish.”',
     attribution: 'Kathi Joy, Founder at Lumiere Work',
@@ -109,10 +123,16 @@ const caseStudies = [
     heroImage: {
       width: 1276.895,
       height: 841.004,
-      aspectRatio: '1276.895 / 841.004',
+      aspectRatio: '249 / 164',
       rotation: 26,
-      x: -10,
-      y: 140,
+      desktop: {
+        x: -58,
+        y: 140,
+      },
+      mobile: {
+        x: 0,
+        y: 0,
+      },
     },
     navButton: {
       desktop: {
@@ -143,8 +163,14 @@ const caseStudies = [
       height: 483,
       aspectRatio: '715 / 483',
       maxWidth: 'none',
-      x: 0,
-      y: 26,
+      desktop: {
+        x: -76,
+        y: 26,
+      },
+      mobile: {
+        x: 0,
+        y: 0,
+      },
     },
     navButton: {
       desktop: {
@@ -173,7 +199,8 @@ const caseStudies = [
       'Branding',
       'Physical Spaces',
       'Email Marketing',
-      'SEO, SEM, Content Creation',
+      'SEO, SEM, Content',
+      'Creation',
     ],
     image: convivaImg,
     navIcon: convivaNavDefault,
@@ -182,8 +209,14 @@ const caseStudies = [
       height: 451,
       aspectRatio: '537 / 451',
       maxWidth: 'none',
-      x: 80,
-      y: 100,
+      desktop: {
+        x: 80,
+        y: 100,
+      },
+      mobile: {
+        x: 0,
+        y: 0,
+      },
     },
     navButton: {
       desktop: {
@@ -218,8 +251,14 @@ const caseStudies = [
       width: 647,
       height: 376,
       aspectRatio: '647 / 376',
-      x: 200,
-      y: 54,
+      desktop: {
+        x: 200,
+        y: 54,
+      },
+      mobile: {
+        x: 0,
+        y: 0,
+      },
     },
     navButton: {
       desktop: {
@@ -239,17 +278,24 @@ const caseStudies = [
   {
     id: 'reltio',
     name: 'Reltio',
-    quote: 'TBD',
-    attribution: 'TBD',
-    services: ['Web Design', 'Web Development'],
+    quote:
+      "From strategy to launch, HKW is the rare agency that combines rock-solid reliability, outstanding design & UI/UX, and genuine partnership — all wrapped up in a team you'll actually love working with.",
+    attribution: 'Sr. Director, Global Digital & Web Marketing',
+    services: ['Web Design', 'Web Development', 'Marketing Support'],
     image: reltioImg,
     navIcon: reltioNavDefault,
     heroImage: {
       width: 537,
       height: 451,
       aspectRatio: '537 / 451',
-      x: 280,
-      y: 110,
+      desktop: {
+        x: 280,
+        y: 110,
+      },
+      mobile: {
+        x: 0,
+        y: 0,
+      },
     },
     navButton: {
       desktop: {
@@ -286,8 +332,14 @@ const caseStudies = [
       height: 352,
       aspectRatio: '203 / 155',
       maxWidth: 'none',
-      x: 100,
-      y: 100,
+      desktop: {
+        x: 100,
+        y: 100,
+      },
+      mobile: {
+        x: 0,
+        y: 0,
+      },
     },
     navButton: {
       desktop: {
@@ -317,8 +369,14 @@ const caseStudies = [
   //     height: 451,
   //     aspectRatio: '537 / 451',
 
-  //     x: 330,
-  //     y: 100,
+  //     desktop: {
+  //       x: 330,
+  //       y: 100,
+  //     },
+  //     mobile: {
+  //       x: 0,
+  //       y: 0,
+  //     },
   //   },
   //   navButton: {
   //     desktop: {
@@ -351,8 +409,14 @@ const caseStudies = [
       height: 313,
       aspectRatio: '350 / 177',
       maxWidth: 'none',
-      x: 0,
-      y: 70,
+      desktop: {
+        x: 0,
+        y: 70,
+      },
+      mobile: {
+        x: 0,
+        y: 0,
+      },
     },
     navButton: {
       desktop: {

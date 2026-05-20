@@ -212,7 +212,7 @@ export const Page = styled(ViewContainer)`
   overflow: hidden;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    background: ${({ theme }) => theme.colors.yellow.light};
+    background: linear-gradient(to top, white 50%, transparent 60%);
     overflow-y: auto;
   }
 `
@@ -320,7 +320,7 @@ export const ClientName = styled.h2`
   color: ${({ theme }) => theme.colors.orange.base};
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    font-size: 48px;
+    margin-top: 24px;
   }
 `
 
@@ -425,8 +425,8 @@ export const HeroImage = styled.div`
       ${({ $layout }) => toCssAngle($layout?.rotation, '0deg')}
     );
     transform-origin: center;
-    translate: ${({ $layout }) => toCssLength($layout?.x, '0')}
-      ${({ $layout }) => toCssLength($layout?.y, '0')};
+    translate: ${({ $layout }) => toCssLength($layout?.desktop?.x, '0')}
+      ${({ $layout }) => toCssLength($layout?.desktop?.y, '0')};
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
@@ -440,7 +440,8 @@ export const HeroImage = styled.div`
       max-height: 260px;
       object-fit: contain;
       transform: none;
-      translate: 0 0;
+      translate: ${({ $layout }) => toCssLength($layout?.mobile?.x, '0')}
+        ${({ $layout }) => toCssLength($layout?.mobile?.y, '0')};
     }
   }
 `
@@ -463,6 +464,10 @@ export const WorkDirtForeground = styled.svg`
   );
   transition: transform 500ms ease;
   will-change: transform;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    transform: translateY(128%);
+  }
 `
 
 export const DesktopNavRail = styled.div`

@@ -68,7 +68,8 @@ const expectedCaseStudyContent = [
       'Branding',
       'Physical Spaces',
       'Email Marketing',
-      'SEO, SEM, Content Creation',
+      'SEO, SEM, Content',
+      'Creation',
     ],
   },
   {
@@ -87,9 +88,10 @@ const expectedCaseStudyContent = [
   {
     id: 'reltio',
     name: 'Reltio',
-    quote: 'TBD',
-    attribution: 'TBD',
-    services: ['Web Design', 'Web Development'],
+    quote:
+      "From strategy to launch, HKW is the rare agency that combines rock-solid reliability, outstanding design & UI/UX, and genuine partnership — all wrapped up in a team you'll actually love working with.",
+    attribution: 'Sr. Director, Global Digital & Web Marketing',
+    services: ['Web Design', 'Web Development', 'Marketing Support'],
   },
   {
     id: 'inclusively',
@@ -169,7 +171,7 @@ describe('WorkPage', () => {
       normalizeAspectRatio(study.heroImage.aspectRatio),
     )
     expect(imageStyle.translate).toBe(
-      `${study.heroImage.x}px ${study.heroImage.y}px`,
+      `${study.heroImage.desktop.x}px ${study.heroImage.desktop.y}px`,
     )
 
     if (study.heroImage.rotation !== undefined) {
@@ -233,9 +235,15 @@ describe('WorkPage', () => {
         expect.objectContaining({
           width: expect.any(Number),
           height: expect.any(Number),
-          x: expect.any(Number),
-          y: expect.any(Number),
           aspectRatio: expect.any(String),
+          desktop: expect.objectContaining({
+            x: expect.any(Number),
+            y: expect.any(Number),
+          }),
+          mobile: expect.objectContaining({
+            x: expect.any(Number),
+            y: expect.any(Number),
+          }),
         }),
       )
     })
@@ -297,10 +305,10 @@ describe('WorkPage', () => {
     )
 
     fireEvent.click(
-      within(getDesktopNav()).getByRole('button', { name: 'Show Lumiere Work' }),
+      within(getDesktopNav()).getByRole('button', { name: 'Show Conviva' }),
     )
 
-    await waitForActiveStudy('lumiere')
+    await waitForActiveStudy('conviva')
 
     expect(
       getComputedStyle(getActiveStudyPane().parentElement).flexBasis,
