@@ -8,10 +8,22 @@ import BookShelf from './BookShelf'
 import RootsPortfolioSlider from './RootsPortfolioSlider'
 import RootsMarmot from './RootsMarmot'
 import { ROOTS_SCENE_TRANSITION_DURATION_MS } from './useRootsPageTransition'
+import WelcomeSign from './WelcomeSign'
 
 const DESKTOP_SCENE_WIDTH = 1442
 const DESKTOP_SCENE_HEIGHT = 1024
 const MOBILE_MEDIA_QUERY = '(max-width: 767px)'
+const MOBILE_FRAME_PRIORITY = [
+  'celdf',
+  'community-whistle',
+  'citizen-nine26',
+  'racial-justice',
+  'waters-meet',
+  'apic-washington',
+]
+const MOBILE_FRAME_ORDER = new Map(
+  MOBILE_FRAME_PRIORITY.map((itemId, index) => [itemId, index]),
+)
 
 const Root = styled.section`
   position: absolute;
@@ -35,7 +47,7 @@ const Root = styled.section`
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    overflow-y: auto;
+    overflow: hidden;
   }
 
   &[data-dialog-open='true'] {
@@ -67,7 +79,9 @@ const DesktopScene = styled.div`
   z-index: 1;
   opacity: ${({ $isActive }) => ($isActive ? 1 : 0)};
   transform: translateY(${({ $isActive }) => ($isActive ? '0' : '20px')});
-  transition: opacity 500ms ease, transform 500ms ease;
+  transition:
+    opacity 500ms ease,
+    transform 500ms ease;
   will-change: transform, opacity;
 `
 
@@ -138,11 +152,11 @@ const BackButton = styled.button`
   }
 `
 
-const Shelf = styled(BookShelf)`
+const Welcome = styled(WelcomeSign)`
   position: absolute;
-  left: 3.9221%;
-  top: 49.4168%;
-  width: 24.8693%;
+  left: 500.64px;
+  top: 403.42px;
+  width: 309.255px;
   height: auto;
   display: block;
   z-index: 0;
@@ -153,30 +167,17 @@ const MobileScene = styled.div`
   z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  min-height: 100dvh;
-  padding: 24px 20px 188px;
-  overflow: hidden;
-  background:
-    radial-gradient(
-      ellipse at 18% 8%,
-      rgba(235, 104, 47, 0.5) 0 10%,
-      transparent 11%
-    ),
-    radial-gradient(
-      ellipse at 41% 5%,
-      rgba(235, 104, 47, 0.48) 0 8%,
-      transparent 9%
-    ),
-    radial-gradient(
-      ellipse at 71% 10%,
-      rgba(235, 104, 47, 0.44) 0 9%,
-      transparent 10%
-    ),
-    ${({ theme }) => theme.colors.brown.brick};
+  height: 100dvh;
+  padding: 88px 20px 178px;
+  overflow-x: hidden;
+  overflow-y: ${({ $isLocked }) => ($isLocked ? 'hidden' : 'auto')};
+  -webkit-overflow-scrolling: touch;
+
   opacity: ${({ $isActive }) => ($isActive ? 1 : 0)};
   transform: translateY(${({ $isActive }) => ($isActive ? '0' : '20px')});
-  transition: opacity 500ms ease, transform 500ms ease;
+  transition:
+    opacity 500ms ease,
+    transform 500ms ease;
   will-change: transform, opacity;
 
   &::after {
@@ -192,15 +193,19 @@ const MobileScene = styled.div`
 `
 
 const MobileBackButton = styled(BackButton)`
-  position: sticky;
-  top: 16px;
-  left: 0;
-  bottom: auto;
-  width: 64px;
-  min-width: 64px;
-  max-width: 64px;
-  margin-bottom: 12px;
-  z-index: 2;
+  position: absolute;
+  left: 21px;
+  bottom: max(14px, env(safe-area-inset-bottom));
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  max-width: 42px;
+  z-index: 5;
+
+  > svg {
+    width: 100%;
+    height: 100%;
+  }
 `
 
 const MobileFrames = styled.div`
@@ -208,11 +213,22 @@ const MobileFrames = styled.div`
   z-index: 1;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+  column-gap: 20px;
   align-items: start;
+  width: 100%;
+  max-width: 353px;
+  margin-inline: auto;
+`
 
-  @media (max-width: 520px) {
-    grid-template-columns: minmax(0, 1fr);
+const MobileFrameColumn = styled.div`
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+
+  &:nth-child(2) {
+    padding-top: 4px;
   }
 `
 
@@ -233,10 +249,10 @@ const RootsMarmotLayer = styled.div`
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    right: -14px;
-    bottom: 14px;
-    width: min(52vw, 186px);
-    z-index: 0;
+    right: -8px;
+    bottom: -8px;
+    width: min(52vw, 200px);
+    z-index: 3;
   }
 `
 
@@ -354,8 +370,43 @@ export default function RootsScene({ sceneRef }) {
   const [isSliderOpen, setIsSliderOpen] = useState(false)
   const { index, next, prev, goTo } = useCarousel(ROOTS_PORTFOLIO_ITEMS.length)
   const activeItem = ROOTS_PORTFOLIO_ITEMS[index]
+  const mobileFrameEntries = ROOTS_PORTFOLIO_ITEMS.map((item, itemIndex) => ({
+    item,
+    itemIndex,
+  })).sort((firstEntry, secondEntry) => {
+    const firstOrder =
+      MOBILE_FRAME_ORDER.get(firstEntry.item.id) ??
+      MOBILE_FRAME_ORDER.size + firstEntry.itemIndex
+    const secondOrder =
+      MOBILE_FRAME_ORDER.get(secondEntry.item.id) ??
+      MOBILE_FRAME_ORDER.size + secondEntry.itemIndex
+
+    return firstOrder - secondOrder
+  })
+  const mobileFrameColumns = [
+    mobileFrameEntries.filter((_, entryIndex) => entryIndex % 2 === 0),
+    mobileFrameEntries.filter((_, entryIndex) => entryIndex % 2 === 1),
+  ]
 
   const handleReturnHome = () => navigate('/')
+  const handleMobileScroll = (event) => {
+    document.body.dataset.rootsMobileScrolled =
+      event.currentTarget.scrollTop > 4 ? 'true' : 'false'
+  }
+
+  useEffect(() => {
+    if (!isMobile) {
+      delete document.body.dataset.rootsMobileScrolled
+      return undefined
+    }
+
+    document.body.dataset.rootsMobileScrolled = 'false'
+
+    return () => {
+      delete document.body.dataset.rootsMobileScrolled
+    }
+  }, [isMobile])
+
   const setTriggerRef = (id, node) => {
     if (node) {
       triggerRefs.current[id] = node
@@ -388,39 +439,39 @@ export default function RootsScene({ sceneRef }) {
       <VisuallyHiddenHeading>Non-profit Roots</VisuallyHiddenHeading>
 
       {isMobile ? (
-        <MobileScene aria-hidden={isSliderOpen} $isActive={isActive}>
-          <MobileBackButton
-            type='button'
-            aria-label='Return to home'
-            onClick={handleReturnHome}
-            disabled={isSliderOpen}
-          >
-            <SceneBackIcon />
-          </MobileBackButton>
-
+        <MobileScene
+          aria-hidden={isSliderOpen}
+          data-roots-mobile-scroll-region
+          $isActive={isActive}
+          $isLocked={isSliderOpen}
+          onScroll={handleMobileScroll}
+        >
           <MobileFrames>
-            {ROOTS_PORTFOLIO_ITEMS.map((item, itemIndex) => {
-              const FrameComponent = item.FrameComponent
+            {mobileFrameColumns.map((columnEntries, columnIndex) => (
+              <MobileFrameColumn key={`mobile-roots-column-${columnIndex}`}>
+                {columnEntries.map(({ item, itemIndex }) => {
+                  const FrameComponent = item.FrameComponent
 
-              return (
-                <MobileFrameButton
-                  key={item.id}
-                  ref={(node) => setTriggerRef(item.id, node)}
-                  type='button'
-                  aria-label={`Open ${item.title}`}
-                  aria-haspopup='dialog'
-                  aria-expanded={isSliderOpen && activeItem.id === item.id}
-                  data-roots-example={item.id}
-                  data-roots-example-region='mobile-frame'
-                  onClick={() => openPortfolio(itemIndex, item.id)}
-                  disabled={isSliderOpen}
-                >
-                  <FrameComponent />
-                </MobileFrameButton>
-              )
-            })}
+                  return (
+                    <MobileFrameButton
+                      key={item.id}
+                      ref={(node) => setTriggerRef(item.id, node)}
+                      type='button'
+                      aria-label={`Open ${item.title}`}
+                      aria-haspopup='dialog'
+                      aria-expanded={isSliderOpen && activeItem.id === item.id}
+                      data-roots-example={item.id}
+                      data-roots-example-region='mobile-frame'
+                      onClick={() => openPortfolio(itemIndex, item.id)}
+                      disabled={isSliderOpen}
+                    >
+                      <FrameComponent />
+                    </MobileFrameButton>
+                  )
+                })}
+              </MobileFrameColumn>
+            ))}
           </MobileFrames>
-
         </MobileScene>
       ) : (
         <DesktopScene aria-hidden={isSliderOpen} $isActive={isActive}>
@@ -433,7 +484,7 @@ export default function RootsScene({ sceneRef }) {
             <SceneBackIcon />
           </BackButton>
 
-          <Shelf />
+          <Welcome />
 
           {ROOTS_PORTFOLIO_ITEMS.map((item, itemIndex) => {
             const FrameComponent = item.FrameComponent
@@ -459,9 +510,19 @@ export default function RootsScene({ sceneRef }) {
               </DesktopFrameButton>
             )
           })}
-
         </DesktopScene>
       )}
+
+      {isMobile ? (
+        <MobileBackButton
+          type='button'
+          aria-label='Return to home'
+          onClick={handleReturnHome}
+          disabled={isSliderOpen}
+        >
+          <SceneBackIcon />
+        </MobileBackButton>
+      ) : null}
 
       <RootsMarmotLayer aria-hidden='true' $isVisible={!isSliderOpen}>
         <RootsMarmot />

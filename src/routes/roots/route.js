@@ -10,9 +10,9 @@ export const rootsRoute = Object.freeze({
   sceneStateKey: 'roots-page',
   label: 'Non-profit Roots',
   navLabel: null,
-  phoneNavLabel: null,
+  phoneNavLabel: 'Roots',
   showInNav: false,
-  showInPhoneNav: false,
+  showInPhoneNav: true,
   sceneSpec: rootsSceneSpec,
   Component: RootsPage,
 })

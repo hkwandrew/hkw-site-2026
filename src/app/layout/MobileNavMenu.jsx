@@ -11,14 +11,16 @@ const ToggleButton = styled.button`
   justify-content: center;
   width: 24px;
   height: 22px;
-  color: ${({ theme }) => theme.colors.blue.dark};
+  color: ${({ $isRootsPage, theme }) =>
+    $isRootsPage ? theme.colors.white : theme.colors.blue.dark};
   pointer-events: auto;
   z-index: 90;
-  translate: 0 -16px;
+  translate: ${({ $isRootsPage, $isHomePage }) =>
+    $isRootsPage || $isHomePage ? '0 0' : '0 -16px'};
 
   svg {
     width: 24px;
-    height: 24px;
+    height: 22px;
   }
 
   &:focus-visible {
@@ -130,7 +132,11 @@ const MenuLink = styled(Link)`
   }
 `
 
-const MobileNavMenu = ({ activePathname }) => {
+const MobileNavMenu = ({
+  activePathname,
+  isRootsPage = false,
+  isHomePage = false,
+}) => {
   const location = useLocation()
   const activePath = activePathname ?? location.pathname
   const [isOpen, setIsOpen] = useState(false)
@@ -250,6 +256,8 @@ const MobileNavMenu = ({ activePathname }) => {
         aria-expanded={isOpen}
         aria-controls='mobile-nav-overlay'
         tabIndex={isOpen ? -1 : undefined}
+        $isRootsPage={isRootsPage}
+        $isHomePage={isHomePage}
         onClick={() => setIsOpen((value) => !value)}
       >
         <svg

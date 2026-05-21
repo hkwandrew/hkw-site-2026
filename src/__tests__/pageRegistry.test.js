@@ -51,7 +51,7 @@ describe('getPageDefinitionForPath', () => {
     expect(aboutPage.sceneStateKey).toBe('about-page')
   })
 
-  it('returns the hidden Non-profit Roots page definition', () => {
+  it('returns the mobile-only Non-profit Roots page definition', () => {
     const rootsPage = getPageDefinitionForPath('/roots')
 
     expect(rootsPage).not.toBeNull()
@@ -60,7 +60,7 @@ describe('getPageDefinitionForPath', () => {
     expect(rootsPage.routePath).toBe('/roots')
     expect(rootsPage.sceneStateKey).toBe('roots-page')
     expect(rootsPage.showInNav).toBe(false)
-    expect(rootsPage.showInPhoneNav).toBe(false)
+    expect(rootsPage.showInPhoneNav).toBe(true)
   })
 
   it('returns null for unknown paths', () => {
@@ -125,5 +125,22 @@ describe('PHONE_NAV_ITEMS', () => {
   it('includes contact page (phone nav only)', () => {
     const contactItem = PHONE_NAV_ITEMS.find((item) => item.id === 'contact')
     expect(contactItem).toBeDefined()
+  })
+
+  it('includes Work and Roots pages', () => {
+    expect(PHONE_NAV_ITEMS).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: 'work',
+          label: 'Work',
+          path: '/work',
+        }),
+        expect.objectContaining({
+          id: 'roots',
+          label: 'Roots',
+          path: '/roots',
+        }),
+      ]),
+    )
   })
 })

@@ -21,6 +21,24 @@ import {
 
 const HOME_HOVER_DEVICE_QUERY = '(hover: hover) and (pointer: fine)'
 
+const isMobileViewport = () =>
+  typeof window !== 'undefined' &&
+  window.matchMedia?.(SCENE_VIEWPORT_MOBILE_QUERY).matches === true
+
+const subscribeToMobileViewport = (onChange) => {
+  if (typeof window === 'undefined' || !window.matchMedia) {
+    return () => {}
+  }
+
+  const mediaQuery = window.matchMedia(SCENE_VIEWPORT_MOBILE_QUERY)
+
+  mediaQuery.addEventListener('change', onChange)
+
+  return () => {
+    mediaQuery.removeEventListener('change', onChange)
+  }
+}
+
 const canUseHomeHoverRegions = () =>
   typeof window !== 'undefined' &&
   window.matchMedia?.(HOME_HOVER_DEVICE_QUERY).matches === true &&
@@ -66,13 +84,18 @@ const useLandscapeTransitionController = (pathname) => {
     canUseHomeHoverRegions,
     () => false,
   )
+  const isMobile = useSyncExternalStore(
+    subscribeToMobileViewport,
+    isMobileViewport,
+    () => false,
+  )
 
   const pageKey = getPageKeyForPath(pathname)
   const isHome = pathname === '/'
   const headerContentPath = revealedContentPath
   const scenePathname = pendingNavPath ?? pathname
   const headerNavPath = scenePathname
-  const shouldShowHeader = headerContentPath !== '/roots'
+  const shouldShowHeader = headerContentPath !== '/roots' || isMobile
   const isRouteContentRevealed = revealedContentPath === pathname
   const shouldRenderRouteContent =
     isRouteContentRevealed || earlyRevealedContentPath === pathname

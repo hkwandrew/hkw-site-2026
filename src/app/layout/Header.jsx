@@ -32,8 +32,33 @@ const StyledHeader = styled.header`
   pointer-events: none;
 
   > * {
+    position: relative;
+    z-index: 1;
     pointer-events: auto;
   }
+
+  ${({ $isRootsPage }) =>
+    $isRootsPage &&
+    css`
+      @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+        min-height: 64px;
+
+        &::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          z-index: 0;
+          pointer-events: none;
+          background: ${({ theme }) => theme.colors.brown.brick};
+          opacity: 0;
+          transition: opacity 180ms ease;
+        }
+
+        body[data-roots-mobile-scrolled='true'] &::before {
+          opacity: 1;
+        }
+      }
+    `}
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     align-items: center;
@@ -57,6 +82,8 @@ const HKWLogo = styled(Link)`
   height: 68px;
   display: grid;
   place-items: center;
+  --fill-0: ${({ $isRootsPage, theme }) =>
+    $isRootsPage ? theme.colors.white : theme.colors.blue.dark};
 
   background-color: ${({ $isServicesPage, $isWorkPage, theme }) =>
     $isWorkPage
@@ -140,16 +167,19 @@ const Header = ({ contentPathname, isPageLabelReady = true, navPathname }) => {
   const isServicesPage = contentPath === '/services'
   const isWorkPage = contentPath === '/work'
   const isAboutPage = contentPath === '/about'
+  const isRootsPage = contentPath === '/roots'
+  const isHomePage = contentPath === '/'
   const isPageLabelActive = isPageLabelReady
   const isPhoneViewport = usePhoneViewport(theme.breakpoints.mobile)
 
   return (
-    <StyledHeader>
+    <StyledHeader $isRootsPage={isRootsPage}>
       <BrandBlock $isServicesPage={isServicesPage}>
         <HKWLogo
           to='/'
           $isServicesPage={isServicesPage}
           $isWorkPage={isWorkPage}
+          $isRootsPage={isRootsPage}
         >
           <svg
             xmlns='http://www.w3.org/2000/svg'
@@ -163,7 +193,7 @@ const Header = ({ contentPathname, isPageLabelReady = true, navPathname }) => {
             />
           </svg>
         </HKWLogo>
-        {pageLabel && (
+        {pageLabel && !isRootsPage && (
           <PageLabel
             aria-hidden={!isPageLabelActive}
             key={contentPath}
@@ -177,7 +207,11 @@ const Header = ({ contentPathname, isPageLabelReady = true, navPathname }) => {
       </BrandBlock>
 
       {isPhoneViewport ? (
-        <MobileNavMenu activePathname={activeNavPath} />
+        <MobileNavMenu
+          activePathname={activeNavPath}
+          isRootsPage={isRootsPage}
+          isHomePage={isHomePage}
+        />
       ) : (
         <NavMenu activePathname={activeNavPath} />
       )}

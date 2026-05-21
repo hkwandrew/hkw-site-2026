@@ -177,6 +177,24 @@ const ArtworkImage = styled.img`
   }
 `
 
+const ArtworkFrame = styled.div`
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(100%, 520px);
+  filter: drop-shadow(0 22px 28px rgba(28, 45, 56, 0.18));
+
+  > * {
+    width: 100%;
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    width: min(100%, 320px);
+  }
+`
+
 const Copy = styled.div`
   position: relative;
   z-index: 1;
@@ -371,6 +389,7 @@ export default function RootsPortfolioSlider({
   const titleId = useId()
   const isPlaceholderCopy = item.quote === 'TBD'
   const hasPlaceholderRoles = item.roles.length === 1 && item.roles[0] === 'TBD'
+  const FrameComponent = item.FrameComponent
 
   useLayoutEffect(() => {
     closeRef.current?.focus()
@@ -454,10 +473,16 @@ export default function RootsPortfolioSlider({
         <Content>
           <ArtworkStage>
             <ArtworkGlow aria-hidden='true' />
-            <ArtworkImage
-              src={item.detailImage}
-              alt={`${item.title} project artwork`}
-            />
+            {item.detailImage ? (
+              <ArtworkImage
+                src={item.detailImage}
+                alt={`${item.title} project artwork`}
+              />
+            ) : (
+              <ArtworkFrame aria-label={`${item.title} project artwork`}>
+                <FrameComponent />
+              </ArtworkFrame>
+            )}
           </ArtworkStage>
 
           <Copy>

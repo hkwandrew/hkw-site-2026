@@ -322,11 +322,12 @@ describe('RootsPage', () => {
   it('wraps to the first portfolio item when advancing from the last slide', async () => {
     renderRootsRoute()
 
-    fireEvent.click(
-      screen.getByRole('button', {
-        name: /open asian & pacific islander coalition of washington/i,
-      }),
+    const lastItem = ROOTS_PORTFOLIO_ITEMS[ROOTS_PORTFOLIO_ITEMS.length - 1]
+    const lastFrame = document.querySelector(
+      `button[data-roots-example='${lastItem.id}']`,
     )
+
+    fireEvent.click(lastFrame)
 
     fireEvent.click(
       screen.getByRole('button', { name: /show next portfolio piece/i }),
@@ -369,5 +370,23 @@ describe('RootsPage', () => {
         (button) => button.dataset.rootsExampleRegion === 'desktop-frame',
       ),
     ).toBe(true)
+  })
+
+  it('renders the expanded nonprofit hub scene on desktop', () => {
+    renderRootsRoute()
+
+    const frameButtons = document.querySelectorAll('button[data-roots-example]')
+
+    expect(frameButtons).toHaveLength(ROOTS_PORTFOLIO_ITEMS.length)
+    expect(ROOTS_PORTFOLIO_ITEMS.length).toBeGreaterThan(6)
+    expect(document.querySelector('[data-roots-hub-sign]')).not.toBeNull()
+    expect(screen.getByText(/go up/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /open terrain/i })).toHaveAttribute(
+      'data-roots-example',
+      'terrain',
+    )
+    expect(
+      screen.getByRole('button', { name: /open meals on wheels/i }),
+    ).toHaveAttribute('data-roots-example', 'meals-on-wheels')
   })
 })

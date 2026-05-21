@@ -704,10 +704,10 @@ export const DesktopArrowButton = styled(ArrowButton)`
   ${({ $side }) => ($side === 'left' ? 'left: 68px;' : 'right: 68px;')}
 
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    ${({ $side }) => ($side === 'left' ? 'left: 24px;' : 'right: 24px;')}
+    ${({ $side }) => ($side === 'left' ? 'left: 20px;' : 'right: 20px;')}
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    ${'' /* display: none; */}
+    top: 95%;
   }
 `

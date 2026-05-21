@@ -74,6 +74,27 @@ describe('Header', () => {
     )
   })
 
+  it('renders the roots mobile header without a page label and uses white controls', () => {
+    isPhoneViewport = true
+
+    const { container } = renderHeader(['/roots'], {
+      contentPathname: '/roots',
+    })
+
+    const logoLink = container.querySelector('header > div a[href="/"]')
+    const menuButton = screen.getByRole('button', {
+      name: 'Open navigation menu',
+    })
+
+    expect(screen.queryByText('Non-profit Roots')).not.toBeInTheDocument()
+    expect(getComputedStyle(logoLink).getPropertyValue('--fill-0').trim()).toBe(
+      '#FFFFFF',
+    )
+    expect(getComputedStyle(menuButton).color).toBe('rgb(255, 255, 255)')
+
+    isPhoneViewport = false
+  })
+
   it('hides the page label immediately and fades it in when the page is ready', () => {
     const { rerender } = renderHeader(['/services'], {
       contentPathname: '/services',

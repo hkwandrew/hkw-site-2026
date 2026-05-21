@@ -10,9 +10,9 @@ export const workRoute = Object.freeze({
   sceneStateKey: 'work-page',
   label: 'Our Work',
   navLabel: 'Work',
-  phoneNavLabel: null,
+  phoneNavLabel: 'Work',
   showInNav: true,
-  showInPhoneNav: false,
+  showInPhoneNav: true,
   sceneSpec: workSceneSpec,
   Component: WorkPage,
 })
