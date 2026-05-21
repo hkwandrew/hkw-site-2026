@@ -67,6 +67,7 @@ const caseStudies = [
     id: 'voxus',
     name: 'Voxus PR',
     flexBasis: 'calc(38.5% - 64px)',
+    isWide: true,
     quote:
       '“We communicate for a living, but HKW helped us crystalize our brand message.”',
     attribution: 'Kevin Pedraja, Partner at Voxus PR',
@@ -190,7 +191,6 @@ const caseStudies = [
   {
     id: 'conviva',
     name: 'Conviva',
-    isWide: true,
     flexBasis: 'calc(39.5% - 64px)',
     quote: '"HKW felt like full-fledged members of my team."',
     attribution: 'Paula Mantle, Marketing Director at Conviva',
@@ -237,6 +237,7 @@ const caseStudies = [
   {
     id: 'scar',
     name: 'SCAR',
+    isWide: true,
     quote:
       "Working with HKW's web design team has been one of the easiest experiences for our organization — they understood our vision right away and have continued to turn it into a site we’re proud to share with our community.",
     attribution: 'TBD',
@@ -317,6 +318,7 @@ const caseStudies = [
   {
     id: 'inclusively',
     name: 'Inclusively',
+    isWide: true,
     quote:
       '"The expertise and attention to detail by the entire team was evident throughout the project..."',
     attribution: 'Tiffany Meehan, VP of Marketing at Inclusively',
