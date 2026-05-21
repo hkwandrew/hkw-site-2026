@@ -15,8 +15,10 @@ const ToggleButton = styled.button`
     $isRootsPage ? theme.colors.white : theme.colors.blue.dark};
   pointer-events: auto;
   z-index: 90;
-  translate: ${({ $isRootsPage, $isHomePage }) =>
-    $isRootsPage || $isHomePage ? '0 0' : '0 -16px'};
+  translate: ${({ $isRootsPage, $isHomePage, $isServicesPage, $isWorkPage }) =>
+    $isRootsPage || $isHomePage || $isServicesPage || $isWorkPage
+      ? '0 0'
+      : '0 -16px'};
 
   svg {
     width: 24px;
@@ -136,6 +138,8 @@ const MobileNavMenu = ({
   activePathname,
   isRootsPage = false,
   isHomePage = false,
+  isServicesPage = false,
+  isWorkPage = false,
 }) => {
   const location = useLocation()
   const activePath = activePathname ?? location.pathname
@@ -258,6 +262,8 @@ const MobileNavMenu = ({
         tabIndex={isOpen ? -1 : undefined}
         $isRootsPage={isRootsPage}
         $isHomePage={isHomePage}
+        $isServicesPage={isServicesPage}
+        $isWorkPage={isWorkPage}
         onClick={() => setIsOpen((value) => !value)}
       >
         <svg

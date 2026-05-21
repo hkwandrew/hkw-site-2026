@@ -212,7 +212,12 @@ export const Page = styled(ViewContainer)`
   overflow: hidden;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    background: linear-gradient(to top, white 50%, transparent 60%);
+    background: linear-gradient(
+      to top,
+      white 70%,
+      transparent 70%,
+      transparent 100%
+    );
     overflow-y: auto;
   }
 `
@@ -248,7 +253,6 @@ export const StudyArea = styled.div`
   align-items: flex-start;
   gap: 64px;
   width: min(calc(100vw - clamp(132px, 17.5vw, 252px)), 1044px);
-  ${'' /* height: 489px; */}
   min-height: 0;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
@@ -295,7 +299,6 @@ export const StudyText = styled.div`
   grid-template-rows: auto auto auto 1fr;
   row-gap: ${({ $compactCopy }) => ($compactCopy ? '40px' : '45px')};
   min-width: 0;
-  ${'' /* min-height: 489px; */}
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     row-gap: 16px;

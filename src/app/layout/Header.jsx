@@ -193,17 +193,18 @@ const Header = ({ contentPathname, isPageLabelReady = true, navPathname }) => {
             />
           </svg>
         </HKWLogo>
-        {pageLabel && !isRootsPage && (
-          <PageLabel
-            aria-hidden={!isPageLabelActive}
-            key={contentPath}
-            $isActive={isPageLabelActive}
-            $isAboutPage={isAboutPage}
-            $isServicesPage={isServicesPage}
-          >
-            {pageLabel}
-          </PageLabel>
-        )}
+        {(pageLabel && !isRootsPage) ||
+          (!isServicesPage && (
+            <PageLabel
+              aria-hidden={!isPageLabelActive}
+              key={contentPath}
+              $isActive={isPageLabelActive}
+              $isAboutPage={isAboutPage}
+              $isServicesPage={isServicesPage}
+            >
+              {pageLabel}
+            </PageLabel>
+          ))}
       </BrandBlock>
 
       {isPhoneViewport ? (
@@ -211,6 +212,8 @@ const Header = ({ contentPathname, isPageLabelReady = true, navPathname }) => {
           activePathname={activeNavPath}
           isRootsPage={isRootsPage}
           isHomePage={isHomePage}
+          isServicesPage={isServicesPage}
+          isWorkPage={isWorkPage}
         />
       ) : (
         <NavMenu activePathname={activeNavPath} />

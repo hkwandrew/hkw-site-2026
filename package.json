@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "NODE_ENV=development vite --port 5175",
+    "dev": "NODE_ENV=development vite --port 5175 --host",
     "build": "NODE_ENV=production vite build",
     "lint": "eslint .",
     "preview": "vite preview",
