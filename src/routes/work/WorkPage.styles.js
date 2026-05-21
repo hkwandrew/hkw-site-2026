@@ -341,9 +341,11 @@ export const QuoteAndAttribution = styled.div`
 
 export const Quote = styled.p`
   ${applyTypography('h5')}
-  letter-spacing: -0.24px !important;
+  font-size: 20px;
+  letter-spacing: ${({ $letterSpacing }) =>
+    toCssLength($letterSpacing, '-0.24px')};
   font-variation-settings:
-    'wdth' ${({ theme }) => theme.font.width.semicondensed},
+    'wdth' ${({ theme }) => theme.font.width.regular},
     'wght' ${({ theme }) => theme.font.weight.medium};
   color: ${({ theme }) => theme.colors.blue.dark};
 
@@ -706,6 +708,6 @@ export const DesktopArrowButton = styled(ArrowButton)`
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    display: none;
+    ${'' /* display: none; */}
   }
 `

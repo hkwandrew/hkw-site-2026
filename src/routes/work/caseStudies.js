@@ -26,7 +26,7 @@ const caseStudies = [
     id: 'celdf',
     name: 'CELDF',
     isCompact: true,
-    flexBasis: 'calc(39.5% - 64px)',
+    flexBasis: 'calc(35.5% - 64px)',
     quote:
       '"HKW exceeded our expectations in their creative design and development of our branding, and in providing us with innovative web development and solutions."',
     attribution: 'Emelyn Lybarger, Outreach Coordinator',
@@ -66,8 +66,9 @@ const caseStudies = [
   {
     id: 'voxus',
     name: 'Voxus PR',
-    flexBasis: 'calc(38.5% - 64px)',
+    flexBasis: 'calc(35.5% - 64px)',
     isWide: true,
+    letterSpacing: '-0.24px',
     quote:
       '“We communicate for a living, but HKW helped us crystalize our brand message.”',
     attribution: 'Kevin Pedraja, Partner at Voxus PR',
@@ -80,7 +81,7 @@ const caseStudies = [
       aspectRatio: '641.456 / 677.632',
       maxWidth: 'none',
       desktop: {
-        x: 40,
+        x: 140,
         y: -135,
       },
       mobile: {
@@ -107,8 +108,9 @@ const caseStudies = [
     id: 'lumiere',
     name: 'Lumiere Work',
     isCompact: true,
-    flexBasis: 'calc(44.5% - 64px)',
+    flexBasis: 'calc(38.5% - 64px)',
     maxWidth: '395px',
+    letterSpacing: '-0.48px',
     quote:
       '“HKW took something as abstract as consciousness-based leadership and translated it into a site that actually feels like the work: structured, luminous, and alive. Professional, thoughtful, and a pleasure to collaborate with from start to finish.”',
     attribution: 'Kathi Joy, Founder at Lumiere Work',
@@ -127,7 +129,7 @@ const caseStudies = [
       aspectRatio: '249 / 164',
       rotation: 26,
       desktop: {
-        x: -58,
+        x: 0,
         y: 140,
       },
       mobile: {
@@ -153,6 +155,8 @@ const caseStudies = [
   {
     id: 'rogue-heart',
     name: 'Rogue Heart Media',
+    flexBasis: 'calc(41.5% - 64px)',
+    letterSpacing: '-0.4px',
     quote:
       '“It has been our joy to work with HKW - on as many occasions as we can foster, really! Trust is well-placed with them, to create sites of lasting value, as well as the characteristic flair & function that you need.”',
     attribution: 'Megan Kennedy, Founder & Creative Director',
@@ -165,7 +169,7 @@ const caseStudies = [
       aspectRatio: '715 / 483',
       maxWidth: 'none',
       desktop: {
-        x: -76,
+        x: -36,
         y: 26,
       },
       mobile: {
@@ -191,7 +195,7 @@ const caseStudies = [
   {
     id: 'conviva',
     name: 'Conviva',
-    flexBasis: 'calc(39.5% - 64px)',
+    flexBasis: 'calc(35.5% - 64px)',
     quote: '"HKW felt like full-fledged members of my team."',
     attribution: 'Paula Mantle, Marketing Director at Conviva',
     services: [
@@ -211,7 +215,7 @@ const caseStudies = [
       // height: 835.02,
       // aspectRatio: '1252.37 / 835.02',
       desktop: {
-        x: -325,
+        x: -285,
         y: -220,
       },
       mobile: {
@@ -237,17 +241,14 @@ const caseStudies = [
   {
     id: 'scar',
     name: 'SCAR',
+    flexBasis: 'calc(46.5% - 64px)',
+    letterSpacing: '-0.4px',
+    maxWidth: 472,
     isWide: true,
     quote:
       "Working with HKW's web design team has been one of the easiest experiences for our organization — they understood our vision right away and have continued to turn it into a site we’re proud to share with our community.",
-    attribution: 'TBD',
-    services: [
-      'Logo Design',
-      'Web Design',
-      'Collateral Design',
-      'Branding',
-      'Web Development',
-    ],
+    attribution: 'Evee Polanski, Director of Operations',
+    services: ['Web Design', 'Web Development'],
     image: scarImg,
     navIcon: scarNavDefault,
     heroImage: {
@@ -255,8 +256,8 @@ const caseStudies = [
       // height: 956.21,
       // aspectRatio: '623.41 / 956.21',
       desktop: {
-        x: 0,
-        y: -60,
+        x: 20,
+        y: -55,
       },
       mobile: {
         x: 0,
@@ -281,6 +282,7 @@ const caseStudies = [
   {
     id: 'reltio',
     name: 'Reltio',
+      flexBasis: 'calc(42.5% - 64px)',
     quote:
       "From strategy to launch, HKW is the rare agency that combines rock-solid reliability, outstanding design & UI/UX, and genuine partnership — all wrapped up in a team you'll actually love working with.",
     attribution: 'Sr. Director, Global Digital & Web Marketing',
@@ -288,12 +290,12 @@ const caseStudies = [
     image: reltioImg,
     navIcon: reltioNavDefault,
     heroImage: {
-      width: 537,
-      height: 451,
-      aspectRatio: '537 / 451',
+      width: 685.556,
+      // height: 605.655,
+      aspectRatio: '297 / 262',
       desktop: {
-        x: 280,
-        y: 110,
+        x: -60,
+        y: -110,
       },
       mobile: {
         x: 0,
@@ -318,7 +320,9 @@ const caseStudies = [
   {
     id: 'inclusively',
     name: 'Inclusively',
+    flexBasis: 'calc(51.5% - 64px)',
     isWide: true,
+    maxWidth: 483,
     quote:
       '"The expertise and attention to detail by the entire team was evident throughout the project..."',
     attribution: 'Tiffany Meehan, VP of Marketing at Inclusively',
@@ -332,13 +336,13 @@ const caseStudies = [
     image: inclusivelyImg,
     navIcon: inclusivelyNavDefault,
     heroImage: {
-      width: 461,
-      height: 352,
-      aspectRatio: '203 / 155',
+      width: 739.35,
+      height: 580.98,
+      aspectRatio: '127 / 103',
       maxWidth: 'none',
       desktop: {
-        x: 100,
-        y: 100,
+        x: -80,
+        y: -75,
       },
       mobile: {
         x: 0,
@@ -401,6 +405,7 @@ const caseStudies = [
     id: 'computercare',
     name: 'ComputerCare',
     isCompact: true,
+    letterSpacing: '-0.4px',
     quote:
       '“HKW has done many wonderful projects for us over the years. Most recently they helped us implement a new and modern looking website, as well as a huge integration project for our website to connect to our internal systems, which has automated so much of our manual processes. They built a user friendly interface for our customers, and keep our site well maintained.”',
     attribution:
@@ -409,13 +414,13 @@ const caseStudies = [
     image: computerCareImg,
     navIcon: computerCareDefault,
     heroImage: {
-      width: 620,
-      height: 313,
-      aspectRatio: '350 / 177',
+      width: 567.471,
+      height: 569.456,
+      aspectRatio: '285 / 286',
       maxWidth: 'none',
       desktop: {
-        x: 0,
-        y: 70,
+        x: 40,
+        y: -50,
       },
       mobile: {
         x: 0,

@@ -79,14 +79,8 @@ const expectedCaseStudyContent = [
     name: 'SCAR',
     quote:
       "Working with HKW's web design team has been one of the easiest experiences for our organization — they understood our vision right away and have continued to turn it into a site we’re proud to share with our community.",
-    attribution: 'TBD',
-    services: [
-      'Logo Design',
-      'Web Design',
-      'Collateral Design',
-      'Branding',
-      'Web Development',
-    ],
+    attribution: 'Evee Polanski, Director of Operations',
+    services: ['Web Design', 'Web Development'],
   },
   {
     id: 'reltio',
@@ -366,10 +360,38 @@ describe('WorkPage', () => {
     }
   })
 
-  it('reduces the main content left padding for wide case studies', async () => {
-    const wideStudy = getStudy('conviva')
+  it('applies active study quote letter spacing from case-study data', async () => {
+    const study = getStudy('voxus')
+    const previousLetterSpacing = study.letterSpacing
 
-    expect(wideStudy.isWide).toBe(true)
+    study.letterSpacing = '-0.48px'
+
+    try {
+      renderWorkPage()
+
+      fireEvent.click(
+        within(getDesktopNav()).getByRole('button', { name: 'Show Voxus PR' }),
+      )
+
+      await waitForActiveStudy('voxus')
+
+      expect(
+        getComputedStyle(within(getActiveStudyPane()).getByText(study.quote))
+          .letterSpacing,
+      ).toBe('-0.48px')
+    } finally {
+      if (previousLetterSpacing === undefined) {
+        delete study.letterSpacing
+      } else {
+        study.letterSpacing = previousLetterSpacing
+      }
+    }
+  })
+
+  it('reduces the main content left padding for wide case studies', async () => {
+    const wideStudy = caseStudies.find((caseStudy) => caseStudy.isWide)
+
+    expect(wideStudy).toBeDefined()
 
     renderWorkPage()
 
@@ -548,6 +570,7 @@ describe('WorkPage', () => {
 
     const firstStudy = caseStudies[0]
     const lastStudy = caseStudies.at(-1)
+    const initialNavTransform = getComputedStyle(getDesktopNav()).transform
 
     await selectDesktopStudy(lastStudy)
 
@@ -556,11 +579,20 @@ describe('WorkPage', () => {
       lastStudy.id,
     )
 
+    const lastStudyNavTransform = getComputedStyle(getDesktopNav()).transform
+
+    expect(lastStudyNavTransform).not.toBe(initialNavTransform)
+
     fireEvent.click(
       screen.getByRole('button', { name: /show next work item/i }),
     )
 
     await waitForActiveStudy(firstStudy.id)
+    await waitFor(() => {
+      expect(getComputedStyle(getDesktopNav()).transform).not.toBe(
+        initialNavTransform,
+      )
+    })
 
     expect(getActiveStudyPane()).toHaveAttribute(
       'data-work-example',
@@ -571,6 +603,14 @@ describe('WorkPage', () => {
         name: firstStudy.name,
       }),
     ).toBeInTheDocument()
+
+    const currentNavButton = getDesktopNav().querySelector('[aria-current="true"]')
+
+    expect(currentNavButton).toHaveAttribute('data-work-example', firstStudy.id)
+    expect(currentNavButton.previousElementSibling).toHaveAttribute(
+      'data-work-example',
+      lastStudy.id,
+    )
   })
 
   it('slides the desktop nav track when the active item moves beyond the first eight buttons', async () => {

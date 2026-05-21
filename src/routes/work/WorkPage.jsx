@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import gsap from 'gsap'
 import Draggable from 'gsap/Draggable'
 import usePageActive from '@/shared/hooks/usePageActive'
@@ -37,10 +37,14 @@ import {
 gsap.registerPlugin(Draggable)
 
 const DESKTOP_NAV_VISIBLE_COUNT = 8
+const DESKTOP_NAV_COPY_COUNT = 3
+const DESKTOP_NAV_BASE_COPY_INDEX = 1
 const DESKTOP_NAV_GAP = 24
 const DESKTOP_NAV_DRAG_THRESHOLD = 10
 const PAGE_REVEAL_DURATION_MS = 500
 const STUDY_FADE_DURATION_MS = 420
+const DESKTOP_NAV_BASE_VISUAL_INDEX =
+  DESKTOP_NAV_BASE_COPY_INDEX * caseStudies.length
 
 const normalizeIndex = (index, itemCount) =>
   ((index % itemCount) + itemCount) % itemCount
@@ -98,40 +102,183 @@ const getClosestDesktopNavSnapPoint = (offset, snapPoints) =>
     snapPoints[0] ?? { start: 0, offset: 0 },
   )
 
-const renderNavButtons = (currentIndex, handleSelect, compact = false) =>
-  caseStudies.map((caseStudy, itemIndex) => {
-    const isCurrent = itemIndex === currentIndex
-    const hasIcon = Boolean(caseStudy.navIcon)
-    const navButtonLayout = resolveNavButtonLayout(caseStudy.navButton, compact)
+const getDesktopNavVisualCycleStart = (visualIndex, itemCount) =>
+  visualIndex - normalizeIndex(visualIndex, itemCount)
 
-    return (
-      <NavButton
-        key={`${compact ? 'mobile' : 'desktop'}-${caseStudy.id}`}
-        type='button'
-        aria-label={`Show ${caseStudy.name}`}
-        aria-current={isCurrent ? 'true' : undefined}
-        data-nav-kind={hasIcon ? 'icon' : 'dot'}
-        data-work-example={caseStudy.id}
-        data-work-example-region={compact ? 'mobile-nav' : 'desktop-nav'}
-        $compact={compact}
-        $layout={navButtonLayout}
-        onClick={() => handleSelect(itemIndex)}
-      >
-        <NavVisual>
-          {hasIcon ? (
-            <NavIconLayer
-              src={caseStudy.navIcon}
-              alt=''
-              aria-hidden='true'
-              $current={isCurrent}
-            />
-          ) : (
-            <FallbackDot $compact={compact} $current={isCurrent} />
-          )}
-        </NavVisual>
-      </NavButton>
+const getFiniteDesktopNavWindowStart = (visualIndex, itemCount) =>
+  getDesktopNavVisualCycleStart(visualIndex, itemCount) +
+  getDesktopNavWindowStart(normalizeIndex(visualIndex, itemCount), itemCount)
+
+const clampDesktopNavWindowStart = (start, totalCount, itemCount) => {
+  const visibleCount = Math.min(DESKTOP_NAV_VISIBLE_COUNT, itemCount)
+  const maxStart = Math.max(0, totalCount - visibleCount)
+
+  return Math.max(0, Math.min(start, maxStart))
+}
+
+const getWindowStartKeepingVisualIndexVisible = (
+  visualIndex,
+  windowStart,
+  itemCount,
+) => {
+  const visibleCount = Math.min(DESKTOP_NAV_VISIBLE_COUNT, itemCount)
+
+  if (visualIndex < windowStart) return visualIndex
+
+  if (visualIndex >= windowStart + visibleCount) {
+    return visualIndex - visibleCount + 1
+  }
+
+  return windowStart
+}
+
+const getDesktopNavWindowStartForVisualChange = ({
+  currentVisualIndex,
+  nextVisualIndex,
+  currentWindowStart,
+  itemCount,
+}) => {
+  const currentFiniteStart = getFiniteDesktopNavWindowStart(
+    currentVisualIndex,
+    itemCount,
+  )
+  const nextFiniteStart = getFiniteDesktopNavWindowStart(
+    nextVisualIndex,
+    itemCount,
+  )
+  const isAdjacent = Math.abs(nextVisualIndex - currentVisualIndex) === 1
+  const isContinuingLoopWindow = currentWindowStart !== currentFiniteStart
+  const currentItemIndex = normalizeIndex(currentVisualIndex, itemCount)
+  const nextItemIndex = normalizeIndex(nextVisualIndex, itemCount)
+  const isForwardWrap =
+    nextVisualIndex > currentVisualIndex &&
+    currentItemIndex === itemCount - 1 &&
+    nextItemIndex === 0
+  const isBackwardWrap =
+    nextVisualIndex < currentVisualIndex &&
+    currentItemIndex === 0 &&
+    nextItemIndex === itemCount - 1
+
+  if (
+    isAdjacent &&
+    (isContinuingLoopWindow || isForwardWrap || isBackwardWrap)
+  ) {
+    return getWindowStartKeepingVisualIndexVisible(
+      nextVisualIndex,
+      currentWindowStart,
+      itemCount,
     )
-  })
+  }
+
+  return nextFiniteStart
+}
+
+const getNearestDesktopNavVisualIndex = (
+  itemIndex,
+  currentVisualIndex,
+  itemCount,
+) => {
+  const nearestCycle = Math.round((currentVisualIndex - itemIndex) / itemCount)
+  const candidates = [nearestCycle - 1, nearestCycle, nearestCycle + 1].map(
+    (cycle) => cycle * itemCount + itemIndex,
+  )
+
+  return candidates.reduce((nearestVisualIndex, candidate) => {
+    if (
+      Math.abs(candidate - currentVisualIndex) <
+      Math.abs(nearestVisualIndex - currentVisualIndex)
+    ) {
+      return candidate
+    }
+
+    return nearestVisualIndex
+  }, candidates[0])
+}
+
+const getNormalizedDesktopNavPosition = ({
+  visualIndex,
+  windowStart,
+  itemCount,
+  totalCount,
+}) => {
+  const baseStart = DESKTOP_NAV_BASE_VISUAL_INDEX
+  const baseEnd = baseStart + itemCount - 1
+
+  if (visualIndex >= baseStart && visualIndex <= baseEnd) {
+    return { visualIndex, windowStart }
+  }
+
+  const normalizedVisualIndex =
+    baseStart + normalizeIndex(visualIndex, itemCount)
+  const copyOffset = normalizedVisualIndex - visualIndex
+
+  return {
+    visualIndex: normalizedVisualIndex,
+    windowStart: clampDesktopNavWindowStart(
+      windowStart + copyOffset,
+      totalCount,
+      itemCount,
+    ),
+  }
+}
+
+const getDesktopNavItems = () =>
+  Array.from({ length: DESKTOP_NAV_COPY_COUNT }, (_, copyIndex) =>
+    caseStudies.map((caseStudy, itemIndex) => ({
+      caseStudy,
+      itemIndex,
+      visualIndex: copyIndex * caseStudies.length + itemIndex,
+      isDuplicate: copyIndex !== DESKTOP_NAV_BASE_COPY_INDEX,
+    })),
+  ).flat()
+
+const getDesktopNavWidths = (widths) =>
+  Array.from({ length: DESKTOP_NAV_COPY_COUNT }, () => widths).flat()
+
+const renderNavButton = ({
+  caseStudy,
+  itemIndex,
+  visualIndex,
+  isCurrent,
+  isAccessibleCurrent,
+  isDuplicate = false,
+  handleSelect,
+  compact = false,
+  keyPrefix,
+}) => {
+  const hasIcon = Boolean(caseStudy.navIcon)
+  const navButtonLayout = resolveNavButtonLayout(caseStudy.navButton, compact)
+
+  return (
+    <NavButton
+      key={`${keyPrefix}-${caseStudy.id}`}
+      type='button'
+      aria-label={isDuplicate ? undefined : `Show ${caseStudy.name}`}
+      aria-current={isAccessibleCurrent ? 'true' : undefined}
+      aria-hidden={isDuplicate ? 'true' : undefined}
+      tabIndex={isDuplicate ? -1 : undefined}
+      data-nav-kind={hasIcon ? 'icon' : 'dot'}
+      data-work-example={caseStudy.id}
+      data-work-example-region={compact ? 'mobile-nav' : 'desktop-nav'}
+      $compact={compact}
+      $layout={navButtonLayout}
+      onClick={() => handleSelect(itemIndex, visualIndex)}
+    >
+      <NavVisual>
+        {hasIcon ? (
+          <NavIconLayer
+            src={caseStudy.navIcon}
+            alt=''
+            aria-hidden='true'
+            $current={isCurrent}
+          />
+        ) : (
+          <FallbackDot $compact={compact} $current={isCurrent} />
+        )}
+      </NavVisual>
+    </NavButton>
+  )
+}
 
 const renderStudyPane = (study, state) => {
   const attributionLabel = study.attribution.replace(/^[—-]\s*/, '')
@@ -152,7 +299,12 @@ const renderStudyPane = (study, state) => {
     >
       <ClientName $compactCopy={hasCompactCopy}>{study.name}</ClientName>
       <QuoteAndAttribution>
-        <Quote $compactCopy={hasCompactCopy}>{study.quote}</Quote>
+        <Quote
+          $compactCopy={hasCompactCopy}
+          $letterSpacing={study.letterSpacing}
+        >
+          {study.quote}
+        </Quote>
         <Attribution $compactCopy={hasCompactCopy}>
           &mdash;{attributionLabel}
         </Attribution>
@@ -195,15 +347,23 @@ const WorkPage = () => {
   const [index, setIndex] = useState(0)
   const [displayIndex, setDisplayIndex] = useState(0)
   const [studyPhase, setStudyPhase] = useState('active')
-  const [desktopNavWindowStart, setDesktopNavWindowStart] = useState(0)
+  const [desktopNavVisualIndex, setDesktopNavVisualIndex] = useState(
+    DESKTOP_NAV_BASE_VISUAL_INDEX,
+  )
+  const [desktopNavWindowStart, setDesktopNavWindowStart] = useState(
+    DESKTOP_NAV_BASE_VISUAL_INDEX,
+  )
   const [isDesktopNavDragging, setIsDesktopNavDragging] = useState(false)
   const [isForegroundEntryComplete, setIsForegroundEntryComplete] =
     useState(false)
   const [shouldBlockNavClick, setShouldBlockNavClick] = useState(false)
   const desktopNavTrackRef = useRef(null)
   const desktopNavDraggableRef = useRef(null)
+  const hasPositionedDesktopNavRef = useRef(false)
+  const shouldSnapDesktopNavRef = useRef(false)
   const releaseNavClickBlockTimerRef = useRef(null)
   const study = caseStudies[displayIndex]
+  const desktopNavItems = useMemo(() => getDesktopNavItems(), [])
   const desktopNavWidths = useMemo(
     () =>
       caseStudies.map(
@@ -211,13 +371,17 @@ const WorkPage = () => {
       ),
     [],
   )
-  const desktopNavViewportWidth = useMemo(
-    () => getDesktopNavViewportWidth(desktopNavWidths),
+  const desktopNavLoopWidths = useMemo(
+    () => getDesktopNavWidths(desktopNavWidths),
     [desktopNavWidths],
   )
+  const desktopNavViewportWidth = useMemo(
+    () => getDesktopNavViewportWidth(desktopNavLoopWidths),
+    [desktopNavLoopWidths],
+  )
   const desktopNavSnapPoints = useMemo(
-    () => getDesktopNavSnapPoints(desktopNavWidths, caseStudies.length),
-    [desktopNavWidths],
+    () => getDesktopNavSnapPoints(desktopNavLoopWidths, desktopNavItems.length),
+    [desktopNavItems.length, desktopNavLoopWidths],
   )
   const desktopNavTrackOffset =
     desktopNavSnapPoints.find((point) => point.start === desktopNavWindowStart)
@@ -275,18 +439,62 @@ const WorkPage = () => {
     }
   }, [])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const trackElement = desktopNavTrackRef.current
 
-    if (!trackElement) return
+    if (!trackElement) return undefined
 
-    gsap.to(trackElement, {
-      x: -desktopNavTrackOffset,
+    const trackX = -desktopNavTrackOffset
+
+    if (
+      !hasPositionedDesktopNavRef.current ||
+      shouldSnapDesktopNavRef.current
+    ) {
+      gsap.set(trackElement, { x: trackX })
+      hasPositionedDesktopNavRef.current = true
+      shouldSnapDesktopNavRef.current = false
+
+      return undefined
+    }
+
+    const tween = gsap.to(trackElement, {
+      x: trackX,
       duration: isDesktopNavDragging ? 0 : 0.42,
       ease: 'power3.out',
       overwrite: true,
+      onComplete() {
+        if (isDesktopNavDragging) return
+
+        const normalizedPosition = getNormalizedDesktopNavPosition({
+          visualIndex: desktopNavVisualIndex,
+          windowStart: desktopNavWindowStart,
+          itemCount: caseStudies.length,
+          totalCount: desktopNavItems.length,
+        })
+
+        if (
+          normalizedPosition.visualIndex === desktopNavVisualIndex &&
+          normalizedPosition.windowStart === desktopNavWindowStart
+        ) {
+          return
+        }
+
+        shouldSnapDesktopNavRef.current = true
+        setDesktopNavVisualIndex(normalizedPosition.visualIndex)
+        setDesktopNavWindowStart(normalizedPosition.windowStart)
+      },
     })
-  }, [desktopNavTrackOffset, isDesktopNavDragging])
+
+    return () => {
+      tween.kill()
+    }
+  }, [
+    desktopNavItems.length,
+    desktopNavTrackOffset,
+    desktopNavVisualIndex,
+    desktopNavWindowStart,
+    isDesktopNavDragging,
+  ])
 
   useEffect(() => {
     const trackElement = desktopNavTrackRef.current
@@ -353,24 +561,56 @@ const WorkPage = () => {
     }
   }, [desktopNavSnapPoints, maxDesktopNavTrackOffset])
 
+  const goToVisualIndex = (nextVisualIndex) => {
+    const normalizedIndex = normalizeIndex(nextVisualIndex, caseStudies.length)
+
+    if (normalizedIndex === index && nextVisualIndex === desktopNavVisualIndex) {
+      return
+    }
+
+    setDesktopNavWindowStart(
+      clampDesktopNavWindowStart(
+        getDesktopNavWindowStartForVisualChange({
+          currentVisualIndex: desktopNavVisualIndex,
+          nextVisualIndex,
+          currentWindowStart: desktopNavWindowStart,
+          itemCount: caseStudies.length,
+        }),
+        desktopNavItems.length,
+        caseStudies.length,
+      ),
+    )
+    setDesktopNavVisualIndex(nextVisualIndex)
+
+    if (normalizedIndex !== index) {
+      setStudyPhase('leaving')
+      setIndex(normalizedIndex)
+    }
+  }
+
   const goTo = (nextIndex) => {
     const normalizedIndex = normalizeIndex(nextIndex, caseStudies.length)
 
-    if (normalizedIndex === index) return
-
-    setStudyPhase('leaving')
-    setDesktopNavWindowStart(
-      getDesktopNavWindowStart(normalizedIndex, caseStudies.length),
+    goToVisualIndex(
+      getNearestDesktopNavVisualIndex(
+        normalizedIndex,
+        desktopNavVisualIndex,
+        caseStudies.length,
+      ),
     )
-    setIndex(normalizedIndex)
   }
 
-  const next = () => goTo(index + 1)
-  const prev = () => goTo(index - 1)
-  const handleNavButtonSelect = (nextIndex) => {
+  const next = () => goToVisualIndex(desktopNavVisualIndex + 1)
+  const prev = () => goToVisualIndex(desktopNavVisualIndex - 1)
+  const handleNavButtonSelect = (nextIndex, visualIndex) => {
     if (shouldBlockNavClick) return
 
-    goTo(nextIndex)
+    if (visualIndex === undefined) {
+      goTo(nextIndex)
+      return
+    }
+
+    goToVisualIndex(visualIndex)
   }
 
   return (
@@ -444,7 +684,20 @@ const WorkPage = () => {
             ref={desktopNavTrackRef}
             data-testid='work-nav-desktop'
           >
-            {renderNavButtons(index, handleNavButtonSelect)}
+            {desktopNavItems.map(
+              ({ caseStudy, itemIndex, visualIndex, isDuplicate }) =>
+                renderNavButton({
+                  caseStudy,
+                  itemIndex,
+                  visualIndex,
+                  isCurrent: visualIndex === desktopNavVisualIndex,
+                  isAccessibleCurrent:
+                    !isDuplicate && itemIndex === index,
+                  isDuplicate,
+                  handleSelect: handleNavButtonSelect,
+                  keyPrefix: `desktop-${visualIndex}`,
+                }),
+            )}
           </DesktopNavStrip>
         </DesktopNavViewport>
       </DesktopNavRail>
