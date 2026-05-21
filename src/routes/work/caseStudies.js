@@ -190,6 +190,8 @@ const caseStudies = [
   {
     id: 'conviva',
     name: 'Conviva',
+    isWide: true,
+    flexBasis: 'calc(39.5% - 64px)',
     quote: '"HKW felt like full-fledged members of my team."',
     attribution: 'Paula Mantle, Marketing Director at Conviva',
     services: [
@@ -205,13 +207,12 @@ const caseStudies = [
     image: convivaImg,
     navIcon: convivaNavDefault,
     heroImage: {
-      width: 537,
-      height: 451,
-      aspectRatio: '537 / 451',
-      maxWidth: 'none',
+      width: 1100.37,
+      // height: 835.02,
+      // aspectRatio: '1252.37 / 835.02',
       desktop: {
-        x: 80,
-        y: 100,
+        x: -325,
+        y: -220,
       },
       mobile: {
         x: 0,
@@ -236,7 +237,8 @@ const caseStudies = [
   {
     id: 'scar',
     name: 'SCAR',
-    quote: 'TBD',
+    quote:
+      "Working with HKW's web design team has been one of the easiest experiences for our organization — they understood our vision right away and have continued to turn it into a site we’re proud to share with our community.",
     attribution: 'TBD',
     services: [
       'Logo Design',
@@ -248,12 +250,12 @@ const caseStudies = [
     image: scarImg,
     navIcon: scarNavDefault,
     heroImage: {
-      width: 647,
-      height: 376,
-      aspectRatio: '647 / 376',
+      width: 603.41,
+      // height: 956.21,
+      // aspectRatio: '623.41 / 956.21',
       desktop: {
-        x: 200,
-        y: 54,
+        x: 0,
+        y: -60,
       },
       mobile: {
         x: 0,

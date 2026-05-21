@@ -393,7 +393,7 @@ const WorkPage = () => {
         $side='right'
       />
 
-      <MainContent>
+      <MainContent $isWide={Boolean(study.isWide)}>
         <StudyArea>
           <StudyTextStage $layout={study}>
             {renderStudyPane(study, studyPhase)}

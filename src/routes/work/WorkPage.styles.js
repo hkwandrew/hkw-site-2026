@@ -223,10 +223,18 @@ export const MainContent = styled.div`
   align-items: flex-start;
   justify-content: flex-start;
   min-height: 0;
-  padding: min(32.8125vh, 336px) 0 0 clamp(132px, 17.5vw, 252px);
+  padding: min(32.8125vh, 336px) 0 0
+    ${({ $isWide }) =>
+      $isWide
+        ? 'calc(clamp(132px, 17.5vw, 252px) - 60px)'
+        : 'clamp(132px, 17.5vw, 252px)'};
 
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    padding: 252px 72px 190px clamp(132px, 17.5vw, 180px);
+    padding: 252px 72px 190px
+      ${({ $isWide }) =>
+        $isWide
+          ? 'calc(clamp(132px, 17.5vw, 180px) - 60px)'
+          : 'clamp(132px, 17.5vw, 180px)'};
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {

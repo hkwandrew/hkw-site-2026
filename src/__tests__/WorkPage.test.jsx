@@ -17,6 +17,8 @@ const renderWorkPage = () => render(<WorkPage />)
 
 const getDesktopNav = () => screen.getByTestId('work-nav-desktop')
 const getActiveStudyPane = () => screen.getByTestId('work-study-active')
+const getMainContent = () =>
+  getActiveStudyPane().parentElement.parentElement.parentElement
 const expectedCaseStudyContent = [
   {
     id: 'celdf',
@@ -75,7 +77,8 @@ const expectedCaseStudyContent = [
   {
     id: 'scar',
     name: 'SCAR',
-    quote: 'TBD',
+    quote:
+      "Working with HKW's web design team has been one of the easiest experiences for our organization — they understood our vision right away and have continued to turn it into a site we’re proud to share with our community.",
     attribution: 'TBD',
     services: [
       'Logo Design',
@@ -234,8 +237,6 @@ describe('WorkPage', () => {
       expect(study.heroImage).toEqual(
         expect.objectContaining({
           width: expect.any(Number),
-          height: expect.any(Number),
-          aspectRatio: expect.any(String),
           desktop: expect.objectContaining({
             x: expect.any(Number),
             y: expect.any(Number),
@@ -246,6 +247,14 @@ describe('WorkPage', () => {
           }),
         }),
       )
+
+      if (study.heroImage.height !== undefined) {
+        expect(study.heroImage.height).toEqual(expect.any(Number))
+      }
+
+      if (study.heroImage.aspectRatio !== undefined) {
+        expect(study.heroImage.aspectRatio).toEqual(expect.any(String))
+      }
     })
   })
 
@@ -291,10 +300,17 @@ describe('WorkPage', () => {
     renderWorkPage()
 
     const initialStudy = caseStudies[0]
+    const omittedLayoutStudy = caseStudies.find(
+      (caseStudy) =>
+        caseStudy.id !== initialStudy.id &&
+        caseStudy.flexBasis === undefined &&
+        caseStudy.maxWidth === undefined,
+    )
     const fallbackFlexBasis = 'calc(52.5% - 64px)'
     const fallbackMaxWidth = '424px'
     const initialStageStyle = getComputedStyle(getActiveStudyPane().parentElement)
 
+    expect(omittedLayoutStudy).toBeDefined()
     expect(initialStageStyle.flexGrow).toBe('0')
     expect(initialStageStyle.flexShrink).toBe('0')
     expect(initialStageStyle.flexBasis).toBe(
@@ -304,15 +320,11 @@ describe('WorkPage', () => {
       toCssLength(initialStudy.maxWidth, fallbackMaxWidth),
     )
 
-    fireEvent.click(
-      within(getDesktopNav()).getByRole('button', { name: 'Show Conviva' }),
+    await selectDesktopStudy(omittedLayoutStudy)
+
+    expect(getComputedStyle(getActiveStudyPane().parentElement).flexBasis).toBe(
+      fallbackFlexBasis,
     )
-
-    await waitForActiveStudy('conviva')
-
-    expect(
-      getComputedStyle(getActiveStudyPane().parentElement).flexBasis,
-    ).toBe(fallbackFlexBasis)
     expect(getComputedStyle(getActiveStudyPane().parentElement).maxWidth).toBe(
       fallbackMaxWidth,
     )
@@ -352,6 +364,27 @@ describe('WorkPage', () => {
         study.maxWidth = previousMaxWidth
       }
     }
+  })
+
+  it('reduces the main content left padding for wide case studies', async () => {
+    const wideStudy = getStudy('conviva')
+
+    expect(wideStudy.isWide).toBe(true)
+
+    renderWorkPage()
+
+    const normalClassName = getMainContent().className
+
+    expect(normalizeCssFunction(getInjectedStyles())).toContain(
+      'clamp(132px,17.5vw,252px)',
+    )
+
+    await selectDesktopStudy(wideStudy)
+
+    expect(getMainContent().className).not.toBe(normalClassName)
+    expect(normalizeCssFunction(getInjectedStyles())).toContain(
+      'calc(clamp(132px,17.5vw,252px)-60px)',
+    )
   })
 
   it('applies per-study hero image layout from case-study data', async () => {
