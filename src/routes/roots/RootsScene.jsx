@@ -9,6 +9,7 @@ import RootsPortfolioSlider from './RootsPortfolioSlider'
 import RootsMarmot from './RootsMarmot'
 import { ROOTS_SCENE_TRANSITION_DURATION_MS } from './useRootsPageTransition'
 import WelcomeSign from './WelcomeSign'
+import RootsUpButton from './RootsUpButton'
 
 const DESKTOP_SCENE_WIDTH = 1440
 const DESKTOP_SCENE_HEIGHT = 1024
@@ -112,13 +113,11 @@ const DesktopFrameButton = styled.button`
   }
 `
 
-const BackButton = styled.button`
+const BackButton = styled(RootsUpButton)`
   position: absolute;
-  left: 6.0888%;
-  bottom: 5.85%;
-  width: 5.32%;
-  min-width: 62px;
-  max-width: 76px;
+  left: 4.09%;
+  top: 85.41%;
+  width: clamp(76px, 7.22%, 104px);
   z-index: 2;
   transition:
     transform 180ms ease,
@@ -184,9 +183,9 @@ const MobileScene = styled.div`
 const MobileBackButton = styled(BackButton)`
   position: absolute;
   left: 21px;
+  top: auto;
   bottom: max(14px, env(safe-area-inset-bottom));
   width: 42px;
-  height: 42px;
   min-width: 42px;
   max-width: 42px;
   z-index: 5;
@@ -460,9 +459,7 @@ export default function RootsScene({ sceneRef }) {
             aria-label='Return to home'
             onClick={handleReturnHome}
             disabled={isSliderOpen}
-          >
-            <SceneBackIcon />
-          </BackButton>
+          />
 
           <Welcome />
 
@@ -499,9 +496,7 @@ export default function RootsScene({ sceneRef }) {
           aria-label='Return to home'
           onClick={handleReturnHome}
           disabled={isSliderOpen}
-        >
-          <SceneBackIcon />
-        </MobileBackButton>
+        />
       ) : null}
 
       <RootsMarmotLayer aria-hidden='true' $isVisible={!isSliderOpen}>
