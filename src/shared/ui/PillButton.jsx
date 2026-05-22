@@ -69,6 +69,10 @@ const StyledButton = styled.button`
   white-space: nowrap;
   cursor: pointer;
 
+  span {
+    text-box: ${({ theme }) => theme.typography.pillButton.textBox};
+  }
+
   ${({ $variant }) => variants[$variant] || variants.close}
 
   &:focus-visible {
@@ -77,14 +81,10 @@ const StyledButton = styled.button`
   }
 `
 
-export default function PillButton({
-  variant = 'close',
-  children,
-  ...props
-}) {
+export default function PillButton({ variant = 'close', children, ...props }) {
   return (
     <StyledButton $variant={variant} {...props}>
-      {children}
+      <span>{children}</span>
     </StyledButton>
   )
 }

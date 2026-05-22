@@ -17,12 +17,23 @@ import Fyre from './Fyre'
 import SpokaneArts from './SpokaneArts'
 import MealsOnWheels from './MealsOnWheels'
 
-import ewiDetail from './assets/roots-slider/ewi-detail.png'
 import apicWashingtonDetail from './assets/roots-slider/apic-washington-detail.png'
+import asiansForCollectiveLiberationDetail from './assets/roots-slider/asians-for-collective-liberation-detail.png'
 import celdfDetail from './assets/roots-slider/celdf-detail.png'
 import citizenNine26Detail from './assets/roots-slider/citizen-nine26-detail.png'
+import communityBuildingDetail from './assets/roots-slider/community-building-detail.png'
+import communityDevelopmentInitiativeDetail from './assets/roots-slider/community-development-initiative-detail.png'
 import communityWhistleDetail from './assets/roots-slider/community-whistle-detail.png'
+import ewiDetail from './assets/roots-slider/ewi-detail.png'
+import fyreDetail from './assets/roots-slider/fyre-detail.png'
+import justiceNotJailsDetail from './assets/roots-slider/justice-not-jails-detail.png'
+import marthasKitchenDetail from './assets/roots-slider/marthas-kitchen-detail.png'
+import mealsOnWheelsDetail from './assets/roots-slider/meals-on-wheels-detail.png'
+import pjalsDetail from './assets/roots-slider/pjals-detail.png'
 import racialJusticeDetail from './assets/roots-slider/racial-justice-detail.png'
+import spokaneArtsDetail from './assets/roots-slider/spokane-arts-detail.png'
+import spokaneCommunityAgainstRacismDetail from './assets/roots-slider/spokane-community-against-racism-detail.png'
+import terrainDetail from './assets/roots-slider/terrain-detail.png'
 import watersMeetDetail from './assets/roots-slider/waters-meet-detail.png'
 
 const PLACEHOLDER_COPY = 'TBD'
@@ -34,9 +45,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
     title: 'CELDF',
     FrameComponent: Celdf,
     detailImage: celdfDetail,
-    quote:
-      '"HKW exceeded our expectations in their creative design and development of our branding, and in providing us with innovative web development and solutions."',
-    attribution: 'Emelyn Lybarger, Outreach Coordinator',
+    bio: '"HKW exceeded our expectations in their creative design and development of our branding, and in providing us with innovative web development and solutions."',
     roles: ['Website Design', 'Graphic Design', 'Branding', 'Logo Design'],
     desktopFrame: {
       left: 245.97,
@@ -46,53 +55,60 @@ const ROOTS_PORTFOLIO_ITEMS = [
   },
   {
     id: 'ewi',
-    title: 'EWI',
+    title: 'Executive Women International of Spokane',
     FrameComponent: Ewi,
     detailImage: ewiDetail,
-    quote: PLACEHOLDER_COPY,
-    attribution: PLACEHOLDER_COPY,
-    roles: PLACEHOLDER_ROLES,
+    maxWidth: 343,
+    bio: 'EWI brings together leaders from diverse businesses to give back and make a meaningful impact. Through philanthropy, community service, and educational initiatives, their members are committed to strengthening the communities they work and live in.',
+    roles: ['Website Design', 'Website Development'],
     desktopFrame: {
       left: 62.5,
       top: 233.6,
       width: 152.482,
     },
+    artworkWidth: 579.059,
+    artworkHeight: 822.19,
   },
   {
     id: 'citizen-nine26',
     title: 'Citizen Nine26',
     FrameComponent: CitizenNineTwoSix,
     detailImage: citizenNine26Detail,
-    quote: 'TBD',
-    attribution: 'TBD',
-    roles: ['TBD'],
+    maxWidth: 372,
+    bio: 'Citizen Nine26 helps everyday people navigate complex legal and civil rights challenges with confidence. Whether accessing public records or understanding their rights, they make sure community members have the tools and support they need to advocate for themselves.',
+    roles: ['Website Design', 'Logo Design'],
     desktopFrame: {
       left: 476.03,
       top: 172.27,
       width: 158.933,
     },
+    artworkWidth: 717.463,
+    artworkHeight: 471.771,
+    artworkTop: 130.109,
+    artworkLeft: 73.531,
   },
   {
     id: 'racial-justice',
     title: 'Racial Justice and Police Misconduct Center (RJPMC)',
     FrameComponent: Rjpmc,
     detailImage: racialJusticeDetail,
-    quote: 'TBD',
-    attribution: 'TBD',
-    roles: ['TBD'],
+    maxWidth: 358,
+    bio: 'Dedicated to investigating law enforcement misconduct and addressing systemic racism in the criminal legal system, RJPMC provides families impacted by police violence with support, legal resources, and a path forward.',
+    roles: ['Website Design', 'Website Development'],
     desktopFrame: {
       left: 281.95,
       top: 326.69,
       width: 156.042,
     },
+    artworkWidth: 877.764,
+    artworkHeight: 585.908,
   },
   {
     id: 'waters-meet',
     title: 'Waters Meet',
     FrameComponent: WatersMeet,
     detailImage: watersMeetDetail,
-    quote: 'TBD',
-    attribution: 'TBD',
+    bio: 'TBD',
     roles: ['TBD'],
     desktopFrame: {
       left: 881.1,
@@ -104,34 +120,47 @@ const ROOTS_PORTFOLIO_ITEMS = [
     id: 'community-development-initiative',
     title: 'Community Development Initiative',
     FrameComponent: CommunityDevelopmentInitiative,
-    quote: PLACEHOLDER_COPY,
-    attribution: PLACEHOLDER_COPY,
-    roles: PLACEHOLDER_ROLES,
+    detailImage: communityDevelopmentInitiativeDetail,
+    maxWidth: 318,
+    bio: 'A civic initiative dedicated to strengthening communities from the ground up, they fund a wide range of local needs, from public services and affordable housing to small business support and neighborhood improvements, ensuring resources reach the people and places that need them most.',
+    roles: ['Website Design', 'Graphic Design', 'Branding', 'Logo Design'],
     desktopFrame: {
       left: 1133.42,
       top: 99.26,
       width: 150.266,
     },
+    artworkTop: -80,
   },
   {
     id: 'spokane-community-against-racism',
-    title: 'Spokane Community Against Racism',
+    title: 'SCAR Spokane',
     FrameComponent: Scar,
-    quote: PLACEHOLDER_COPY,
-    attribution: PLACEHOLDER_COPY,
-    roles: PLACEHOLDER_ROLES,
+    detailImage: spokaneCommunityAgainstRacismDetail,
+    maxWidth: 372,
+    bio: 'SCAR is a 501c4 and led by a steering committee of six people; four of whom are people of color. They have a multitude of affiliations with local, state, and national organizations. SCAR uses the Hub and Spoke model of organizing with the Steering Committee in the center.',
+    roles: [
+      'Website Design',
+      'Website Development',
+      'Graphic Design',
+      'Branding',
+      'Logo Design',
+      'Marketing Support',
+    ],
     desktopFrame: {
       left: 61.08,
       top: 436.54,
       width: 183.207,
     },
+    artworkWidth: 967.93,
+    artworkHeight: 1166.299,
+    artworkTop: 80,
   },
   {
     id: 'asians-for-collective-liberation',
     title: 'Asians for Collective Liberation',
     FrameComponent: Acl,
-    quote: PLACEHOLDER_COPY,
-    attribution: PLACEHOLDER_COPY,
+    detailImage: asiansForCollectiveLiberationDetail,
+    bio: PLACEHOLDER_COPY,
     roles: PLACEHOLDER_ROLES,
     desktopFrame: {
       left: 297,
@@ -143,8 +172,8 @@ const ROOTS_PORTFOLIO_ITEMS = [
     id: 'justice-not-jails',
     title: 'Justice Not Jails',
     FrameComponent: JusticeNotJails,
-    quote: PLACEHOLDER_COPY,
-    attribution: PLACEHOLDER_COPY,
+    detailImage: justiceNotJailsDetail,
+    bio: PLACEHOLDER_COPY,
     roles: PLACEHOLDER_ROLES,
     desktopFrame: {
       left: 917.18,
@@ -156,8 +185,8 @@ const ROOTS_PORTFOLIO_ITEMS = [
     id: 'meals-on-wheels',
     title: 'Meals on Wheels',
     FrameComponent: MealsOnWheels,
-    quote: PLACEHOLDER_COPY,
-    attribution: PLACEHOLDER_COPY,
+    detailImage: mealsOnWheelsDetail,
+    bio: PLACEHOLDER_COPY,
     roles: PLACEHOLDER_ROLES,
     desktopFrame: {
       left: 1132,
@@ -169,8 +198,8 @@ const ROOTS_PORTFOLIO_ITEMS = [
     id: 'community-building',
     title: 'Community Building',
     FrameComponent: CommunityBuilding,
-    quote: PLACEHOLDER_COPY,
-    attribution: PLACEHOLDER_COPY,
+    detailImage: communityBuildingDetail,
+    bio: PLACEHOLDER_COPY,
     roles: PLACEHOLDER_ROLES,
     desktopFrame: {
       left: 876.96,
@@ -182,8 +211,8 @@ const ROOTS_PORTFOLIO_ITEMS = [
     id: 'fyre',
     title: 'FYRE',
     FrameComponent: Fyre,
-    quote: PLACEHOLDER_COPY,
-    attribution: PLACEHOLDER_COPY,
+    detailImage: fyreDetail,
+    bio: PLACEHOLDER_COPY,
     roles: PLACEHOLDER_ROLES,
     desktopFrame: {
       left: 1177.98,
@@ -195,8 +224,8 @@ const ROOTS_PORTFOLIO_ITEMS = [
     id: 'terrain',
     title: 'Terrain',
     FrameComponent: Terrain,
-    quote: PLACEHOLDER_COPY,
-    attribution: PLACEHOLDER_COPY,
+    detailImage: terrainDetail,
+    bio: PLACEHOLDER_COPY,
     roles: PLACEHOLDER_ROLES,
     desktopFrame: {
       left: 24,
@@ -209,8 +238,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
     title: 'Community Whistle',
     FrameComponent: CommunityWhistle,
     detailImage: communityWhistleDetail,
-    quote: 'TBD',
-    attribution: 'TBD',
+    bio: 'TBD',
     roles: ['TBD'],
     desktopFrame: {
       left: 501.92,
@@ -222,8 +250,8 @@ const ROOTS_PORTFOLIO_ITEMS = [
     id: 'spokane-arts',
     title: 'Spokane Arts',
     FrameComponent: SpokaneArts,
-    quote: PLACEHOLDER_COPY,
-    attribution: PLACEHOLDER_COPY,
+    detailImage: spokaneArtsDetail,
+    bio: PLACEHOLDER_COPY,
     roles: PLACEHOLDER_ROLES,
     desktopFrame: {
       left: 272,
@@ -235,8 +263,8 @@ const ROOTS_PORTFOLIO_ITEMS = [
     id: 'marthas-kitchen',
     title: "Martha's Kitchen",
     FrameComponent: MarthasKitchen,
-    quote: PLACEHOLDER_COPY,
-    attribution: PLACEHOLDER_COPY,
+    detailImage: marthasKitchenDetail,
+    bio: PLACEHOLDER_COPY,
     roles: PLACEHOLDER_ROLES,
     desktopFrame: {
       left: 693.95,
@@ -248,8 +276,8 @@ const ROOTS_PORTFOLIO_ITEMS = [
     id: 'pjals',
     title: 'PJALS',
     FrameComponent: Pjals,
-    quote: PLACEHOLDER_COPY,
-    attribution: PLACEHOLDER_COPY,
+    detailImage: pjalsDetail,
+    bio: PLACEHOLDER_COPY,
     roles: PLACEHOLDER_ROLES,
     desktopFrame: {
       left: 992.92,
@@ -262,8 +290,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
     title: 'Asian & Pacific Islander Coalition of Washington',
     FrameComponent: ApicWashington,
     detailImage: apicWashingtonDetail,
-    quote: 'TBD',
-    attribution: 'TBD',
+    bio: 'TBD',
     roles: ['TBD'],
     desktopFrame: {
       left: 672.77,

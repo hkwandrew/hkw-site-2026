@@ -7,11 +7,6 @@ import {
 import { Link } from 'react-router'
 import SunHoverArt from './SunHoverArt'
 
-const SUN_CONTAINER = Object.freeze({
-  x: 1706.222193,
-  y: 231.108808,
-})
-
 const CONTACT_BADGE = Object.freeze(
   getHomeHoverRegionPosition(HOME_HOVER_REGION.contact),
 )
@@ -31,11 +26,8 @@ const Sun = () => {
     canInteractWithHomeHover && homeHoverRegion === HOME_HOVER_REGION.contact
 
   const sunSvg = (
-    <g
-      id='sun__container'
-      transform={`translate(${SUN_CONTAINER.x},${SUN_CONTAINER.y})`}
-    >
-      <g id='sun__wrapper' transform='scale(1,1)'>
+    <g id='sun__container'>
+      <g id='sun__wrapper'>
         <path
           id='sun'
           d='M1689.5,291c32.03,0,58-25.967,58-58s-25.97-58-58-58-58,25.967-58,58s25.97,58,58,58Z'

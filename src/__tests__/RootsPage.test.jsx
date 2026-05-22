@@ -319,6 +319,61 @@ describe('RootsPage', () => {
     })
   })
 
+  it('positions detail-image artwork from top and left portfolio values', () => {
+    renderRootsRoute()
+
+    fireEvent.click(screen.getByRole('button', { name: /open citizen nine26/i }))
+
+    const item = ROOTS_PORTFOLIO_ITEMS.find(
+      ({ id }) => id === 'citizen-nine26',
+    )
+    const artwork = screen.getByAltText('Citizen Nine26 project artwork')
+
+    expect(item).toMatchObject({
+      artworkTop: 130.109,
+      artworkLeft: 73.531,
+      artworkWidth: 717.463,
+      artworkHeight: 471.771,
+    })
+    expect(item).not.toHaveProperty('artworkJustify')
+    expect(item).not.toHaveProperty('artworkAlign')
+    expect(artwork).toHaveStyle({
+      position: 'absolute',
+      top: `${item.artworkTop}px`,
+      left: `${item.artworkLeft}px`,
+      width: `${item.artworkWidth}px`,
+      height: `${item.artworkHeight}px`,
+      maxWidth: 'none',
+      maxInlineSize: 'none',
+      maxBlockSize: 'none',
+    })
+  })
+
+  it('does not cap configured artwork dimensions to the stage width', () => {
+    renderRootsRoute()
+
+    fireEvent.click(screen.getByRole('button', { name: /open racial justice/i }))
+
+    const item = ROOTS_PORTFOLIO_ITEMS.find(
+      ({ id }) => id === 'racial-justice',
+    )
+    const artwork = screen.getByAltText(
+      'Racial Justice and Police Misconduct Center (RJPMC) project artwork',
+    )
+
+    expect(item).toMatchObject({
+      artworkWidth: 877.764,
+      artworkHeight: 585.908,
+    })
+    expect(artwork).toHaveStyle({
+      width: `${item.artworkWidth}px`,
+      height: `${item.artworkHeight}px`,
+      maxWidth: 'none',
+      maxInlineSize: 'none',
+      maxBlockSize: 'none',
+    })
+  })
+
   it('wraps to the first portfolio item when advancing from the last slide', async () => {
     renderRootsRoute()
 
@@ -357,6 +412,31 @@ describe('RootsPage', () => {
     })
   })
 
+  it('renders mobile frame rows in portfolio data order', () => {
+    window.matchMedia = createMatchMedia(true)
+
+    renderRootsRoute()
+
+    const mobileFrames = document.querySelector(
+      '[data-roots-mobile-scroll-region]',
+    ).firstElementChild
+    const columns = Array.from(mobileFrames.children)
+    const frameRows = columns[0].querySelectorAll(
+      'button[data-roots-example-region="mobile-frame"]',
+    )
+    const rowOrderedIds = Array.from(frameRows).flatMap((_, rowIndex) =>
+      columns
+        .map((column) =>
+          column.querySelectorAll(
+            'button[data-roots-example-region="mobile-frame"]',
+          )[rowIndex]?.dataset.rootsExample,
+        )
+        .filter(Boolean),
+    )
+
+    expect(rowOrderedIds).toEqual(ROOTS_PORTFOLIO_ITEMS.map((item) => item.id))
+  })
+
   it('exposes each desktop roots frame id as a data attribute', () => {
     renderRootsRoute()
 
@@ -379,8 +459,10 @@ describe('RootsPage', () => {
 
     expect(frameButtons).toHaveLength(ROOTS_PORTFOLIO_ITEMS.length)
     expect(ROOTS_PORTFOLIO_ITEMS.length).toBeGreaterThan(6)
-    expect(document.querySelector('[data-roots-hub-sign]')).not.toBeNull()
-    expect(screen.getByText(/go up/i)).toBeInTheDocument()
+    expect(document.querySelector('[data-roots-welcome-sign]')).not.toBeNull()
+    expect(
+      screen.getByRole('button', { name: /return to home/i }),
+    ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /open terrain/i })).toHaveAttribute(
       'data-roots-example',
       'terrain',

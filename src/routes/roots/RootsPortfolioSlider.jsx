@@ -6,6 +6,18 @@ import RootsMarmot from './RootsMarmot'
 import frameBackground from './assets/roots-slider/frame.png'
 import PillButton from '@/shared/ui/PillButton'
 
+const toCssLength = (value, fallback = 'auto') =>
+  typeof value === 'number' ? `${value}px` : (value ?? fallback)
+
+const getArtworkTranslate = ({ $artworkTop, $artworkLeft }) => {
+  const translateX = $artworkLeft == null ? '-50%' : '0'
+  const translateY = $artworkTop == null ? '-50%' : '0'
+
+  return translateX === '0' && translateY === '0'
+    ? 'none'
+    : `translate(${translateX}, ${translateY})`
+}
+
 const Overlay = styled.div`
   position: absolute;
   inset: 0;
@@ -23,7 +35,7 @@ const Dialog = styled.div`
   flex-direction: column;
   min-height: 100%;
   height: 100%;
-  overflow: auto;
+  overflow: hidden;
   color: ${({ theme }) => theme.colors.blue.dark};
 
   &::before {
@@ -102,7 +114,7 @@ const ClosePill = styled(PillButton)`
 
 const Content = styled.div`
   position: relative;
-  z-index: 2;
+  z-index: 0;
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(300px, 417px);
   gap: 64px;
@@ -131,7 +143,6 @@ const ArtworkStage = styled.div`
   justify-content: center;
   min-width: 0;
   min-height: 0;
-  padding: 36px 12px 60px;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     min-height: 0;
@@ -139,41 +150,26 @@ const ArtworkStage = styled.div`
   }
 `
 
-const ArtworkGlow = styled.div`
-  position: absolute;
-  inset: 17% 4% 13%;
-  border-radius: 28px;
-  background:
-    radial-gradient(
-      circle at 42% 34%,
-      rgba(255, 255, 255, 0.72) 0,
-      rgba(255, 255, 255, 0.22) 30%,
-      transparent 62%
-    ),
-    linear-gradient(
-      180deg,
-      rgba(250, 156, 56, 0.11) 0%,
-      rgba(250, 156, 56, 0.03) 100%
-    );
-  filter: blur(8px);
-  pointer-events: none;
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    inset: 10% 0 0;
-  }
-`
-
 const ArtworkImage = styled.img`
-  position: relative;
+  position: absolute;
+  top: ${({ $artworkTop }) => toCssLength($artworkTop, '50%')};
+  left: ${({ $artworkLeft }) => toCssLength($artworkLeft, '50%')};
   z-index: 1;
-  width: min(100%, 720px);
-  max-height: min(66vh, 728px);
-  object-fit: contain;
-  filter: drop-shadow(0 22px 28px rgba(28, 45, 56, 0.18));
+  width: ${({ $artworkWidth }) => toCssLength($artworkWidth)};
+  height: ${({ $artworkHeight }) => toCssLength($artworkHeight)};
+  max-width: none;
+  max-inline-size: none;
+  max-block-size: none;
+  transform: ${getArtworkTranslate};
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    width: 100%;
-    max-height: 40vh;
+    position: relative;
+    top: auto;
+    left: auto;
+    width: ${({ $artworkWidth }) => toCssLength($artworkWidth, '100%')};
+    height: ${({ $artworkHeight }) => toCssLength($artworkHeight)};
+    transform: none;
+    ${'' /* max-height: 40vh; */}
   }
 `
 
@@ -183,8 +179,7 @@ const ArtworkFrame = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: min(100%, 520px);
-  filter: drop-shadow(0 22px 28px rgba(28, 45, 56, 0.18));
+  ${'' /* width: min(100%, 520px); */}
 
   > * {
     width: 100%;
@@ -200,12 +195,13 @@ const Copy = styled.div`
   z-index: 1;
   display: flex;
   flex-direction: column;
-  align-self: center;
-  gap: 42px;
+  margin-top: 128px;
+  ${'' /* align-self: center; */}
+  gap: 45px;
   width: 100%;
-  max-width: 417px;
   min-width: 0;
-  padding-right: 24px;
+  max-width: ${({ $maxWidth }) =>
+    typeof $maxWidth === 'number' ? `${$maxWidth}px` : ($maxWidth ?? 'none')};
 
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
     gap: 30px;
@@ -219,55 +215,34 @@ const Copy = styled.div`
 `
 
 const Title = styled.h2`
-  margin: 0;
-  ${applyTypography('h3')}
+  letter-spacing: -1.44px;
   line-height: 1;
+  font-size: ${({ theme }) => theme.typography.h3.size};
+  text-box: ${({ theme }) => theme.typography.textBox};
+  font-weight: ${({ theme }) => theme.font.weight.bold};
   font-variation-settings:
-    'wdth' 90,
-    'wght' ${({ theme }) => theme.font.weight.semibold};
+    'wdth' ${({ theme }) => theme.font.width.condensed},
+    'wght' ${({ theme }) => theme.font.weight.bold};
+  color: ${({ theme }) => theme.colors.blue.dark};
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     font-size: 36px;
   }
 `
 
-const QuoteBlock = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+const Bio = styled.p`
   color: ${({ theme }) => theme.colors.blue.dark};
-`
-
-const Quote = styled.p`
-  margin: 0;
-  ${applyTypography('formButton')}
+  font-size: ${({ theme }) => theme.typography.formButton.size};
   line-height: 1.19;
-  text-transform: none;
-  font-style: italic;
+  letter-spacing: -0.4px;
+  font-weight: ${({ theme }) => theme.font.weight.medium};
   font-variation-settings:
-    'wdth' 100,
-    'wght'
-      ${({ theme, $placeholder }) =>
-        $placeholder ? theme.font.weight.semibold : theme.font.weight.medium};
-  opacity: ${({ $placeholder }) => ($placeholder ? 0.72 : 1)};
+    'wdth' ${({ theme }) => theme.font.width.regular},
+    'wght' ${({ theme }) => theme.font.weight.medium};
+  text-transform: none;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     font-size: 18px;
-  }
-`
-
-const Attribution = styled.p`
-  margin: 0;
-  ${applyTypography('bodyMedium')}
-  line-height: 1.1;
-  font-style: italic;
-  opacity: ${({ $placeholder }) => ($placeholder ? 0.6 : 0.8)};
-  font-variation-settings:
-    'wdth' 90,
-    'wght' ${({ theme }) => theme.font.weight.regular};
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    font-size: 16px;
   }
 `
 
@@ -278,7 +253,6 @@ const Roles = styled.div`
 `
 
 const RolesLabel = styled.p`
-  margin: 0;
   ${applyTypography('bodyMedium')}
   line-height: 1.3;
 `
@@ -293,14 +267,13 @@ const RolesList = styled.ul`
 `
 
 const Role = styled.li`
-  ${applyTypography('bodyMedium')}
+  font-size: ${({ theme }) => theme.typography.bodyMedium.size};
+  letter-spacing: 0;
   line-height: 1.5;
+  font-weight: ${({ theme }) => theme.font.weight.semibold};
   font-variation-settings:
     'wdth' 100,
-    'wght'
-      ${({ theme, $placeholder }) =>
-        $placeholder ? theme.font.weight.medium : theme.font.weight.semibold};
-  opacity: ${({ $placeholder }) => ($placeholder ? 0.72 : 1)};
+    'wght' ${({ theme }) => theme.font.weight.semibold};
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     font-size: 16px;
@@ -315,7 +288,7 @@ const NavCluster = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 38px;
+  padding: 0 68px;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     position: sticky;
@@ -338,7 +311,6 @@ const NavControl = styled(ArrowButton)`
   pointer-events: auto;
   background: ${({ theme }) => theme.colors.orange.base};
   color: ${({ theme }) => theme.colors.white};
-  box-shadow: 0 12px 24px rgba(28, 45, 56, 0.18);
 
   &:hover {
     background: ${({ theme }) => theme.colors.orange.dark};
@@ -387,8 +359,6 @@ export default function RootsPortfolioSlider({
   const dialogRef = useRef(null)
   const closeRef = useRef(null)
   const titleId = useId()
-  const isPlaceholderCopy = item.quote === 'TBD'
-  const hasPlaceholderRoles = item.roles.length === 1 && item.roles[0] === 'TBD'
   const FrameComponent = item.FrameComponent
 
   useLayoutEffect(() => {
@@ -472,9 +442,12 @@ export default function RootsPortfolioSlider({
 
         <Content>
           <ArtworkStage>
-            <ArtworkGlow aria-hidden='true' />
             {item.detailImage ? (
               <ArtworkImage
+                $artworkWidth={item.artworkWidth}
+                $artworkHeight={item.artworkHeight}
+                $artworkTop={item.artworkTop}
+                $artworkLeft={item.artworkLeft}
                 src={item.detailImage}
                 alt={`${item.title} project artwork`}
               />
@@ -485,26 +458,16 @@ export default function RootsPortfolioSlider({
             )}
           </ArtworkStage>
 
-          <Copy>
+          <Copy $maxWidth={item.maxWidth}>
             <Title id={titleId}>{item.title}</Title>
 
-            <QuoteBlock>
-              <Quote $placeholder={isPlaceholderCopy}>{item.quote}</Quote>
-              <Attribution $placeholder={isPlaceholderCopy}>
-                {item.attribution}
-              </Attribution>
-            </QuoteBlock>
+            <Bio>{item.bio}</Bio>
 
             <Roles>
               <RolesLabel>Our roles:</RolesLabel>
               <RolesList>
                 {item.roles.map((role) => (
-                  <Role
-                    key={`${item.id}-${role}`}
-                    $placeholder={hasPlaceholderRoles && role === 'TBD'}
-                  >
-                    {role}
-                  </Role>
+                  <Role key={`${item.id}-${role}`}>{role}</Role>
                 ))}
               </RolesList>
             </Roles>

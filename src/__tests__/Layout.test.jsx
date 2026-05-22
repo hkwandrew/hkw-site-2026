@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor, withTheme } from '@/__tests__/testUtils'
+import { act, fireEvent, render, screen, waitFor, withTheme } from '@/__tests__/testUtils'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { usePageSceneTransition } from '@/app/landscape/pageSceneTransition'
@@ -24,6 +24,45 @@ const originalMatchMedia = window.matchMedia
 const originalResizeObserver = window.ResizeObserver
 let completePendingSceneTransition = null
 let sceneViewportChangeHandlers = []
+let activeRouter = null
+let canUseHoverRegions = false
+let sceneTransitionStartPaths = []
+
+const SCENE_RUNTIME_LAYER_SELECTORS = [
+  '#blue-mountain__container',
+  '#blue-mountain__wrapper',
+  '#gold-mountain__container',
+  '#gold-mountain__wrapper',
+  '#sun__container',
+  '#sun__wrapper',
+  '#dk-blue-mountain_container',
+  '#dk-blue-mountain_wrapper',
+  '#tree-mountain__container',
+  '#tree-mountain__wrapper',
+  '#upper-field__container',
+  '#upper-field__wrapper',
+  '#white-sand__container',
+  '#white-sand__wrapper',
+  '#dirt-layer__container',
+  '#dirt-layer__wrapper',
+]
+
+const assignRuntimeTransformSentinels = (container) => {
+  SCENE_RUNTIME_LAYER_SELECTORS.forEach((selector, index) => {
+    const element = container.querySelector(selector)
+
+    element?.setAttribute('transform', `sentinel-${index}`)
+  })
+}
+
+const expectRuntimeTransformSentinels = (container) => {
+  SCENE_RUNTIME_LAYER_SELECTORS.forEach((selector, index) => {
+    expect(container.querySelector(selector)).toHaveAttribute(
+      'transform',
+      `sentinel-${index}`,
+    )
+  })
+}
 
 const AboutTransitionProbe = () => {
   const { transitionSceneToPath } = usePageSceneTransition()
@@ -82,16 +121,23 @@ describe('Layout shared scene links', () => {
   beforeEach(() => {
     completePendingSceneTransition = null
     sceneViewportChangeHandlers = []
+    activeRouter = null
+    canUseHoverRegions = false
+    sceneTransitionStartPaths = []
     sharedSceneRuntimeMocks.animateSharedSceneTransition.mockReset()
     sharedSceneRuntimeMocks.applySharedSceneState.mockReset()
     sharedSceneRuntimeMocks.animateSharedSceneTransition.mockImplementation(
       ({ onComplete }) => {
+        sceneTransitionStartPaths.push(activeRouter?.state.location.pathname ?? null)
         completePendingSceneTransition = onComplete
         return { kill: vi.fn() }
       },
     )
     window.matchMedia = vi.fn().mockImplementation((query) => ({
-      matches: false,
+      matches:
+        query === '(hover: hover) and (pointer: fine)'
+          ? canUseHoverRegions
+          : false,
       media: query,
       addEventListener: vi.fn((eventName, handler) => {
         if (
@@ -141,6 +187,47 @@ describe('Layout shared scene links', () => {
 
     const workRender = renderLayoutRoute('/work')
     expect(workRender.container.querySelector('.work-dirt-layer')).toBeTruthy()
+  })
+
+  it('keeps runtime-owned scene transforms through route re-render', async () => {
+    const { container, router } = renderLayoutRoute('/')
+    activeRouter = router
+
+    assignRuntimeTransformSentinels(container)
+
+    await act(async () => {
+      await router.navigate('/about')
+    })
+
+    expectRuntimeTransformSentinels(container)
+  })
+
+  it('starts the home layer scene transition before the about route commits', async () => {
+    canUseHoverRegions = true
+    const { container, router } = renderLayoutRoute('/')
+    activeRouter = router
+    const aboutLayerLink = container
+      .querySelector('#blue-mountain__container')
+      ?.closest('a')
+
+    await act(async () => {
+      fireEvent.click(aboutLayerLink)
+    })
+
+    expect(sceneTransitionStartPaths[0]).toBe('/')
+    expect(router.state.location.pathname).toBe('/about')
+  })
+
+  it('starts the home nav scene transition before the about route commits', async () => {
+    const { router } = renderLayoutRoute('/')
+    activeRouter = router
+
+    await act(async () => {
+      screen.getByRole('link', { name: 'About' }).click()
+    })
+
+    expect(sceneTransitionStartPaths[0]).toBe('/')
+    expect(router.state.location.pathname).toBe('/about')
   })
 
   it('reapplies the active scene state when the scene viewport changes', () => {

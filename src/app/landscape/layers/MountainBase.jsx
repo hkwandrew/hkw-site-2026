@@ -3,7 +3,6 @@ import { useHomeHover } from '@/routes/home/homeHoverContext'
 const MountainBase = ({
   containerId,
   wrapperId,
-  container,
   hoverPosition,
   hoverRegion,
   hoverContent,
@@ -76,8 +75,8 @@ const MountainBase = ({
   )
 
   return (
-    <g id={containerId} transform={`translate(${container.x},${container.y})`}>
-      <g id={wrapperId} transform='scale(1,1)'>
+    <g id={containerId}>
+      <g id={wrapperId}>
         {innerContent}
       </g>
     </g>

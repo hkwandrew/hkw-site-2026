@@ -10,20 +10,9 @@ import RootsMarmot from './RootsMarmot'
 import { ROOTS_SCENE_TRANSITION_DURATION_MS } from './useRootsPageTransition'
 import WelcomeSign from './WelcomeSign'
 
-const DESKTOP_SCENE_WIDTH = 1442
+const DESKTOP_SCENE_WIDTH = 1440
 const DESKTOP_SCENE_HEIGHT = 1024
 const MOBILE_MEDIA_QUERY = '(max-width: 767px)'
-const MOBILE_FRAME_PRIORITY = [
-  'celdf',
-  'community-whistle',
-  'citizen-nine26',
-  'racial-justice',
-  'waters-meet',
-  'apic-washington',
-]
-const MOBILE_FRAME_ORDER = new Map(
-  MOBILE_FRAME_PRIORITY.map((itemId, index) => [itemId, index]),
-)
 
 const Root = styled.section`
   position: absolute;
@@ -155,7 +144,7 @@ const BackButton = styled.button`
 const Welcome = styled(WelcomeSign)`
   position: absolute;
   left: 500.64px;
-  top: 403.42px;
+  top: 382.35px;
   width: 309.255px;
   height: auto;
   display: block;
@@ -373,16 +362,7 @@ export default function RootsScene({ sceneRef }) {
   const mobileFrameEntries = ROOTS_PORTFOLIO_ITEMS.map((item, itemIndex) => ({
     item,
     itemIndex,
-  })).sort((firstEntry, secondEntry) => {
-    const firstOrder =
-      MOBILE_FRAME_ORDER.get(firstEntry.item.id) ??
-      MOBILE_FRAME_ORDER.size + firstEntry.itemIndex
-    const secondOrder =
-      MOBILE_FRAME_ORDER.get(secondEntry.item.id) ??
-      MOBILE_FRAME_ORDER.size + secondEntry.itemIndex
-
-    return firstOrder - secondOrder
-  })
+  }))
   const mobileFrameColumns = [
     mobileFrameEntries.filter((_, entryIndex) => entryIndex % 2 === 0),
     mobileFrameEntries.filter((_, entryIndex) => entryIndex % 2 === 1),

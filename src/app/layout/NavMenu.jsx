@@ -3,6 +3,10 @@ import { Link, useLocation } from 'react-router'
 import styled from 'styled-components'
 import { NAV_ITEMS } from '@/app/router/routeRegistry'
 import { applyTypography } from '@/shared/ui/Typography'
+import {
+  canStartSceneTransitionFromClick,
+  usePageSceneTransition,
+} from '@/app/landscape/pageSceneTransition'
 
 const Content = styled.div`
   position: relative;
@@ -121,6 +125,7 @@ const StyledNavLink = styled(Link)`
 
 const NavMenu = ({ activePathname }) => {
   const location = useLocation()
+  const { transitionSceneToPath } = usePageSceneTransition()
   const activePath = activePathname ?? location.pathname
   const contentRef = useRef(null)
   const menuRef = useRef(null)
@@ -227,6 +232,15 @@ const NavMenu = ({ activePathname }) => {
                 to={path}
                 data-text={label}
                 aria-current={activePath === path ? 'page' : undefined}
+                onClick={(event) => {
+                  if (
+                    activePath === '/' &&
+                    path === '/about' &&
+                    canStartSceneTransitionFromClick(event)
+                  ) {
+                    transitionSceneToPath(path)
+                  }
+                }}
                 ref={(el) => {
                   linkRefs.current[index] = el
                 }}

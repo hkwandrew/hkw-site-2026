@@ -3,6 +3,10 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router'
 import styled from 'styled-components'
 import { PHONE_NAV_ITEMS } from '@/app/router/routeRegistry'
+import {
+  canStartSceneTransitionFromClick,
+  usePageSceneTransition,
+} from '@/app/landscape/pageSceneTransition'
 
 const ToggleButton = styled.button`
   position: relative;
@@ -142,6 +146,7 @@ const MobileNavMenu = ({
   isWorkPage = false,
 }) => {
   const location = useLocation()
+  const { transitionSceneToPath } = usePageSceneTransition()
   const activePath = activePathname ?? location.pathname
   const [isOpen, setIsOpen] = useState(false)
   const buttonRef = useRef(null)
@@ -309,7 +314,17 @@ const MobileNavMenu = ({
                       key={id}
                       to={path}
                       aria-current={activePath === path ? 'page' : undefined}
-                      onClick={() => closeMenu(false)}
+                      onClick={(event) => {
+                        if (
+                          activePath === '/' &&
+                          path === '/about' &&
+                          canStartSceneTransitionFromClick(event)
+                        ) {
+                          transitionSceneToPath(path)
+                        }
+
+                        closeMenu(false)
+                      }}
                     >
                       {label}
                     </MenuLink>

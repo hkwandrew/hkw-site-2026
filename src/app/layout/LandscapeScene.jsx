@@ -9,6 +9,10 @@ import TreeMountain from '@/app/landscape/layers/TreeMountain'
 import UpperField from '@/app/landscape/layers/UpperField'
 import WhiteSand from '@/app/landscape/layers/WhiteSand'
 import styled from 'styled-components'
+import {
+  canStartSceneTransitionFromClick,
+  usePageSceneTransition,
+} from '@/app/landscape/pageSceneTransition'
 
 const LandscapeSceneWrapper = styled.svg`
   width: 100%;
@@ -18,52 +22,82 @@ const LandscapeSceneWrapper = styled.svg`
   overflow: visible;
 `
 
-const getHomeLayerLinkProps = (isInteractive) => ({
+const getHomeLayerLinkProps = (isInteractive, to, transitionSceneToPath) => ({
   'aria-hidden': isInteractive ? undefined : true,
+  onClick: (event) => {
+    if (
+      to !== '/about' ||
+      !isInteractive ||
+      !canStartSceneTransitionFromClick(event)
+    ) {
+      return
+    }
+
+    transitionSceneToPath(to)
+  },
   style: {
     pointerEvents: isInteractive ? 'auto' : 'none',
   },
   tabIndex: isInteractive ? undefined : -1,
 })
 
-const LandscapeScene = ({ areHomeLayerLinksInteractive, scenePathname }) => (
-  <LandscapeSceneWrapper
-    xmlns='http://www.w3.org/2000/svg'
-    xmlnsXlink='http://www.w3.org/1999/xlink'
-    id='scene-svg'
-    viewBox='0 0 1440 1024'
-    shapeRendering='geometricPrecision'
-    textRendering='geometricPrecision'
-  >
-    <g id='scene' transform='translate(-1181.222193 -8.108808)'>
-      <path
-        id='sky'
-        d='M3960,0L0,0v1014h3975.5L3960,0Z'
-        transform='translate(-1.849932 0)'
-        fill={theme.colors.yellow.light}
-      />
-      <Link
-        to='/about'
-        {...getHomeLayerLinkProps(areHomeLayerLinksInteractive)}
-      >
-        <BlueMountain />
-      </Link>
-      <Link to='/work' {...getHomeLayerLinkProps(areHomeLayerLinksInteractive)}>
-        <GoldMountain />
-      </Link>
-      <WhiteSand />
-      <Sun />
-      <Link
-        to='/services'
-        {...getHomeLayerLinkProps(areHomeLayerLinksInteractive)}
-      >
-        <DkBlueMountain />
-        <TreeMountain />
-      </Link>
-      <UpperField />
-      <DirtLayer showWorkDirtLayer={scenePathname === '/work'} />
-    </g>
-  </LandscapeSceneWrapper>
-)
+const LandscapeScene = ({ areHomeLayerLinksInteractive, scenePathname }) => {
+  const { transitionSceneToPath } = usePageSceneTransition()
+
+  return (
+    <LandscapeSceneWrapper
+      xmlns='http://www.w3.org/2000/svg'
+      xmlnsXlink='http://www.w3.org/1999/xlink'
+      id='scene-svg'
+      viewBox='0 0 1440 1024'
+      shapeRendering='geometricPrecision'
+      textRendering='geometricPrecision'
+    >
+      <g id='scene' transform='translate(-1181.222193 -8.108808)'>
+        <path
+          id='sky'
+          d='M3960,0L0,0v1014h3975.5L3960,0Z'
+          transform='translate(-1.849932 0)'
+          fill={theme.colors.yellow.light}
+        />
+        <Link
+          to='/about'
+          {...getHomeLayerLinkProps(
+            areHomeLayerLinksInteractive,
+            '/about',
+            transitionSceneToPath,
+          )}
+        >
+          <BlueMountain />
+        </Link>
+        <Link
+          to='/work'
+          {...getHomeLayerLinkProps(
+            areHomeLayerLinksInteractive,
+            '/work',
+            transitionSceneToPath,
+          )}
+        >
+          <GoldMountain />
+        </Link>
+        <WhiteSand />
+        <Sun />
+        <Link
+          to='/services'
+          {...getHomeLayerLinkProps(
+            areHomeLayerLinksInteractive,
+            '/services',
+            transitionSceneToPath,
+          )}
+        >
+          <DkBlueMountain />
+          <TreeMountain />
+        </Link>
+        <UpperField />
+        <DirtLayer showWorkDirtLayer={scenePathname === '/work'} />
+      </g>
+    </LandscapeSceneWrapper>
+  )
+}
 
 export default LandscapeScene
