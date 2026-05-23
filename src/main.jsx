@@ -5,6 +5,7 @@ import { ThemeProvider } from "styled-components"
 import theme from "./styles/theme"
 import GlobalStyle from "./styles/GlobalStyle"
 
+import "./styles/fonts.css"
 import "the-new-css-reset"
 
 import ErrorBoundary from '@/app/ErrorBoundary.jsx'

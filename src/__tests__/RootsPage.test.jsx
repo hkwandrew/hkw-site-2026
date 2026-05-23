@@ -85,6 +85,11 @@ const renderRootsRouteFromHome = () => {
   return render(<RouterProvider router={router} />)
 }
 
+const getInjectedStyles = () =>
+  Array.from(document.querySelectorAll('style'))
+    .map((styleElement) => styleElement.textContent)
+    .join('\n')
+
 describe('RootsPage', () => {
   beforeEach(() => {
     vi.useFakeTimers()
@@ -157,7 +162,7 @@ describe('RootsPage', () => {
     })
   })
 
-  it('moves the roots marmot eye highlights toward the mouse while the dark eyes stay fixed', async () => {
+  it('animates the roots marmot eye highlights without following the mouse', () => {
     window.requestAnimationFrame = vi.fn(() => 1)
     window.cancelAnimationFrame = vi.fn()
 
@@ -171,18 +176,6 @@ describe('RootsPage', () => {
     expect(pupils).toHaveLength(2)
     expect(eyeCores).toHaveLength(2)
 
-    marmot.getBoundingClientRect = vi.fn(() => ({
-      left: 100,
-      top: 120,
-      width: 404,
-      height: 262,
-      right: 504,
-      bottom: 382,
-      x: 100,
-      y: 120,
-      toJSON: () => {},
-    }))
-
     act(() => {
       fireEvent.mouseMove(window, {
         clientX: 504,
@@ -190,25 +183,24 @@ describe('RootsPage', () => {
       })
     })
 
-    await vi.waitFor(() => {
-      expect(pupils[0]).toHaveStyle({
-        transform: 'translate(3.8px, -2.5px) scale(2.25)',
-      })
-      expect(pupils[1]).toHaveStyle({
-        transform: 'translate(1.4px, -3.2px) scale(2.25)',
-      })
-      expect(pupils[0].parentElement.getAttribute('clip-path')).toMatch(
-        /^url\(#.+\)$/,
-      )
-      expect(pupils[1].parentElement.getAttribute('clip-path')).toMatch(
-        /^url\(#.+\)$/,
-      )
-      expect(eyeCores[0]).not.toHaveAttribute('style')
-      expect(eyeCores[1]).not.toHaveAttribute('style')
-    })
+    expect(pupils[0]).not.toHaveAttribute('style')
+    expect(pupils[1]).not.toHaveAttribute('style')
+    expect(pupils[0].parentElement.getAttribute('clip-path')).toMatch(
+      /^url\(#.+\)$/,
+    )
+    expect(pupils[1].parentElement.getAttribute('clip-path')).toMatch(
+      /^url\(#.+\)$/,
+    )
+    expect(eyeCores[0]).not.toHaveAttribute('style')
+    expect(eyeCores[1]).not.toHaveAttribute('style')
+    expect(getInjectedStyles()).toMatch(
+      /\[data-roots-pupil\]\s*\{[^}]*animation:[^;]+5\.8s ease-in-out infinite/s,
+    )
+    expect(getInjectedStyles()).toContain('--roots-pupil-scan-left')
+    expect(getInjectedStyles()).toContain('--roots-pupil-scan-right')
   })
 
-  it('leaves the roots marmot pupils centered when reduced motion is preferred', async () => {
+  it('disables the roots marmot pupil animation when reduced motion is preferred', () => {
     window.matchMedia = createReducedMotionMatchMedia(true)
     window.requestAnimationFrame = vi.fn(() => 1)
     window.cancelAnimationFrame = vi.fn()
@@ -221,29 +213,9 @@ describe('RootsPage', () => {
     expect(marmot).not.toBeNull()
     expect(pupils).toHaveLength(2)
 
-    marmot.getBoundingClientRect = vi.fn(() => ({
-      left: 100,
-      top: 120,
-      width: 404,
-      height: 262,
-      right: 504,
-      bottom: 382,
-      x: 100,
-      y: 120,
-      toJSON: () => {},
-    }))
-
-    act(() => {
-      fireEvent.mouseMove(window, {
-        clientX: 504,
-        clientY: 120,
-      })
-    })
-
-    await vi.waitFor(() => {
-      expect(pupils[0]).not.toHaveAttribute('style')
-      expect(pupils[1]).not.toHaveAttribute('style')
-    })
+    expect(getInjectedStyles()).toMatch(
+      /@media\s*\(prefers-reduced-motion:\s*reduce\)[^{]*\{[\s\S]*\[data-roots-pupil\]\s*\{[^}]*animation:\s*none/s,
+    )
   })
 
   it('renders a softened original-path coffee steam plume', () => {

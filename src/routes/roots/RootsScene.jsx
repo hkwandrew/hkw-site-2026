@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import { useNavigate } from 'react-router'
 import useCarousel from '@/shared/hooks/useCarousel'
 import usePageActive from '@/shared/hooks/usePageActive'
@@ -14,6 +14,78 @@ import RootsUpButton from './RootsUpButton'
 const DESKTOP_SCENE_WIDTH = 1440
 const DESKTOP_SCENE_HEIGHT = 1024
 const MOBILE_MEDIA_QUERY = '(max-width: 767px)'
+
+const communityWhistleRattle = keyframes`
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+
+  18% {
+    transform: translate3d(0.8px, -0.4px, 0) rotate(-2.4deg);
+  }
+
+  36% {
+    transform: translate3d(-0.6px, 0.5px, 0) rotate(2deg);
+  }
+
+  54% {
+    transform: translate3d(0.5px, 0.2px, 0) rotate(-1.6deg);
+  }
+
+  72% {
+    transform: translate3d(-0.4px, -0.3px, 0) rotate(1.2deg);
+  }
+`
+
+const mealsOnWheelsWheelSpin = keyframes`
+  to {
+    transform: rotate(360deg);
+  }
+`
+
+const aclWaveDriftLeft = keyframes`
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(-20px, 0, 0);
+  }
+`
+
+const aclWaveDriftRight = keyframes`
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(20px, 0, 0);
+  }
+`
+
+const citizenStarTwinkle = keyframes`
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: brightness(1);
+  }
+
+  36% {
+    opacity: 0;
+    transform: scale(0.985);
+    filter: brightness(0.94);
+  }
+
+  58% {
+    opacity: 1;
+    transform: scale(1.018);
+    filter: brightness(1.12);
+  }
+`
 
 const Root = styled.section`
   position: absolute;
@@ -95,6 +167,75 @@ const DesktopFrameButton = styled.button`
     transform: translateY(-6px) scale(1.012);
   }
 
+  &[data-roots-example='community-whistle']:hover #whistle {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: ${communityWhistleRattle} 420ms ease-in-out infinite;
+    will-change: transform;
+  }
+
+  &[data-roots-example='meals-on-wheels']:hover #wheels path {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: ${mealsOnWheelsWheelSpin} 1.1s linear infinite;
+    will-change: transform;
+  }
+
+  &[data-roots-example='asians-for-collective-liberation']:hover #top-wave,
+  &[data-roots-example='asians-for-collective-liberation']:hover #bottom-wave,
+  &[data-roots-example='asians-for-collective-liberation']:hover #middle-wave {
+    transform-box: fill-box;
+    will-change: transform;
+  }
+
+  &[data-roots-example='asians-for-collective-liberation']:hover #top-wave,
+  &[data-roots-example='asians-for-collective-liberation']:hover #bottom-wave {
+    animation: ${aclWaveDriftLeft} 3.2s ease-in-out infinite;
+  }
+
+  &[data-roots-example='asians-for-collective-liberation']:hover #middle-wave {
+    animation: ${aclWaveDriftRight} 3.2s ease-in-out infinite;
+  }
+
+  &[data-roots-example='citizen-nine26']:hover #star path {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: ${citizenStarTwinkle} 1.4s ease-in-out infinite;
+    will-change: filter, opacity, transform;
+  }
+
+  &[data-roots-example='citizen-nine26']:hover #star path:nth-of-type(1) {
+    animation-delay: 80ms;
+  }
+
+  &[data-roots-example='citizen-nine26']:hover #star path:nth-of-type(2) {
+    animation-delay: 240ms;
+  }
+
+  &[data-roots-example='citizen-nine26']:hover #star path:nth-of-type(3) {
+    animation-delay: 400ms;
+  }
+
+  &[data-roots-example='citizen-nine26']:hover #star path:nth-of-type(4) {
+    animation-delay: 560ms;
+  }
+
+  &[data-roots-example='citizen-nine26']:hover #star path:nth-of-type(5) {
+    animation-delay: 0ms;
+  }
+
+  &[data-roots-example='citizen-nine26']:hover #star path:nth-of-type(6) {
+    animation-delay: 160ms;
+  }
+
+  &[data-roots-example='citizen-nine26']:hover #star path:nth-of-type(7) {
+    animation-delay: 320ms;
+  }
+
+  &[data-roots-example='citizen-nine26']:hover #star path:nth-of-type(8) {
+    animation-delay: 480ms;
+  }
+
   &:focus-visible {
     outline: 3px solid ${({ theme }) => theme.colors.yellow.gold};
     outline-offset: 10px;
@@ -110,6 +251,37 @@ const DesktopFrameButton = styled.button`
     display: block;
     width: 100%;
     height: auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &[data-roots-example='community-whistle']:hover #whistle {
+      animation: none;
+      transform: none;
+      will-change: auto;
+    }
+
+    &[data-roots-example='meals-on-wheels']:hover #wheels path {
+      animation: none;
+      transform: none;
+      will-change: auto;
+    }
+
+    &[data-roots-example='asians-for-collective-liberation']:hover #top-wave,
+    &[data-roots-example='asians-for-collective-liberation']:hover #middle-wave,
+    &[data-roots-example='asians-for-collective-liberation']:hover
+      #bottom-wave {
+      animation: none;
+      transform: none;
+      will-change: auto;
+    }
+
+    &[data-roots-example='citizen-nine26']:hover #star path {
+      animation: none;
+      filter: none;
+      opacity: 1;
+      transform: none;
+      will-change: auto;
+    }
   }
 `
 

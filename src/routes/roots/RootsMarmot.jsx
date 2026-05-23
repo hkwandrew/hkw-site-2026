@@ -1,9 +1,6 @@
-import { useEffect, useId, useRef } from 'react'
+import { useId } from 'react'
 import styled, { keyframes } from 'styled-components'
 
-const ROOTS_MARMOT_VIEWBOX_WIDTH = 404
-const ROOTS_MARMOT_VIEWBOX_HEIGHT = 262
-const ROOTS_MARMOT_REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
 const ROOTS_MARMOT_PUPIL_SCALE = 2.25
 const RIGHT_EYE_CORE_PATH =
   'M239.563 67.6691C242.515 67.2443 244.499 64.0649 243.996 60.5676C243.493 57.0704 240.692 54.5797 237.741 55.0045C234.789 55.4293 232.805 58.6087 233.308 62.106C233.811 65.6032 236.612 68.0939 239.563 67.6691Z'
@@ -22,16 +19,16 @@ const PUPIL_CONFIG = {
     eyeCenterY: 63.337,
     catchlightCenterX: 236.497,
     catchlightCenterY: 64.753,
-    maxX: 2.9,
-    maxY: 3,
+    scanLeftX: -1.1,
+    scanRightX: 1.65,
   },
   left: {
     eyeCenterX: 175.019,
     eyeCenterY: 67.456,
     catchlightCenterX: 174.633,
     catchlightCenterY: 70.125,
-    maxX: 1.1,
-    maxY: 1.8,
+    scanLeftX: -0.55,
+    scanRightX: 0.85,
   },
 }
 
@@ -45,8 +42,7 @@ const getPupilRestOffset = ({
   y: formatTranslateValue(eyeCenterY - catchlightCenterY),
 })
 
-const getScaledPupilTransform = (x, y) =>
-  `translate(${formatTranslateValue(x)}px, ${formatTranslateValue(y)}px) scale(${ROOTS_MARMOT_PUPIL_SCALE})`
+const toPx = (value) => `${formatTranslateValue(value)}px`
 
 const steamPathDrift = keyframes`
   0% {
@@ -65,6 +61,32 @@ const steamPathDrift = keyframes`
   100% {
     opacity: 0;
     transform: translate3d(1px, -4px, 0) scale(1.01);
+  }
+`
+
+const pupilReadScan = keyframes`
+  0%,
+  16%,
+  100% {
+    transform: translate(
+        calc(var(--roots-pupil-rest-x) + var(--roots-pupil-scan-left)),
+        var(--roots-pupil-rest-y)
+      )
+      scale(${ROOTS_MARMOT_PUPIL_SCALE});
+  }
+
+  44%,
+  58% {
+    transform: translate(
+        calc(var(--roots-pupil-rest-x) + var(--roots-pupil-scan-right)),
+        var(--roots-pupil-rest-y)
+      )
+      scale(${ROOTS_MARMOT_PUPIL_SCALE});
+  }
+
+  82% {
+    transform: translate(var(--roots-pupil-rest-x), var(--roots-pupil-rest-y))
+      scale(${ROOTS_MARMOT_PUPIL_SCALE});
   }
 `
 
@@ -98,17 +120,22 @@ const Marmot = styled.svg`
     transform-origin: center;
     transform: translate(var(--roots-pupil-rest-x), var(--roots-pupil-rest-y))
       scale(${ROOTS_MARMOT_PUPIL_SCALE});
+    animation: ${pupilReadScan} 5.8s ease-in-out infinite;
     will-change: transform;
   }
 
   [data-roots-pupil='right'] {
     --roots-pupil-rest-x: ${getPupilRestOffset(PUPIL_CONFIG.right).x}px;
     --roots-pupil-rest-y: ${getPupilRestOffset(PUPIL_CONFIG.right).y}px;
+    --roots-pupil-scan-left: ${toPx(PUPIL_CONFIG.right.scanLeftX)};
+    --roots-pupil-scan-right: ${toPx(PUPIL_CONFIG.right.scanRightX)};
   }
 
   [data-roots-pupil='left'] {
     --roots-pupil-rest-x: ${getPupilRestOffset(PUPIL_CONFIG.left).x}px;
     --roots-pupil-rest-y: ${getPupilRestOffset(PUPIL_CONFIG.left).y}px;
+    --roots-pupil-scan-left: ${toPx(PUPIL_CONFIG.left.scanLeftX)};
+    --roots-pupil-scan-right: ${toPx(PUPIL_CONFIG.left.scanRightX)};
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -120,104 +147,19 @@ const Marmot = styled.svg`
     }
 
     [data-roots-pupil] {
+      animation: none;
       will-change: auto;
     }
   }
 `
 
-const getPupilTransform = ({
-  pointerX,
-  pointerY,
-  eyeCenterX,
-  eyeCenterY,
-  catchlightCenterX,
-  catchlightCenterY,
-  maxX,
-  maxY,
-}) => {
-  const restX = eyeCenterX - catchlightCenterX
-  const restY = eyeCenterY - catchlightCenterY
-  const xDelta = pointerX - eyeCenterX
-  const yDelta = pointerY - eyeCenterY
-  const distance = Math.hypot(xDelta, yDelta)
-
-  if (distance === 0) {
-    return getScaledPupilTransform(restX, restY)
-  }
-
-  const x = restX + (xDelta / distance) * maxX
-  const y = restY + (yDelta / distance) * maxY
-
-  return getScaledPupilTransform(x, y)
-}
-
-const resetPupils = (marmot) => {
-  marmot.querySelectorAll('[data-roots-pupil]').forEach((pupil) => {
-    pupil.style.removeProperty('transform')
-  })
-}
-
 const RootsMarmot = () => {
-  const marmotRef = useRef(null)
   const clipPathPrefix = useId().replace(/:/g, '')
   const rightEyeClipId = `roots-marmot-${clipPathPrefix}-right-eye-clip`
   const leftEyeClipId = `roots-marmot-${clipPathPrefix}-left-eye-clip`
 
-  useEffect(() => {
-    const marmot = marmotRef.current
-    const reducedMotionQuery = window.matchMedia?.(
-      ROOTS_MARMOT_REDUCED_MOTION_QUERY,
-    )
-
-    if (!marmot || reducedMotionQuery?.matches) {
-      return undefined
-    }
-
-    const handleMouseMove = (event) => {
-      const bounds = marmot.getBoundingClientRect()
-
-      if (bounds.width === 0 || bounds.height === 0) {
-        resetPupils(marmot)
-        return
-      }
-
-      const pointerX =
-        ((event.clientX - bounds.left) / bounds.width) *
-        ROOTS_MARMOT_VIEWBOX_WIDTH
-      const pointerY =
-        ((event.clientY - bounds.top) / bounds.height) *
-        ROOTS_MARMOT_VIEWBOX_HEIGHT
-
-      Object.entries(PUPIL_CONFIG).forEach(([pupilName, config]) => {
-        const pupil = marmot.querySelector(`[data-roots-pupil='${pupilName}']`)
-
-        if (!pupil) return
-
-        pupil.style.transform = getPupilTransform({
-          pointerX,
-          pointerY,
-          ...config,
-        })
-      })
-    }
-
-    const handleReset = () => resetPupils(marmot)
-
-    window.addEventListener('mousemove', handleMouseMove, { passive: true })
-    window.addEventListener('mouseleave', handleReset)
-    window.addEventListener('blur', handleReset)
-
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove)
-      window.removeEventListener('mouseleave', handleReset)
-      window.removeEventListener('blur', handleReset)
-      resetPupils(marmot)
-    }
-  }, [])
-
   return (
     <Marmot
-      ref={marmotRef}
       data-roots-marmot=''
       width='404'
       height='262'
@@ -350,6 +292,7 @@ const RootsMarmot = () => {
         fill='#A8A8A8'
       />
       <path
+        className='right-hand'
         d='M195.653 219.207C195.653 219.207 190.704 214.918 181.424 214.511C172.158 214.103 162.696 218.855 160.896 222.736C159.096 226.617 157.353 233.942 154.344 238.737C152.431 241.774 153.908 246.85 157.17 245.345C160.432 243.841 160.432 240.059 162.372 236.389C164.313 232.719 165.901 229.176 165.901 229.176C165.901 229.176 165.156 236.965 163.286 241.366C161.416 245.767 160.826 249.732 163.399 250.632C165.972 251.532 168.671 245.163 170.176 240.902C171.68 236.642 174.324 231.805 174.324 231.805C174.324 231.805 172.974 238.793 172.257 241.38C171.54 243.967 170.134 248.79 173.128 249.212C176.123 249.634 177.839 242.519 178.668 240.48C179.498 238.442 182.127 233.788 182.127 233.788C182.127 233.788 181.832 239.665 181.312 242.097C180.791 244.53 180.313 246.625 182.226 247.075C184.138 247.525 186.908 239.299 187.976 235.517C189.045 231.735 189.228 231.749 192.068 230.708C194.908 229.668 196.258 231.482 198.325 228.36C200.392 225.239 198.212 220.275 195.667 219.193L195.653 219.207Z'
         fill='#4F4030'
       />

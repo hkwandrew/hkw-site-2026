@@ -41,7 +41,6 @@ const RootsUpButton = forwardRef(function RootsUpButton(
     <ButtonRoot
       ref={ref}
       type={type}
-      data-figma-node='5244:3688'
       {...props}
     >
       <svg
