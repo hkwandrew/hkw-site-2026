@@ -59,7 +59,7 @@ export const Description = styled.section`
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     right: 19px;
-    top: 189px;
+    top: 218px;
     width: 165px;
     z-index: 2;
   }

@@ -42,6 +42,20 @@ const finalStageMascotFloat = keyframes`
   }
 `
 
+const mobileQuoteFade = keyframes`
+  0%, 42% {
+    opacity: 0;
+  }
+
+  48%, 52% {
+    opacity: 1;
+  }
+
+  58%, 100% {
+    opacity: 0;
+  }
+`
+
 const desktopLayerDepth = {
   dark: 10,
   mid: 20,
@@ -335,6 +349,13 @@ export const MobileStaticScene = styled.div`
   height: 100dvh;
   overflow: hidden;
   pointer-events: none;
+  background: linear-gradient(
+    to top,
+    ${({ theme }) => theme.colors.white} 0%,
+    ${({ theme }) => theme.colors.white} 50%,
+    transparent 50%,
+    transparent 100%
+  );
 `
 
 export const MobileQuotePanels = styled.div`
@@ -349,6 +370,8 @@ export const MobilePanel = styled.section`
   overflow: hidden;
   scroll-snap-align: start;
   scroll-snap-stop: always;
+  view-timeline-name: --about-mobile-panel;
+  view-timeline-axis: block;
 `
 
 export const MobileHeroCloud = styled.div`
@@ -370,7 +393,7 @@ export const MobileHeroCloud = styled.div`
 export const MobileIntroCopy = styled.div`
   position: absolute;
   left: 50%;
-  top: 230px;
+  top: 165px;
   z-index: 2;
   width: min(336px, calc(100vw - 40px));
   transform: translateX(-50%);
@@ -398,8 +421,16 @@ export const MobileQuoteCloud = styled.div`
   left: 50%;
   bottom: -2px;
   z-index: 3;
-  width: max(112vw, 440px);
+  width: 410px;
   transform: translateX(-50%);
+  top: 58%;
+  background: linear-gradient(
+    to top,
+    ${({ theme }) => theme.colors.blue.dark} 0%,
+    ${({ theme }) => theme.colors.blue.dark} 50%,
+    transparent 50%,
+    transparent 100%
+  );
 
   svg,
   img {
@@ -413,16 +444,23 @@ export const MobilePanelQuote = styled.div`
   position: absolute;
   left: 50%;
   bottom: ${({ $isFinal }) => ($isFinal ? '96px' : '88px')};
+  top: 70%;
   z-index: 4;
   width: min(322px, calc(100vw - 48px));
   transform: translateX(-50%);
   text-align: center;
+  will-change: opacity;
+
+  @supports (animation-timeline: view()) {
+    animation: ${mobileQuoteFade} linear both;
+    animation-timeline: --about-mobile-panel;
+    animation-range: entry 0% exit 100%;
+  }
 `
 
 export const MobileQuoteText = styled.p`
   margin: 0;
-  color: ${({ $isFinal, theme }) =>
-    $isFinal ? theme.colors.orange.base : theme.colors.white};
+  color: ${({ theme }) => theme.colors.white};
   ${applyTypography('formButton')}
   line-height: 1.3;
   font-style: italic;
@@ -434,8 +472,7 @@ export const MobileQuoteText = styled.p`
 
 export const MobileQuoteName = styled.p`
   margin: 12px 0 0;
-  color: ${({ $isFinal, theme }) =>
-    $isFinal ? theme.colors.blue.dark : theme.colors.blue.light};
+  color: ${({ theme }) => theme.colors.blue.light};
   ${applyTypography('bodyMedium')}
   line-height: 0.9;
   font-weight: ${({ theme }) => theme.font.weight.medium};
@@ -445,12 +482,11 @@ export const MobileQuoteName = styled.p`
 `
 
 export const MobileQuoteMeta = styled.p`
-  margin: 16px 0 0;
+  margin: 8px 0 0;
   display: flex;
   flex-direction: column;
   gap: 6px;
-  color: ${({ $isFinal, theme }) =>
-    $isFinal ? theme.colors.blue.dark : theme.colors.blue.light};
+  color: ${({ theme }) => theme.colors.blue.light};
   ${applyTypography('bodySmall')}
   line-height: 1.15;
 `
@@ -458,10 +494,16 @@ export const MobileQuoteMeta = styled.p`
 export const MobileSwipeHint = styled.div`
   position: absolute;
   left: 50%;
-  bottom: 24px;
+  bottom: 18px;
   z-index: 5;
-  width: 60px;
   transform: translateX(-50%);
+  will-change: opacity;
+
+  @supports (animation-timeline: view()) {
+    animation: ${mobileQuoteFade} linear both;
+    animation-timeline: --about-mobile-panel;
+    animation-range: entry 0% exit 100%;
+  }
 
   svg {
     display: block;
@@ -472,11 +514,12 @@ export const MobileSwipeHint = styled.div`
 
 export const MobileMarmot = styled.div`
   position: absolute;
-  right: 30px;
-  bottom: -6px;
+  right: 130px;
+  bottom: -80px;
   z-index: 5;
-  width: 168px;
+  width: 135px;
   pointer-events: none;
+  rotate: -11.89deg;
 
   svg {
     display: block;

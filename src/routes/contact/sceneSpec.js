@@ -8,8 +8,8 @@ const BLUE_MOUNTAIN_SMOOTH_MORPH = {
 
 export const CONTACT_SCENE_STATE = {
   blueMountain: {
-    container: { x: 3175.697877, y: 644.21 },
-    wrapper: { scaleX: 1, scaleY: 1 },
+    container: { x: 1144.21, y: 0 },
+    wrapper: { scaleX: 1.05, scaleY: 1 },
     pathD:
       'M1404 926.001C1200.5 793.5 1154.5 926.001 1066.5 926.001C996.5 926 814.5 739.501 539.5 825C241.501 722 -1235.5 1152 1051 1280.5C2186 629.001 1530.5 1028 1404 926.001Z',
   },

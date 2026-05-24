@@ -75,6 +75,23 @@ describe('AboutPage', () => {
     })
   })
 
+  it('uses each mobile panel as the quote and scroll cue fade timeline', () => {
+    const { container } = render(<AboutPage />)
+    const quote = container.querySelector('[data-about-mobile-quote="jonathan"]')
+    const scrollCue = container.querySelector('[data-about-mobile-scroll-cue]')
+    const styles = Array.from(document.querySelectorAll('style'))
+      .map((style) => style.textContent)
+      .join('\n')
+    const timelineMatches =
+      styles.match(/animation-timeline:--about-mobile-panel/g) ?? []
+
+    expect(quote).toBeInTheDocument()
+    expect(scrollCue).toBeInTheDocument()
+    expect(getComputedStyle(quote).position).toBe('absolute')
+    expect(styles).toContain('view-timeline-name:--about-mobile-panel')
+    expect(timelineMatches.length).toBeGreaterThanOrEqual(2)
+  })
+
   it('hides the intro layer from stageOne onward in the desktop scene', () => {
     expect(ABOUT_FRAME_VISIBILITY[0].intro).toBe(1)
     expect(ABOUT_FRAME_VISIBILITY.slice(1).every((frame) => frame.intro === 0)).toBe(
