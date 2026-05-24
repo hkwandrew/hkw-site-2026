@@ -95,6 +95,22 @@ describe('Header', () => {
     isPhoneViewport = false
   })
 
+  it('positions the services mobile nav toggle higher than default pages', () => {
+    isPhoneViewport = true
+
+    renderHeader(['/services'], {
+      contentPathname: '/services',
+    })
+
+    const menuButton = screen.getByRole('button', {
+      name: 'Open navigation menu',
+    })
+
+    expect(getComputedStyle(menuButton).translate).toBe('0 -24px')
+
+    isPhoneViewport = false
+  })
+
   it('hides the page label immediately and fades it in when the page is ready', () => {
     const { rerender } = renderHeader(['/services'], {
       contentPathname: '/services',

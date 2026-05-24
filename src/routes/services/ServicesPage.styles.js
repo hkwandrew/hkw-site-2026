@@ -11,8 +11,8 @@ export const ServiceList = styled.ul`
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     position: absolute;
     left: 19px;
-    top: 190px;
-    gap: 16px;
+    top: 166px;
+    gap: 24px;
     width: 184px;
     padding: 0;
     z-index: 2;
@@ -59,7 +59,7 @@ export const Description = styled.section`
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     right: 19px;
-    top: 252px;
+    top: 189px;
     width: 165px;
     z-index: 2;
   }
@@ -122,11 +122,11 @@ export const TopHatMarmotWrapper = styled.div`
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    right: -10px;
-    bottom: -3%;
+    right: -16px;
+    bottom: -8px;
     width: min(49vw, 193px);
     z-index: 1;
-    transform: scaleX(-1);
+    ${'' /* transform: scaleX(-1); */}
     transform-origin: center bottom;
 
     svg {

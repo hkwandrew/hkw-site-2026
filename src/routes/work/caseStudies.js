@@ -53,7 +53,7 @@ const caseStudies = [
         width: 112,
         height: 127,
         x: 0,
-        y: 43,
+        y: 10,
       },
       mobile: {
         width: 56,
@@ -92,9 +92,9 @@ const caseStudies = [
     navButton: {
       desktop: {
         width: 132,
-        height: 162,
+        height: 132,
         x: 0,
-        y: 36,
+        y: 10,
       },
       mobile: {
         width: 56,
@@ -139,10 +139,10 @@ const caseStudies = [
     },
     navButton: {
       desktop: {
-        width: 162,
-        height: 162,
+        width: 132,
+        height: 132,
         x: 0,
-        y: 40,
+        y: 30,
       },
       mobile: {
         width: 56,
@@ -179,10 +179,10 @@ const caseStudies = [
     },
     navButton: {
       desktop: {
-        width: 146.136,
-        height: 176.207,
+        width: 132,
+        height: 132,
         x: 0,
-        y: 30,
+        y: 20,
       },
       mobile: {
         width: 56,
@@ -225,10 +225,10 @@ const caseStudies = [
     },
     navButton: {
       desktop: {
-        width: 125,
-        height: 125,
+        width: 88,
+        height: 94,
         x: 0,
-        y: 50,
+        y: 40,
       },
       mobile: {
         width: 56,
@@ -266,10 +266,10 @@ const caseStudies = [
     },
     navButton: {
       desktop: {
-        width: 114.086,
-        height: 204.45,
+        width: 84.086,
+        height: 174.45,
         x: 0,
-        y: 10,
+        y: -10,
       },
       mobile: {
         width: 56,
@@ -304,10 +304,10 @@ const caseStudies = [
     },
     navButton: {
       desktop: {
-        width: 162,
-        height: 162,
+        width: 103,
+        height: 123,
         x: 0,
-        y: 30,
+        y: 20,
       },
       mobile: {
         width: 56,
@@ -351,10 +351,10 @@ const caseStudies = [
     },
     navButton: {
       desktop: {
-        width: 74,
-        height: 125,
+        width: 44,
+        height: 95,
         x: 0,
-        y: 35,
+        y: 25,
       },
       mobile: {
         width: 56,
@@ -429,10 +429,10 @@ const caseStudies = [
     },
     navButton: {
       desktop: {
-        width: 155.89,
-        height: 94.18,
+        width: 122,
+        height: 74.18,
         x: 0,
-        y: 65,
+        y: 45,
       },
       mobile: {
         width: 56,

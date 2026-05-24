@@ -96,8 +96,10 @@ const HKWLogo = styled(Link)`
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     width: 76px;
     height: 38px;
-    background-color: transparent;
-    border-radius: 2px;
+    border-radius: ${({ $isServicesPage }) =>
+      $isServicesPage ? '8px' : '2px'};
+    translate: ${({ $isServicesPage }) => ($isServicesPage ? '-8px 0' : '0')};
+    opacity: ${({ $isActive }) => ($isActive ? 1 : 0)};
   }
 `
 
@@ -123,11 +125,12 @@ const PageLabel = styled.div`
   translate: ${({ $isServicesPage }) => ($isServicesPage ? '10px 0' : '0')};
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    margin-top: 6px;
+    margin-top: ${({ $isServicesPage }) => ($isServicesPage ? '22px' : '6px')};
     will-change: opacity;
     font-weight: 700;
     line-height: 1.3;
     font-size: 20px;
+    translate: ${({ $isServicesPage }) => ($isServicesPage ? '-2px 0' : '0')};
   }
 `
 
@@ -180,6 +183,7 @@ const Header = ({ contentPathname, isPageLabelReady = true, navPathname }) => {
           $isServicesPage={isServicesPage}
           $isWorkPage={isWorkPage}
           $isRootsPage={isRootsPage}
+          $isActive={isPageLabelActive}
         >
           <svg
             xmlns='http://www.w3.org/2000/svg'
@@ -193,18 +197,17 @@ const Header = ({ contentPathname, isPageLabelReady = true, navPathname }) => {
             />
           </svg>
         </HKWLogo>
-        {(pageLabel && !isRootsPage) ||
-          (!isServicesPage && (
-            <PageLabel
-              aria-hidden={!isPageLabelActive}
-              key={contentPath}
-              $isActive={isPageLabelActive}
-              $isAboutPage={isAboutPage}
-              $isServicesPage={isServicesPage}
-            >
-              {pageLabel}
-            </PageLabel>
-          ))}
+        {pageLabel && !isRootsPage && (
+          <PageLabel
+            aria-hidden={!isPageLabelActive}
+            key={contentPath}
+            $isActive={isPageLabelActive}
+            $isAboutPage={isAboutPage}
+            $isServicesPage={isServicesPage}
+          >
+            {pageLabel}
+          </PageLabel>
+        )}
       </BrandBlock>
 
       {isPhoneViewport ? (

@@ -20,9 +20,11 @@ const ToggleButton = styled.button`
   pointer-events: auto;
   z-index: 90;
   translate: ${({ $isRootsPage, $isHomePage, $isServicesPage, $isWorkPage }) =>
-    $isRootsPage || $isHomePage || $isServicesPage || $isWorkPage
+    $isRootsPage || $isHomePage || $isWorkPage
       ? '0 0'
-      : '0 -16px'};
+      : $isServicesPage
+        ? '0 -24px'
+        : '0 -16px'};
 
   svg {
     width: 24px;

@@ -25,7 +25,6 @@ export default function Services() {
         <TopHatMarmotWrapper>
           <TopHatMarmot />
         </TopHatMarmotWrapper>
-        <ServicesTitle>OUR SPECIALTIES</ServicesTitle>
         <ServiceList>
           {services.map((service, i) => (
             <ServiceItem
