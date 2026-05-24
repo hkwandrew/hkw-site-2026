@@ -1,10 +1,12 @@
-import { useEffect, useId, useLayoutEffect, useRef } from 'react'
-import styled from 'styled-components'
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
+import styled, { css, keyframes } from 'styled-components'
 import ArrowButton from '@/shared/ui/ArrowButton'
 import { applyTypography } from '@/shared/ui/Typography'
 import RootsMarmot from './RootsMarmot'
 import frameBackground from './assets/roots-slider/frame.png'
 import PillButton from '@/shared/ui/PillButton'
+
+const SLIDE_FADE_DURATION_MS = 420
 
 const toCssLength = (value, fallback = 'auto') =>
   typeof value === 'number' ? `${value}px` : (value ?? fallback)
@@ -16,6 +18,45 @@ const getArtworkTranslate = ({ $artworkTop, $artworkLeft }) => {
   return translateX === '0' && translateY === '0'
     ? 'none'
     : `translate(${translateX}, ${translateY})`
+}
+
+const slidePaneFadeIn = keyframes`
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+`
+
+const slidePaneFadeOut = keyframes`
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+`
+
+const getSlidePaneMotion = ({ $state }) => {
+  if ($state === 'leaving') {
+    return css`
+      animation: ${slidePaneFadeOut} ${SLIDE_FADE_DURATION_MS}ms cubic-bezier(0.22, 1, 0.36, 1) both;
+      pointer-events: none;
+    `
+  }
+
+  if ($state === 'entering') {
+    return css`
+      animation: ${slidePaneFadeIn} ${SLIDE_FADE_DURATION_MS}ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    `
+  }
+
+  return css`
+    opacity: 1;
+  `
 }
 
 const Overlay = styled.div`
@@ -113,6 +154,7 @@ const ClosePill = styled(PillButton)`
 `
 
 const Content = styled.div`
+  ${getSlidePaneMotion}
   position: relative;
   z-index: 0;
   display: grid;
@@ -218,6 +260,7 @@ const Title = styled.h2`
   letter-spacing: -1.44px;
   line-height: 1;
   font-size: ${({ theme }) => theme.typography.h3.size};
+  white-space: pre-line;
   text-box: ${({ theme }) => theme.typography.textBox};
   font-weight: ${({ theme }) => theme.font.weight.bold};
   font-variation-settings:
@@ -359,11 +402,55 @@ export default function RootsPortfolioSlider({
   const dialogRef = useRef(null)
   const closeRef = useRef(null)
   const titleId = useId()
-  const FrameComponent = item.FrameComponent
+  const [displayItem, setDisplayItem] = useState(item)
+  const [slidePhase, setSlidePhase] = useState('active')
+  const FrameComponent = displayItem.FrameComponent
+
+  const requestSlideChange = useCallback(
+    (changeSlide) => {
+      if (slidePhase !== 'leaving') {
+        setSlidePhase('leaving')
+      }
+
+      changeSlide()
+    },
+    [slidePhase],
+  )
+  const handleNext = useCallback(() => {
+    requestSlideChange(onNext)
+  }, [onNext, requestSlideChange])
+  const handlePrev = useCallback(() => {
+    requestSlideChange(onPrev)
+  }, [onPrev, requestSlideChange])
 
   useLayoutEffect(() => {
     closeRef.current?.focus()
   }, [])
+
+  useEffect(() => {
+    if (slidePhase === 'leaving') {
+      const timer = window.setTimeout(() => {
+        setDisplayItem(item)
+        setSlidePhase('entering')
+      }, SLIDE_FADE_DURATION_MS)
+
+      return () => {
+        window.clearTimeout(timer)
+      }
+    }
+
+    if (slidePhase === 'entering') {
+      const timer = window.setTimeout(() => {
+        setSlidePhase(item.id === displayItem.id ? 'active' : 'leaving')
+      }, SLIDE_FADE_DURATION_MS)
+
+      return () => {
+        window.clearTimeout(timer)
+      }
+    }
+
+    return undefined
+  }, [displayItem.id, item, slidePhase])
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow
@@ -381,13 +468,13 @@ export default function RootsPortfolioSlider({
 
       if (event.key === 'ArrowRight') {
         event.preventDefault()
-        onNext()
+        handleNext()
         return
       }
 
       if (event.key === 'ArrowLeft') {
         event.preventDefault()
-        onPrev()
+        handlePrev()
         return
       }
 
@@ -419,7 +506,7 @@ export default function RootsPortfolioSlider({
       document.body.style.overflow = previousOverflow
       document.body.style.touchAction = previousTouchAction
     }
-  }, [onClose, onNext, onPrev])
+  }, [handleNext, handlePrev, onClose])
 
   return (
     <Overlay>
@@ -428,7 +515,7 @@ export default function RootsPortfolioSlider({
         role='dialog'
         aria-modal='true'
         aria-labelledby={titleId}
-        data-roots-example={item.id}
+        data-roots-example={displayItem.id}
         data-roots-example-region='dialog'
       >
         <ClosePill
@@ -440,34 +527,38 @@ export default function RootsPortfolioSlider({
           Close
         </ClosePill>
 
-        <Content>
+        <Content
+          key={displayItem.id}
+          $state={slidePhase}
+          data-roots-slide-pane={slidePhase}
+        >
           <ArtworkStage>
-            {item.detailImage ? (
+            {displayItem.detailImage ? (
               <ArtworkImage
-                $artworkWidth={item.artworkWidth}
-                $artworkHeight={item.artworkHeight}
-                $artworkTop={item.artworkTop}
-                $artworkLeft={item.artworkLeft}
-                src={item.detailImage}
-                alt={`${item.title} project artwork`}
+                $artworkWidth={displayItem.artworkWidth}
+                $artworkHeight={displayItem.artworkHeight}
+                $artworkTop={displayItem.artworkTop}
+                $artworkLeft={displayItem.artworkLeft}
+                src={displayItem.detailImage}
+                alt={`${displayItem.title} project artwork`}
               />
             ) : (
-              <ArtworkFrame aria-label={`${item.title} project artwork`}>
+              <ArtworkFrame aria-label={`${displayItem.title} project artwork`}>
                 <FrameComponent />
               </ArtworkFrame>
             )}
           </ArtworkStage>
 
-          <Copy $maxWidth={item.maxWidth}>
-            <Title id={titleId}>{item.title}</Title>
+          <Copy $maxWidth={displayItem.maxWidth}>
+            <Title id={titleId}>{displayItem.title}</Title>
 
-            <Bio>{item.bio}</Bio>
+            <Bio>{displayItem.bio}</Bio>
 
             <Roles>
               <RolesLabel>Our roles:</RolesLabel>
               <RolesList>
-                {item.roles.map((role) => (
-                  <Role key={`${item.id}-${role}`}>{role}</Role>
+                {displayItem.roles.map((role) => (
+                  <Role key={`${displayItem.id}-${role}`}>{role}</Role>
                 ))}
               </RolesList>
             </Roles>
@@ -479,13 +570,13 @@ export default function RootsPortfolioSlider({
             type='button'
             direction='left'
             aria-label='Show previous portfolio piece'
-            onClick={onPrev}
+            onClick={handlePrev}
           />
           <NavControl
             type='button'
             direction='right'
             aria-label='Show next portfolio piece'
-            onClick={onNext}
+            onClick={handleNext}
           />
         </NavCluster>
         <MarmotAccent aria-hidden='true'>

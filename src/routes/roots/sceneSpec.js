@@ -24,7 +24,7 @@ export const ROOTS_SCENE_STATE = {
     wrapper: { scaleX: 1.26, scaleY: 1.26 },
   },
   upperField: {
-    container: { x: 2005, y: 690 },
+    container: { x: -2005, y: 690 },
     wrapper: { scaleX: 1.04, scaleY: 1.04 },
   },
   whiteSand: {
