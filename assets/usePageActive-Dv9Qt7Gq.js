@@ -1,0 +1,1 @@
+import{S as e,b as t}from"./index-DVgyjVcd.js";var n=e(t(),1),r=()=>{let[e,t]=(0,n.useState)(!1);return(0,n.useEffect)(()=>{let e=requestAnimationFrame(()=>t(!0));return()=>cancelAnimationFrame(e)},[]),e};export{r as t};
