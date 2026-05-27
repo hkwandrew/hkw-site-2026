@@ -13,7 +13,19 @@ import RootsUpButton from './RootsUpButton'
 
 const DESKTOP_SCENE_WIDTH = 1440
 const DESKTOP_SCENE_HEIGHT = 1024
-const MOBILE_MEDIA_QUERY = '(max-width: 767px)'
+const PHONE_MAX_WIDTH = 767
+const PORTRAIT_TABLET_MAX_WIDTH = 1024
+const PHONE_MEDIA_QUERY = `(max-width: ${PHONE_MAX_WIDTH}px)`
+const PORTRAIT_TABLET_MEDIA_QUERY = [
+  `(min-width: ${PHONE_MAX_WIDTH + 1}px)`,
+  `(max-width: ${PORTRAIT_TABLET_MAX_WIDTH}px)`,
+  '(orientation: portrait)',
+].join(' and ')
+const ROOTS_VIEWPORT_LAYOUT = Object.freeze({
+  DESKTOP: 'desktop',
+  PHONE: 'phone',
+  PORTRAIT_TABLET: 'portrait-tablet',
+})
 
 const communityWhistleRattle = keyframes`
   0%,
@@ -102,6 +114,10 @@ const Root = styled.section`
   will-change: transform;
   isolation: isolate;
   z-index: 20;
+
+  &[data-roots-viewport-layout='portrait-tablet'] {
+    --hkw-viewport-px-unit: 1px;
+  }
 
   &[data-roots-phase='entering'],
   &[data-roots-phase='exiting'] {
@@ -314,9 +330,9 @@ const BackButton = styled(RootsUpButton)`
 
 const Welcome = styled(WelcomeSign)`
   position: absolute;
-  left: 500.64px;
-  top: 382.35px;
-  width: 309.255px;
+  left: ${(500.64 / DESKTOP_SCENE_WIDTH) * 100}%;
+  top: ${(382.35 / DESKTOP_SCENE_HEIGHT) * 100}%;
+  width: ${(309.255 / DESKTOP_SCENE_WIDTH) * 100}%;
   height: auto;
   display: block;
   z-index: 0;
@@ -350,6 +366,11 @@ const MobileScene = styled.div`
     background: ${({ theme }) => theme.colors.yellow.light};
     pointer-events: none;
   }
+
+  &[data-roots-mobile-layout='portrait-tablet'] {
+    padding-top: 96px;
+    padding-inline: 40px;
+  }
 `
 
 const MobileBackButton = styled(BackButton)`
@@ -377,6 +398,18 @@ const MobileFrames = styled.div`
   align-items: start;
   width: 100%;
   max-width: 353px;
+  margin-inline: auto;
+`
+
+const PortraitTabletFrames = styled.div`
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 24px;
+  align-items: start;
+  width: 100%;
+  max-width: 720px;
   margin-inline: auto;
 `
 
@@ -412,6 +445,13 @@ const RootsMarmotLayer = styled.div`
     right: -8px;
     bottom: -8px;
     width: min(52vw, 200px);
+    z-index: 3;
+  }
+
+  [data-roots-viewport-layout='portrait-tablet'] & {
+    right: -8px;
+    bottom: -8px;
+    width: min(32vw, 260px);
     z-index: 3;
   }
 `
@@ -486,45 +526,97 @@ function SceneBackIcon() {
   )
 }
 
-function useIsMobileViewport() {
-  const [isMobile, setIsMobile] = useState(() => {
-    if (
-      typeof window === 'undefined' ||
-      typeof window.matchMedia !== 'function'
-    ) {
-      return false
-    }
+const getFallbackRootsViewportLayout = () => {
+  if (typeof window === 'undefined') return ROOTS_VIEWPORT_LAYOUT.DESKTOP
 
-    return window.matchMedia(MOBILE_MEDIA_QUERY).matches
-  })
+  if (window.innerWidth <= PHONE_MAX_WIDTH) {
+    return ROOTS_VIEWPORT_LAYOUT.PHONE
+  }
+
+  if (
+    window.innerWidth <= PORTRAIT_TABLET_MAX_WIDTH &&
+    window.innerHeight > window.innerWidth
+  ) {
+    return ROOTS_VIEWPORT_LAYOUT.PORTRAIT_TABLET
+  }
+
+  return ROOTS_VIEWPORT_LAYOUT.DESKTOP
+}
+
+const resolveRootsViewportLayout = (phoneMediaQuery, portraitTabletMediaQuery) => {
+  if (phoneMediaQuery.matches) return ROOTS_VIEWPORT_LAYOUT.PHONE
+  if (portraitTabletMediaQuery.matches) {
+    return ROOTS_VIEWPORT_LAYOUT.PORTRAIT_TABLET
+  }
+
+  return ROOTS_VIEWPORT_LAYOUT.DESKTOP
+}
+
+const getRootsViewportLayout = () => {
+  if (
+    typeof window === 'undefined' ||
+    typeof window.matchMedia !== 'function'
+  ) {
+    return getFallbackRootsViewportLayout()
+  }
+
+  return resolveRootsViewportLayout(
+    window.matchMedia(PHONE_MEDIA_QUERY),
+    window.matchMedia(PORTRAIT_TABLET_MEDIA_QUERY),
+  )
+}
+
+function useRootsViewportLayout() {
+  const [viewportLayout, setViewportLayout] = useState(getRootsViewportLayout)
 
   useEffect(() => {
-    if (
-      typeof window === 'undefined' ||
-      typeof window.matchMedia !== 'function'
-    ) {
+    if (typeof window === 'undefined') {
       return undefined
     }
 
-    const mediaQuery = window.matchMedia(MOBILE_MEDIA_QUERY)
-    const updateMatch = (event) => {
-      setIsMobile(event.matches)
+    if (typeof window.matchMedia !== 'function') {
+      const updateLayout = () => {
+        setViewportLayout(getFallbackRootsViewportLayout())
+      }
+
+      window.addEventListener('resize', updateLayout)
+
+      return () => {
+        window.removeEventListener('resize', updateLayout)
+      }
     }
 
-    mediaQuery.addEventListener('change', updateMatch)
+    const mediaQueries = [
+      window.matchMedia(PHONE_MEDIA_QUERY),
+      window.matchMedia(PORTRAIT_TABLET_MEDIA_QUERY),
+    ]
+    const updateLayout = () => {
+      setViewportLayout(
+        resolveRootsViewportLayout(mediaQueries[0], mediaQueries[1]),
+      )
+    }
+
+    mediaQueries.forEach((mediaQuery) => {
+      mediaQuery.addEventListener('change', updateLayout)
+    })
+    updateLayout()
 
     return () => {
-      mediaQuery.removeEventListener('change', updateMatch)
+      mediaQueries.forEach((mediaQuery) => {
+        mediaQuery.removeEventListener('change', updateLayout)
+      })
     }
   }, [])
 
-  return isMobile
+  return viewportLayout
 }
 
 export default function RootsScene({ sceneRef }) {
   const navigate = useNavigate()
   const isActive = usePageActive()
-  const isMobile = useIsMobileViewport()
+  const viewportLayout = useRootsViewportLayout()
+  const isMobileLayout = viewportLayout !== ROOTS_VIEWPORT_LAYOUT.DESKTOP
+  const isPhoneLayout = viewportLayout === ROOTS_VIEWPORT_LAYOUT.PHONE
   const triggerRefs = useRef({})
   const openedFromIdRef = useRef(null)
   const [isSliderOpen, setIsSliderOpen] = useState(false)
@@ -546,7 +638,7 @@ export default function RootsScene({ sceneRef }) {
   }
 
   useEffect(() => {
-    if (!isMobile) {
+    if (!isMobileLayout) {
       delete document.body.dataset.rootsMobileScrolled
       return undefined
     }
@@ -556,7 +648,7 @@ export default function RootsScene({ sceneRef }) {
     return () => {
       delete document.body.dataset.rootsMobileScrolled
     }
-  }, [isMobile])
+  }, [isMobileLayout])
 
   const setTriggerRef = (id, node) => {
     if (node) {
@@ -581,48 +673,58 @@ export default function RootsScene({ sceneRef }) {
     })
   }
 
+  const renderMobileFrameButton = ({ item, itemIndex }) => {
+    const FrameComponent = item.FrameComponent
+
+    return (
+      <MobileFrameButton
+        key={item.id}
+        ref={(node) => setTriggerRef(item.id, node)}
+        type='button'
+        aria-label={`Open ${item.title}`}
+        aria-haspopup='dialog'
+        aria-expanded={isSliderOpen && activeItem.id === item.id}
+        data-roots-example={item.id}
+        data-roots-example-region='mobile-frame'
+        onClick={() => openPortfolio(itemIndex, item.id)}
+        disabled={isSliderOpen}
+      >
+        <FrameComponent />
+      </MobileFrameButton>
+    )
+  }
+
   return (
     <Root
       ref={sceneRef}
       aria-label='Non-profit Roots scene'
       data-dialog-open={isSliderOpen}
+      data-roots-viewport-layout={viewportLayout}
     >
       <VisuallyHiddenHeading>Non-profit Roots</VisuallyHiddenHeading>
 
-      {isMobile ? (
+      {isMobileLayout ? (
         <MobileScene
           aria-hidden={isSliderOpen}
           data-roots-mobile-scroll-region
+          data-roots-mobile-layout={viewportLayout}
           $isActive={isActive}
           $isLocked={isSliderOpen}
           onScroll={handleMobileScroll}
         >
-          <MobileFrames>
-            {mobileFrameColumns.map((columnEntries, columnIndex) => (
-              <MobileFrameColumn key={`mobile-roots-column-${columnIndex}`}>
-                {columnEntries.map(({ item, itemIndex }) => {
-                  const FrameComponent = item.FrameComponent
-
-                  return (
-                    <MobileFrameButton
-                      key={item.id}
-                      ref={(node) => setTriggerRef(item.id, node)}
-                      type='button'
-                      aria-label={`Open ${item.title}`}
-                      aria-haspopup='dialog'
-                      aria-expanded={isSliderOpen && activeItem.id === item.id}
-                      data-roots-example={item.id}
-                      data-roots-example-region='mobile-frame'
-                      onClick={() => openPortfolio(itemIndex, item.id)}
-                      disabled={isSliderOpen}
-                    >
-                      <FrameComponent />
-                    </MobileFrameButton>
-                  )
-                })}
-              </MobileFrameColumn>
-            ))}
-          </MobileFrames>
+          {isPhoneLayout ? (
+            <MobileFrames data-roots-mobile-layout={viewportLayout}>
+              {mobileFrameColumns.map((columnEntries, columnIndex) => (
+                <MobileFrameColumn key={`mobile-roots-column-${columnIndex}`}>
+                  {columnEntries.map(renderMobileFrameButton)}
+                </MobileFrameColumn>
+              ))}
+            </MobileFrames>
+          ) : (
+            <PortraitTabletFrames data-roots-mobile-layout={viewportLayout}>
+              {mobileFrameEntries.map(renderMobileFrameButton)}
+            </PortraitTabletFrames>
+          )}
         </MobileScene>
       ) : (
         <DesktopScene aria-hidden={isSliderOpen} $isActive={isActive}>
@@ -662,7 +764,7 @@ export default function RootsScene({ sceneRef }) {
         </DesktopScene>
       )}
 
-      {isMobile ? (
+      {isMobileLayout ? (
         <MobileBackButton
           type='button'
           aria-label='Return to home'

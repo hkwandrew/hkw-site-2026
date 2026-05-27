@@ -1,4 +1,13 @@
 import { createGlobalStyle } from 'styled-components'
+import {
+  DESKTOP_VIEWPORT_WIDTH,
+  DESKTOP_VIEWPORT_HEIGHT,
+  MOBILE_VIEWPORT_HEIGHT,
+  MOBILE_VIEWPORT_WIDTH,
+  VIEWPORT_PX_UNIT_CUSTOM_PROPERTY,
+  getCappedViewportPxUnitValue,
+  getFittedViewportPxUnitValue,
+} from './viewportUnits'
 
 const GlobalStyle = createGlobalStyle`
   *, *::before, *::after {
@@ -10,6 +19,10 @@ const GlobalStyle = createGlobalStyle`
   :root {
     color-scheme: light;
     text-rendering: optimizeLegibility;
+    ${VIEWPORT_PX_UNIT_CUSTOM_PROPERTY}: ${getFittedViewportPxUnitValue(
+      DESKTOP_VIEWPORT_WIDTH,
+      DESKTOP_VIEWPORT_HEIGHT,
+    )};
   }
 
   html, body, #root {
@@ -39,6 +52,13 @@ const GlobalStyle = createGlobalStyle`
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    :root {
+      ${VIEWPORT_PX_UNIT_CUSTOM_PROPERTY}: ${getCappedViewportPxUnitValue(
+        MOBILE_VIEWPORT_WIDTH,
+        MOBILE_VIEWPORT_HEIGHT,
+      )};
+    }
+
     html, body, #root {
       ${'' /* height: auto;
       min-height: 100%;

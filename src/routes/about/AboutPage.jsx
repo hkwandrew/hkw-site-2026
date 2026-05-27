@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react'
 import { useInRouterContext } from 'react-router'
 import usePageActive from '@/shared/hooks/usePageActive'
+import { convertCssPxToViewportUnit } from '@/styles/viewportUnits'
 import MarmotCheer from './MarmotCheer'
 import {
   ABOUT_DESKTOP_CLOUDS,
@@ -54,8 +55,8 @@ const CLOUD_FLOAT_PRESETS = {
 }
 
 const MASCOT_FLOAT_STYLE = {
-  '--about-float-x': '2px',
-  '--about-float-y': '-10px',
+  '--about-float-x': convertCssPxToViewportUnit('2px'),
+  '--about-float-y': convertCssPxToViewportUnit('-10px'),
   '--about-float-rotate': '1.3deg',
   '--about-float-duration': '5.2s',
   '--about-float-delay': '-0.8s',
@@ -65,8 +66,8 @@ const getCloudFloatStyle = (layer, index) => {
   const preset = CLOUD_FLOAT_PRESETS[layer] ?? CLOUD_FLOAT_PRESETS.mid
 
   return {
-    '--about-float-x': preset.x,
-    '--about-float-y': preset.y,
+    '--about-float-x': convertCssPxToViewportUnit(preset.x),
+    '--about-float-y': convertCssPxToViewportUnit(preset.y),
     '--about-float-duration': `${preset.duration + index * 0.18}s`,
     '--about-float-delay': `${index * -0.55}s`,
   }
