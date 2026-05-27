@@ -63,7 +63,7 @@ export const SERVICES_SCENE_STATE = {
     },
   },
   dirtLayer: {
-    container: { x: 1181, y: 1100 },
+    container: { x: 1181, y: 2100 },
     wrapper: { scaleX: 1, scaleY: 1 },
     viewports: {
       mobile: {

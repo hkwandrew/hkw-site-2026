@@ -209,7 +209,7 @@ const toHeroWidth = (value) => {
 }
 
 export const Page = styled(ViewContainer)`
-  overflow: hidden;
+  ${'' /* overflow: hidden; */}
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     background: linear-gradient(

@@ -68,11 +68,11 @@ export const HOME_SCENE_STATE = {
     wrapper: { scaleX: 1, scaleY: 1 },
   },
   dirtLayer: {
-    container: { x: 1308, y: '110%' },
+    container: { x: 1308, y: '210%' },
     wrapper: { scaleX: 1, scaleY: 1 },
     viewports: {
       mobile: {
-        container: { x: 0, y: '260%' },
+        container: { x: 1308, y: '320%' },
       },
     },
   },
