@@ -479,6 +479,10 @@ export const WorkDirtForeground = styled.svg`
   );
   transition: transform ${({ $transitionMs }) => $transitionMs}ms linear;
   will-change: transform;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    display: none;
+  }
 `
 
 export const DesktopNavRail = styled.div`

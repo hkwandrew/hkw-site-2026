@@ -2,6 +2,14 @@ import { describe, it, expect, vi } from 'vitest'
 import { createMemoryRouter, MemoryRouter, RouterProvider } from 'react-router'
 import { fireEvent, render, screen, withTheme } from '@/__tests__/testUtils'
 import Contact from '@/routes/contact/ContactPage'
+import { CONTACT_SCENE_STATE } from '@/routes/contact/sceneSpec'
+
+const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+const getStyleText = () =>
+  Array.from(document.head.querySelectorAll('style'))
+    .map((styleTag) => styleTag.textContent ?? '')
+    .join('\n')
 
 const renderContact = (props = {}) =>
   render(
@@ -41,6 +49,24 @@ describe('Contact page', () => {
     renderContact()
     expect(screen.getAllByLabelText(/name/i).length).toBeGreaterThan(0)
     expect(screen.getAllByLabelText(/email/i).length).toBeGreaterThan(0)
+  })
+
+  it('uses the shared scene sun for the phone contact background', () => {
+    renderContact()
+
+    const phoneStage = screen.getByLabelText('Contact form mobile')
+    const styles = getStyleText()
+    const phoneStageClassName = Array.from(phoneStage.classList).find(
+      (className) => styles.includes(`.${className}`),
+    )
+
+    expect(phoneStageClassName).toBeDefined()
+    expect(styles).not.toMatch(
+      new RegExp(`\\.${escapeRegExp(phoneStageClassName)}::?before`),
+    )
+    expect(CONTACT_SCENE_STATE.sun.viewports.mobile.wrapper.scaleX).toBeGreaterThan(
+      CONTACT_SCENE_STATE.sun.wrapper.scaleX,
+    )
   })
 
   it('shows validation errors on empty submit', () => {

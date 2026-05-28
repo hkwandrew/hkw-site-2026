@@ -22,17 +22,23 @@ export const CONTACT_SCENE_STATE = {
   sun: {
     container: { x: 1893.827022, y: 512 },
     wrapper: { scaleX: 8.4483, scaleY: 8.4483 },
+    viewports: {
+      mobile: {
+        container: { x: 1899, y: 1697 },
+        wrapper: { scaleX: 28, scaleY: 28 },
+      },
+    },
   },
   dkBlueMountain: {
     container: { x: 3489.129945, y: 1798 },
     wrapper: { scaleX: 0.8, scaleY: 0.8 },
   },
   treeMountain: {
-    container: { x: 55.680149, y: '100%' },
+    container: { x: 55.680149, y: '300%' },
     wrapper: { scaleX: 0.8, scaleY: 0.8 },
   },
   upperField: {
-    container: { x: 2041.826439, y: 1798 },
+    container: { x: 2041.826439, y: '300%' },
     wrapper: { scaleX: 0.8, scaleY: 0.8 },
   },
   whiteSand: {
@@ -40,7 +46,7 @@ export const CONTACT_SCENE_STATE = {
     wrapper: { scaleX: 1, scaleY: 1 },
   },
   dirtLayer: {
-    container: { x: 1181, y: 1100 },
+    container: { x: 1181, y: '300%' },
     wrapper: { scaleX: 1, scaleY: 1 },
   },
 }

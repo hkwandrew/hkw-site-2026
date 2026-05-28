@@ -11,15 +11,6 @@ export const Page = styled.section`
   min-height: 100dvh;
   overflow-x: hidden;
   overflow-y: auto;
-
-  @media (max-width: ${PHONE_BREAKPOINT}) {
-    background-image: linear-gradient(
-      to bottom,
-      ${({ theme }) => theme.colors.yellow.light} 20%,
-      ${({ theme }) => theme.colors.orange.base} 20%,
-      ${({ theme }) => theme.colors.orange.base} 100%
-    );
-  }
 `
 
 export const DesktopStage = styled.section`
@@ -102,20 +93,6 @@ export const PhoneStage = styled.section`
     position: relative;
     min-height: 100dvh;
     padding: 42px 20px 28px;
-    isolation: isolate;
-
-    &::before {
-      content: '';
-      position: absolute;
-      left: 50%;
-      top: 21px;
-      width: 620px;
-      height: calc(100dvh - 21px);
-      transform: translateX(-50%);
-      background: ${({ theme }) => theme.colors.orange.base};
-      border-radius: 50%;
-      z-index: 0;
-    }
   }
 `
 

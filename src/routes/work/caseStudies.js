@@ -85,8 +85,8 @@ const caseStudies = [
         y: -135,
       },
       mobile: {
-        x: 0,
-        y: 0,
+        x: 70,
+        y: -105,
       },
     },
     navButton: {
@@ -133,8 +133,8 @@ const caseStudies = [
         y: 140,
       },
       mobile: {
-        x: 0,
-        y: 0,
+        x: 150,
+        y: -200,
       },
     },
     navButton: {
@@ -173,8 +173,8 @@ const caseStudies = [
         y: 26,
       },
       mobile: {
-        x: 0,
-        y: 0,
+        x: 86,
+        y: -116,
       },
     },
     navButton: {
@@ -219,8 +219,8 @@ const caseStudies = [
         y: -220,
       },
       mobile: {
-        x: 0,
-        y: 0,
+        x: 80,
+        y: -260,
       },
     },
     navButton: {
@@ -260,8 +260,8 @@ const caseStudies = [
         y: -55,
       },
       mobile: {
-        x: 0,
-        y: 0,
+        x: 65,
+        y: -55,
       },
     },
     navButton: {
@@ -282,7 +282,7 @@ const caseStudies = [
   {
     id: 'reltio',
     name: 'Reltio',
-      flexBasis: 'calc(42.5% - 64px)',
+    flexBasis: 'calc(42.5% - 64px)',
     quote:
       "From strategy to launch, HKW is the rare agency that combines rock-solid reliability, outstanding design & UI/UX, and genuine partnership — all wrapped up in a team you'll actually love working with.",
     attribution: 'Sr. Director, Global Digital & Web Marketing',
@@ -298,8 +298,8 @@ const caseStudies = [
         y: -110,
       },
       mobile: {
-        x: 0,
-        y: 0,
+        x: 80,
+        y: -130,
       },
     },
     navButton: {
@@ -345,8 +345,8 @@ const caseStudies = [
         y: -75,
       },
       mobile: {
-        x: 0,
-        y: 0,
+        x: 5,
+        y: -75,
       },
     },
     navButton: {
@@ -423,8 +423,8 @@ const caseStudies = [
         y: -50,
       },
       mobile: {
-        x: 0,
-        y: 0,
+        x: 75,
+        y: -130,
       },
     },
     navButton: {

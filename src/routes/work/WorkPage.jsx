@@ -716,13 +716,6 @@ const WorkPage = () => {
           <StudyTextStage $layout={study}>
             {renderStudyPane(study, studyPhase)}
           </StudyTextStage>
-
-          {/* <MobileNavRail>
-            <MobileNavStrip>
-              {renderNavButtons(index, handleNavButtonSelect, true)}
-            </MobileNavStrip>
-          </MobileNavRail> */}
-
           <HeroStage>{renderHeroPane(study, studyPhase)}</HeroStage>
         </StudyArea>
       </MainContent>

@@ -30,7 +30,7 @@ export const WORK_SCENE_STATE = {
     wrapper: { scaleX: 0.8, scaleY: 0.8 },
   },
   upperField: {
-    container: { x: 2101.532525, y: 1283.708382 },
+    container: { x: 2101.532525, y: '200%' },
     wrapper: { scaleX: 0.8, scaleY: 0.8 },
   },
   whiteSand: {
