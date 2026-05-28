@@ -1,10 +1,13 @@
 /* eslint-disable react-refresh/only-export-components */
 import { render as rtlRender } from '@testing-library/react'
-import { ThemeProvider } from 'styled-components'
+import { StyleSheetManager, ThemeProvider } from 'styled-components'
 import theme from '@/styles/theme'
+import { viewportPxToVwPlugin } from '@/styles/viewportUnits'
 
 const ThemeWrapper = ({ children }) => (
-  <ThemeProvider theme={theme}>{children}</ThemeProvider>
+  <StyleSheetManager stylisPlugins={[viewportPxToVwPlugin]}>
+    <ThemeProvider theme={theme}>{children}</ThemeProvider>
+  </StyleSheetManager>
 )
 
 export const withTheme = (children) => <ThemeWrapper>{children}</ThemeWrapper>

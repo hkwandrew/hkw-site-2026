@@ -1,7 +1,9 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useBlocker } from 'react-router'
 import gsap from 'gsap'
 import Draggable from 'gsap/Draggable'
 import usePageActive from '@/shared/hooks/usePageActive'
+import { usePageSceneTransition } from '@/app/landscape/pageSceneTransition'
 import DirtLayer from '@/app/landscape/layers/DirtLayer'
 import caseStudies from './caseStudies'
 import { resolveNavButtonLayout } from './navButtonLayout'
@@ -42,10 +44,79 @@ const DESKTOP_NAV_COPY_COUNT = 3
 const DESKTOP_NAV_BASE_COPY_INDEX = 1
 const DESKTOP_NAV_GAP = 24
 const DESKTOP_NAV_DRAG_THRESHOLD = 10
-const PAGE_REVEAL_DURATION_MS = 500
+const WORK_DIRT_FOREGROUND_TRANSITION_MS = 1500
 const STUDY_FADE_DURATION_MS = 420
 const DESKTOP_NAV_BASE_VISUAL_INDEX =
   DESKTOP_NAV_BASE_COPY_INDEX * caseStudies.length
+
+const useWorkPageExitTransition = () => {
+  const [isExiting, setIsExiting] = useState(false)
+  const nextPathRef = useRef(null)
+  const exitFrameRef = useRef(0)
+  const exitTimeoutRef = useRef(0)
+  const { transitionSceneToPath } = usePageSceneTransition()
+  const leaveWorkBlocker = useBlocker(({ currentLocation, nextLocation }) => {
+    const isLeavingWork =
+      currentLocation.pathname === '/work' &&
+      nextLocation.pathname !== currentLocation.pathname
+
+    nextPathRef.current = isLeavingWork ? nextLocation.pathname : null
+
+    return isLeavingWork
+  })
+
+  useEffect(() => {
+    if (leaveWorkBlocker.state !== 'blocked' || exitTimeoutRef.current) {
+      return undefined
+    }
+
+    const nextPath = nextPathRef.current
+
+    if (!nextPath) {
+      leaveWorkBlocker.proceed()
+      return undefined
+    }
+
+    const shouldReduceMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    const didStartSceneTransition = transitionSceneToPath(nextPath)
+
+    if (!didStartSceneTransition || shouldReduceMotion) {
+      nextPathRef.current = null
+      leaveWorkBlocker.proceed()
+      return undefined
+    }
+
+    exitFrameRef.current = window.requestAnimationFrame(() => {
+      exitFrameRef.current = 0
+      setIsExiting(true)
+    })
+
+    exitTimeoutRef.current = window.setTimeout(() => {
+      exitTimeoutRef.current = 0
+      nextPathRef.current = null
+      leaveWorkBlocker.proceed()
+    }, WORK_DIRT_FOREGROUND_TRANSITION_MS)
+
+    return undefined
+  }, [leaveWorkBlocker, transitionSceneToPath])
+
+  useEffect(
+    () => () => {
+      if (exitFrameRef.current) {
+        window.cancelAnimationFrame(exitFrameRef.current)
+      }
+
+      if (exitTimeoutRef.current) {
+        window.clearTimeout(exitTimeoutRef.current)
+      }
+    },
+    [],
+  )
+
+  return isExiting
+}
 
 const normalizeIndex = (index, itemCount) =>
   ((index % itemCount) + itemCount) % itemCount
@@ -347,6 +418,7 @@ const WorkDirtLayer = styled.g``
 
 const WorkPage = () => {
   const isActive = usePageActive()
+  const isExiting = useWorkPageExitTransition()
   const [index, setIndex] = useState(0)
   const [displayIndex, setDisplayIndex] = useState(0)
   const [studyPhase, setStudyPhase] = useState('active')
@@ -397,7 +469,7 @@ const WorkPage = () => {
 
     const timer = window.setTimeout(() => {
       setIsForegroundEntryComplete(true)
-    }, PAGE_REVEAL_DURATION_MS)
+    }, WORK_DIRT_FOREGROUND_TRANSITION_MS)
 
     return () => {
       window.clearTimeout(timer)
@@ -656,6 +728,7 @@ const WorkPage = () => {
       </MainContent>
 
       <WorkDirtForeground
+        id='work-dirt-foreground'
         aria-hidden='true'
         focusable='false'
         viewBox='0 0 1440 1024'
@@ -663,6 +736,8 @@ const WorkPage = () => {
         textRendering='geometricPrecision'
         $isActive={isActive}
         $isEntryComplete={isForegroundEntryComplete}
+        $isLeaving={isExiting}
+        $transitionMs={WORK_DIRT_FOREGROUND_TRANSITION_MS}
       >
         <g transform='translate(-1181.222193 -8.108808)'>
           <path

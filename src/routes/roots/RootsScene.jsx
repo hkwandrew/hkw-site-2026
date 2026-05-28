@@ -599,7 +599,6 @@ function useRootsViewportLayout() {
     mediaQueries.forEach((mediaQuery) => {
       mediaQuery.addEventListener('change', updateLayout)
     })
-    updateLayout()
 
     return () => {
       mediaQueries.forEach((mediaQuery) => {

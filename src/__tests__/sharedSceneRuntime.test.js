@@ -19,7 +19,12 @@ const createSceneRoot = ({
     <svg viewBox="${viewBox}">
       <g id="scene" transform="${sceneTransform}">
         <g id="tree-mountain__container" transform="translate(0,0)">
-          <g id="tree-mountain__wrapper" transform="scale(1,1)"></g>
+          <g id="tree-mountain__wrapper" transform="scale(1,1)">
+            <g class="trees">
+              <path d="M0 0L1 1"></path>
+              <path d="M9 9L10 10"></path>
+            </g>
+          </g>
         </g>
         <g id="dirt-layer__container" transform="${dirtLayerTransform}">
           <g id="dirt-layer__wrapper" transform="scale(1,1)"></g>
@@ -40,6 +45,8 @@ const setMobileViewport = (matches) => {
   }))
 }
 
+const getTreeMountainPaths = (root) => root.querySelectorAll('g.trees > path')
+
 const createPercentageCoordinateSceneState = (
   container = { x: 0, y: '100%' },
 ) => ({
@@ -59,6 +66,19 @@ const createNumericDirtLayerSceneState = () => ({
   dirtLayer: {
     ...HOME_SCENE_STATE.dirtLayer,
     container: { x: 1308, y: 1100 },
+  },
+})
+
+const createTreeMountainPathSceneState = () => ({
+  ...HOME_SCENE_STATE,
+  treeMountain: {
+    ...HOME_SCENE_STATE.treeMountain,
+    viewports: {
+      mobile: {
+        ...HOME_SCENE_STATE.treeMountain.viewports.mobile,
+        pathD: 'M2 2L3 3',
+      },
+    },
   },
 })
 
@@ -91,6 +111,40 @@ describe('shared scene runtime viewport state', () => {
       'transform',
       'scale(1.84,1.82)',
     )
+  })
+
+  it('applies mobile TreeMountain path data when the viewport matches', () => {
+    setMobileViewport(true)
+
+    const root = createSceneRoot()
+
+    applySharedSceneState(root, createTreeMountainPathSceneState())
+
+    const paths = getTreeMountainPaths(root)
+
+    expect(paths[0]).toHaveAttribute('d', 'M2 2L3 3')
+    expect(paths[1]).toHaveAttribute('d', 'M9 9L10 10')
+  })
+
+  it('animates toward mobile TreeMountain path data when the viewport matches', () => {
+    setMobileViewport(true)
+
+    const root = createSceneRoot()
+    const timeline = animateSharedSceneTransition({
+      durationMs: 100,
+      pathMorphByLayer: {},
+      rootElement: root,
+      targetState: createTreeMountainPathSceneState(),
+    })
+
+    timeline.progress(1)
+
+    const paths = getTreeMountainPaths(root)
+
+    expect(paths[0]).toHaveAttribute('d', 'M2 2L3 3')
+    expect(paths[1]).toHaveAttribute('d', 'M9 9L10 10')
+
+    timeline.kill()
   })
 
   it('applies percentage y coordinate values from scene state', () => {

@@ -471,16 +471,14 @@ export const WorkDirtForeground = styled.svg`
   height: auto;
   overflow: visible;
   pointer-events: none;
-  transform: translateY(
-    ${({ $isActive, $isEntryComplete }) =>
-      !$isActive && !$isEntryComplete ? '-20px' : '0'}
+  transform: translate3d(
+    0,
+    ${({ $isActive, $isEntryComplete, $isLeaving }) =>
+      $isLeaving || (!$isActive && !$isEntryComplete) ? '128%' : '0'},
+    0
   );
-  transition: transform 500ms ease;
+  transition: transform ${({ $transitionMs }) => $transitionMs}ms linear;
   will-change: transform;
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    transform: translateY(128%);
-  }
 `
 
 export const DesktopNavRail = styled.div`

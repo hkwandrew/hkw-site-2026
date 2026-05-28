@@ -4,7 +4,7 @@ import { act, fireEvent, render, screen } from '@/__tests__/testUtils'
 import RootsPortfolioSlider from '@/routes/roots/RootsPortfolioSlider'
 
 const TestFrame = () => <svg aria-hidden='true' />
-const SLIDE_FADE_DURATION_MS = 420
+const SLIDE_FADE_DURATION_MS = 180
 const normalizeCss = (value) => value.replace(/\s+/g, '')
 const getInjectedStyles = () =>
   Array.from(document.querySelectorAll('style'))
@@ -24,7 +24,7 @@ const expectSlidePaneToFade = (element) => {
   const styles = normalizeCss(getElementStyles(element))
 
   expect(styles).toContain('animation:')
-  expect(styles).toContain('420mscubic-bezier(0.22,1,0.36,1)both')
+  expect(styles).toContain('180mscubic-bezier(0.22,1,0.36,1)both')
 }
 
 const sliderItems = [

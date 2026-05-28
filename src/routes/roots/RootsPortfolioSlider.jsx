@@ -6,7 +6,7 @@ import RootsMarmot from './RootsMarmot'
 import frameBackground from './assets/roots-slider/frame.png'
 import PillButton from '@/shared/ui/PillButton'
 
-const SLIDE_FADE_DURATION_MS = 420
+const SLIDE_FADE_DURATION_MS = 180
 
 const toCssLength = (value, fallback = 'auto') =>
   typeof value === 'number' ? `${value}px` : (value ?? fallback)

@@ -5,15 +5,63 @@ import {
   waitFor,
   within,
 } from '@/__tests__/testUtils'
-import { describe, expect, it } from 'vitest'
+import { createMemoryRouter, Link, RouterProvider } from 'react-router'
+import { describe, expect, it, vi } from 'vitest'
+import { PageSceneTransitionProvider } from '@/app/landscape/pageSceneTransition'
 import WorkPage from '@/routes/work/WorkPage'
 import {
   NAV_BUTTON_LAYOUT_DEFAULTS,
   resolveNavButtonLayout,
 } from '@/routes/work/navButtonLayout'
 import caseStudies from '@/routes/work/caseStudies'
+import { convertCssPxToViewportUnit } from '@/styles/viewportUnits'
 
-const renderWorkPage = () => render(<WorkPage />)
+const renderWorkPage = () => {
+  const router = createMemoryRouter(
+    [
+      {
+        path: '/work',
+        element: <WorkPage />,
+      },
+    ],
+    {
+      initialEntries: ['/work'],
+    },
+  )
+
+  return {
+    router,
+    ...render(<RouterProvider router={router} />),
+  }
+}
+
+const renderWorkPageWithExitLink = (transitionSceneToPath) => {
+  const router = createMemoryRouter(
+    [
+      {
+        path: '/work',
+        element: (
+          <PageSceneTransitionProvider value={{ transitionSceneToPath }}>
+            <WorkPage />
+            <Link to='/services'>Services</Link>
+          </PageSceneTransitionProvider>
+        ),
+      },
+      {
+        path: '/services',
+        element: <div>Services route body</div>,
+      },
+    ],
+    {
+      initialEntries: ['/work'],
+    },
+  )
+
+  return {
+    router,
+    ...render(<RouterProvider router={router} />),
+  }
+}
 
 const getDesktopNav = () => screen.getByTestId('work-nav-desktop')
 const getActiveStudyPane = () => screen.getByTestId('work-study-active')
@@ -122,12 +170,18 @@ describe('WorkPage', () => {
       : typeof value === 'number'
         ? `${value}px`
         : value
+  const toRenderedCssLength = (value, fallback = 'none') =>
+    convertCssPxToViewportUnit(toCssLength(value, fallback))
   const normalizeAspectRatio = (value) => value.replaceAll(' ', '')
   const normalizeCssFunction = (value) => value.replace(/\s+/g, '')
   const getInjectedStyles = () =>
     Array.from(document.querySelectorAll('style'))
       .map((styleElement) => styleElement.textContent)
       .join('\n')
+  const hasInjectedAnimationRule = (element) =>
+    Array.from(element.classList).some((className) =>
+      getInjectedStyles().includes(`.${className}{animation:`),
+    )
 
   const waitForActiveStudy = async (studyId) => {
     await waitFor(() => {
@@ -160,15 +214,17 @@ describe('WorkPage', () => {
     const heroPaneStyle = getComputedStyle(image.parentElement)
     const imageStyle = getComputedStyle(image)
 
-    expect(heroPaneStyle.width).toBe(`${study.heroImage.width}px`)
+    expect(heroPaneStyle.width).toBe(toRenderedCssLength(study.heroImage.width))
     expect(heroPaneStyle.maxWidth).toBe(
-      toCssLength(study.heroImage.maxWidth),
+      toRenderedCssLength(study.heroImage.maxWidth),
     )
     expect(normalizeAspectRatio(imageStyle.aspectRatio)).toBe(
       normalizeAspectRatio(study.heroImage.aspectRatio),
     )
     expect(imageStyle.translate).toBe(
-      `${study.heroImage.desktop.x}px ${study.heroImage.desktop.y}px`,
+      convertCssPxToViewportUnit(
+        `${study.heroImage.desktop.x}px ${study.heroImage.desktop.y}px`,
+      ),
     )
 
     if (study.heroImage.rotation !== undefined) {
@@ -308,19 +364,19 @@ describe('WorkPage', () => {
     expect(initialStageStyle.flexGrow).toBe('0')
     expect(initialStageStyle.flexShrink).toBe('0')
     expect(initialStageStyle.flexBasis).toBe(
-      toCssLength(initialStudy.flexBasis, fallbackFlexBasis),
+      toRenderedCssLength(initialStudy.flexBasis, fallbackFlexBasis),
     )
     expect(initialStageStyle.maxWidth).toBe(
-      toCssLength(initialStudy.maxWidth, fallbackMaxWidth),
+      toRenderedCssLength(initialStudy.maxWidth, fallbackMaxWidth),
     )
 
     await selectDesktopStudy(omittedLayoutStudy)
 
     expect(getComputedStyle(getActiveStudyPane().parentElement).flexBasis).toBe(
-      fallbackFlexBasis,
+      toRenderedCssLength(undefined, fallbackFlexBasis),
     )
     expect(getComputedStyle(getActiveStudyPane().parentElement).maxWidth).toBe(
-      fallbackMaxWidth,
+      toRenderedCssLength(undefined, fallbackMaxWidth),
     )
   })
 
@@ -343,8 +399,8 @@ describe('WorkPage', () => {
 
       const stageStyle = getComputedStyle(getActiveStudyPane().parentElement)
 
-      expect(stageStyle.flexBasis).toBe('312px')
-      expect(stageStyle.maxWidth).toBe('376px')
+      expect(stageStyle.flexBasis).toBe(convertCssPxToViewportUnit('312px'))
+      expect(stageStyle.maxWidth).toBe(convertCssPxToViewportUnit('376px'))
     } finally {
       if (previousFlexBasis === undefined) {
         delete study.flexBasis
@@ -378,7 +434,7 @@ describe('WorkPage', () => {
       expect(
         getComputedStyle(within(getActiveStudyPane()).getByText(study.quote))
           .letterSpacing,
-      ).toBe('-0.48px')
+      ).toBe(convertCssPxToViewportUnit('-0.48px'))
     } finally {
       if (previousLetterSpacing === undefined) {
         delete study.letterSpacing
@@ -398,14 +454,20 @@ describe('WorkPage', () => {
     const normalClassName = getMainContent().className
 
     expect(normalizeCssFunction(getInjectedStyles())).toContain(
-      'clamp(132px,17.5vw,252px)',
+      normalizeCssFunction(
+        convertCssPxToViewportUnit('clamp(132px, 17.5vw, 252px)'),
+      ),
     )
 
     await selectDesktopStudy(wideStudy)
 
     expect(getMainContent().className).not.toBe(normalClassName)
     expect(normalizeCssFunction(getInjectedStyles())).toContain(
-      'calc(clamp(132px,17.5vw,252px)-60px)',
+      normalizeCssFunction(
+        convertCssPxToViewportUnit(
+          'calc(clamp(132px, 17.5vw, 252px) - 60px)',
+        ),
+      ),
     )
   })
 
@@ -532,6 +594,26 @@ describe('WorkPage', () => {
     expect(screen.getByRole('img', { name: 'Reltio' })).toBeInTheDocument()
   })
 
+  it('keeps the work route mounted while the dirt foreground exits down', async () => {
+    const transitionSceneToPath = vi.fn(() => true)
+    const { router } = renderWorkPageWithExitLink(transitionSceneToPath)
+
+    fireEvent.click(screen.getByRole('link', { name: 'Services' }))
+
+    await waitFor(() => {
+      expect(transitionSceneToPath).toHaveBeenCalledWith('/services')
+    })
+
+    expect(router.state.location.pathname).toBe('/work')
+    expect(getComputedStyle(document.querySelector('#work-dirt-foreground')).transform)
+      .toContain('128%')
+    expect(screen.queryByText('Services route body')).not.toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(screen.getByText('Services route body')).toBeInTheDocument()
+    }, { timeout: 2000 })
+  })
+
   it('fades study panes without horizontal slide motion or layout shifts when changing items', async () => {
     renderWorkPage()
 
@@ -560,7 +642,7 @@ describe('WorkPage', () => {
     const enteringPane = document.querySelector('[data-study-pane="entering"]')
 
     expect(enteringPane).toHaveAttribute('data-work-example', 'conviva')
-    expect(getComputedStyle(enteringPane).animationName).not.toBe('none')
+    expect(hasInjectedAnimationRule(enteringPane)).toBe(true)
 
     await waitForActiveStudy('conviva')
   })

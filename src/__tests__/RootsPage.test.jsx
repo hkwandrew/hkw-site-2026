@@ -5,14 +5,32 @@ import { PageSceneTransitionProvider } from '@/app/landscape/pageSceneTransition
 import RootsPage from '@/routes/roots/RootsPage'
 import ROOTS_PORTFOLIO_ITEMS from '@/routes/roots/rootsPortfolio'
 import { ROOTS_SCENE_TRANSITION_DURATION_MS } from '@/routes/roots/useRootsPageTransition'
+import { convertCssPxToViewportUnit } from '@/styles/viewportUnits'
 
 const originalMatchMedia = window.matchMedia
 const originalRequestAnimationFrame = window.requestAnimationFrame
 const originalCancelAnimationFrame = window.cancelAnimationFrame
+const ROOTS_PORTFOLIO_SLIDE_FADE_DURATION_MS = 180
 
 const createMatchMedia = (matches) =>
   vi.fn().mockImplementation((query) => ({
     matches,
+    media: query,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  }))
+
+const createRootsViewportMatchMedia = ({
+  phone = false,
+  portraitTablet = false,
+} = {}) =>
+  vi.fn().mockImplementation((query) => ({
+    matches:
+      (query === '(max-width: 767px)' && phone) ||
+      (query.includes('(orientation: portrait)') && portraitTablet),
     media: query,
     addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
@@ -150,7 +168,9 @@ describe('RootsPage', () => {
       .parentElement
 
     expect(getComputedStyle(sceneContent).opacity).toBe('0')
-    expect(getComputedStyle(sceneContent).transform).toContain('20px')
+    expect(getComputedStyle(sceneContent).transform).toContain(
+      convertCssPxToViewportUnit('20px'),
+    )
 
     act(() => {
       frameCallbacks.splice(0).forEach((callback) => callback())
@@ -302,7 +322,7 @@ describe('RootsPage', () => {
     const artwork = screen.getByAltText('Citizen Nine26 project artwork')
 
     expect(item).toMatchObject({
-      artworkTop: 130.109,
+      artworkTop: 160.109,
       artworkLeft: 73.531,
       artworkWidth: 717.463,
       artworkHeight: 471.771,
@@ -311,10 +331,10 @@ describe('RootsPage', () => {
     expect(item).not.toHaveProperty('artworkAlign')
     expect(artwork).toHaveStyle({
       position: 'absolute',
-      top: `${item.artworkTop}px`,
-      left: `${item.artworkLeft}px`,
-      width: `${item.artworkWidth}px`,
-      height: `${item.artworkHeight}px`,
+      top: convertCssPxToViewportUnit(`${item.artworkTop}px`),
+      left: convertCssPxToViewportUnit(`${item.artworkLeft}px`),
+      width: convertCssPxToViewportUnit(`${item.artworkWidth}px`),
+      height: convertCssPxToViewportUnit(`${item.artworkHeight}px`),
       maxWidth: 'none',
       maxInlineSize: 'none',
       maxBlockSize: 'none',
@@ -338,8 +358,8 @@ describe('RootsPage', () => {
       artworkHeight: 585.908,
     })
     expect(artwork).toHaveStyle({
-      width: `${item.artworkWidth}px`,
-      height: `${item.artworkHeight}px`,
+      width: convertCssPxToViewportUnit(`${item.artworkWidth}px`),
+      height: convertCssPxToViewportUnit(`${item.artworkHeight}px`),
       maxWidth: 'none',
       maxInlineSize: 'none',
       maxBlockSize: 'none',
@@ -359,6 +379,10 @@ describe('RootsPage', () => {
     fireEvent.click(
       screen.getByRole('button', { name: /show next portfolio piece/i }),
     )
+
+    act(() => {
+      vi.advanceTimersByTime(ROOTS_PORTFOLIO_SLIDE_FADE_DURATION_MS)
+    })
 
     await vi.waitFor(() => {
       expect(screen.getByRole('dialog', { name: /celdf/i })).toBeInTheDocument()
@@ -406,7 +430,41 @@ describe('RootsPage', () => {
         .filter(Boolean),
     )
 
+    expect(mobileFrames).toHaveAttribute('data-roots-mobile-layout', 'phone')
     expect(rowOrderedIds).toEqual(ROOTS_PORTFOLIO_ITEMS.map((item) => item.id))
+  })
+
+  it('renders a portrait-tablet mobile frame grid in portfolio data order', () => {
+    window.matchMedia = createRootsViewportMatchMedia({
+      portraitTablet: true,
+    })
+
+    renderRootsRoute()
+
+    const mobileScene = document.querySelector(
+      '[data-roots-mobile-scroll-region]',
+    )
+    const mobileFrames = mobileScene.firstElementChild
+    const frameButtons = Array.from(
+      mobileFrames.querySelectorAll(
+        'button[data-roots-example-region="mobile-frame"]',
+      ),
+    )
+
+    expect(mobileScene).toHaveAttribute(
+      'data-roots-mobile-layout',
+      'portrait-tablet',
+    )
+    expect(mobileFrames).toHaveAttribute(
+      'data-roots-mobile-layout',
+      'portrait-tablet',
+    )
+    expect(document.querySelector('[data-roots-welcome-sign]')).toBeNull()
+    expect(mobileFrames.children).toHaveLength(ROOTS_PORTFOLIO_ITEMS.length)
+    expect(frameButtons.map((button) => button.dataset.rootsExample)).toEqual(
+      ROOTS_PORTFOLIO_ITEMS.map((item) => item.id),
+    )
+    expect(getInjectedStyles()).toContain('repeat(auto-fit')
   })
 
   it('exposes each desktop roots frame id as a data attribute', () => {
