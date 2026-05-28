@@ -43,7 +43,7 @@ export const WORK_SCENE_STATE = {
     },
   },
   dirtLayer: {
-    container: { x: 1181, y: 1000 },
+    container: { x: 1181, y: 2000 },
     wrapper: { scaleX: 1, scaleY: 1 },
     viewports: {
       mobile: {
