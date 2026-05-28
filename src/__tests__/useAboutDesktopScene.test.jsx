@@ -1,6 +1,11 @@
 import { fireEvent, render, screen } from '@/__tests__/testUtils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { ABOUT_HERO_CLOUD } from '@/routes/about/aboutSceneData'
+import {
+  ABOUT_DESIGN_FRAME,
+  ABOUT_DESKTOP_CLOUDS,
+  ABOUT_DESKTOP_QUOTE_LAYOUTS,
+  ABOUT_HERO_CLOUD,
+} from '@/routes/about/aboutSceneData'
 
 const originalRequestAnimationFrame = window.requestAnimationFrame
 const originalCancelAnimationFrame = window.cancelAnimationFrame
@@ -57,6 +62,68 @@ const getAutoAlphaTimelineValues = (element) =>
       return false
     })
     .map(([, props]) => props.autoAlpha)
+
+const getGsapSetProps = (element) =>
+  gsapMocks.set.mock.calls.find(([target]) => target === element)?.[1]
+
+const withMockedSceneViewport = ({ width, height }, callback) => {
+  const widthDescriptor = Object.getOwnPropertyDescriptor(
+    HTMLElement.prototype,
+    'clientWidth',
+  )
+  const heightDescriptor = Object.getOwnPropertyDescriptor(
+    HTMLElement.prototype,
+    'clientHeight',
+  )
+
+  Object.defineProperty(HTMLElement.prototype, 'clientWidth', {
+    configurable: true,
+    get() {
+      if (
+        this.matches?.('[data-about-scene]') ||
+        this.matches?.('[data-testid="about-desktop-scroller"]')
+      ) {
+        return width
+      }
+
+      return widthDescriptor?.get?.call(this) ?? 0
+    },
+  })
+
+  Object.defineProperty(HTMLElement.prototype, 'clientHeight', {
+    configurable: true,
+    get() {
+      if (
+        this.matches?.('[data-about-scene]') ||
+        this.matches?.('[data-testid="about-desktop-scroller"]')
+      ) {
+        return height
+      }
+
+      return heightDescriptor?.get?.call(this) ?? 0
+    },
+  })
+
+  try {
+    return callback()
+  } finally {
+    if (widthDescriptor) {
+      Object.defineProperty(HTMLElement.prototype, 'clientWidth', widthDescriptor)
+    } else {
+      delete HTMLElement.prototype.clientWidth
+    }
+
+    if (heightDescriptor) {
+      Object.defineProperty(
+        HTMLElement.prototype,
+        'clientHeight',
+        heightDescriptor,
+      )
+    } else {
+      delete HTMLElement.prototype.clientHeight
+    }
+  }
+}
 
 describe('useAboutDesktopScene', () => {
   beforeEach(() => {
@@ -187,6 +254,41 @@ describe('useAboutDesktopScene', () => {
       'viewBox',
       ABOUT_HERO_CLOUD.viewBoxes.stageOne,
     )
+  })
+
+  it('fits desktop cloud and quote coordinates to portrait-tablet viewports without stretching vertically', () => {
+    withMockedSceneViewport({ width: 768, height: 1024 }, () => {
+      const { container } = render(<AboutPage />)
+      const darkCloud = ABOUT_DESKTOP_CLOUDS.find(
+        (cloud) => cloud.id === 'dark-left',
+      )
+      const jonathanQuote = ABOUT_DESKTOP_QUOTE_LAYOUTS.find(
+        (quote) => quote.id === 'jonathan',
+      )
+      const sceneScale = Math.min(
+        768 / ABOUT_DESIGN_FRAME.width,
+        1024 / ABOUT_DESIGN_FRAME.height,
+      )
+      const darkCloudElement = container.querySelector(
+        '[data-about-cloud="dark-left"]',
+      )
+      const jonathanQuoteElement = container.querySelector(
+        '[data-about-quote="jonathan"]',
+      )
+      const darkCloudProps = getGsapSetProps(darkCloudElement)
+      const jonathanQuoteProps = getGsapSetProps(jonathanQuoteElement)
+
+      expect(darkCloudProps.y).toBeCloseTo(
+        darkCloud.states[0].y * sceneScale,
+      )
+      expect(darkCloudProps.width).toBeCloseTo(darkCloud.width * sceneScale)
+      expect(jonathanQuoteProps.y).toBeCloseTo(
+        jonathanQuote.states[0].y * sceneScale,
+      )
+      expect(jonathanQuoteProps.width).toBeCloseTo(
+        jonathanQuote.width * sceneScale,
+      )
+    })
   })
 
   it('hides the hero cloud from stageTwo onward while keeping the later cloud layers visible', () => {

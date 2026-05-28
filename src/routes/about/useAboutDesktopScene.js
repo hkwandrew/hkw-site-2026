@@ -35,6 +35,19 @@ const buildStateProps = ({ state, toX, toY, toWidth, width }) => ({
   ...(typeof state.opacity === 'number' ? { opacity: state.opacity } : {}),
 })
 
+const getFittedSceneGeometry = (sceneWidth, sceneHeight) => {
+  const scale = Math.min(
+    sceneWidth / ABOUT_DESIGN_FRAME.width,
+    sceneHeight / ABOUT_DESIGN_FRAME.height,
+  )
+  const fittedWidth = ABOUT_DESIGN_FRAME.width * scale
+
+  return {
+    offsetX: Math.max((sceneWidth - fittedWidth) / 2, 0),
+    scale,
+  }
+}
+
 const clampProgress = (value) => Math.min(Math.max(value, 0), 1)
 
 const formatViewBoxValue = (value) => {
@@ -148,9 +161,13 @@ const useAboutDesktopScene = () => {
 
       const sceneWidth = scene.clientWidth || ABOUT_DESIGN_FRAME.width
       const sceneHeight = scene.clientHeight || ABOUT_DESIGN_FRAME.height
-      const toX = (value) => (value / ABOUT_DESIGN_FRAME.width) * sceneWidth
-      const toY = (value) => (value / ABOUT_DESIGN_FRAME.height) * sceneHeight
-      const toWidth = (value) => (value / ABOUT_DESIGN_FRAME.width) * sceneWidth
+      const { offsetX, scale } = getFittedSceneGeometry(
+        sceneWidth,
+        sceneHeight,
+      )
+      const toX = (value) => offsetX + value * scale
+      const toY = (value) => value * scale
+      const toWidth = (value) => value * scale
 
       timeline = gsap.timeline({
         paused: true,
@@ -204,9 +221,9 @@ const useAboutDesktopScene = () => {
           selector: `[data-about-fill="${fill.id}"]`,
           states: fill.states,
           width: fill.width,
-          toX,
+          toX: () => 0,
           toY,
-          toWidth,
+          toWidth: () => sceneWidth,
         })
       })
 

@@ -182,7 +182,7 @@ export const DesktopHeroCloud = styled.div`
 export const DesktopIntroCopy = styled.div`
   position: absolute;
   left: 50%;
-  top: 28.5%;
+  top: 292px;
   z-index: 15;
   width: min(657px, 52vw);
   transform: translateX(-50%);
@@ -209,7 +209,7 @@ export const DesktopIntroCopy = styled.div`
 export const DesktopScrollHint = styled.button`
   position: absolute;
   left: 50%;
-  top: 48.4%;
+  top: 496px;
   z-index: 16;
   width: clamp(58px, 4.6vw, 68px);
   transform: translateX(-50%);
@@ -352,8 +352,8 @@ export const MobileStaticScene = styled.div`
   background: linear-gradient(
     to top,
     ${({ theme }) => theme.colors.white} 0%,
-    ${({ theme }) => theme.colors.white} 50%,
-    transparent 50%,
+    ${({ theme }) => theme.colors.white} 70%,
+    transparent 70%,
     transparent 100%
   );
 `
@@ -427,8 +427,8 @@ export const MobileQuoteCloud = styled.div`
   background: linear-gradient(
     to top,
     ${({ theme }) => theme.colors.blue.dark} 0%,
-    ${({ theme }) => theme.colors.blue.dark} 50%,
-    transparent 50%,
+    ${({ theme }) => theme.colors.blue.dark} 65%,
+    transparent 65%,
     transparent 100%
   );
 
