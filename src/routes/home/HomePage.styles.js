@@ -390,6 +390,19 @@ export const FooterText = styled.div`
 `
 
 // Marmot scene
+export const HomeMarmotClip = styled.div`
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    overflow: hidden;
+  }
+`
+
 export const HomeMarmotWrapper = styled.div`
   position: absolute;
   right: -74.21px;

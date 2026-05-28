@@ -14,6 +14,7 @@ import {
   Footer,
   FooterText,
   HeroText,
+  HomeMarmotClip,
   HomeMarmotWrapper,
   MarmotCharacterWrap,
   PlaneShell,
@@ -107,47 +108,49 @@ export default function Home() {
           </Footer>
         </DesktopHome>
       </ViewContainer>
-      <HomeMarmotWrapper>
-        <StumpHoverOverlay
-          aria-hidden='true'
-          $active={isStumpHoverActive}
-          $isTransitioning={isRootsTransitionActive}
-        >
-          <StumpHoverArt />
-        </StumpHoverOverlay>
-        <StumpTrigger
-          type='button'
-          aria-label='Enter Non-profit Roots'
-          disabled={!canInteractWithHomeHover}
-          onClick={handleRootsClick}
-          onFocus={() => {
-            if (canInteractWithHomeHover) {
-              preloadRootsPage()
-              setHomeHoverRegion(HOME_HOVER_REGION.mascot)
-            }
-          }}
-          onBlur={() => {
-            if (canInteractWithHomeHover && !isRootsTransitionActive) {
-              clearHomeHoverRegion()
-            }
-          }}
-          onMouseEnter={() => {
-            if (canInteractWithHomeHover) {
-              preloadRootsPage()
-              setHomeHoverRegion(HOME_HOVER_REGION.mascot)
-            }
-          }}
-          onMouseLeave={() => {
-            if (canInteractWithHomeHover && !isRootsTransitionActive) {
-              clearHomeHoverRegion()
-            }
-          }}
-          $isInteractive={canInteractWithHomeHover}
-        />
-        <MarmotCharacterWrap $isTransitioning={isRootsTransitionActive}>
-          <HomeMarmot />
-        </MarmotCharacterWrap>
-      </HomeMarmotWrapper>
+      <HomeMarmotClip data-home-marmot-clip>
+        <HomeMarmotWrapper>
+          <StumpHoverOverlay
+            aria-hidden='true'
+            $active={isStumpHoverActive}
+            $isTransitioning={isRootsTransitionActive}
+          >
+            <StumpHoverArt />
+          </StumpHoverOverlay>
+          <StumpTrigger
+            type='button'
+            aria-label='Enter Non-profit Roots'
+            disabled={!canInteractWithHomeHover}
+            onClick={handleRootsClick}
+            onFocus={() => {
+              if (canInteractWithHomeHover) {
+                preloadRootsPage()
+                setHomeHoverRegion(HOME_HOVER_REGION.mascot)
+              }
+            }}
+            onBlur={() => {
+              if (canInteractWithHomeHover && !isRootsTransitionActive) {
+                clearHomeHoverRegion()
+              }
+            }}
+            onMouseEnter={() => {
+              if (canInteractWithHomeHover) {
+                preloadRootsPage()
+                setHomeHoverRegion(HOME_HOVER_REGION.mascot)
+              }
+            }}
+            onMouseLeave={() => {
+              if (canInteractWithHomeHover && !isRootsTransitionActive) {
+                clearHomeHoverRegion()
+              }
+            }}
+            $isInteractive={canInteractWithHomeHover}
+          />
+          <MarmotCharacterWrap $isTransitioning={isRootsTransitionActive}>
+            <HomeMarmot />
+          </MarmotCharacterWrap>
+        </HomeMarmotWrapper>
+      </HomeMarmotClip>
     </>
   )
 }

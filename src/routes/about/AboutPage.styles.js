@@ -99,7 +99,7 @@ const ABOUT_PAGE_SLIDE_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)'
 
 export const Page = styled(ViewContainer)`
   overflow: visible;
-  ${'' /* max-width: 1440px; */}
+  max-width: 100%;
   margin-inline: auto;
   pointer-events: auto;
   opacity: 1;

@@ -1,5 +1,6 @@
 import { Component } from 'react'
 import theme from '@/styles/theme'
+import { convertCssPxToViewportUnit } from '@/styles/viewportUnits'
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -32,12 +33,19 @@ class ErrorBoundary extends Component {
             textAlign: 'center',
           }}
         >
-          <h1 style={{ fontSize: theme.typography.h4.size, marginBottom: '1rem' }}>
+          <h1
+            style={{
+              fontSize: convertCssPxToViewportUnit(theme.typography.h4.size),
+              marginBottom: '1rem',
+            }}
+          >
             Something went wrong
           </h1>
           <p
             style={{
-              fontSize: theme.typography.bodyMedium.size,
+              fontSize: convertCssPxToViewportUnit(
+                theme.typography.bodyMedium.size,
+              ),
               marginBottom: '2rem',
               opacity: 0.7,
             }}
@@ -48,7 +56,9 @@ class ErrorBoundary extends Component {
             onClick={() => window.location.reload()}
             style={{
               padding: '0.75rem 2rem',
-              fontSize: theme.typography.smallButton.size,
+              fontSize: convertCssPxToViewportUnit(
+                theme.typography.smallButton.size,
+              ),
               fontWeight: theme.typography.smallButton.weight,
               color: theme.colors.yellow.light,
               backgroundColor: theme.colors.orange.base,

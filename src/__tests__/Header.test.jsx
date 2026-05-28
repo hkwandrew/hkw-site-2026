@@ -2,6 +2,7 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter } from 'react-router'
 import { fireEvent, render, screen } from '@/__tests__/testUtils'
 import Header from '@/app/layout/Header'
+import { convertCssPxToViewportUnit } from '@/styles/viewportUnits'
 
 const renderHeader = (initialEntries = ['/contact'], props = {}) =>
   render(
@@ -62,16 +63,31 @@ describe('Header', () => {
     )
   })
 
-  it('uses the gold logo background on the work page', () => {
+  it('uses the gold logo backing color on the work page', () => {
     const { container } = renderHeader(['/work'], {
       contentPathname: '/work',
     })
 
     const logoLink = container.querySelector('header > div a[href="/"]')
 
+    expect(
+      getComputedStyle(logoLink).getPropertyValue('--logo-background').trim(),
+    ).toBe('#FA9C38')
+  })
+
+  it('keeps the services logo color inside the SVG instead of the link box', () => {
+    const { container } = renderHeader(['/services'], {
+      contentPathname: '/services',
+    })
+
+    const logoLink = container.querySelector('header > div a[href="/"]')
+
     expect(getComputedStyle(logoLink).backgroundColor).toBe(
-      'rgb(250, 156, 56)',
+      'rgba(0, 0, 0, 0)',
     )
+    expect(
+      getComputedStyle(logoLink).getPropertyValue('--logo-background').trim(),
+    ).toBe('#AFD3FC')
   })
 
   it('renders the roots mobile header without a page label and uses white controls', () => {
@@ -106,7 +122,9 @@ describe('Header', () => {
       name: 'Open navigation menu',
     })
 
-    expect(getComputedStyle(menuButton).translate).toBe('0 -24px')
+    expect(getComputedStyle(menuButton).translate).toBe(
+      convertCssPxToViewportUnit('0 -24px'),
+    )
 
     isPhoneViewport = false
   })

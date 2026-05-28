@@ -2,6 +2,7 @@ import { render, screen } from '@/__tests__/testUtils'
 import { describe, expect, it } from 'vitest'
 import PillButton from '@/shared/ui/PillButton'
 import theme from '@/styles/theme'
+import { convertCssPxToViewportUnit } from '@/styles/viewportUnits'
 
 describe('design tokens', () => {
   it('uses role-based button typography from the Figma button instances', () => {
@@ -45,18 +46,28 @@ describe('design tokens', () => {
     const closeButton = screen.getByRole('button', { name: 'Close' })
     const sendButton = screen.getByRole('button', { name: 'Send Message' })
 
-    expect(getComputedStyle(closeButton).fontSize).toBe('24px')
-    expect(getComputedStyle(closeButton).lineHeight).toBe('26px')
+    expect(getComputedStyle(closeButton).fontSize).toBe(
+      convertCssPxToViewportUnit('24px'),
+    )
+    expect(getComputedStyle(closeButton).lineHeight).toBe(
+      convertCssPxToViewportUnit('26px'),
+    )
     expect(getComputedStyle(closeButton).letterSpacing).toBe('0px')
     expect(getComputedStyle(closeButton).backgroundColor).toBe('rgb(165, 50, 19)')
     expect(getComputedStyle(closeButton).color).toBe('rgb(252, 250, 229)')
-    expect(getComputedStyle(closeButton).borderRadius).toBe('9999px')
+    expect(getComputedStyle(closeButton).borderRadius).toBe(
+      convertCssPxToViewportUnit('9999px'),
+    )
 
-    expect(getComputedStyle(sendButton).fontSize).toBe('20px')
+    expect(getComputedStyle(sendButton).fontSize).toBe(
+      convertCssPxToViewportUnit('20px'),
+    )
     expect(getComputedStyle(sendButton).lineHeight).toBe('1')
     expect(getComputedStyle(sendButton).letterSpacing).toBe('0px')
     expect(getComputedStyle(sendButton).backgroundColor).toBe('rgb(28, 45, 56)')
     expect(getComputedStyle(sendButton).color).toBe('rgb(252, 250, 229)')
-    expect(getComputedStyle(sendButton).borderRadius).toBe('99px')
+    expect(getComputedStyle(sendButton).borderRadius).toBe(
+      convertCssPxToViewportUnit('99px'),
+    )
   })
 })

@@ -7,6 +7,7 @@ import { ROOTS_DROP_DURATION_MS } from '@/routes/home/HomePage.styles'
 
 const mockNavigate = vi.fn()
 const originalMatchMedia = window.matchMedia
+const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
 vi.mock('react-router', async () => {
   const actual = await vi.importActual('react-router')
@@ -21,7 +22,7 @@ const renderHomePage = ({
   clearHomeHoverRegion = vi.fn(),
   setHomeHoverRegion = vi.fn(),
 } = {}) => {
-  render(
+  const renderResult = render(
     <MemoryRouter initialEntries={['/']}>
       <HomeHoverProvider
         value={{
@@ -39,6 +40,7 @@ const renderHomePage = ({
   return {
     clearHomeHoverRegion,
     setHomeHoverRegion,
+    ...renderResult,
   }
 }
 
@@ -83,7 +85,7 @@ describe('HomePage', () => {
   })
 
   it('starts a dedicated marmot exit animation during the roots transition', () => {
-    renderHomePage()
+    const { container } = renderHomePage()
 
     fireEvent.click(
       screen.getByRole('button', {
@@ -91,12 +93,27 @@ describe('HomePage', () => {
       }),
     )
 
-    const introGroup = document.querySelector('#marmot-character-intro')
-
+    const introGroup = container.querySelector('#marmot-character-intro')
     expect(introGroup).not.toBeNull()
-    expect(getComputedStyle(introGroup).animationName).not.toBe('none')
-    expect(getComputedStyle(introGroup).animationDuration).toBe(
-      `${ROOTS_DROP_DURATION_MS}ms`,
+
+    const introWrapper = introGroup.closest('div')
+    expect(introWrapper).not.toBeNull()
+
+    const styles = Array.from(document.head.querySelectorAll('style'))
+      .map((styleTag) => styleTag.textContent ?? '')
+      .join('\n')
+    const introWrapperClassName = Array.from(introWrapper.classList).find(
+      (className) =>
+        styles.includes(`.${className} #marmot-character-intro{animation:`),
+    )
+
+    expect(introWrapperClassName).toBeDefined()
+    expect(styles).toMatch(
+      new RegExp(
+        `\\.${escapeRegExp(
+          introWrapperClassName,
+        )} #marmot-character-intro\\{animation:[^}]* ${ROOTS_DROP_DURATION_MS}ms `,
+      ),
     )
   })
 
@@ -140,6 +157,33 @@ describe('HomePage', () => {
     expect(styles).not.toContain('#banner-highlight-strip')
     expect(styles).not.toContain('#banner-text{animation:')
     expect(styles).not.toContain('#tow-line{animation:')
+  })
+
+  it('clips the off-canvas marmot at phone widths without changing the marmot crop', () => {
+    const { container } = renderHomePage()
+
+    const clip = container.querySelector('[data-home-marmot-clip]')
+    expect(clip).not.toBeNull()
+
+    const styles = Array.from(document.head.querySelectorAll('style'))
+      .map((styleTag) => styleTag.textContent ?? '')
+      .join('\n')
+    const clipClassName = Array.from(clip.classList).find((className) =>
+      styles.includes(`.${className}{position:absolute;`),
+    )
+
+    expect(clip).toHaveStyle({ overflow: 'visible' })
+    expect(clipClassName).toBeDefined()
+    expect(styles).toMatch(
+      new RegExp(
+        `@media \\(max-width:\\s*767px\\)\\{\\.${escapeRegExp(
+          clipClassName,
+        )}\\{overflow:hidden;\\}\\}`,
+      ),
+    )
+    expect(styles).toContain(
+      'right:calc(-127 * var(--hkw-viewport-px-unit))',
+    )
   })
 
   it('renders the plane propeller with a perpendicular spin treatment', () => {
