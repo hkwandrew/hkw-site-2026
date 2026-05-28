@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "NODE_ENV=development vite --port 5175 --host",
     "build": "NODE_ENV=production vite build",
+    "deploy": "NODE_ENV=production vite build --mode deploy",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest"
