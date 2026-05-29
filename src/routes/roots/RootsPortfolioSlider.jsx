@@ -1,9 +1,20 @@
-import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react'
+import { createPortal } from 'react-dom'
 import styled, { css, keyframes } from 'styled-components'
 import ArrowButton from '@/shared/ui/ArrowButton'
 import { applyTypography } from '@/shared/ui/Typography'
 import RootsMarmot from './RootsMarmot'
-import frameBackground from './assets/roots-slider/frame.png'
+import frameBottom from './assets/roots-slider/frame-chrome/bottom.svg'
+import frameLeft from './assets/roots-slider/frame-chrome/left.svg'
+import frameRight from './assets/roots-slider/frame-chrome/right.svg'
+import frameTop from './assets/roots-slider/frame-chrome/top.svg'
 import PillButton from '@/shared/ui/PillButton'
 
 const SLIDE_FADE_DURATION_MS = 180
@@ -43,14 +54,16 @@ const slidePaneFadeOut = keyframes`
 const getSlidePaneMotion = ({ $state }) => {
   if ($state === 'leaving') {
     return css`
-      animation: ${slidePaneFadeOut} ${SLIDE_FADE_DURATION_MS}ms cubic-bezier(0.22, 1, 0.36, 1) both;
+      animation: ${slidePaneFadeOut} ${SLIDE_FADE_DURATION_MS}ms
+        cubic-bezier(0.22, 1, 0.36, 1) both;
       pointer-events: none;
     `
   }
 
   if ($state === 'entering') {
     return css`
-      animation: ${slidePaneFadeIn} ${SLIDE_FADE_DURATION_MS}ms cubic-bezier(0.22, 1, 0.36, 1) both;
+      animation: ${slidePaneFadeIn} ${SLIDE_FADE_DURATION_MS}ms
+        cubic-bezier(0.22, 1, 0.36, 1) both;
     `
   }
 
@@ -60,10 +73,13 @@ const getSlidePaneMotion = ({ $state }) => {
 }
 
 const Overlay = styled.div`
-  position: absolute;
+  position: fixed;
   inset: 0;
-  z-index: 30;
+  z-index: 120;
+  display: flex;
+  justify-content: center;
   overflow: hidden;
+  background: #fcfae5;
   box-shadow:
     0 22px 48px rgba(28, 45, 56, 0.28),
     inset 0 0 0 1px rgba(43, 30, 21, 0.18);
@@ -74,9 +90,11 @@ const Dialog = styled.div`
   z-index: 2;
   display: flex;
   flex-direction: column;
+  width: min(100%, 1440px);
   min-height: 100%;
-  height: 100%;
+  height: 100dvh;
   overflow: hidden;
+  isolation: isolate;
   color: ${({ theme }) => theme.colors.blue.dark};
 
   &::before {
@@ -84,29 +102,21 @@ const Dialog = styled.div`
     background: #fcfae5;
     position: absolute;
     inset: 0;
-  }
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image: url(${frameBackground});
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    pointer-events: none;
+    z-index: 0;
   }
 `
 
 const FrameChrome = styled.div`
-  overflow: hidden;
+  overflow: visible;
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 2;
   pointer-events: none;
 `
 
 const FrameSide = styled.img`
   position: absolute;
+  z-index: ${({ $zIndex }) => $zIndex ?? 1};
   top: ${({ $top }) => $top ?? 'auto'};
   right: ${({ $right }) => $right ?? 'auto'};
   bottom: ${({ $bottom }) => $bottom ?? 'auto'};
@@ -137,7 +147,7 @@ const ClosePill = styled(PillButton)`
   position: absolute;
   top: 54px;
   right: 70px;
-  z-index: 3;
+  z-index: 4;
 
   &:focus-visible {
     outline: 3px solid ${({ theme }) => theme.colors.yellow.gold};
@@ -145,18 +155,50 @@ const ClosePill = styled(PillButton)`
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    top: 18px;
-    right: 18px;
-    min-width: 84px;
-    padding: 13px 17px 12px;
-    ${applyTypography('smallButton')}
+    top: max(24px, calc(36px + env(safe-area-inset-top)));
+    right: 34px;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    gap: 0;
+    border-radius: 50%;
+    color: ${({ theme }) => theme.colors.yellow.light};
+
+    > span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      text-box: unset;
+    }
+
+    &:hover {
+      background: ${({ theme }) => theme.colors.yellow.light};
+      color: ${({ theme }) => theme.colors.orange.base};
+    }
+  }
+`
+
+const CloseLabel = styled.span`
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    display: none;
+  }
+`
+const MobileCloseIcon = styled.svg`
+  display: none;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    display: block;
+    width: 18px;
+    height: 18px;
   }
 `
 
 const Content = styled.div`
   ${getSlidePaneMotion}
   position: relative;
-  z-index: 0;
+  z-index: 1;
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(300px, 417px);
   gap: 64px;
@@ -173,8 +215,14 @@ const Content = styled.div`
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     display: flex;
     flex-direction: column;
-    gap: 28px;
-    padding: 88px 20px 28px;
+    flex: 1 1 auto;
+    gap: 18px;
+    min-height: 0;
+    padding: min(24px, calc(84px + env(safe-area-inset-top))) 48px 12px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
   }
 `
 
@@ -187,8 +235,11 @@ const ArtworkStage = styled.div`
   min-height: 0;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    min-height: 0;
-    padding: 16px 0 8px;
+    flex: 0 0 auto;
+    height: min(34dvh, 220px);
+    min-height: 140px;
+    padding: 0;
+    overflow: visible;
   }
 `
 
@@ -208,10 +259,12 @@ const ArtworkImage = styled.img`
     position: relative;
     top: auto;
     left: auto;
-    width: ${({ $artworkWidth }) => toCssLength($artworkWidth, '100%')};
-    height: ${({ $artworkHeight }) => toCssLength($artworkHeight)};
+    width: min(100%, 360px);
+    height: auto;
+    max-width: 100%;
+    max-height: min(34dvh, 220px);
+    object-fit: contain;
     transform: none;
-    ${'' /* max-height: 40vh; */}
   }
 `
 
@@ -228,7 +281,12 @@ const ArtworkFrame = styled.div`
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    width: min(100%, 320px);
+    width: min(100%, 300px);
+    max-height: min(34dvh, 220px);
+
+    > * {
+      max-height: inherit;
+    }
   }
 `
 
@@ -251,7 +309,9 @@ const Copy = styled.div`
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    gap: 24px;
+    gap: 18px;
+    margin-top: 0;
+    padding-inline: 2px;
     max-width: none;
   }
 `
@@ -269,7 +329,8 @@ const Title = styled.h2`
   color: ${({ theme }) => theme.colors.blue.dark};
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    font-size: 36px;
+    font-size: 24px;
+    letter-spacing: 0;
   }
 `
 
@@ -285,7 +346,9 @@ const Bio = styled.p`
   text-transform: none;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    font-size: 18px;
+    font-size: 14px;
+    line-height: 1.2;
+    letter-spacing: 0;
   }
 `
 
@@ -298,6 +361,10 @@ const Roles = styled.div`
 const RolesLabel = styled.p`
   ${applyTypography('bodyMedium')}
   line-height: 1.3;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    font-size: 14px;
+  }
 `
 
 const RolesList = styled.ul`
@@ -319,7 +386,7 @@ const Role = styled.li`
     'wght' ${({ theme }) => theme.font.weight.semibold};
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    font-size: 16px;
+    font-size: 14px;
   }
 `
 
@@ -334,19 +401,17 @@ const NavCluster = styled.div`
   padding: 0 68px;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    position: sticky;
-    inset: auto;
-    bottom: 0;
+    position: absolute;
+    top: auto;
+    right: 0;
+    bottom: 24px;
+    left: 0;
+    z-index: 3;
     justify-content: center;
     gap: 16px;
     margin-top: auto;
-    padding: 24px 0 max(8px, env(safe-area-inset-bottom));
-    background: linear-gradient(
-      180deg,
-      rgba(252, 250, 229, 0) 0%,
-      rgba(252, 250, 229, 0.9) 32%,
-      rgba(252, 250, 229, 1) 100%
-    );
+    padding: 18px 0 max(10px, env(safe-area-inset-bottom));
+    background: transparent;
   }
 `
 
@@ -454,10 +519,8 @@ export default function RootsPortfolioSlider({
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow
-    const previousTouchAction = document.body.style.touchAction
 
     document.body.style.overflow = 'hidden'
-    document.body.style.touchAction = 'none'
 
     const handleKeyDown = (event) => {
       if (event.key === 'Escape') {
@@ -504,12 +567,13 @@ export default function RootsPortfolioSlider({
     return () => {
       document.removeEventListener('keydown', handleKeyDown)
       document.body.style.overflow = previousOverflow
-      document.body.style.touchAction = previousTouchAction
     }
   }, [handleNext, handlePrev, onClose])
 
-  return (
-    <Overlay>
+  if (typeof document === 'undefined') return null
+
+  return createPortal(
+    <Overlay data-roots-portfolio-overlay>
       <Dialog
         ref={dialogRef}
         role='dialog'
@@ -518,13 +582,86 @@ export default function RootsPortfolioSlider({
         data-roots-example={displayItem.id}
         data-roots-example-region='dialog'
       >
+        <FrameChrome aria-hidden='true'>
+          <FrameSide
+            src={frameLeft}
+            alt=''
+            data-roots-frame-edge='left'
+            $top='-47px'
+            $left='-177px'
+            $width='205px'
+            $height='calc(100% + 289px)'
+            $mobileTop='0'
+            $mobileLeft='0'
+            $mobileWidth='30px'
+            $mobileHeight='100%'
+            $zIndex={1}
+          />
+          <FrameSide
+            src={frameRight}
+            alt=''
+            data-roots-frame-edge='right'
+            $top='-14px'
+            $right='-177px'
+            $width='205px'
+            $height='calc(100% + 256px)'
+            $mobileTop='0'
+            $mobileRight='0'
+            $mobileWidth='30px'
+            $mobileHeight='100%'
+            $zIndex={1}
+          />
+          <HorizontalFrame
+            src={frameTop}
+            alt=''
+            data-roots-frame-edge='top'
+            $top='-245px'
+            $left='-28px'
+            $width='calc(100% + 56px)'
+            $height='271px'
+            $mobileTop='0'
+            $mobileLeft='0'
+            $mobileWidth='100%'
+            $mobileHeight='30px'
+            $zIndex={2}
+          />
+          <HorizontalFrame
+            src={frameBottom}
+            alt=''
+            data-roots-frame-edge='bottom'
+            $bottom='-242px'
+            $left='-28px'
+            $width='calc(100% + 56px)'
+            $height='271px'
+            $mobileBottom='0'
+            $mobileLeft='0'
+            $mobileWidth='100%'
+            $mobileHeight='30px'
+            $zIndex={2}
+          />
+        </FrameChrome>
+
         <ClosePill
           ref={closeRef}
           variant='close'
           type='button'
           onClick={onClose}
         >
-          Close
+          <CloseLabel>Close</CloseLabel>
+          <MobileCloseIcon
+            aria-hidden='true'
+            focusable='false'
+            viewBox='0 0 18 18'
+            fill='none'
+            data-roots-mobile-close-icon
+          >
+            <path
+              d='M4 4L14 14M14 4L4 14'
+              stroke='currentColor'
+              strokeWidth='2'
+              strokeLinecap='round'
+            />
+          </MobileCloseIcon>
         </ClosePill>
 
         <Content
@@ -532,7 +669,7 @@ export default function RootsPortfolioSlider({
           $state={slidePhase}
           data-roots-slide-pane={slidePhase}
         >
-          <ArtworkStage>
+          <ArtworkStage data-roots-slide-artwork>
             {displayItem.detailImage ? (
               <ArtworkImage
                 $artworkWidth={displayItem.artworkWidth}
@@ -549,7 +686,7 @@ export default function RootsPortfolioSlider({
             )}
           </ArtworkStage>
 
-          <Copy $maxWidth={displayItem.maxWidth}>
+          <Copy $maxWidth={displayItem.maxWidth} data-roots-slide-copy>
             <Title id={titleId}>{displayItem.title}</Title>
 
             <Bio>{displayItem.bio}</Bio>
@@ -565,7 +702,7 @@ export default function RootsPortfolioSlider({
           </Copy>
         </Content>
 
-        <NavCluster>
+        <NavCluster data-roots-slide-nav>
           <NavControl
             type='button'
             direction='left'
@@ -583,6 +720,7 @@ export default function RootsPortfolioSlider({
           <RootsMarmot />
         </MarmotAccent>
       </Dialog>
-    </Overlay>
+    </Overlay>,
+    document.body,
   )
 }

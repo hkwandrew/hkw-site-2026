@@ -13,11 +13,11 @@ const getInjectedStyles = () =>
 const getElementStyles = (element) =>
   Array.from(element.classList)
     .map((className) => {
-      const match = getInjectedStyles().match(
-        new RegExp(`\\.${className}\\{[^}]*\\}`),
+      const matches = getInjectedStyles().match(
+        new RegExp(`\\.${className}\\{[^}]*\\}`, 'g'),
       )
 
-      return match?.[0] ?? ''
+      return matches?.join('\n') ?? ''
     })
     .join('\n')
 const expectSlidePaneToFade = (element) => {
@@ -44,7 +44,7 @@ const sliderItems = [
   },
 ]
 
-const renderSlider = (title) =>
+const renderSlider = (title, itemOverrides = {}) =>
   render(
     <RootsPortfolioSlider
       item={{
@@ -53,6 +53,7 @@ const renderSlider = (title) =>
         FrameComponent: TestFrame,
         bio: 'A test portfolio item.',
         roles: ['Website Design'],
+        ...itemOverrides,
       }}
       onClose={vi.fn()}
       onNext={vi.fn()}
@@ -83,6 +84,116 @@ afterEach(() => {
 })
 
 describe('RootsPortfolioSlider', () => {
+  it('renders the dialog in a body portal above the app chrome', () => {
+    const { container } = renderSlider('Portal Project')
+
+    const dialog = screen.getByRole('dialog', { name: 'Portal Project' })
+    const overlay = dialog.parentElement
+
+    expect(overlay).toHaveAttribute('data-roots-portfolio-overlay')
+    expect(container).not.toContainElement(dialog)
+  })
+
+  it('renders separate wooden frame edge chrome', () => {
+    renderSlider('Framed Project')
+
+    const frameEdges = Array.from(
+      screen
+        .getByRole('dialog', { name: 'Framed Project' })
+        .querySelectorAll('[data-roots-frame-edge]'),
+    )
+
+    expect(frameEdges.map((edge) => edge.dataset.rootsFrameEdge)).toEqual([
+      'left',
+      'right',
+      'top',
+      'bottom',
+    ])
+    expect(
+      frameEdges.every((edge) => edge.getAttribute('src')?.includes('.svg')),
+    ).toBe(true)
+    expect(normalizeCss(getElementStyles(frameEdges[0]))).toContain(
+      'height:calc(100%+calc(289*var(--hkw-viewport-px-unit)))',
+    )
+    expect(normalizeCss(getElementStyles(frameEdges[1]))).toContain(
+      'height:calc(100%+calc(256*var(--hkw-viewport-px-unit)))',
+    )
+    expect(normalizeCss(getElementStyles(frameEdges[0]))).toContain(
+      'width:calc(30*var(--hkw-viewport-px-unit))',
+    )
+    expect(normalizeCss(getElementStyles(frameEdges[0]))).toContain(
+      'height:100%',
+    )
+    expect(normalizeCss(getElementStyles(frameEdges[1]))).toContain(
+      'width:calc(30*var(--hkw-viewport-px-unit))',
+    )
+    expect(normalizeCss(getElementStyles(frameEdges[1]))).toContain(
+      'height:100%',
+    )
+    expect(normalizeCss(getElementStyles(frameEdges[2]))).toContain(
+      'z-index:2',
+    )
+    expect(normalizeCss(getElementStyles(frameEdges[2]))).toContain(
+      'width:100%',
+    )
+    expect(normalizeCss(getElementStyles(frameEdges[2]))).toContain(
+      'height:calc(30*var(--hkw-viewport-px-unit))',
+    )
+    expect(normalizeCss(getElementStyles(frameEdges[3]))).toContain(
+      'z-index:2',
+    )
+    expect(normalizeCss(getElementStyles(frameEdges[3]))).toContain(
+      'width:100%',
+    )
+    expect(normalizeCss(getElementStyles(frameEdges[3]))).toContain(
+      'height:calc(30*var(--hkw-viewport-px-unit))',
+    )
+    expect(normalizeCss(getInjectedStyles())).not.toContain(
+      'background-size:cover',
+    )
+  })
+
+  it('contains detail artwork and resets copy spacing on mobile', () => {
+    renderSlider('Mobile Project', {
+      detailImage: '/mobile-project.png',
+      artworkWidth: 1000,
+      artworkHeight: 760,
+    })
+
+    const artwork = screen.getByAltText('Mobile Project project artwork')
+    const copy = document.querySelector('[data-roots-slide-copy]')
+    const nav = document.querySelector('[data-roots-slide-nav]')
+
+    expect(normalizeCss(getElementStyles(artwork))).toContain(
+      'object-fit:contain',
+    )
+    expect(normalizeCss(getElementStyles(copy))).toContain('margin-top:0')
+    expect(normalizeCss(getElementStyles(copy))).toContain('padding-inline:')
+    expect(normalizeCss(getElementStyles(nav))).not.toContain('linear-gradient')
+    expect(normalizeCss(getElementStyles(nav))).not.toContain('background:')
+    expect(normalizeCss(getElementStyles(nav))).toContain('position:absolute')
+    expect(normalizeCss(getElementStyles(nav))).toContain('padding:0')
+  })
+
+  it('uses the contact-style X close button treatment on mobile', () => {
+    renderSlider('Mobile Close Project')
+
+    const closeButton = screen.getByRole('button', { name: 'Close' })
+    const mobileCloseIcon = closeButton.querySelector(
+      '[data-roots-mobile-close-icon]',
+    )
+
+    expect(mobileCloseIcon).not.toBeNull()
+    expect(mobileCloseIcon).toHaveAttribute('viewBox', '0 0 18 18')
+    expect(mobileCloseIcon.querySelector('path')).toHaveAttribute(
+      'd',
+      'M4 4L14 14M14 4L4 14',
+    )
+    expect(normalizeCss(getElementStyles(closeButton))).toContain(
+      'border-radius:50%',
+    )
+  })
+
   it('preserves authored title line breaks', () => {
     renderSlider('Asian & Pacific Islander Coalition \nof Washington')
 

@@ -22,6 +22,8 @@ const StyledButton = styled.button`
   svg {
     transform: rotate(${({ $direction }) => rotations[$direction] || '0deg'});
     transition: ${({ theme }) => theme.transition.fast};
+    translate: ${({ $direction }) => ($direction === 'right' ? '2px' : '-2px')}
+      0;
   }
 
   &:hover {
@@ -31,6 +33,16 @@ const StyledButton = styled.button`
   &:focus-visible {
     outline: 2px solid ${({ theme }) => theme.colors.yellow.gold};
     outline-offset: 2px;
+  }
+
+  @media (max-width: 767px) {
+    width: 32px;
+    height: 32px;
+
+    svg {
+      height: 15px;
+      width: 7px;
+    }
   }
 `
 
