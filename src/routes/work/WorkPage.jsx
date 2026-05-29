@@ -463,6 +463,7 @@ const WorkPage = () => {
       ?.offset ?? 0
   const maxDesktopNavTrackOffset =
     desktopNavSnapPoints[desktopNavSnapPoints.length - 1]?.offset ?? 0
+  const isWorkChromeVisible = isForegroundEntryComplete && !isExiting
 
   useEffect(() => {
     if (!isActive) return undefined
@@ -693,7 +694,10 @@ const WorkPage = () => {
 
   return (
     <Page $isActive={isActive}>
-      <MarmotWrapper>
+      <MarmotWrapper
+        data-testid='work-marmot'
+        $isVisible={isWorkChromeVisible}
+      >
         <WorkMarmot />
       </MarmotWrapper>
 
@@ -702,6 +706,7 @@ const WorkPage = () => {
         aria-label='Show previous work item'
         onClick={prev}
         $side='left'
+        $isVisible={isWorkChromeVisible}
       />
 
       <DesktopArrowButton
@@ -709,9 +714,13 @@ const WorkPage = () => {
         aria-label='Show next work item'
         onClick={next}
         $side='right'
+        $isVisible={isWorkChromeVisible}
       />
 
-      <MainContent $isWide={Boolean(study.isWide)}>
+      <MainContent
+        $isVisible={isWorkChromeVisible}
+        $isWide={Boolean(study.isWide)}
+      >
         <StudyArea>
           <StudyTextStage $layout={study}>
             {renderStudyPane(study, studyPhase)}
@@ -1012,7 +1021,7 @@ const WorkPage = () => {
         </g>
       </WorkDirtForeground>
 
-      <DesktopNavRail>
+      <DesktopNavRail $isVisible={isWorkChromeVisible}>
         <DesktopNavViewport
           $dragging={isDesktopNavDragging}
           $viewportWidth={desktopNavViewportWidth}

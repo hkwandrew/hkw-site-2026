@@ -212,14 +212,14 @@ export const Page = styled(ViewContainer)`
   ${'' /* overflow: hidden; */}
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    background: linear-gradient(
+    ${'' /* background: linear-gradient(
       to top,
       white 70%,
       transparent 70%,
       transparent 100%
     );
     overflow-y: auto;
-  }
+  } */}
 `
 
 export const MainContent = styled.div`
@@ -228,11 +228,15 @@ export const MainContent = styled.div`
   align-items: flex-start;
   justify-content: flex-start;
   min-height: 0;
+  opacity: ${({ $isVisible }) => ($isVisible ? 1 : 0)};
   padding: min(32.8125vh, 336px) 0 0
     ${({ $isWide }) =>
       $isWide
         ? 'calc(clamp(132px, 17.5vw, 252px) - 60px)'
         : 'clamp(132px, 17.5vw, 252px)'};
+  pointer-events: ${({ $isVisible }) => ($isVisible ? 'auto' : 'none')};
+  transition: opacity 320ms ease;
+  will-change: opacity;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
     padding: 252px 72px 190px
@@ -493,8 +497,11 @@ export const DesktopNavRail = styled.div`
   display: flex;
   justify-content: center;
   width: min(calc(100% - 144px), 1296px);
+  opacity: ${({ $isVisible }) => ($isVisible ? 1 : 0)};
   transform: translateX(-50%);
-  pointer-events: auto;
+  pointer-events: ${({ $isVisible }) => ($isVisible ? 'auto' : 'none')};
+  transition: opacity 320ms ease;
+  will-change: opacity;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     display: none;
@@ -509,7 +516,7 @@ export const DesktopNavRail = styled.div`
 
 export const DesktopNavViewport = styled.div`
   width: min(100%, ${({ $viewportWidth }) => `${$viewportWidth}px`});
-  overflow-x: hidden;
+  ${'' /* overflow-x: hidden; */}
   overflow-y: visible;
   cursor: ${({ $dragging }) => ($dragging ? 'grabbing' : 'grab')};
   touch-action: pan-y;
@@ -620,7 +627,10 @@ export const MarmotWrapper = styled.div`
   top: 142px;
   right: 114.84px;
   z-index: 2;
+  opacity: ${({ $isVisible }) => ($isVisible ? 1 : 0)};
   pointer-events: none;
+  transition: opacity 320ms ease;
+  will-change: opacity;
 
   #marmot-character-idle,
   #left-ear,
@@ -703,8 +713,11 @@ export const DesktopArrowButton = styled(ArrowButton)`
   position: absolute;
   top: 50%;
   z-index: 3;
-  pointer-events: auto;
+  opacity: ${({ $isVisible }) => ($isVisible ? 1 : 0)};
+  pointer-events: ${({ $isVisible }) => ($isVisible ? 'auto' : 'none')};
   transform: translateY(-100%);
+  transition: opacity 320ms ease;
+  will-change: opacity;
 
   ${({ $side }) => ($side === 'left' ? 'left: 68px;' : 'right: 68px;')}
 
