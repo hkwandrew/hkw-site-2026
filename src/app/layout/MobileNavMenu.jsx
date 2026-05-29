@@ -309,7 +309,6 @@ const MobileNavMenu = ({
               }}
             >
               <Sheet ref={panelRef}>
-                <MenuLabel>Navigate</MenuLabel>
                 <MenuList>
                   {PHONE_NAV_ITEMS.map(({ id, label, path }) => (
                     <MenuLink

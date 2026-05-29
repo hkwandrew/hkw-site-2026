@@ -408,6 +408,16 @@ describe('RootsPage', () => {
     })
   })
 
+  it('does not paint a light bottom filler in the mobile scroll scene', () => {
+    window.matchMedia = createMatchMedia(true)
+
+    renderRootsRoute()
+
+    expect(getInjectedStyles()).not.toContain(
+      `height:${convertCssPxToViewportUnit('14px')};background:#FCFAE5`,
+    )
+  })
+
   it('renders mobile frame rows in portfolio data order', () => {
     window.matchMedia = createMatchMedia(true)
 

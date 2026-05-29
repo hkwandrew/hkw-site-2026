@@ -356,17 +356,6 @@ const MobileScene = styled.div`
     transform 500ms ease;
   will-change: transform, opacity;
 
-  &::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 14px;
-    background: ${({ theme }) => theme.colors.yellow.light};
-    pointer-events: none;
-  }
-
   &[data-roots-mobile-layout='portrait-tablet'] {
     padding-top: 96px;
     padding-inline: 40px;

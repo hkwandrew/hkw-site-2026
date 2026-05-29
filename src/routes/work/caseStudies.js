@@ -30,7 +30,7 @@ const caseStudies = [
     quote:
       '"HKW exceeded our expectations in their creative design and development of our branding, and in providing us with innovative web development and solutions."',
     attribution: 'Emelyn Lybarger, Outreach Coordinator',
-    services: ['Website Design', 'Graphic Design', 'Branding', 'Logo Design'],
+    services: ['Website Design', 'Graphic Design', 'Branding', 'Logo Design', 'Collateral Design', 'Website Development'],
     image: celdfImg,
     navIcon: celdfNavDefault,
     heroImage: {
@@ -72,7 +72,7 @@ const caseStudies = [
     quote:
       '“We communicate for a living, but HKW helped us crystalize our brand message.”',
     attribution: 'Kevin Pedraja, Partner at Voxus PR',
-    services: ['Website Design', 'Web Development', 'Branding'],
+    services: ['Website Design', 'Web Development'],
     image: voxusImg,
     navIcon: voxusNavDefault,
     heroImage: {
@@ -248,7 +248,14 @@ const caseStudies = [
     quote:
       "Working with HKW's web design team has been one of the easiest experiences for our organization — they understood our vision right away and have continued to turn it into a site we’re proud to share with our community.",
     attribution: 'Evee Polanski, Director of Operations',
-    services: ['Web Design', 'Web Development'],
+    services: [
+      'Website Design',
+      'Website Development',
+      'Graphic Design',
+      'Branding',
+      'Logo Design',
+      'Marketing Support',
+    ],
     image: scarImg,
     navIcon: scarNavDefault,
     heroImage: {
@@ -410,7 +417,11 @@ const caseStudies = [
       '“HKW has done many wonderful projects for us over the years. Most recently they helped us implement a new and modern looking website, as well as a huge integration project for our website to connect to our internal systems, which has automated so much of our manual processes. They built a user friendly interface for our customers, and keep our site well maintained.”',
     attribution:
       'Melissa Marsh, Senior Business Systems Analyst at ComputerCare',
-    services: ['Web Design', 'Web Development'],
+    services: [
+      'Web Design',
+      'Web Development',
+      'Backend Customer Portal Design and Development',
+    ],
     image: computerCareImg,
     navIcon: computerCareDefault,
     heroImage: {

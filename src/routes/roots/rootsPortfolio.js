@@ -64,7 +64,6 @@ const ROOTS_PORTFOLIO_ITEMS = [
     artworkHeight: 732.95,
     artworkTop: 40,
     artworkLeft: -40,
-
   },
   {
     id: 'ewi',
@@ -89,7 +88,13 @@ const ROOTS_PORTFOLIO_ITEMS = [
     detailImage: citizenNine26Detail,
     maxWidth: 372,
     bio: 'Citizen Nine26 helps everyday people navigate complex legal and civil rights challenges with confidence. Whether accessing public records or understanding their rights, they make sure community members have the tools and support they need to advocate for themselves.',
-    roles: ['Website Design', 'Logo Design'],
+    roles: [
+      'Logo Design',
+      'Branding',
+      'Collateral Design',
+      'Website Design',
+      'Website Development',
+    ],
     desktopFrame: {
       left: 476.03,
       top: 172.27,
