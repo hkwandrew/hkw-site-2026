@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router'
 import styled from 'styled-components'
 import { NAV_ITEMS } from '@/app/router/routeRegistry'
@@ -8,14 +8,67 @@ import {
   usePageSceneTransition,
 } from '@/app/landscape/pageSceneTransition'
 
+const CONTACT_NAV_ID = 'contact'
+const PRIMARY_NAV_ITEMS = NAV_ITEMS.filter(({ id }) => id !== CONTACT_NAV_ID)
+const CONTACT_NAV_ITEM = NAV_ITEMS.find(({ id }) => id === CONTACT_NAV_ID)
+
 const Content = styled.div`
   position: relative;
+  display: flex;
+  align-items: center;
+  background-color: ${({ theme }) => theme.colors.orange.dark};
+  border-radius: ${({ theme }) => theme.components.navTabs.borderRadius};
 
   --pill-x: 0px;
   --pill-w: 0px;
   --pill-h: 0px;
   --pill-o: 0;
   --pill-move-dur: 0.5s;
+  --contact-reveal-w: 170px;
+
+  &:hover [data-contact-reveal],
+  &:focus-within [data-contact-reveal] {
+    max-width: var(--contact-reveal-w);
+    margin-left: ${({ theme }) => theme.components.navTabs.gap};
+    opacity: 1;
+  }
+
+  &:hover [data-contact-reveal-inner],
+  &:focus-within [data-contact-reveal-inner] {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  @media (hover: none) {
+    [data-contact-reveal] {
+      max-width: var(--contact-reveal-w);
+      margin-left: ${({ theme }) => theme.components.navTabs.gap};
+      opacity: 1;
+    }
+
+    [data-contact-reveal-inner] {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  &[data-click-collapsed='true'] [data-contact-reveal] {
+    max-width: 0;
+    margin-left: 0;
+    opacity: 0;
+  }
+
+  &[data-click-collapsed='true'] [data-contact-reveal-inner] {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-contact-reveal],
+    [data-contact-reveal-inner] {
+      transition-duration: 0.01ms;
+    }
+  }
 `
 
 const Pill = styled.div`
@@ -41,12 +94,10 @@ const Pill = styled.div`
 
 const Items = styled.ul`
   display: flex;
-  background-color: ${({ theme }) => theme.colors.orange.dark};
   gap: ${({ theme }) => theme.components.navTabs.gap};
   ${
     '' /* min-height: ${({ theme }) => theme.components.navTabs.containerHeight}; */
   }
-  border-radius: ${({ theme }) => theme.components.navTabs.borderRadius};
 `
 
 const Item = styled.li`
@@ -106,7 +157,13 @@ const StyledNavLink = styled(Link)`
       'wght' ${({ theme }) => theme.typography.navButton.activeWeight};
   }
 
-  &:not([aria-current='page']):hover {
+  &:focus-visible {
+    outline: 2px solid ${({ theme }) => theme.colors.yellow.gold};
+    outline-offset: 4px;
+  }
+
+  &:not([aria-current='page']):hover,
+  &:not([aria-current='page']):focus-visible {
     border-radius: ${({ theme }) => theme.components.navTabs.borderRadius};
     background-color: ${({ theme }) => theme.colors.orange.base};
     color: ${({ theme }) => theme.colors.white};
@@ -123,14 +180,35 @@ const StyledNavLink = styled(Link)`
   }
 `
 
+const ContactReveal = styled.div`
+  max-width: 0;
+  margin-left: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    max-width 0.42s ease,
+    margin-left 0.42s ease,
+    opacity 0.16s ease;
+`
+
+const ContactRevealInner = styled.div`
+  width: max-content;
+  transform: translateX(100%);
+  opacity: 0;
+  transition:
+    transform 0.42s ease,
+    opacity 0.16s ease;
+`
+
 const NavMenu = ({ activePathname }) => {
   const location = useLocation()
   const { transitionSceneToPath } = usePageSceneTransition()
   const activePath = activePathname ?? location.pathname
+  const [isClickCollapsed, setIsClickCollapsed] = useState(false)
   const contentRef = useRef(null)
   const menuRef = useRef(null)
 
-  // Refs for each NavLink element (indexed to NAV_ITEMS)
+  // Refs for each primary NavLink element.
   const linkRefs = useRef([])
 
   // Track whether we've ever displayed the pill. Used to avoid animating from "nothing".
@@ -148,7 +226,9 @@ const NavMenu = ({ activePathname }) => {
 
       // Determine active index from current pathname.
       // If there is no match (e.g. `/`), hide the pill (no active state).
-      const matchIndex = NAV_ITEMS.findIndex((item) => item.path === activePath)
+      const matchIndex = PRIMARY_NAV_ITEMS.findIndex(
+        (item) => item.path === activePath,
+      )
 
       if (matchIndex === -1) {
         contentEl.style.setProperty('--pill-o', '0')
@@ -221,26 +301,36 @@ const NavMenu = ({ activePathname }) => {
     }
   }, [activePath])
 
+  const handleNavLinkClick = (event, path) => {
+    setIsClickCollapsed(true)
+    event.currentTarget.blur()
+
+    if (
+      activePath === '/' &&
+      path === '/about' &&
+      canStartSceneTransitionFromClick(event)
+    ) {
+      transitionSceneToPath(path)
+    }
+  }
+
   return (
     <nav>
-      <Content ref={contentRef}>
+      <Content
+        ref={contentRef}
+        data-click-collapsed={isClickCollapsed ? 'true' : undefined}
+        onFocusCapture={() => setIsClickCollapsed(false)}
+        onPointerLeave={() => setIsClickCollapsed(false)}
+      >
         <Pill />
         <Items ref={menuRef}>
-          {NAV_ITEMS.map(({ label, path }, index) => (
+          {PRIMARY_NAV_ITEMS.map(({ label, path }, index) => (
             <Item key={path}>
               <StyledNavLink
                 to={path}
                 data-text={label}
                 aria-current={activePath === path ? 'page' : undefined}
-                onClick={(event) => {
-                  if (
-                    activePath === '/' &&
-                    path === '/about' &&
-                    canStartSceneTransitionFromClick(event)
-                  ) {
-                    transitionSceneToPath(path)
-                  }
-                }}
+                onClick={(event) => handleNavLinkClick(event, path)}
                 ref={(el) => {
                   linkRefs.current[index] = el
                 }}
@@ -250,6 +340,24 @@ const NavMenu = ({ activePathname }) => {
             </Item>
           ))}
         </Items>
+        {CONTACT_NAV_ITEM ? (
+          <ContactReveal data-contact-reveal>
+            <ContactRevealInner data-contact-reveal-inner>
+              <StyledNavLink
+                to={CONTACT_NAV_ITEM.path}
+                data-text={CONTACT_NAV_ITEM.label}
+                aria-current={
+                  activePath === CONTACT_NAV_ITEM.path ? 'page' : undefined
+                }
+                onClick={(event) =>
+                  handleNavLinkClick(event, CONTACT_NAV_ITEM.path)
+                }
+              >
+                <span>{CONTACT_NAV_ITEM.label}</span>
+              </StyledNavLink>
+            </ContactRevealInner>
+          </ContactReveal>
+        ) : null}
       </Content>
     </nav>
   )

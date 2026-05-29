@@ -170,6 +170,7 @@ export const DesktopHeroCloud = styled.div`
   left: 0;
   top: 0;
   z-index: 5;
+  width: 100%;
   will-change: transform, width;
 
   svg {
@@ -421,9 +422,13 @@ export const MobileQuoteCloud = styled.div`
   left: 50%;
   bottom: -2px;
   z-index: 3;
-  width: 410px;
+  width: 110vw;
+
+  @media (min-height: 780px) {
+    width: 115vw;
+  }
   transform: translateX(-50%);
-  top: 58%;
+  top: min(59dvh, 413px);
   background: linear-gradient(
     to top,
     ${({ theme }) => theme.colors.blue.dark} 0%,
@@ -444,7 +449,7 @@ export const MobilePanelQuote = styled.div`
   position: absolute;
   left: 50%;
   bottom: ${({ $isFinal }) => ($isFinal ? '96px' : '88px')};
-  top: 70%;
+  top: min(71.3dvh, 499px);
   z-index: 4;
   width: min(322px, calc(100vw - 48px));
   transform: translateX(-50%);

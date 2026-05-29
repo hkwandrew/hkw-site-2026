@@ -92,6 +92,24 @@ describe('AboutPage', () => {
     expect(timelineMatches.length).toBeGreaterThanOrEqual(2)
   })
 
+  it('caps sticky mobile quote clouds to the Figma mobile art frame', () => {
+    render(<AboutPage />)
+
+    const styles = Array.from(document.querySelectorAll('style'))
+      .map((style) => style.textContent)
+      .join('\n')
+      .replace(/\s+/g, '')
+
+    expect(styles).toContain(
+      'top:min(59dvh,calc(413*var(--hkw-viewport-px-unit)))',
+    )
+    expect(styles).toContain(
+      'top:min(71.3dvh,calc(499*var(--hkw-viewport-px-unit)))',
+    )
+    expect(styles).not.toContain('top:58%')
+    expect(styles).not.toContain('top:70%')
+  })
+
   it('hides the intro layer from stageOne onward in the desktop scene', () => {
     expect(ABOUT_FRAME_VISIBILITY[0].intro).toBe(1)
     expect(ABOUT_FRAME_VISIBILITY.slice(1).every((frame) => frame.intro === 0)).toBe(

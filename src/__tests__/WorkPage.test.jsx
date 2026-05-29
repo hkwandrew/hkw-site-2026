@@ -64,6 +64,10 @@ const renderWorkPageWithExitLink = (transitionSceneToPath) => {
 }
 
 const getDesktopNav = () => screen.getByTestId('work-nav-desktop')
+const getDesktopNavRail = () => getDesktopNav().parentElement.parentElement
+const getPreviousArrowButton = () =>
+  screen.getByRole('button', { name: /show previous work item/i })
+const getWorkMarmot = () => screen.getByTestId('work-marmot')
 const getActiveStudyPane = () => screen.getByTestId('work-study-active')
 const getMainContent = () =>
   getActiveStudyPane().parentElement.parentElement.parentElement
@@ -594,9 +598,32 @@ describe('WorkPage', () => {
     expect(screen.getByRole('img', { name: 'Reltio' })).toBeInTheDocument()
   })
 
+  it('reveals work content and carousel controls after the dirt foreground lands', async () => {
+    renderWorkPage()
+
+    expect(getComputedStyle(getMainContent()).opacity).toBe('0')
+    expect(getComputedStyle(getDesktopNavRail()).opacity).toBe('0')
+    expect(getComputedStyle(getPreviousArrowButton()).opacity).toBe('0')
+    expect(getComputedStyle(getWorkMarmot()).opacity).toBe('0')
+
+    await waitFor(() => {
+      expect(getComputedStyle(getMainContent()).opacity).toBe('1')
+      expect(getComputedStyle(getDesktopNavRail()).opacity).toBe('1')
+      expect(getComputedStyle(getPreviousArrowButton()).opacity).toBe('1')
+      expect(getComputedStyle(getWorkMarmot()).opacity).toBe('1')
+    }, { timeout: 2000 })
+  })
+
   it('keeps the work route mounted while the dirt foreground exits down', async () => {
     const transitionSceneToPath = vi.fn(() => true)
     const { router } = renderWorkPageWithExitLink(transitionSceneToPath)
+
+    await waitFor(() => {
+      expect(getComputedStyle(getMainContent()).opacity).toBe('1')
+      expect(getComputedStyle(getDesktopNavRail()).opacity).toBe('1')
+      expect(getComputedStyle(getPreviousArrowButton()).opacity).toBe('1')
+      expect(getComputedStyle(getWorkMarmot()).opacity).toBe('1')
+    }, { timeout: 2000 })
 
     fireEvent.click(screen.getByRole('link', { name: 'Services' }))
 
@@ -605,8 +632,18 @@ describe('WorkPage', () => {
     })
 
     expect(router.state.location.pathname).toBe('/work')
-    expect(getComputedStyle(document.querySelector('#work-dirt-foreground')).transform)
-      .toContain('128%')
+
+    await waitFor(() => {
+      expect(getComputedStyle(getMainContent()).opacity).toBe('0')
+      expect(getComputedStyle(getDesktopNavRail()).opacity).toBe('0')
+      expect(getComputedStyle(getPreviousArrowButton()).opacity).toBe('0')
+      expect(getComputedStyle(getWorkMarmot()).opacity).toBe('0')
+      expect(
+        getComputedStyle(document.querySelector('#work-dirt-foreground'))
+          .transform,
+      ).toContain('128%')
+    })
+
     expect(screen.queryByText('Services route body')).not.toBeInTheDocument()
 
     await waitFor(() => {

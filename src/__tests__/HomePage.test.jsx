@@ -20,6 +20,8 @@ vi.mock('react-router', async () => {
 
 const renderHomePage = ({
   clearHomeHoverRegion = vi.fn(),
+  homeHoverRegion = null,
+  isHomeInteractive,
   setHomeHoverRegion = vi.fn(),
 } = {}) => {
   const renderResult = render(
@@ -27,8 +29,9 @@ const renderHomePage = ({
       <HomeHoverProvider
         value={{
           clearHomeHoverRegion,
-          homeHoverRegion: null,
+          homeHoverRegion,
           isHome: true,
+          isHomeInteractive,
           setHomeHoverRegion,
         }}
       >
@@ -115,6 +118,13 @@ describe('HomePage', () => {
         )} #marmot-character-intro\\{animation:[^}]* ${ROOTS_DROP_DURATION_MS}ms `,
       ),
     )
+    expect(styles).toMatch(
+      new RegExp(
+        `\\.${escapeRegExp(
+          introWrapperClassName,
+        )} #marmot-character-hover\\{opacity:0;transition:none;visibility:hidden;\\}`,
+      ),
+    )
   })
 
   it('activates the roots hover region on focus and mouse enter', () => {
@@ -129,6 +139,81 @@ describe('HomePage', () => {
 
     expect(setHomeHoverRegion).toHaveBeenCalledTimes(2)
     expect(setHomeHoverRegion).toHaveBeenCalledWith('mascot')
+  })
+
+  it('expands the roots trigger over the marmot and stump artwork', () => {
+    const { container } = renderHomePage()
+
+    const trigger = container.querySelector('[data-home-marmot-trigger]')
+    expect(trigger).not.toBeNull()
+
+    const styles = Array.from(document.head.querySelectorAll('style'))
+      .map((styleTag) => styleTag.textContent ?? '')
+      .join('\n')
+    const triggerClassName = Array.from(trigger.classList).find((className) =>
+      styles.includes(`.${className}{position:absolute;`),
+    )
+
+    expect(triggerClassName).toBeDefined()
+    expect(styles).toMatch(
+      new RegExp(
+        `\\.${escapeRegExp(
+          triggerClassName,
+        )}\\{[^}]*top:0;left:calc\\(118 \\* var\\(--hkw-viewport-px-unit\\)\\);width:calc\\(436 \\* var\\(--hkw-viewport-px-unit\\)\\);height:calc\\(376 \\* var\\(--hkw-viewport-px-unit\\)\\);z-index:3;`,
+      ),
+    )
+  })
+
+  it('renders the marmot hover pose from the route-owned art', () => {
+    const { container } = renderHomePage()
+
+    const hoverPose = container.querySelector('#marmot-character-hover')
+    const hoverEyes = container.querySelector('#marmot-hover-blink')
+
+    expect(hoverPose).not.toBeNull()
+    expect(hoverPose).toHaveAttribute('aria-hidden', 'true')
+    expect(hoverEyes).not.toBeNull()
+  })
+
+  it('keeps the hover marmot eye layer visible between blinks', () => {
+    renderHomePage()
+
+    const styles = Array.from(document.head.querySelectorAll('style'))
+      .map((styleTag) => styleTag.textContent ?? '')
+      .join('\n')
+
+    expect(styles).toContain('#marmot-hover-blink{opacity:1;')
+    expect(styles).not.toContain('#marmot-hover-blink{opacity:0;')
+  })
+
+  it('activates the marmot hover pose only when the mascot region is interactive', () => {
+    const { container } = renderHomePage({
+      homeHoverRegion: 'mascot',
+      isHomeInteractive: true,
+    })
+
+    const marmotWrapper = container.querySelector('[data-home-marmot-wrapper]')
+
+    expect(marmotWrapper).not.toBeNull()
+    expect(marmotWrapper).toHaveAttribute(
+      'data-home-marmot-hover-active',
+      'true',
+    )
+  })
+
+  it('keeps the marmot hover pose inactive when home hover is disabled', () => {
+    const { container } = renderHomePage({
+      homeHoverRegion: 'mascot',
+      isHomeInteractive: false,
+    })
+
+    const marmotWrapper = container.querySelector('[data-home-marmot-wrapper]')
+
+    expect(marmotWrapper).not.toBeNull()
+    expect(marmotWrapper).toHaveAttribute(
+      'data-home-marmot-hover-active',
+      'false',
+    )
   })
 
   it('clears the roots hover region on blur and mouse leave', () => {

@@ -1,4 +1,4 @@
-import { render } from '@/__tests__/testUtils'
+import { fireEvent, render } from '@/__tests__/testUtils'
 import { MemoryRouter } from 'react-router'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import NavMenu from '@/app/layout/NavMenu'
@@ -70,6 +70,19 @@ describe('NavMenu', () => {
         }
       }
 
+      if (text === 'Contact') {
+        return {
+          x: 310,
+          y: 0,
+          width: 130,
+          height: 62,
+          top: 0,
+          left: 310,
+          right: 440,
+          bottom: 62,
+        }
+      }
+
       return {
         x: 0,
         y: 0,
@@ -127,5 +140,66 @@ describe('NavMenu', () => {
     expect(navContent?.style.getPropertyValue('--pill-w')).toBe('90px')
     expect(navContent?.style.getPropertyValue('--pill-h')).toBe('62px')
     expect(navContent?.style.getPropertyValue('--pill-o')).toBe('1')
+  })
+
+  it('renders Contact as a trailing reveal link outside the primary nav group', () => {
+    const { container } = renderNavMenu('/about')
+    const primaryLinks = Array.from(container.querySelectorAll('ul a')).map(
+      (link) => link.textContent,
+    )
+    const contactLink = Array.from(container.querySelectorAll('a')).find(
+      (link) => link.textContent === 'Contact',
+    )
+
+    expect(primaryLinks).toEqual(['About', 'Services', 'Work'])
+    expect(contactLink).toHaveAttribute('href', '/contact')
+  })
+
+  it('uses one shared nav track behind the primary links and Contact reveal', () => {
+    const { container } = renderNavMenu('/about')
+    const navContent = container.querySelector('nav > div')
+    const primaryNav = container.querySelector('ul')
+    const contactReveal = container.querySelector('[data-contact-reveal]')
+
+    expect(getComputedStyle(navContent).backgroundColor).toBe(
+      'rgb(165, 50, 19)',
+    )
+    expect(getComputedStyle(primaryNav).backgroundColor).toBe(
+      'rgba(0, 0, 0, 0)',
+    )
+    expect(getComputedStyle(contactReveal).backgroundColor).toBe(
+      'rgba(0, 0, 0, 0)',
+    )
+  })
+
+  it('marks the trailing Contact link current and hides the active pill on Contact', () => {
+    const { container } = renderNavMenu('/contact')
+    const navContent = container.querySelector('nav > div')
+    const contactLink = Array.from(container.querySelectorAll('a')).find(
+      (link) => link.textContent === 'Contact',
+    )
+
+    expect(contactLink).toHaveAttribute('aria-current', 'page')
+    expect(navContent?.style.getPropertyValue('--pill-o')).toBe('0')
+  })
+
+  it('removes nav focus after a link click and keeps the reveal collapsed until re-entry', () => {
+    const { container } = renderNavMenu('/about')
+    const navContent = container.querySelector('nav > div')
+    const contactLink = Array.from(container.querySelectorAll('a')).find(
+      (link) => link.textContent === 'Contact',
+    )
+
+    contactLink.focus()
+    expect(document.activeElement).toBe(contactLink)
+
+    fireEvent.click(contactLink)
+
+    expect(document.activeElement).not.toBe(contactLink)
+    expect(navContent).toHaveAttribute('data-click-collapsed', 'true')
+
+    fireEvent.pointerLeave(navContent)
+
+    expect(navContent).not.toHaveAttribute('data-click-collapsed')
   })
 })
