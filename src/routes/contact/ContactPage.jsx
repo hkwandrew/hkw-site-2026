@@ -4,16 +4,12 @@ import CloseButton from '@/shared/ui/CloseButton'
 import FormField from '@/shared/ui/FormField'
 import { validateContact } from './validateContact'
 import {
+  CloseWrapper,
   ContactForm,
-  DesktopCloseWrapper,
-  DesktopPanel,
-  DesktopStage,
+  Panel,
   Page,
-  PhonePanel,
-  PhoneStage,
-  PhoneSubtitle,
-  PhoneTitle,
   RequiredNote,
+  Stage,
   SubmitButton,
   SubmitRow,
   Subtitle,
@@ -39,13 +35,12 @@ const initialValues = {
 }
 
 
-function ContactFormFields({ layout, values, errors, onChange, onSubmit }) {
+function ContactFormFields({ values, errors, onChange, onSubmit }) {
   return (
-    <ContactForm $layout={layout} noValidate onSubmit={onSubmit}>
+    <ContactForm noValidate onSubmit={onSubmit}>
       <FormField
         label='PROJECT TYPE'
         type='select'
-        layout={layout}
         name='projectType'
         value={values.projectType}
         onChange={onChange}
@@ -54,7 +49,6 @@ function ContactFormFields({ layout, values, errors, onChange, onSubmit }) {
       <FormField
         label='ENTER NAME'
         required
-        layout={layout}
         name='name'
         value={values.name}
         onChange={onChange}
@@ -63,7 +57,6 @@ function ContactFormFields({ layout, values, errors, onChange, onSubmit }) {
       />
       <FormField
         label='ORGANIZATION'
-        layout={layout}
         name='organization'
         value={values.organization}
         onChange={onChange}
@@ -73,7 +66,6 @@ function ContactFormFields({ layout, values, errors, onChange, onSubmit }) {
         label='ENTER EMAIL ADDRESS'
         type='email'
         required
-        layout={layout}
         name='email'
         value={values.email}
         onChange={onChange}
@@ -84,7 +76,6 @@ function ContactFormFields({ layout, values, errors, onChange, onSubmit }) {
       />
       <FormField
         label='ENTER WEBSITE, IF APPLICABLE'
-        layout={layout}
         name='website'
         value={values.website}
         onChange={onChange}
@@ -93,17 +84,16 @@ function ContactFormFields({ layout, values, errors, onChange, onSubmit }) {
       <FormField
         label='TELL US ABOUT YOUR PROJECT'
         type='textarea'
-        layout={layout}
         name='message'
         value={values.message}
         onChange={onChange}
       />
-      <SubmitRow $layout={layout}>
+      <SubmitRow>
         <SubmitButton variant='send' type='submit'>
           SEND MESSAGE
         </SubmitButton>
       </SubmitRow>
-      <RequiredNote $layout={layout}>* REQUIRED</RequiredNote>
+      <RequiredNote>* REQUIRED</RequiredNote>
     </ContactForm>
   )
 }
@@ -152,40 +142,23 @@ export default function Contact({ onClose } = {}) {
 
   return (
     <Page>
-      <DesktopStage aria-label='Contact form'>
-        <DesktopPanel>
-          <DesktopCloseWrapper>
+      <Stage aria-label='Contact form'>
+        <Panel>
+          <CloseWrapper>
             <CloseButton onClick={handleClose} />
-          </DesktopCloseWrapper>
+          </CloseWrapper>
           <Title>Get In Touch</Title>
           <Subtitle>
             Fill out the form below and we&apos;ll follow up soon.
           </Subtitle>
           <ContactFormFields
-            layout='desktop'
             values={values}
             errors={errors}
             onChange={handleChange}
             onSubmit={handleSubmit}
           />
-        </DesktopPanel>
-      </DesktopStage>
-
-      <PhoneStage aria-label='Contact form mobile'>
-        <PhonePanel>
-          <PhoneTitle>GET IN TOUCH</PhoneTitle>
-          <PhoneSubtitle>
-            Fill out the form below and we&apos;ll follow up soon.
-          </PhoneSubtitle>
-          <ContactFormFields
-            layout='phone'
-            values={values}
-            errors={errors}
-            onChange={handleChange}
-            onSubmit={handleSubmit}
-          />
-        </PhonePanel>
-      </PhoneStage>
+        </Panel>
+      </Stage>
     </Page>
   )
 }

@@ -64,7 +64,7 @@ export const HOME_SCENE_STATE = {
     },
   },
   whiteSand: {
-    container: { x: 2005, y: 1800 },
+    container: { x: '100%', y: 1800 },
     wrapper: { scaleX: 1, scaleY: 1 },
   },
   dirtLayer: {

@@ -15,33 +15,48 @@ const LabelRow = styled.div`
   justify-content: space-between;
   gap: 12px;
   min-height: 24px;
+
+  @media (max-width: 767px) {
+    min-height: 19px;
+  }
 `
 
 const FieldLabel = styled.label`
   ${applyTypography('label')}
   color: ${({ theme }) => theme.colors.white};
+
+  @media (max-width: 767px) {
+    font-size: 14px;
+    line-height: 18px;
+    letter-spacing: 1.4px;
+  }
 `
 
 const ErrorText = styled.span`
-  color: ${({ theme }) => theme.colors.yellow.light};
+  color: ${({ theme }) => theme.colors.peach};
   font-size: 14px;
   font-style: italic;
-  font-variation-settings: 'wdth' 87;
-  line-height: 1.1;
+  font-variation-settings:
+    'wdth' ${({ theme }) => theme.font.width.semicondensed},
+    'slnt' ${({ theme }) => theme.font.slant.italic};
   text-align: right;
   white-space: nowrap;
 `
 
+const invalidControlStyles = css`
+  border-color: ${({ theme }) => theme.colors.brown.brick};
+  background: ${({ theme }) => theme.colors.peach};
+`
+
 const controlBase = css`
   width: 100%;
-  min-height: 54px;
-  padding: 10px 20px;
+  height: 54px;
+  padding: 10px 28px 12px;
   border: 2px solid transparent;
-  border-radius: 9999px;
+  border-radius: 99px;
   outline: 0;
   font-family: inherit;
   font-size: 16px;
-  line-height: 1;
   color: ${({ theme }) => theme.colors.blue.dark};
   background: ${({ theme }) => theme.colors.white};
   -webkit-appearance: none;
@@ -50,14 +65,20 @@ const controlBase = css`
     border-color 0.2s ease,
     background-color 0.2s ease;
 
+  &:focus,
+  &:focus-visible {
+    ${invalidControlStyles}
+  }
+
   &::placeholder {
+    line-height: 1.875;
     color: rgba(28, 45, 56, 0.7);
   }
-`
 
-const invalidControlStyles = css`
-  border-color: ${({ theme }) => theme.colors.brown.brick};
-  background: ${({ theme }) => theme.colors.peach};
+  @media (max-width: 767px) {
+    height: 40px;
+    padding: 8px 24px 10px;
+  }
 `
 
 const StyledInput = styled.input`
@@ -73,6 +94,11 @@ const StyledTextarea = styled.textarea`
   padding-top: 14px;
   padding-bottom: 14px;
   ${({ $invalid }) => $invalid && invalidControlStyles}
+
+  @media (max-width: 767px) {
+    min-height: 80px;
+    border-radius: 20px;
+  }
 `
 
 const SelectControl = styled.div`
@@ -101,16 +127,21 @@ const SelectTrigger = styled.button`
   width: 100%;
   cursor: pointer;
   text-align: left;
-  line-height: ${({ $layout }) => ($layout === 'desktop' ? '30px' : '1')};
-  padding-top: ${({ $layout }) => ($layout === 'desktop' ? '10px' : '10px')};
-  padding-right: ${({ $layout }) => ($layout === 'desktop' ? '72px' : '56px')};
-  padding-bottom: ${({ $layout }) => ($layout === 'desktop' ? '10px' : '10px')};
-  padding-left: ${({ $layout }) => ($layout === 'desktop' ? '27px' : '20px')};
-  ${({ $invalid }) => $invalid && invalidControlStyles}
+  line-height: 30px;
+  padding: 10px 72px 10px 27px;
+  ${({ $active, $invalid }) => ($active || $invalid) && invalidControlStyles}
 
   &:focus-visible {
     outline: 2px solid ${({ theme }) => theme.colors.yellow.gold};
     outline-offset: 2px;
+  }
+
+  @media (max-width: 767px) {
+    line-height: 1;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 56px;
+    padding-left: 20px;
   }
 `
 
@@ -127,20 +158,26 @@ const TriggerValue = styled.span`
 const TriggerCaret = styled.span`
   position: absolute;
   top: 50%;
-  right: ${({ $layout }) => ($layout === 'desktop' ? '23px' : '20px')};
+  right: 23px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: ${({ $layout }) => ($layout === 'desktop' ? '24px' : '18px')};
-  height: ${({ $layout }) => ($layout === 'desktop' ? '15px' : '11px')};
+  width: 24px;
+  height: 15px;
   color: ${({ theme }) => theme.colors.blue.dark};
   pointer-events: none;
-  transform: translateY(-50%) rotate(${({ $open }) => ($open ? '180deg' : '0deg')});
+  transform: translateY(-50%) scale(${({ $open }) => ($open ? '-1' : '1')});
   transition: transform 160ms ease;
 
   svg {
     width: 100%;
     height: 100%;
+  }
+
+  @media (max-width: 767px) {
+    right: 20px;
+    width: 26px;
+    height: 16px;
   }
 `
 
@@ -153,7 +190,6 @@ const SelectMenu = styled.ul`
   flex-direction: column;
   gap: 4px;
   width: 100%;
-  max-height: ${({ $layout }) => ($layout === 'desktop' ? '308px' : '264px')};
   padding: 10px;
   overflow-y: auto;
   border-radius: 30px;
@@ -205,7 +241,6 @@ function CustomSelectField({
   fieldId,
   invalid,
   labelId,
-  layout,
   name,
   onChange,
   options,
@@ -363,7 +398,11 @@ function CustomSelectField({
   }
 
   return (
-    <SelectControl ref={rootRef} $open={isOpen} onBlurCapture={handleBlurCapture}>
+    <SelectControl
+      ref={rootRef}
+      $open={isOpen}
+      onBlurCapture={handleBlurCapture}
+    >
       <HiddenSelectInput type='hidden' name={name} value={selectedValue} />
       <SelectTrigger
         ref={triggerRef}
@@ -376,34 +415,30 @@ function CustomSelectField({
         aria-haspopup='listbox'
         aria-invalid={invalid || undefined}
         aria-labelledby={`${labelId} ${valueId}`}
+        $active={isOpen}
         $invalid={invalid}
-        $layout={layout}
         onClick={handleTriggerClick}
         onKeyDown={handleTriggerKeyDown}
       >
         <TriggerValue id={valueId} $placeholder={selectedValue === ''}>
           {selectedItem.label}
         </TriggerValue>
-        <TriggerCaret $layout={layout} $open={isOpen} aria-hidden='true'>
-          <svg viewBox='0 0 24 15' fill='none'>
+        <TriggerCaret $open={isOpen} aria-hidden='true'>
+          <svg
+            viewBox='0 0 19 13'
+            fill='none'
+            xmlns='http://www.w3.org/2000/svg'
+          >
             <path
-              d='M3 3L12 12L21 3'
-              stroke='currentColor'
-              strokeWidth='3.5'
-              strokeLinecap='round'
-              strokeLinejoin='round'
+              d='M11.3479 11.6961C10.1551 13.1516 7.93221 13.1623 6.72548 11.7183L0.632629 4.4275C-0.835138 2.67114 0.413701 0 2.70261 0C3.60626 0 4.44989 0.45245 4.94981 1.20521L7.00255 4.29608C7.22632 4.63474 7.42772 4.9492 7.60674 5.23948C7.80814 5.52975 7.97598 5.81035 8.11024 6.08128C8.26688 6.34253 8.41234 6.60377 8.5466 6.86502C8.67378 7.11248 8.80096 7.36861 8.92813 7.63342C8.94115 7.66053 8.96854 7.67779 8.9986 7.67779C9.02984 7.67779 9.05805 7.65916 9.0705 7.63051C9.1769 7.38559 9.29318 7.14494 9.41933 6.90856C9.5536 6.65699 9.69905 6.40058 9.8557 6.13933C10.0123 5.86841 10.1914 5.58297 10.3928 5.28302C10.5942 4.98307 10.8179 4.66376 11.0641 4.32511L13.2028 1.15748C13.6915 0.43375 14.5077 0 15.381 0C17.5991 0 18.8197 2.57833 17.4138 4.29398L11.3479 11.6961Z'
+              fill='#1C2D38'
             />
           </svg>
         </TriggerCaret>
       </SelectTrigger>
 
       {isOpen ? (
-        <SelectMenu
-          id={listboxId}
-          role='listbox'
-          aria-labelledby={labelId}
-          $layout={layout}
-        >
+        <SelectMenu id={listboxId} role='listbox' aria-labelledby={labelId}>
           {items.map((item, index) => {
             const isSelected = item.value === selectedValue
             const isActive = index === activeIndex
@@ -442,7 +477,6 @@ export default function FormField({
   required,
   options,
   errorText,
-  layout = 'desktop',
   id,
   name,
   ...props
@@ -464,7 +498,6 @@ export default function FormField({
     'aria-invalid': invalid || undefined,
     'aria-describedby': describedBy,
     $invalid: invalid,
-    $layout: layout,
     ...props,
   }
 
@@ -486,7 +519,6 @@ export default function FormField({
           fieldId={fieldId}
           invalid={invalid}
           labelId={labelId}
-          layout={layout}
           name={name}
           onChange={props.onChange}
           options={options}

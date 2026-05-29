@@ -12,9 +12,15 @@ export const CONTACT_SCENE_STATE = {
     wrapper: { scaleX: 1.05, scaleY: 1 },
     pathD:
       'M1404 926.001C1200.5 793.5 1154.5 926.001 1066.5 926.001C996.5 926 814.5 739.501 539.5 825C241.501 722 -1235.5 1152 1051 1280.5C2186 629.001 1530.5 1028 1404 926.001Z',
+    viewports: {
+      mobile: {
+        container: { x: 1144.21, y: '90%' },
+        wrapper: { scaleX: 1.3, scaleY: 2 },
+      },
+    },
   },
   goldMountain: {
-    container: { x: 2023.544812, y: 1798 },
+    container: { x: 2023.544812, y: '400%' },
     wrapper: { scaleX: 0.8, scaleY: 0.8 },
     pathD:
       'M1158,364.374c144.44-26.581,288.87-64.466,488.19-8.327C1716,345,1872,364.374,1902.59,391.423c45.54,10.753,76.39-34.507,119.41-35.376c46.39-.936,118,58.953,326,35.376C3098,478,3045.5,1031,3587.5,1004.5h-3165C636.559,689.583,1158,364.374,1158,364.374Z',
@@ -24,8 +30,8 @@ export const CONTACT_SCENE_STATE = {
     wrapper: { scaleX: 8.4483, scaleY: 8.4483 },
     viewports: {
       mobile: {
-        container: { x: 1899, y: 1697 },
-        wrapper: { scaleX: 28, scaleY: 28 },
+        container: { x: 1899, y: 1437 },
+        wrapper: { scaleX: 23, scaleY: 23 },
       },
     },
   },
@@ -34,7 +40,7 @@ export const CONTACT_SCENE_STATE = {
     wrapper: { scaleX: 0.8, scaleY: 0.8 },
   },
   treeMountain: {
-    container: { x: 55.680149, y: '300%' },
+    container: { x: 55.680149, y: '320%' },
     wrapper: { scaleX: 0.8, scaleY: 0.8 },
   },
   upperField: {
@@ -42,11 +48,11 @@ export const CONTACT_SCENE_STATE = {
     wrapper: { scaleX: 0.8, scaleY: 0.8 },
   },
   whiteSand: {
-    container: { x: 2005, y: 1800 },
+    container: { x: '100%', y: 1800 },
     wrapper: { scaleX: 1, scaleY: 1 },
   },
   dirtLayer: {
-    container: { x: 1181, y: '300%' },
+    container: { x: 1181, y: '400%' },
     wrapper: { scaleX: 1, scaleY: 1 },
   },
 }

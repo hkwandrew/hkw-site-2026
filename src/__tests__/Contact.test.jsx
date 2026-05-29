@@ -45,24 +45,27 @@ describe('Contact page', () => {
     expect(screen.getByText('Get In Touch')).toBeInTheDocument()
   })
 
-  it('renders form fields', () => {
-    renderContact()
-    expect(screen.getAllByLabelText(/name/i).length).toBeGreaterThan(0)
-    expect(screen.getAllByLabelText(/email/i).length).toBeGreaterThan(0)
+  it('renders one form field tree', () => {
+    const { container } = renderContact()
+
+    expect(container.querySelectorAll('form')).toHaveLength(1)
+    expect(screen.getAllByLabelText(/enter name/i)).toHaveLength(1)
+    expect(screen.getAllByLabelText(/enter email address/i)).toHaveLength(1)
+    expect(screen.getAllByRole('combobox', { name: /project type/i })).toHaveLength(1)
   })
 
   it('uses the shared scene sun for the phone contact background', () => {
     renderContact()
 
-    const phoneStage = screen.getByLabelText('Contact form mobile')
+    const contactStage = screen.getByLabelText('Contact form')
     const styles = getStyleText()
-    const phoneStageClassName = Array.from(phoneStage.classList).find(
+    const contactStageClassName = Array.from(contactStage.classList).find(
       (className) => styles.includes(`.${className}`),
     )
 
-    expect(phoneStageClassName).toBeDefined()
+    expect(contactStageClassName).toBeDefined()
     expect(styles).not.toMatch(
-      new RegExp(`\\.${escapeRegExp(phoneStageClassName)}::?before`),
+      new RegExp(`\\.${escapeRegExp(contactStageClassName)}::?before`),
     )
     expect(CONTACT_SCENE_STATE.sun.viewports.mobile.wrapper.scaleX).toBeGreaterThan(
       CONTACT_SCENE_STATE.sun.wrapper.scaleX,
@@ -74,6 +77,29 @@ describe('Contact page', () => {
     const sendButtons = screen.getAllByRole('button', { name: /send message/i })
     fireEvent.submit(sendButtons[0].closest('form'))
     expect(screen.getAllByText('Please fill out this field.').length).toBeGreaterThan(0)
+  })
+
+  it('applies Figma validation and active field styling on desktop', () => {
+    renderContact()
+
+    fireEvent.submit(screen.getByRole('button', { name: /send message/i }).closest('form'))
+
+    const nameInput = screen.getByLabelText(/enter name/i)
+    const errorText = screen.getAllByText('Please fill out this field.')[0]
+    const nameStyles = getComputedStyle(nameInput)
+    const errorStyles = getComputedStyle(errorText)
+
+    expect(nameInput).toHaveAttribute('aria-invalid', 'true')
+    expect(nameStyles.backgroundColor).toBe('rgb(254, 227, 202)')
+    expect(nameStyles.borderColor).toBe('rgb(111, 27, 0)')
+    expect(errorStyles.color).toBe('rgb(254, 227, 202)')
+
+    const projectType = screen.getByRole('combobox', { name: /project type/i })
+    fireEvent.click(projectType)
+
+    const projectTypeStyles = getComputedStyle(projectType)
+    expect(projectTypeStyles.backgroundColor).toBe('rgb(254, 227, 202)')
+    expect(projectTypeStyles.borderColor).toBe('rgb(111, 27, 0)')
   })
 
   it('renders a desktop close button on the contact route', () => {

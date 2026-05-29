@@ -173,6 +173,7 @@ const Header = ({ contentPathname, isPageLabelReady = true, navPathname }) => {
   const isAboutPage = contentPath === '/about'
   const isRootsPage = contentPath === '/roots'
   const isHomePage = contentPath === '/'
+  const isContactPage = contentPath === '/contact'
   const isPageLabelActive = isPageLabelReady
   const isPhoneViewport = usePhoneViewport(theme.breakpoints.mobile)
 
@@ -225,6 +226,7 @@ const Header = ({ contentPathname, isPageLabelReady = true, navPathname }) => {
           isHomePage={isHomePage}
           isServicesPage={isServicesPage}
           isWorkPage={isWorkPage}
+          isContactPage={isContactPage}
         />
       ) : (
         <NavMenu activePathname={activeNavPath} />

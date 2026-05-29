@@ -13,7 +13,11 @@ const StyledButton = styled.button`
   cursor: pointer;
 
   &:hover {
-    background: ${({ theme }) => theme.colors.orange.base};
+    background: ${({ theme }) => theme.colors.yellow.light};
+
+    svg path {
+      stroke: ${({ theme }) => theme.colors.orange.base};
+    }
   }
 
   &:focus-visible {
@@ -25,8 +29,13 @@ const StyledButton = styled.button`
 export default function CloseButton({ onClick, ...props }) {
   return (
     <StyledButton type='button' onClick={onClick} aria-label='Close' {...props}>
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-        <path d="M4 4L14 14M14 4L4 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <svg width='18' height='18' viewBox='0 0 18 18' fill='none'>
+        <path
+          d='M4 4L14 14M14 4L4 14'
+          stroke='currentColor'
+          strokeWidth='2'
+          strokeLinecap='round'
+        />
       </svg>
     </StyledButton>
   )

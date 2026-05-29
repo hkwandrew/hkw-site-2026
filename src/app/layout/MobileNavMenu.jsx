@@ -19,8 +19,14 @@ const ToggleButton = styled.button`
     $isRootsPage ? theme.colors.white : theme.colors.blue.dark};
   pointer-events: auto;
   z-index: 90;
-  translate: ${({ $isRootsPage, $isHomePage, $isServicesPage, $isWorkPage }) =>
-    $isRootsPage || $isHomePage || $isWorkPage
+  translate: ${({
+    $isRootsPage,
+    $isHomePage,
+    $isServicesPage,
+    $isWorkPage,
+    $isContactPage,
+  }) =>
+    $isRootsPage || $isHomePage || $isWorkPage || $isContactPage
       ? '0 0'
       : $isServicesPage
         ? '0 -24px'
@@ -146,6 +152,7 @@ const MobileNavMenu = ({
   isHomePage = false,
   isServicesPage = false,
   isWorkPage = false,
+  isContactPage = false,
 }) => {
   const location = useLocation()
   const { transitionSceneToPath } = usePageSceneTransition()
@@ -271,6 +278,7 @@ const MobileNavMenu = ({
         $isHomePage={isHomePage}
         $isServicesPage={isServicesPage}
         $isWorkPage={isWorkPage}
+        $isContactPage={isContactPage}
         onClick={() => setIsOpen((value) => !value)}
       >
         <svg

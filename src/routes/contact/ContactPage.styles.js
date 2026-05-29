@@ -13,113 +13,130 @@ export const Page = styled.section`
   overflow-y: auto;
 `
 
-export const DesktopStage = styled.section`
+export const Stage = styled.section`
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100dvh;
 
   @media (max-width: ${PHONE_BREAKPOINT}) {
-    display: none;
+    display: block;
+    position: relative;
+    padding: 42px 20px 28px;
   }
 `
 
-export const DesktopPanel = styled.div`
+export const Panel = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 365px;
   overflow: visible;
+
+  @media (max-width: ${PHONE_BREAKPOINT}) {
+    z-index: 1;
+    top: 24px;
+    width: 100%;
+    min-height: calc(100dvh - 148px);
+  }
 `
 
-export const DesktopCloseWrapper = styled.div`
+export const CloseWrapper = styled.div`
   position: absolute;
   top: -55px;
   left: 50%;
   transform: translateX(-50%);
+
+  @media (max-width: ${PHONE_BREAKPOINT}) {
+    display: none;
+  }
 `
 
 export const Title = styled.h1`
   margin: 0;
-  color: ${({ theme }) => theme.colors.yellow.light};
+  color: ${({ theme }) => theme.colors.peach};
   text-align: center;
   ${applyTypography('h4')}
   font-variation-settings:
     'wdth' ${({ theme }) => theme.font.width.condensed},
     'wght' ${({ theme }) => theme.font.weight.medium};
   text-transform: uppercase;
+  line-height: normal;
+  font-size: 40px;
+  letter-spacing: unset;
+
+  @media (max-width: ${PHONE_BREAKPOINT}) {
+    ${applyTypography('pillButton')}
+    color: ${({ theme }) => theme.colors.yellow.light};
+    text-box: unset !important;
+  }
 `
 
 export const Subtitle = styled.p`
+  margin: 8px 0 0;
   color: ${({ theme }) => theme.colors.white};
   text-align: center;
-  ${applyTypography('bodySmall')}
+  font-size: 16px;
+  font-variation-settings:
+    'wdth' ${({ theme }) => theme.font.width.regular},
+    'wght' ${({ theme }) => theme.font.weight.regular};
   line-height: calc(29 / 16);
-`
-
-export const ContactForm = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ $layout }) => ($layout === 'phone' ? '14px' : '8px')};
-  width: ${({ $layout }) => ($layout === 'phone' ? '300px' : '365px')};
-  margin-top: ${({ $layout }) => ($layout === 'phone' ? '18px' : '31px')};
-`
-
-export const SubmitRow = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-top: ${({ $layout }) => ($layout === 'phone' ? '4px' : '16px')};
-`
-
-export const SubmitButton = styled(PillButton)`
-  width: ${({ theme }) => theme.components.formButton.width};
-  min-width: ${({ theme }) => theme.components.formButton.width};
-  height: ${({ theme }) => theme.components.formButton.height};
-`
-
-export const RequiredNote = styled.p`
-  margin: ${({ $layout }) => ($layout === 'phone' ? '2px 0 0' : '14px 0 0')};
-  color: ${({ theme }) => theme.colors.white};
-  text-align: center;
-  ${applyTypography('label')}
-`
-
-export const PhoneStage = styled.section`
-  display: none;
 
   @media (max-width: ${PHONE_BREAKPOINT}) {
-    display: block;
-    position: relative;
-    min-height: 100dvh;
-    padding: 42px 20px 28px;
-  }
-`
-
-export const PhonePanel = styled.div`
-  display: none;
-
-  @media (max-width: ${PHONE_BREAKPOINT}) {
-    position: relative;
-    z-index: 1;
-    top: 42px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: calc(100dvh - 148px);
-  }
-`
-
-export const PhoneSubtitle = styled(Subtitle)`
-  @media (max-width: ${PHONE_BREAKPOINT}) {
-    margin-top: 6px;
+    margin: 6px 0 0;
     font-size: 14px;
     line-height: 1.42857;
   }
 `
 
-export const PhoneTitle = styled(Title)`
+export const ContactForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 365px;
+  margin-top: 48px;
+
   @media (max-width: ${PHONE_BREAKPOINT}) {
-    ${applyTypography('pillButton')}
+    gap: 0;
+    width: 300px;
+    margin-top: 18px;
+  }
+`
+
+export const SubmitRow = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+
+  @media (max-width: ${PHONE_BREAKPOINT}) {
+    margin-top: 12px;
+  }
+`
+
+export const SubmitButton = styled(PillButton)`
+  width: ${({ theme }) => theme.components.formButton.width};
+  min-width: ${({ theme }) => theme.components.formButton.width};
+  padding-inline: 30px;
+  height: ${({ theme }) => theme.components.formButton.height};
+  color: ${({ theme }) => theme.colors.white};
+  text-box: trim-both cap alphabetic;
+
+  @media (max-width: ${PHONE_BREAKPOINT}) {
+    font-size: 16px;
+  }
+`
+
+export const RequiredNote = styled.p`
+  margin: 14px 0 0;
+  color: ${({ theme }) => theme.colors.white};
+  text-align: center;
+  ${applyTypography('label')}
+
+  @media (max-width: ${PHONE_BREAKPOINT}) {
+    margin-top: 2px;
+    font-size: 14px;
+    line-height: 24px;
+    letter-spacing: 1.4px;
   }
 `
