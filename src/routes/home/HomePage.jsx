@@ -40,9 +40,14 @@ export default function Home() {
     setHomeHoverRegion,
   } = useHomeHover()
   const canInteractWithHomeHover = isHomeInteractive ?? isHome
+  const marmotWrapperRef = useRef(null)
   const isStumpHoverActive =
     isRootsTransitionActive ||
     (canInteractWithHomeHover && homeHoverRegion === HOME_HOVER_REGION.mascot)
+  const isMarmotHoverActive =
+    !isRootsTransitionActive &&
+    canInteractWithHomeHover &&
+    homeHoverRegion === HOME_HOVER_REGION.mascot
 
   useEffect(
     () => () => {
@@ -80,6 +85,44 @@ export default function Home() {
         state: { [ROOTS_ENTRY_STATE_KEY]: true },
       })
     }, ROOTS_DROP_DURATION_MS)
+  }
+
+  const resetMarmotPointerState = () => {
+    const wrapper = marmotWrapperRef.current
+    if (!wrapper) return
+
+    wrapper.style.setProperty('--marmot-hover-x', '0px')
+    wrapper.style.setProperty('--marmot-hover-y', '0px')
+  }
+
+  const handleMarmotPointerMove = (event) => {
+    if (!canInteractWithHomeHover || isRootsTransitionActive) return
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+
+    if (prefersReducedMotion) return
+
+    const wrapper = marmotWrapperRef.current
+    if (!wrapper) return
+
+    const bounds = event.currentTarget.getBoundingClientRect()
+    if (!bounds.width || !bounds.height) return
+
+    const pointerX = (event.clientX - bounds.left) / bounds.width
+    const pointerY = (event.clientY - bounds.top) / bounds.height
+    const clampedX = Math.max(-1, Math.min(1, (pointerX - 0.5) * 2))
+    const clampedY = Math.max(-1, Math.min(1, (pointerY - 0.5) * 2))
+
+    wrapper.style.setProperty(
+      '--marmot-hover-x',
+      `${(clampedX * 5).toFixed(2)}px`,
+    )
+    wrapper.style.setProperty(
+      '--marmot-hover-y',
+      `${(clampedY * 4).toFixed(2)}px`,
+    )
   }
 
   return (
@@ -129,6 +172,8 @@ export default function Home() {
               }
             }}
             onBlur={() => {
+              resetMarmotPointerState()
+
               if (canInteractWithHomeHover && !isRootsTransitionActive) {
                 clearHomeHoverRegion()
               }
@@ -139,14 +184,26 @@ export default function Home() {
                 setHomeHoverRegion(HOME_HOVER_REGION.mascot)
               }
             }}
+            onMouseMove={handleMarmotPointerMove}
             onMouseLeave={() => {
+              resetMarmotPointerState()
+
               if (canInteractWithHomeHover && !isRootsTransitionActive) {
                 clearHomeHoverRegion()
               }
             }}
             $isInteractive={canInteractWithHomeHover}
+            data-home-marmot-trigger
           />
-          <MarmotCharacterWrap $isTransitioning={isRootsTransitionActive}>
+          <MarmotCharacterWrap
+            ref={marmotWrapperRef}
+            $isHoverActive={isMarmotHoverActive}
+            $isTransitioning={isRootsTransitionActive}
+            data-home-marmot-wrapper
+            data-home-marmot-hover-active={
+              isMarmotHoverActive ? 'true' : 'false'
+            }
+          >
             <HomeMarmot />
           </MarmotCharacterWrap>
         </HomeMarmotWrapper>

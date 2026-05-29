@@ -9,6 +9,9 @@ export const ROOTS_DROP_DURATION_MS = 420
 const ROOTS_DROP_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)'
 const MARMOT_BURIED_OFFSET_PX = 280
 const MARMOT_BURIED_SCALE = 0.985
+const MARMOT_HOVER_ENTER_MS = 420
+const MARMOT_HOVER_EXIT_MS = 340
+const MARMOT_HOVER_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)'
 
 // Marmot motion
 const marmotEmerge = keyframes`
@@ -55,6 +58,63 @@ const marmotIdleFloat = keyframes`
 
   50% {
     transform: translate3d(0, -3px, 0);
+  }
+`
+
+const marmotHoverWave = keyframes`
+  0%,
+  100% {
+    transform: rotate(0deg) translate3d(0, 0, 0);
+  }
+
+  34% {
+    transform: rotate(-6deg) translate3d(-1px, -2px, 0);
+  }
+
+  62% {
+    transform: rotate(4deg) translate3d(1px, 1px, 0);
+  }
+`
+
+const marmotHoverMugBob = keyframes`
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(0, -2px, 0);
+  }
+`
+
+const marmotHoverPoseFloat = keyframes`
+  0%,
+  100% {
+    transform: rotate(0deg) translate3d(0, 0, 0);
+  }
+
+  45% {
+    transform: rotate(-1.2deg) translate3d(-1px, -3px, 0);
+  }
+
+  72% {
+    transform: rotate(0.65deg) translate3d(1px, -1px, 0);
+  }
+`
+
+const marmotHoverBlink = keyframes`
+  0%,
+  88%,
+  94%,
+  100% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+
+  90%,
+  92% {
+    opacity: 1;
+    transform: scaleY(0.72);
   }
 `
 
@@ -416,12 +476,19 @@ export const HomeMarmotWrapper = styled.div`
 
   #marmot-character-intro,
   #marmot-character-idle,
+  #marmot-character-hover,
+  #marmot-hover-art,
+  #marmot-hover-wave-limb,
+  #marmot-hover-face,
+  #marmot-hover-mug,
   #left-ear,
   #right-ear,
   #left-eye-core,
   #right-eye-core,
   #left-eye-lash,
   #right-eye-lash,
+  #marmot-hover-blink,
+  #marmot-hover-blink image,
   #coffee-steam path {
     transform-box: fill-box;
     will-change: transform, opacity;
@@ -436,6 +503,41 @@ export const HomeMarmotWrapper = styled.div`
   #marmot-character-idle {
     transform-origin: center bottom;
     animation: ${marmotIdleFloat} 5.8s ease-in-out 900ms infinite;
+    transition: opacity ${MARMOT_HOVER_EXIT_MS}ms ${MARMOT_HOVER_EASE};
+  }
+
+  #marmot-character-hover {
+    pointer-events: none;
+    opacity: 0;
+    transform-origin: center bottom;
+    transform: translate3d(0, 9px, 0) scale(0.985);
+    transition:
+      opacity ${MARMOT_HOVER_EXIT_MS}ms ${MARMOT_HOVER_EASE},
+      transform ${MARMOT_HOVER_EXIT_MS}ms ${MARMOT_HOVER_EASE};
+  }
+
+  #marmot-hover-wave-limb {
+    transform-origin: 16% 86%;
+  }
+
+  #marmot-hover-face {
+    transform-origin: center;
+  }
+
+  #marmot-hover-mug {
+    transform-origin: center bottom;
+  }
+
+  #marmot-hover-art {
+    transform-origin: center bottom;
+  }
+
+  #marmot-hover-blink {
+    opacity: 1;
+  }
+
+  #marmot-hover-blink image {
+    transform-origin: center;
   }
 
   #left-ear {
@@ -484,12 +586,19 @@ export const HomeMarmotWrapper = styled.div`
   @media (prefers-reduced-motion: reduce) {
     #marmot-character-intro,
     #marmot-character-idle,
+    #marmot-character-hover,
+    #marmot-hover-art,
+    #marmot-hover-wave-limb,
+    #marmot-hover-face,
+    #marmot-hover-mug,
     #left-ear,
     #right-ear,
     #left-eye-core,
     #right-eye-core,
     #left-eye-lash,
     #right-eye-lash,
+    #marmot-hover-blink,
+    #marmot-hover-blink image,
     #coffee-steam path {
       animation: none;
       transform: none;
@@ -517,6 +626,8 @@ export const HomeMarmotWrapper = styled.div`
 `
 
 export const MarmotCharacterWrap = styled.div`
+  --marmot-hover-x: 0px;
+  --marmot-hover-y: 0px;
   position: relative;
   z-index: 1;
   transform: rotate(-0.298deg);
@@ -530,6 +641,54 @@ export const MarmotCharacterWrap = styled.div`
   #marmot-character-intro {
     transform-origin: center bottom;
   }
+
+  #marmot-character-idle {
+    opacity: ${({ $isHoverActive }) => ($isHoverActive ? 0 : 1)};
+    transition-duration: ${({ $isHoverActive }) =>
+      $isHoverActive
+        ? `${MARMOT_HOVER_ENTER_MS}ms`
+        : `${MARMOT_HOVER_EXIT_MS}ms`};
+  }
+
+  #marmot-character-hover {
+    opacity: ${({ $isHoverActive }) => ($isHoverActive ? 1 : 0)};
+    transform: ${({ $isHoverActive }) =>
+      $isHoverActive
+        ? `translate3d(
+            var(--marmot-hover-x),
+            var(--marmot-hover-y),
+            0
+          ) scale(1)`
+        : 'translate3d(0, 9px, 0) scale(0.985)'};
+    transition-duration: ${({ $isHoverActive }) =>
+      $isHoverActive
+        ? `${MARMOT_HOVER_ENTER_MS}ms`
+        : `${MARMOT_HOVER_EXIT_MS}ms`};
+  }
+
+  ${({ $isHoverActive }) =>
+    $isHoverActive &&
+    css`
+      #marmot-hover-wave-limb {
+        animation: ${marmotHoverWave} 1.08s ease-in-out infinite;
+      }
+
+      #marmot-hover-art {
+        animation: ${marmotHoverPoseFloat} 2.6s ease-in-out infinite;
+      }
+
+      #marmot-hover-mug {
+        animation: ${marmotHoverMugBob} 2.2s ease-in-out infinite;
+      }
+
+      #marmot-hover-blink {
+        opacity: 1;
+      }
+
+      #marmot-hover-blink image {
+        animation: ${marmotHoverBlink} 5.6s steps(1, end) infinite;
+      }
+    `}
 
   ${({ $isTransitioning }) =>
     $isTransitioning
@@ -550,6 +709,16 @@ export const MarmotCharacterWrap = styled.div`
             animation: none;
             transform: none;
           }
+
+          #marmot-character-idle {
+            opacity: 1;
+          }
+
+          #marmot-character-hover {
+            opacity: 0;
+            transition: none;
+            visibility: hidden;
+          }
         `
       : css`
           #marmot-character-intro {
@@ -562,6 +731,21 @@ export const MarmotCharacterWrap = styled.div`
       transition: none;
       transform: none;
       opacity: 1;
+    }
+
+    #marmot-character-hover,
+    #marmot-hover-art,
+    #marmot-hover-wave-limb,
+    #marmot-hover-face,
+    #marmot-hover-mug,
+    #marmot-hover-blink,
+    #marmot-hover-blink image {
+      animation: none;
+      transition: none;
+    }
+
+    #marmot-character-hover {
+      transform: none;
     }
   }
 
@@ -599,11 +783,12 @@ export const StumpHoverOverlay = styled.div`
 
 export const StumpTrigger = styled.button`
   position: absolute;
-  right: 168px;
-  bottom: 18px;
-  width: 226px;
-  height: 172px;
-  border-radius: 50%;
+  top: 0;
+  left: 118px;
+  width: 436px;
+  height: 376px;
+  z-index: 3;
+  border-radius: 46% 42% 50% 54%;
   background: transparent;
   pointer-events: ${({ $isInteractive }) => ($isInteractive ? 'auto' : 'none')};
   cursor: ${({ $isInteractive }) => ($isInteractive ? 'pointer' : 'default')};
@@ -614,16 +799,16 @@ export const StumpTrigger = styled.button`
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    right: 130px;
-    bottom: 118px;
-    width: 182px;
-    height: 142px;
+    top: 7px;
+    left: 48px;
+    width: 342px;
+    height: 276px;
   }
 
   @media (max-width: ${({ theme }) =>
       theme.breakpoints.mobile}) and (max-height: 760px) {
-    right: 124px;
-    bottom: 93px;
+    top: 4px;
+    left: 40px;
   }
 `
 

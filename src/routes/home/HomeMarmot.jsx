@@ -1,3 +1,5 @@
+import HomeMarmotHoverPose from './HomeMarmotHoverPose'
+
 const HomeMarmot = () => {
   return (
     <svg viewBox='0 0 684 457' fill='none' xmlns='http://www.w3.org/2000/svg'>
@@ -246,6 +248,7 @@ const HomeMarmot = () => {
           </g>
         </g>
       </g>
+      <HomeMarmotHoverPose />
       <g id='mound-occluder'>
         <path
           d='  M10.7189 422.663L102.150744 250.3024C269.337744 289.4245 467.837744 284.9245 553.925744 247.955919L657.559744 419.303L10.7189 422.663Z'
