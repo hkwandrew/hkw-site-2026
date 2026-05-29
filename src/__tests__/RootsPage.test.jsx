@@ -341,6 +341,66 @@ describe('RootsPage', () => {
     })
   })
 
+  it('opens the women of color candidates dialog with configured Figma artwork', () => {
+    renderRootsRoute()
+
+    const itemIndex = ROOTS_PORTFOLIO_ITEMS.findIndex(
+      ({ id }) => id === 'women-of-color-candidates',
+    )
+    const item = ROOTS_PORTFOLIO_ITEMS[itemIndex]
+    const trigger = screen.getByRole('button', {
+      name: /open women of color candidates/i,
+    })
+
+    expect(ROOTS_PORTFOLIO_ITEMS[itemIndex - 1].id).toBe('fyre')
+    expect(item).toMatchObject({
+      title: 'Women of Color Candidates',
+      desktopFrame: {
+        left: 1267.75,
+        top: 557.01,
+        width: 143.189,
+      },
+      artworkTop: 68.7,
+      artworkLeft: -64,
+      artworkWidth: 1075,
+      artworkHeight: 717,
+    })
+    expect(trigger).toHaveAttribute(
+      'data-roots-example',
+      'women-of-color-candidates',
+    )
+
+    fireEvent.click(trigger)
+
+    const dialog = screen.getByRole('dialog', {
+      name: /women of color candidates/i,
+    })
+    const artwork = screen.getByAltText(
+      'Women of Color Candidates project artwork',
+    )
+
+    expect(dialog).toHaveAttribute(
+      'data-roots-example',
+      'women-of-color-candidates',
+    )
+    expect(dialog).toHaveTextContent(/Working with Scott Mueller/i)
+    expect(dialog).toHaveTextContent(/Nikki Lockwood/i)
+    expect(screen.getByText('Website Design')).toBeInTheDocument()
+    expect(screen.getByText('Website Development')).toBeInTheDocument()
+    expect(screen.getByText('Graphic Design')).toBeInTheDocument()
+    expect(screen.getByText('Branding')).toBeInTheDocument()
+    expect(artwork).toHaveStyle({
+      position: 'absolute',
+      top: convertCssPxToViewportUnit(`${item.artworkTop}px`),
+      left: convertCssPxToViewportUnit(`${item.artworkLeft}px`),
+      width: convertCssPxToViewportUnit(`${item.artworkWidth}px`),
+      height: convertCssPxToViewportUnit(`${item.artworkHeight}px`),
+      maxWidth: 'none',
+      maxInlineSize: 'none',
+      maxBlockSize: 'none',
+    })
+  })
+
   it('does not cap configured artwork dimensions to the stage width', () => {
     renderRootsRoute()
 
@@ -510,5 +570,10 @@ describe('RootsPage', () => {
     expect(
       screen.getByRole('button', { name: /open meals on wheels/i }),
     ).toHaveAttribute('data-roots-example', 'meals-on-wheels')
+    expect(
+      screen.getByRole('button', {
+        name: /open women of color candidates/i,
+      }),
+    ).toHaveAttribute('data-roots-example', 'women-of-color-candidates')
   })
 })

@@ -77,9 +77,9 @@ const Overlay = styled.div`
   inset: 0;
   z-index: 120;
   display: flex;
+  align-items: center;
   justify-content: center;
   overflow: hidden;
-  background: #fcfae5;
   box-shadow:
     0 22px 48px rgba(28, 45, 56, 0.28),
     inset 0 0 0 1px rgba(43, 30, 21, 0.18);
@@ -90,19 +90,21 @@ const Dialog = styled.div`
   z-index: 2;
   display: flex;
   flex-direction: column;
-  width: min(100%, 1440px);
-  min-height: 100%;
-  height: 100dvh;
+  width: calc(1440 * var(--hkw-viewport-px-unit));
+  height: calc(1024 * var(--hkw-viewport-px-unit));
   overflow: hidden;
   isolation: isolate;
+  background: #fcfae5;
   color: ${({ theme }) => theme.colors.blue.dark};
 
-  &::before {
-    content: '';
-    background: #fcfae5;
-    position: absolute;
-    inset: 0;
-    z-index: 0;
+  &[data-component='WomenOfColorCandidates'] {
+    p {
+      font-size: 18px;
+
+      @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+        font-size: 14px;
+      }
+    }
   }
 `
 
@@ -339,6 +341,7 @@ const Bio = styled.p`
   font-size: ${({ theme }) => theme.typography.formButton.size};
   line-height: 1.19;
   letter-spacing: -0.4px;
+  white-space: pre-line;
   font-weight: ${({ theme }) => theme.font.weight.medium};
   font-variation-settings:
     'wdth' ${({ theme }) => theme.font.width.regular},
@@ -411,7 +414,6 @@ const NavCluster = styled.div`
     gap: 16px;
     margin-top: auto;
     padding: 18px 0 max(10px, env(safe-area-inset-bottom));
-    background: transparent;
   }
 `
 
@@ -470,6 +472,8 @@ export default function RootsPortfolioSlider({
   const [displayItem, setDisplayItem] = useState(item)
   const [slidePhase, setSlidePhase] = useState('active')
   const FrameComponent = displayItem.FrameComponent
+  const frameComponentName =
+    FrameComponent.displayName ?? FrameComponent.name ?? displayItem.id
 
   const requestSlideChange = useCallback(
     (changeSlide) => {
@@ -580,6 +584,7 @@ export default function RootsPortfolioSlider({
         aria-modal='true'
         aria-labelledby={titleId}
         data-roots-example={displayItem.id}
+        data-component={frameComponentName}
         data-roots-example-region='dialog'
       >
         <FrameChrome aria-hidden='true'>
@@ -587,10 +592,10 @@ export default function RootsPortfolioSlider({
             src={frameLeft}
             alt=''
             data-roots-frame-edge='left'
-            $top='-47px'
+            // $top='-47px'
             $left='-177px'
             $width='205px'
-            $height='calc(100% + 289px)'
+            $height='calc(100% + 86px)'
             $mobileTop='0'
             $mobileLeft='0'
             $mobileWidth='30px'
@@ -604,7 +609,7 @@ export default function RootsPortfolioSlider({
             $top='-14px'
             $right='-177px'
             $width='205px'
-            $height='calc(100% + 256px)'
+            $height='calc(100% + 104px)'
             $mobileTop='0'
             $mobileRight='0'
             $mobileWidth='30px'
@@ -615,9 +620,9 @@ export default function RootsPortfolioSlider({
             src={frameTop}
             alt=''
             data-roots-frame-edge='top'
-            $top='-245px'
-            $left='-28px'
-            $width='calc(100% + 56px)'
+            $top='-116px'
+            // $left='-28px'
+            $width='calc(100% + 80px)'
             $height='271px'
             $mobileTop='0'
             $mobileLeft='0'
@@ -629,9 +634,9 @@ export default function RootsPortfolioSlider({
             src={frameBottom}
             alt=''
             data-roots-frame-edge='bottom'
-            $bottom='-242px'
-            $left='-28px'
-            $width='calc(100% + 56px)'
+            $bottom='-116px'
+            // $left='-28px'
+            $width='calc(100% + 64px)'
             $height='271px'
             $mobileBottom='0'
             $mobileLeft='0'

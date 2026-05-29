@@ -42,6 +42,7 @@ const StyledButton = styled.button`
     svg {
       height: 15px;
       width: 7px;
+      translate: unset;
     }
   }
 `

@@ -94,6 +94,27 @@ describe('RootsPortfolioSlider', () => {
     expect(container).not.toContainElement(dialog)
   })
 
+  it('keeps the roots scene visible outside the framed modal panel', () => {
+    renderSlider('Transparent Overlay Project')
+
+    const dialog = screen.getByRole('dialog', {
+      name: 'Transparent Overlay Project',
+    })
+    const overlay = dialog.parentElement
+    const overlayStyles = normalizeCss(getElementStyles(overlay))
+    const dialogStyles = normalizeCss(getElementStyles(dialog))
+
+    expect(overlayStyles).toContain('align-items:center')
+    expect(overlayStyles).not.toContain('background:#fcfae5')
+    expect(dialogStyles).toContain(
+      'width:calc(1440*var(--hkw-viewport-px-unit))',
+    )
+    expect(dialogStyles).toContain(
+      'height:calc(1024*var(--hkw-viewport-px-unit))',
+    )
+    expect(dialogStyles).toContain('background:#fcfae5')
+  })
+
   it('renders separate wooden frame edge chrome', () => {
     renderSlider('Framed Project')
 
@@ -113,10 +134,16 @@ describe('RootsPortfolioSlider', () => {
       frameEdges.every((edge) => edge.getAttribute('src')?.includes('.svg')),
     ).toBe(true)
     expect(normalizeCss(getElementStyles(frameEdges[0]))).toContain(
-      'height:calc(100%+calc(289*var(--hkw-viewport-px-unit)))',
+      'height:calc(100%+calc(86*var(--hkw-viewport-px-unit)))',
+    )
+    expect(normalizeCss(getElementStyles(frameEdges[0]))).toContain(
+      'z-index:1',
     )
     expect(normalizeCss(getElementStyles(frameEdges[1]))).toContain(
-      'height:calc(100%+calc(256*var(--hkw-viewport-px-unit)))',
+      'height:calc(100%+calc(104*var(--hkw-viewport-px-unit)))',
+    )
+    expect(normalizeCss(getElementStyles(frameEdges[1]))).toContain(
+      'z-index:1',
     )
     expect(normalizeCss(getElementStyles(frameEdges[0]))).toContain(
       'width:calc(30*var(--hkw-viewport-px-unit))',
@@ -134,7 +161,10 @@ describe('RootsPortfolioSlider', () => {
       'z-index:2',
     )
     expect(normalizeCss(getElementStyles(frameEdges[2]))).toContain(
-      'width:100%',
+      'left:calc(-28*var(--hkw-viewport-px-unit))',
+    )
+    expect(normalizeCss(getElementStyles(frameEdges[2]))).toContain(
+      'width:calc(100%+calc(56*var(--hkw-viewport-px-unit)))',
     )
     expect(normalizeCss(getElementStyles(frameEdges[2]))).toContain(
       'height:calc(30*var(--hkw-viewport-px-unit))',
@@ -143,7 +173,13 @@ describe('RootsPortfolioSlider', () => {
       'z-index:2',
     )
     expect(normalizeCss(getElementStyles(frameEdges[3]))).toContain(
-      'width:100%',
+      'bottom:calc(-236*var(--hkw-viewport-px-unit))',
+    )
+    expect(normalizeCss(getElementStyles(frameEdges[3]))).toContain(
+      'left:calc(-28*var(--hkw-viewport-px-unit))',
+    )
+    expect(normalizeCss(getElementStyles(frameEdges[3]))).toContain(
+      'width:calc(100%+calc(56*var(--hkw-viewport-px-unit)))',
     )
     expect(normalizeCss(getElementStyles(frameEdges[3]))).toContain(
       'height:calc(30*var(--hkw-viewport-px-unit))',

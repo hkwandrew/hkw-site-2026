@@ -1,12 +1,23 @@
+import { styled } from 'styled-components'
+
+const Sign = styled.svg`
+  width: 183px;
+  height: 175px;
+  position: absolute;
+  translate: 0 -53.6px;
+  left: -90px;
+  z-index: 0;
+`
+
 const NonProfitSign = () => {
   return (
-    <svg
-      width='183'
-      height='175'
-      viewBox='0 0 183 175'
-      fill='none'
-      xmlns='http://www.w3.org/2000/svg'
-    >
+    <Sign viewBox='0 0 183 175' fill='none' xmlns='http://www.w3.org/2000/svg'>
+      <path
+        height='175'
+        viewBox='0 0 183 175'
+        fill='none'
+        xmlns='http://www.w3.org/2000/svg'
+      />
       <path
         fill-rule='evenodd'
         clip-rule='evenodd'
@@ -31,6 +42,8 @@ const NonProfitSign = () => {
         stroke='#A4673A'
         stroke-width='0.726151'
       />
-    </svg>
+    </Sign>
   )
 }
+
+export default NonProfitSign

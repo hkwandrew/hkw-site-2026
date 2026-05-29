@@ -14,6 +14,7 @@ import CommunityDevelopmentInitiative from './CommunityDevelopmentInitiative'
 import Pjals from './Pjals'
 import CommunityBuilding from './CommunityBuilding'
 import Fyre from './Fyre'
+import WomenOfColorCandidates from './WomenOfColorCandidates'
 import SpokaneArts from './SpokaneArts'
 import MealsOnWheels from './MealsOnWheels'
 
@@ -35,6 +36,7 @@ import spokaneArtsDetail from './assets/roots-slider/spokane-arts-detail.png'
 import spokaneCommunityAgainstRacismDetail from './assets/roots-slider/spokane-community-against-racism-detail.png'
 import terrainDetail from './assets/roots-slider/terrain-detail.png'
 import watersMeetDetail from './assets/roots-slider/waters-meet-detail.png'
+import womenOfColorCandidatesDetail from './assets/roots-slider/women-of-color-candidates-detail.png'
 
 const PLACEHOLDER_COPY = 'TBD'
 const PLACEHOLDER_ROLES = ['TBD']
@@ -96,8 +98,8 @@ const ROOTS_PORTFOLIO_ITEMS = [
       'Website Development',
     ],
     desktopFrame: {
-      left: 476.03,
-      top: 172.27,
+      left: 481.44,
+      top: 152.58,
       width: 158.933,
     },
     artworkWidth: 717.463,
@@ -114,9 +116,9 @@ const ROOTS_PORTFOLIO_ITEMS = [
     bio: 'Dedicated to investigating law enforcement misconduct and addressing systemic racism in the criminal legal system, RJPMC provides families impacted by police violence with support, legal resources, and a path forward.',
     roles: ['Website Design', 'Website Development'],
     desktopFrame: {
-      left: 683.27,
+      left: 681.11,
       top: 212.6,
-      width: 141.03,
+      width: 143.189,
     },
     artworkWidth: 877.764,
     artworkHeight: 585.908,
@@ -217,9 +219,9 @@ const ROOTS_PORTFOLIO_ITEMS = [
       'Logo Design',
     ],
     desktopFrame: {
-      left: 917.18,
-      top: 351.59,
-      width: 181.894,
+      left: 869,
+      top: 349,
+      width: 138.443,
     },
     artworkWidth: 825.651,
     artworkHeight: 526.339,
@@ -253,9 +255,9 @@ const ROOTS_PORTFOLIO_ITEMS = [
     bio: "The Community Building Foundation supports the Spokane region through grant-making, women's retreat programs, and the Community Building Campus, a downtown hub offering affordable space for local organizations to grow and do their work.",
     roles: ['Website Development', 'Retainer Support'],
     desktopFrame: {
-      left: 876.96,
-      top: 567.63,
-      width: 225.713,
+      left: 849.03,
+      top: 531.96,
+      width: 183.638,
     },
     artworkWidth: 686.044,
     artworkHeight: 770.911,
@@ -271,14 +273,37 @@ const ROOTS_PORTFOLIO_ITEMS = [
     bio: 'FYRE provides a safe and welcoming space where underserved youth and young adults ages 12 to 24 can socialize, get homework done, and access the resources they need to thrive in Okanogan County.',
     roles: ['Website Design', 'Website Development'],
     desktopFrame: {
-      left: 1177.98,
-      top: 483.6,
+      left: 1061.97,
+      top: 479.05,
       width: 168.953,
     },
     artworkWidth: 807.827,
     artworkHeight: 751.094,
     artworkTop: -20,
     artworkLeft: 40,
+  },
+  {
+    id: 'women-of-color-candidates',
+    title: 'Women of Color Candidates',
+    FrameComponent: WomenOfColorCandidates,
+    detailImage: womenOfColorCandidatesDetail,
+    maxWidth: 354,
+    bio: '"Working with Scott Mueller was an incredible experience. He intentionally prioritizes supporting candidates of color, and his generosity, creativity, and patience made a huge difference in my campaign. He created a kick-ass logo, helped design a website I was truly proud of, supported social media outreach, and even helped produce hundreds of campaign buttons. As someone without established political connections or resources, his support helped me show up professionally and confidently. His work goes far beyond design — he helps elevate voices and candidates who might otherwise not have access to this level of support."\n\n- Nikki Lockwood',
+    roles: [
+      'Website Design',
+      'Website Development',
+      'Graphic Design',
+      'Branding',
+    ],
+    desktopFrame: {
+      left: 1267.75,
+      top: 557.01,
+      width: 143.189,
+    },
+    artworkWidth: 1075,
+    artworkHeight: 717,
+    artworkTop: 68.7,
+    artworkLeft: -64,
   },
   {
     id: 'terrain',
@@ -290,7 +315,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
     roles: ['Website Development', 'Marketing Support'],
     desktopFrame: {
       left: 27.92,
-      top: 667.62,
+      top: 676.62,
       width: 196,
     },
     artworkWidth: 1080.837,
@@ -307,7 +332,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
     bio: 'As a grassroots rapid-response system, Community Whistle shares whistle codes, safety guidance, and immigration hotline resources to help neighbors alert each other and respond to raids.',
     roles: ['Website Design', 'Logo Design'],
     desktopFrame: {
-      left: 501.92,
+      left: 501.12,
       top: 752.01,
       width: 139.814,
     },
@@ -325,7 +350,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
     roles: ['Website Design', 'Website Development'],
     desktopFrame: {
       left: 270.98,
-      top: 778.63,
+      top: 787.63,
       width: 176,
     },
     artworkWidth: 459.782,
@@ -367,8 +392,8 @@ const ROOTS_PORTFOLIO_ITEMS = [
       'Marketing Support',
     ],
     desktopFrame: {
-      left: 992.92,
-      top: 730.61,
+      left: 986.95,
+      top: 699.95,
       width: 166.613,
     },
     artworkWidth: 750.523,
