@@ -8,7 +8,7 @@ export default defineConfig(({ command, mode }) => {
   const shouldPublishGhPages = command === 'build' && mode === 'deploy'
 
   return {
-    base: '/hkw-site-2026/',
+    base: '/',
     plugins: [
       ...(shouldPublishGhPages ? [ghPages()] : []),
       react({
@@ -51,19 +51,22 @@ export default defineConfig(({ command, mode }) => {
           return undefined
         },
         plugins: [
-          ['@swc/plugin-styled-components', {
-            displayName: true,
-            pure: true,
-            fileName: true,
-            meaninglessFileNames: ['index', 'styles'],
-          }],
+          [
+            '@swc/plugin-styled-components',
+            {
+              displayName: true,
+              pure: true,
+              fileName: true,
+              meaninglessFileNames: ['index', 'styles'],
+            },
+          ],
         ],
       }),
       svgr({
         svgrOptions: {
           icon: false,
-        }
-      })
+        },
+      }),
     ],
     optimizeDeps: {
       // SVGR-transformed modules import react/jsx-runtime, which isn't always

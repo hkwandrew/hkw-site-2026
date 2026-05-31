@@ -2,9 +2,20 @@
 <html lang="en">
 
 <head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XGNJ5B0E55"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-XGNJ5B0E55');
+  </script>
+
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
   <link rel="preload" href="/fonts/AcuminVF.woff2" as="font" type="font/woff2" crossorigin />
   <title>HKW - Happy, Knowledgable Work</title>
   <meta name="description" content="HKW is a digital design and marketing studio based in Spokane, Washington." />
@@ -13,6 +24,7 @@
 <body>
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
+
 </body>
 
 </html>
