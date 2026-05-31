@@ -48,10 +48,7 @@ const memoFrame = (FrameComponent, displayName) => {
 
 const ApicWashingtonFrame = memoFrame(ApicWashington, 'ApicWashington')
 const CeldfFrame = memoFrame(Celdf, 'Celdf')
-const CitizenNineTwoSixFrame = memoFrame(
-  CitizenNineTwoSix,
-  'CitizenNineTwoSix',
-)
+const CitizenNineTwoSixFrame = memoFrame(CitizenNineTwoSix, 'CitizenNineTwoSix')
 const CommunityWhistleFrame = memoFrame(CommunityWhistle, 'CommunityWhistle')
 const ScarFrame = memoFrame(Scar, 'Scar')
 const WatersMeetFrame = memoFrame(WatersMeet, 'WatersMeet')
@@ -119,30 +116,6 @@ const ROOTS_PORTFOLIO_ITEMS = [
     },
     artworkWidth: 579.059,
     artworkHeight: 822.19,
-  },
-  {
-    id: 'citizen-nine26',
-    title: 'Citizen Nine26',
-    FrameComponent: CitizenNineTwoSixFrame,
-    detailImage: citizenNine26Detail,
-    maxWidth: 372,
-    bio: 'Citizen Nine26 helps everyday people navigate complex legal and civil rights challenges with confidence. Whether accessing public records or understanding their rights, they make sure community members have the tools and support they need to advocate for themselves.',
-    roles: [
-      'Logo Design',
-      'Branding',
-      'Collateral Design',
-      'Website Design',
-      'Website Development',
-    ],
-    desktopFrame: {
-      left: 481.44,
-      top: 152.58,
-      width: 158.933,
-    },
-    artworkWidth: 717.463,
-    artworkHeight: 471.771,
-    artworkTop: 160.109,
-    artworkLeft: 73.531,
   },
   {
     id: 'racial-justice',
@@ -266,6 +239,30 @@ const ROOTS_PORTFOLIO_ITEMS = [
     artworkLeft: 10,
   },
   {
+    id: 'citizen-nine26',
+    title: 'Citizen Nine26',
+    FrameComponent: CitizenNineTwoSixFrame,
+    detailImage: citizenNine26Detail,
+    maxWidth: 372,
+    bio: 'Citizen Nine26 helps everyday people navigate complex legal and civil rights challenges with confidence. Whether accessing public records or understanding their rights, they make sure community members have the tools and support they need to advocate for themselves.',
+    roles: [
+      'Logo Design',
+      'Branding',
+      'Collateral Design',
+      'Website Design',
+      'Website Development',
+    ],
+    desktopFrame: {
+      left: 481.44,
+      top: 152.58,
+      width: 158.933,
+    },
+    artworkWidth: 717.463,
+    artworkHeight: 471.771,
+    artworkTop: 160.109,
+    artworkLeft: 73.531,
+  },
+  {
     id: 'meals-on-wheels',
     title: 'Meals on Wheels',
     FrameComponent: MealsOnWheelsFrame,
@@ -361,23 +358,6 @@ const ROOTS_PORTFOLIO_ITEMS = [
     artworkLeft: -140,
   },
   {
-    id: 'community-whistle',
-    title: 'Community Whistle',
-    FrameComponent: CommunityWhistleFrame,
-    detailImage: communityWhistleDetail,
-    maxWidth: 318,
-    bio: 'As a grassroots rapid-response system, Community Whistle shares whistle codes, safety guidance, and immigration hotline resources to help neighbors alert each other and respond to raids.',
-    roles: ['Website Design', 'Logo Design'],
-    desktopFrame: {
-      left: 501.12,
-      top: 752.01,
-      width: 139.814,
-    },
-    artworkWidth: 1091.189,
-    artworkHeight: 727.548,
-    artworkTop: 0,
-  },
-  {
     id: 'spokane-arts',
     title: 'Spokane Arts',
     FrameComponent: SpokaneArtsFrame,
@@ -454,6 +434,23 @@ const ROOTS_PORTFOLIO_ITEMS = [
     artworkWidth: 730.119,
     artworkHeight: 730.119,
     artworkTop: 40,
+  },
+  {
+    id: 'community-whistle',
+    title: 'Community Whistle',
+    FrameComponent: CommunityWhistleFrame,
+    detailImage: communityWhistleDetail,
+    maxWidth: 318,
+    bio: 'As a grassroots rapid-response system, Community Whistle shares whistle codes, safety guidance, and immigration hotline resources to help neighbors alert each other and respond to raids.',
+    roles: ['Website Design', 'Logo Design'],
+    desktopFrame: {
+      left: 501.12,
+      top: 752.01,
+      width: 139.814,
+    },
+    artworkWidth: 1091.189,
+    artworkHeight: 727.548,
+    artworkTop: 0,
   },
 ]
 

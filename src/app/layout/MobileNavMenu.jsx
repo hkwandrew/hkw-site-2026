@@ -2,7 +2,10 @@ import { createPortal } from 'react-dom'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router'
 import styled, { keyframes } from 'styled-components'
-import { PHONE_NAV_ITEMS, getRoutePathForPath } from '@/app/router/routeRegistry'
+import {
+  PHONE_NAV_ITEMS,
+  getRoutePathForPath,
+} from '@/app/router/routeRegistry'
 import {
   canStartSceneTransitionFromClick,
   usePageSceneTransition,
@@ -114,16 +117,16 @@ const CloseButton = styled.button`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: 24px;
+  height: 24px;
   color: ${({ theme }) => theme.colors.yellow.light};
   background: ${({ theme }) => theme.colors.orange.dark};
   border-radius: 9999px;
   pointer-events: auto;
 
   svg {
-    width: 18px;
-    height: 18px;
+    width: 12px;
+    height: 12px;
   }
 
   &:focus-visible {

@@ -24,13 +24,20 @@ const Content = styled.div`
   --pill-h: 0px;
   --pill-o: 0;
   --pill-move-dur: 0.5s;
-  --contact-reveal-w: 170px;
+  --contact-pill-size: 62px;
+
+  &[data-has-contact-reveal='true']:not([data-click-collapsed='true']):hover,
+  &[data-has-contact-reveal='true']:not(
+      [data-click-collapsed='true']
+    ):focus-within {
+    border-radius: ${({ theme }) => theme.components.navTabs.borderRadius} 0 0
+      ${({ theme }) => theme.components.navTabs.borderRadius};
+  }
 
   &:hover [data-contact-reveal],
   &:focus-within [data-contact-reveal] {
-    max-width: var(--contact-reveal-w);
-    margin-left: ${({ theme }) => theme.components.navTabs.gap};
     opacity: 1;
+    pointer-events: auto;
   }
 
   &:hover [data-contact-reveal-inner],
@@ -41,25 +48,28 @@ const Content = styled.div`
 
   @media (hover: none) {
     [data-contact-reveal] {
-      max-width: var(--contact-reveal-w);
-      margin-left: ${({ theme }) => theme.components.navTabs.gap};
       opacity: 1;
+      pointer-events: auto;
     }
 
     [data-contact-reveal-inner] {
       transform: translateX(0);
       opacity: 1;
     }
+
+    &[data-has-contact-reveal='true']:not([data-click-collapsed='true']) {
+      border-radius: ${({ theme }) => theme.components.navTabs.borderRadius} 0 0
+        ${({ theme }) => theme.components.navTabs.borderRadius};
+    }
   }
 
   &[data-click-collapsed='true'] [data-contact-reveal] {
-    max-width: 0;
-    margin-left: 0;
     opacity: 0;
+    pointer-events: none;
   }
 
   &[data-click-collapsed='true'] [data-contact-reveal-inner] {
-    transform: translateX(100%);
+    transform: translateX(-100%);
     opacity: 0;
   }
 
@@ -181,29 +191,61 @@ const StyledNavLink = styled(Link)`
 `
 
 const ContactReveal = styled.div`
-  max-width: 0;
-  margin-left: 0;
+  position: absolute;
+  top: 0;
+  left: 100%;
+  width: var(--contact-pill-size);
+  height: 100%;
   overflow: hidden;
   opacity: 0;
-  transition:
-    max-width 0.42s ease,
-    margin-left 0.42s ease,
-    opacity 0.16s ease;
+  pointer-events: none;
+  z-index: 0;
+  background-color: ${({ theme }) => theme.colors.orange.dark};
+  border-radius: 0 ${({ theme }) => theme.components.navTabs.borderRadius}
+    ${({ theme }) => theme.components.navTabs.borderRadius} 0;
+  transition: opacity 0.16s ease;
 `
 
 const ContactRevealInner = styled.div`
-  width: max-content;
-  transform: translateX(100%);
+  height: 100%;
+  width: var(--contact-pill-size);
+  transform: translateX(-100%);
   opacity: 0;
+  border-radius: ${({ theme }) => theme.components.navTabs.borderRadius};
   transition:
     transform 0.42s ease,
     opacity 0.16s ease;
+`
+
+const ContactNavLink = styled(StyledNavLink)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--contact-pill-size);
+  height: 100%;
+  padding: 0;
+
+  &::after {
+    display: none;
+  }
+
+  &[aria-current='page'] {
+    background-color: ${({ theme }) => theme.colors.orange.base};
+  }
+`
+
+const ContactIcon = styled.svg`
+  display: block;
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
 `
 
 const NavMenu = ({ activePathname }) => {
   const location = useLocation()
   const { transitionSceneToPath } = usePageSceneTransition()
   const activePath = getRoutePathForPath(activePathname ?? location.pathname)
+  const isContactActive = activePath === CONTACT_NAV_ITEM?.path
   const [isClickCollapsed, setIsClickCollapsed] = useState(false)
   const contentRef = useRef(null)
   const menuRef = useRef(null)
@@ -318,6 +360,9 @@ const NavMenu = ({ activePathname }) => {
     <nav>
       <Content
         ref={contentRef}
+        data-has-contact-reveal={
+          CONTACT_NAV_ITEM && !isContactActive ? 'true' : undefined
+        }
         data-click-collapsed={isClickCollapsed ? 'true' : undefined}
         onFocusCapture={() => setIsClickCollapsed(false)}
         onPointerLeave={() => setIsClickCollapsed(false)}
@@ -340,12 +385,13 @@ const NavMenu = ({ activePathname }) => {
             </Item>
           ))}
         </Items>
-        {CONTACT_NAV_ITEM ? (
+        {CONTACT_NAV_ITEM && !isContactActive ? (
           <ContactReveal data-contact-reveal>
             <ContactRevealInner data-contact-reveal-inner>
-              <StyledNavLink
+              <ContactNavLink
                 to={CONTACT_NAV_ITEM.path}
-                data-text={CONTACT_NAV_ITEM.label}
+                aria-label={CONTACT_NAV_ITEM.label}
+                data-text=''
                 aria-current={
                   activePath === CONTACT_NAV_ITEM.path ? 'page' : undefined
                 }
@@ -353,8 +399,16 @@ const NavMenu = ({ activePathname }) => {
                   handleNavLinkClick(event, CONTACT_NAV_ITEM.path)
                 }
               >
-                <span>{CONTACT_NAV_ITEM.label}</span>
-              </StyledNavLink>
+                <ContactIcon
+                  aria-hidden='true'
+                  data-contact-icon
+                  focusable='false'
+                  viewBox='0 0 24 24'
+                  xmlns='http://www.w3.org/2000/svg'
+                >
+                  <path d='M0 3v18h24v-18h-24zm21.518 2l-9.518 7.713-9.518-7.713h19.036zm-19.518 14v-11.817l10 8.104 10-8.104v11.817h-20z' />
+                </ContactIcon>
+              </ContactNavLink>
             </ContactRevealInner>
           </ContactReveal>
         ) : null}
