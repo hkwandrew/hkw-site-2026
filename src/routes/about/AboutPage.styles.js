@@ -93,8 +93,10 @@ const desktopMetaPalette = {
   `,
 }
 
-const ABOUT_PAGE_SLIDE_DISTANCE = '100dvh'
-const ABOUT_PAGE_MOBILE_SLIDE_DISTANCE = '100dvh'
+const ABOUT_PAGE_ENTER_SLIDE_DISTANCE = '72dvh'
+const ABOUT_PAGE_EXIT_SLIDE_DISTANCE = '100dvh'
+const ABOUT_PAGE_MOBILE_ENTER_SLIDE_DISTANCE = '72dvh'
+const ABOUT_PAGE_MOBILE_EXIT_SLIDE_DISTANCE = '100dvh'
 const ABOUT_PAGE_SLIDE_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)'
 
 export const Page = styled(ViewContainer)`
@@ -105,7 +107,7 @@ export const Page = styled(ViewContainer)`
   opacity: 1;
   transform: translate3d(
     0,
-    ${({ $isActive }) => ($isActive ? '0' : ABOUT_PAGE_SLIDE_DISTANCE)},
+    ${({ $isActive }) => ($isActive ? '0' : ABOUT_PAGE_ENTER_SLIDE_DISTANCE)},
     0
   );
   transition: transform ${SCENE_TRANSITION_DURATION_MS}ms
@@ -114,7 +116,7 @@ export const Page = styled(ViewContainer)`
 
   &[data-about-phase='exiting'] {
     pointer-events: none;
-    transform: translate3d(0, ${ABOUT_PAGE_SLIDE_DISTANCE}, 0);
+    transform: translate3d(0, ${ABOUT_PAGE_EXIT_SLIDE_DISTANCE}, 0);
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}),
@@ -124,12 +126,12 @@ export const Page = styled(ViewContainer)`
     transform: translate3d(
       0,
       ${({ $isActive }) =>
-        $isActive ? '0' : ABOUT_PAGE_MOBILE_SLIDE_DISTANCE},
+        $isActive ? '0' : ABOUT_PAGE_MOBILE_ENTER_SLIDE_DISTANCE},
       0
     );
 
     &[data-about-phase='exiting'] {
-      transform: translate3d(0, ${ABOUT_PAGE_MOBILE_SLIDE_DISTANCE}, 0);
+      transform: translate3d(0, ${ABOUT_PAGE_MOBILE_EXIT_SLIDE_DISTANCE}, 0);
     }
   }
 `

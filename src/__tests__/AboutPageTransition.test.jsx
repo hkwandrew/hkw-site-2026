@@ -83,7 +83,7 @@ describe('AboutPage route exit transition', () => {
 
     expect(page).toHaveAttribute('data-about-phase', 'entered')
     expect(getComputedStyle(page).opacity).toBe('1')
-    expect(getComputedStyle(page).transform).toContain('16dvh')
+    expect(getComputedStyle(page).transform).toContain('72dvh')
 
     act(() => {
       activatePage?.(0)
@@ -115,7 +115,7 @@ describe('AboutPage route exit transition', () => {
     expect(transitionSceneToPath).toHaveBeenCalledWith('/services')
     expect(page).toHaveAttribute('data-about-phase', 'exiting')
     expect(getComputedStyle(page).opacity).toBe('1')
-    expect(getComputedStyle(page).transform).toContain('16dvh')
+    expect(getComputedStyle(page).transform).toContain('100dvh')
     expect(screen.queryByText('Services page')).not.toBeInTheDocument()
 
     act(() => {
