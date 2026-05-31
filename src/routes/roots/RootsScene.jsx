@@ -354,6 +354,25 @@ const Welcome = styled(WelcomeSign)`
   height: auto;
   display: block;
   z-index: 0;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    width: 50%;
+  }
+`
+
+const MobileWelcome = styled(WelcomeSign)`
+  position: relative;
+  z-index: 1;
+  display: block;
+  flex: 0 0 auto;
+  width: min(46vw, 172px);
+  height: auto;
+  margin: 0 auto 24px;
+
+  [data-roots-mobile-layout='portrait-tablet'] & {
+    width: min(30vw, 224px);
+    margin-bottom: 28px;
+  }
 `
 
 const MobileScene = styled.div`
@@ -405,7 +424,7 @@ const MobileFrames = styled.div`
   align-items: start;
   width: 100%;
   max-width: 353px;
-  margin-inline: auto;
+  margin-inline: auto;r;
 `
 
 const PortraitTabletFrames = styled.div`
@@ -414,7 +433,7 @@ const PortraitTabletFrames = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
   gap: 24px;
-  align-items: start;
+  align-items: center;
   width: 100%;
   max-width: 720px;
   margin-inline: auto;
@@ -550,7 +569,10 @@ const getFallbackRootsViewportLayout = () => {
   return ROOTS_VIEWPORT_LAYOUT.DESKTOP
 }
 
-const resolveRootsViewportLayout = (phoneMediaQuery, portraitTabletMediaQuery) => {
+const resolveRootsViewportLayout = (
+  phoneMediaQuery,
+  portraitTabletMediaQuery,
+) => {
   if (phoneMediaQuery.matches) return ROOTS_VIEWPORT_LAYOUT.PHONE
   if (portraitTabletMediaQuery.matches) {
     return ROOTS_VIEWPORT_LAYOUT.PORTRAIT_TABLET
@@ -711,14 +733,7 @@ export default function RootsScene({ sceneRef }) {
     return () => {
       isActive = false
     }
-  }, [
-    goTo,
-    index,
-    isSliderOpen,
-    navigate,
-    portfolioSlug,
-    routePortfolioIndex,
-  ])
+  }, [goTo, index, isSliderOpen, navigate, portfolioSlug, routePortfolioIndex])
 
   useEffect(() => {
     if (!isMobileLayout) {
@@ -796,6 +811,8 @@ export default function RootsScene({ sceneRef }) {
           $isLocked={isSliderOpen}
           onScroll={handleMobileScroll}
         >
+          <MobileWelcome />
+
           {isPhoneLayout ? (
             <MobileFrames data-roots-mobile-layout={viewportLayout}>
               {mobileFrameColumns.map((columnEntries, columnIndex) => (

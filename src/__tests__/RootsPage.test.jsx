@@ -562,9 +562,15 @@ describe('RootsPage', () => {
 
     renderRootsRoute()
 
-    const mobileFrames = document.querySelector(
+    const mobileScene = document.querySelector(
       '[data-roots-mobile-scroll-region]',
-    ).firstElementChild
+    )
+    const mobileWelcome = mobileScene.querySelector(
+      '[data-roots-welcome-sign]',
+    )
+    const mobileFrames = mobileScene.querySelector(
+      '[data-roots-mobile-layout="phone"]',
+    )
     const columns = Array.from(mobileFrames.children)
     const frameRows = columns[0].querySelectorAll(
       'button[data-roots-example-region="mobile-frame"]',
@@ -580,6 +586,8 @@ describe('RootsPage', () => {
     )
 
     expect(mobileFrames).toHaveAttribute('data-roots-mobile-layout', 'phone')
+    expect(mobileScene.firstElementChild).toBe(mobileWelcome)
+    expect(mobileWelcome.nextElementSibling).toBe(mobileFrames)
     expect(rowOrderedIds).toEqual(ROOTS_PORTFOLIO_ITEMS.map((item) => item.id))
   })
 
@@ -593,7 +601,12 @@ describe('RootsPage', () => {
     const mobileScene = document.querySelector(
       '[data-roots-mobile-scroll-region]',
     )
-    const mobileFrames = mobileScene.firstElementChild
+    const mobileWelcome = mobileScene.querySelector(
+      '[data-roots-welcome-sign]',
+    )
+    const mobileFrames = mobileScene.querySelector(
+      '[data-roots-mobile-layout="portrait-tablet"]',
+    )
     const frameButtons = Array.from(
       mobileFrames.querySelectorAll(
         'button[data-roots-example-region="mobile-frame"]',
@@ -608,7 +621,8 @@ describe('RootsPage', () => {
       'data-roots-mobile-layout',
       'portrait-tablet',
     )
-    expect(document.querySelector('[data-roots-welcome-sign]')).toBeNull()
+    expect(mobileScene.firstElementChild).toBe(mobileWelcome)
+    expect(mobileWelcome.nextElementSibling).toBe(mobileFrames)
     expect(mobileFrames.children).toHaveLength(ROOTS_PORTFOLIO_ITEMS.length)
     expect(frameButtons.map((button) => button.dataset.rootsExample)).toEqual(
       ROOTS_PORTFOLIO_ITEMS.map((item) => item.id),
