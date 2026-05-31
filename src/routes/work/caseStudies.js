@@ -24,13 +24,22 @@ import inclusivelyNavDefault from './assets/work-nav/inclusively-default.png'
 const caseStudies = [
   {
     id: 'celdf',
+    slug: 'celdf',
+    type: 'Non-Profit',
     name: 'CELDF',
     isCompact: true,
     flexBasis: 'calc(35.5% - 64px)',
     quote:
       '"HKW exceeded our expectations in their creative design and development of our branding, and in providing us with innovative web development and solutions."',
     attribution: 'Emelyn Lybarger, Outreach Coordinator',
-    services: ['Website Design', 'Graphic Design', 'Branding', 'Logo Design', 'Collateral Design', 'Website Development'],
+    services: [
+      'Website Design',
+      'Graphic Design',
+      'Branding',
+      'Logo Design',
+      'Collateral Design',
+      'Website Development',
+    ],
     image: celdfImg,
     navIcon: celdfNavDefault,
     heroImage: {
@@ -65,6 +74,7 @@ const caseStudies = [
   },
   {
     id: 'voxus',
+    slug: 'voxus-pr',
     name: 'Voxus PR',
     flexBasis: 'calc(35.5% - 64px)',
     isWide: true,
@@ -106,6 +116,7 @@ const caseStudies = [
   },
   {
     id: 'lumiere',
+    slug: 'lumiere-work',
     name: 'Lumiere Work',
     isCompact: true,
     flexBasis: 'calc(38.5% - 64px)',
@@ -154,6 +165,7 @@ const caseStudies = [
   },
   {
     id: 'rogue-heart',
+    slug: 'rogue-heart',
     name: 'Rogue Heart Media',
     flexBasis: 'calc(41.5% - 64px)',
     letterSpacing: '-0.4px',
@@ -194,8 +206,9 @@ const caseStudies = [
   },
   {
     id: 'conviva',
+    slug: 'conviva',
     name: 'Conviva',
-    flexBasis: 'calc(35.5% - 64px)',
+    flexBasis: 'calc(34.63% - 64px)',
     quote: '"HKW felt like full-fledged members of my team."',
     attribution: 'Paula Mantle, Marketing Director at Conviva',
     services: [
@@ -211,11 +224,11 @@ const caseStudies = [
     image: convivaImg,
     navIcon: convivaNavDefault,
     heroImage: {
-      width: 1100.37,
-      // height: 835.02,
-      // aspectRatio: '1252.37 / 835.02',
+      width: 1252.371,
+      height: 835.02,
+      aspectRatio: '1252.37 / 835.02',
       desktop: {
-        x: -285,
+        x: -270,
         y: -220,
       },
       mobile: {
@@ -240,6 +253,8 @@ const caseStudies = [
   },
   {
     id: 'scar',
+    slug: 'scar',
+    type: 'Non-Profit',
     name: 'SCAR',
     flexBasis: 'calc(46.5% - 64px)',
     letterSpacing: '-0.4px',
@@ -288,11 +303,12 @@ const caseStudies = [
   },
   {
     id: 'reltio',
+    slug: 'reltio',
     name: 'Reltio',
     flexBasis: 'calc(42.5% - 64px)',
     quote:
       "From strategy to launch, HKW is the rare agency that combines rock-solid reliability, outstanding design & UI/UX, and genuine partnership — all wrapped up in a team you'll actually love working with.",
-    attribution: 'Sr. Director, Global Digital & Web Marketing',
+    attribution: 'Karim, Azar, Sr. Director, Global Digital & Web Marketing',
     services: ['Web Design', 'Web Development', 'Marketing Support'],
     image: reltioImg,
     navIcon: reltioNavDefault,
@@ -326,6 +342,7 @@ const caseStudies = [
   },
   {
     id: 'inclusively',
+    slug: 'inclusively',
     name: 'Inclusively',
     flexBasis: 'calc(51.5% - 64px)',
     isWide: true,
@@ -410,6 +427,7 @@ const caseStudies = [
   // },
   {
     id: 'computercare',
+    slug: 'computer-care',
     name: 'ComputerCare',
     isCompact: true,
     letterSpacing: '-0.4px',

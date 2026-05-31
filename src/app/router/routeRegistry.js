@@ -23,6 +23,30 @@ const ROUTE_BY_PATH = Object.fromEntries(
   ]),
 )
 
+const normalizePathname = (pathname) => {
+  if (!pathname || pathname === '/') return pathname
+
+  return pathname.replace(/\/+$/, '')
+}
+
+const getNestedRouteDefinitionForPath = (pathname) => {
+  const normalizedPathname = normalizePathname(pathname)
+
+  return (
+    ROUTE_DEFINITIONS.find((routeDefinition) => {
+      if (routeDefinition.routePath === '/') return false
+
+      const routePrefix = `${routeDefinition.routePath}/`
+
+      if (!normalizedPathname.startsWith(routePrefix)) return false
+
+      const nestedSegment = normalizedPathname.slice(routePrefix.length)
+
+      return nestedSegment.length > 0 && !nestedSegment.includes('/')
+    }) ?? null
+  )
+}
+
 const createRouteHandle = (routeDefinition) => ({
   pageId: routeDefinition.id,
   pageKey: routeDefinition.pageKey,
@@ -48,10 +72,19 @@ export const PHONE_NAV_ITEMS = ROUTE_DEFINITIONS.filter(
   path: routeDefinition.routePath,
 }))
 
-export const getRouteDefinitionForPath = (pathname) =>
-  ROUTE_BY_PATH[pathname] ?? null
+export const getRouteDefinitionForPath = (pathname) => {
+  const normalizedPathname = normalizePathname(pathname)
+
+  return (
+    ROUTE_BY_PATH[normalizedPathname] ??
+    getNestedRouteDefinitionForPath(normalizedPathname)
+  )
+}
 
 export const getPageDefinitionForPath = getRouteDefinitionForPath
+
+export const getRoutePathForPath = (pathname) =>
+  getRouteDefinitionForPath(pathname)?.routePath ?? pathname
 
 export const getPageKeyForPath = (pathname) =>
   getRouteDefinitionForPath(pathname)?.pageKey ?? 'unknown'
@@ -84,7 +117,7 @@ export const getRouteChildrenConfig = () =>
     }
 
     return {
-      path: routeDefinition.routePath.slice(1),
+      path: routeDefinition.routePattern ?? routeDefinition.routePath.slice(1),
       Component: routeDefinition.Component,
       handle: createRouteHandle(routeDefinition),
     }

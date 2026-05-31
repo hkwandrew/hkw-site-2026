@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
-import { useNavigate } from 'react-router'
+import { useLocation, useNavigate, useParams } from 'react-router'
 import useCarousel from '@/shared/hooks/useCarousel'
 import usePageActive from '@/shared/hooks/usePageActive'
 import ROOTS_PORTFOLIO_ITEMS from './rootsPortfolio'
@@ -26,6 +26,24 @@ const ROOTS_VIEWPORT_LAYOUT = Object.freeze({
   PHONE: 'phone',
   PORTRAIT_TABLET: 'portrait-tablet',
 })
+const ROOTS_ROUTE_PATH = '/roots'
+
+const getPortfolioSlug = (item) => item.slug ?? item.id
+
+const getPortfolioPath = (item) =>
+  `${ROOTS_ROUTE_PATH}/${getPortfolioSlug(item)}`
+
+const getPortfolioIndexForSlug = (slug) => {
+  if (!slug) return 0
+
+  return ROOTS_PORTFOLIO_ITEMS.findIndex(
+    (item) => getPortfolioSlug(item) === slug,
+  )
+}
+
+const normalizePortfolioIndex = (index) =>
+  ((index % ROOTS_PORTFOLIO_ITEMS.length) + ROOTS_PORTFOLIO_ITEMS.length) %
+  ROOTS_PORTFOLIO_ITEMS.length
 
 const communityWhistleRattle = keyframes`
   0%,
@@ -601,14 +619,24 @@ function useRootsViewportLayout() {
 
 export default function RootsScene({ sceneRef }) {
   const navigate = useNavigate()
+  const location = useLocation()
+  const { portfolioSlug } = useParams()
   const isActive = usePageActive()
   const viewportLayout = useRootsViewportLayout()
   const isMobileLayout = viewportLayout !== ROOTS_VIEWPORT_LAYOUT.DESKTOP
   const isPhoneLayout = viewportLayout === ROOTS_VIEWPORT_LAYOUT.PHONE
   const triggerRefs = useRef({})
   const openedFromIdRef = useRef(null)
-  const [isSliderOpen, setIsSliderOpen] = useState(false)
-  const { index, next, prev, goTo } = useCarousel(ROOTS_PORTFOLIO_ITEMS.length)
+  const routePortfolioIndex = getPortfolioIndexForSlug(portfolioSlug)
+  const initialPortfolioIndex =
+    routePortfolioIndex >= 0 ? routePortfolioIndex : 0
+  const [isSliderOpen, setIsSliderOpen] = useState(
+    Boolean(portfolioSlug && routePortfolioIndex >= 0),
+  )
+  const { index, goTo } = useCarousel(
+    ROOTS_PORTFOLIO_ITEMS.length,
+    initialPortfolioIndex,
+  )
   const activeItem = ROOTS_PORTFOLIO_ITEMS[index]
   const mobileFrameEntries = ROOTS_PORTFOLIO_ITEMS.map((item, itemIndex) => ({
     item,
@@ -620,10 +648,77 @@ export default function RootsScene({ sceneRef }) {
   ]
 
   const handleReturnHome = () => navigate('/')
+  const navigateToPortfolioIndex = (nextIndex) => {
+    const normalizedIndex = normalizePortfolioIndex(nextIndex)
+    const nextItem = ROOTS_PORTFOLIO_ITEMS[normalizedIndex]
+    const nextPath = getPortfolioPath(nextItem)
+
+    goTo(normalizedIndex)
+
+    if (location.pathname !== nextPath) {
+      navigate(nextPath)
+    }
+  }
+  const next = () => navigateToPortfolioIndex(index + 1)
+  const prev = () => navigateToPortfolioIndex(index - 1)
   const handleMobileScroll = (event) => {
     document.body.dataset.rootsMobileScrolled =
       event.currentTarget.scrollTop > 4 ? 'true' : 'false'
   }
+
+  useLayoutEffect(() => {
+    let isActive = true
+
+    if (portfolioSlug && routePortfolioIndex < 0) {
+      queueMicrotask(() => {
+        if (!isActive) return
+
+        if (isSliderOpen) {
+          setIsSliderOpen(false)
+        }
+        navigate(ROOTS_ROUTE_PATH, { replace: true })
+      })
+
+      return () => {
+        isActive = false
+      }
+    }
+
+    if (!portfolioSlug) {
+      queueMicrotask(() => {
+        if (!isActive || !isSliderOpen) return
+
+        setIsSliderOpen(false)
+      })
+
+      return () => {
+        isActive = false
+      }
+    }
+
+    openedFromIdRef.current = ROOTS_PORTFOLIO_ITEMS[routePortfolioIndex].id
+    queueMicrotask(() => {
+      if (!isActive) return
+
+      if (index !== routePortfolioIndex) {
+        goTo(routePortfolioIndex)
+      }
+      if (!isSliderOpen) {
+        setIsSliderOpen(true)
+      }
+    })
+
+    return () => {
+      isActive = false
+    }
+  }, [
+    goTo,
+    index,
+    isSliderOpen,
+    navigate,
+    portfolioSlug,
+    routePortfolioIndex,
+  ])
 
   useEffect(() => {
     if (!isMobileLayout) {
@@ -651,10 +746,11 @@ export default function RootsScene({ sceneRef }) {
     openedFromIdRef.current = itemId
     goTo(itemIndex)
     setIsSliderOpen(true)
+    navigate(getPortfolioPath(ROOTS_PORTFOLIO_ITEMS[itemIndex]))
   }
 
   const closePortfolio = () => {
-    setIsSliderOpen(false)
+    navigate(ROOTS_ROUTE_PATH)
 
     window.requestAnimationFrame(() => {
       triggerRefs.current[openedFromIdRef.current]?.focus()

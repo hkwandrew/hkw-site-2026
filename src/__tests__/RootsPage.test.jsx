@@ -50,12 +50,15 @@ const createReducedMotionMatchMedia = (matches) =>
     dispatchEvent: vi.fn(),
   }))
 
-const renderRootsRoute = () => {
+const renderRootsRoute = ({
+  initialEntries = ['/roots'],
+  initialIndex,
+} = {}) => {
   const transitionSceneToPath = vi.fn()
   const router = createMemoryRouter(
     [
       {
-        path: '/roots',
+        path: '/roots/:portfolioSlug?',
         element: withTheme(
           <PageSceneTransitionProvider value={{ transitionSceneToPath }}>
             <RootsPage />
@@ -67,7 +70,7 @@ const renderRootsRoute = () => {
         element: <div>Home page</div>,
       },
     ],
-    { initialEntries: ['/roots'] },
+    { initialEntries, initialIndex },
   )
 
   return {
@@ -292,6 +295,82 @@ describe('RootsPage', () => {
     await vi.waitFor(() => {
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
       expect(trigger).toHaveFocus()
+    })
+  })
+
+  it('opens a portfolio dialog from the URL slug', async () => {
+    const { router } = renderRootsRoute({
+      initialEntries: ['/roots/meals-on-wheels'],
+    })
+
+    const dialog = screen.getByRole('dialog', { name: /meals on wheels/i })
+
+    expect(router.state.location.pathname).toBe('/roots/meals-on-wheels')
+    expect(dialog).toHaveAttribute('data-roots-example', 'meals-on-wheels')
+  })
+
+  it('updates the URL when moving through portfolio slides', async () => {
+    const { router } = renderRootsRoute({
+      initialEntries: ['/roots/meals-on-wheels'],
+    })
+
+    fireEvent.click(
+      screen.getByRole('button', { name: /show next portfolio piece/i }),
+    )
+
+    expect(router.state.location.pathname).toBe('/roots/community-building')
+
+    act(() => {
+      vi.advanceTimersByTime(ROOTS_PORTFOLIO_SLIDE_FADE_DURATION_MS)
+    })
+
+    await vi.waitFor(() => {
+      expect(
+        screen.getByRole('dialog', { name: /community building/i }),
+      ).toBeInTheDocument()
+    })
+  })
+
+  it('returns to the parent roots route when closing a slug-opened dialog', async () => {
+    const { router } = renderRootsRoute({
+      initialEntries: ['/roots/meals-on-wheels'],
+    })
+
+    act(() => {
+      fireEvent.click(screen.getByRole('button', { name: /close/i }))
+    })
+
+    await vi.waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+      expect(router.state.location.pathname).toBe('/roots')
+    })
+  })
+
+  it('closes the slug-opened portfolio dialog on browser back', async () => {
+    const { router } = renderRootsRoute({
+      initialEntries: ['/roots', '/roots/meals-on-wheels'],
+      initialIndex: 1,
+    })
+
+    expect(screen.getByRole('dialog', { name: /meals on wheels/i }))
+      .toBeInTheDocument()
+
+    await act(async () => {
+      await router.navigate(-1)
+    })
+
+    await vi.waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+      expect(router.state.location.pathname).toBe('/roots')
+    })
+  })
+
+  it('replaces invalid roots slugs with the parent roots route', async () => {
+    const { router } = renderRootsRoute({ initialEntries: ['/roots/nope'] })
+
+    await vi.waitFor(() => {
+      expect(router.state.location.pathname).toBe('/roots')
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     })
   })
 

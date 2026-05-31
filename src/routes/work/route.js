@@ -8,6 +8,7 @@ export const WORK_ROUTE_CONTENT_REVEAL_LEAD_MS = 1500
 export const workRoute = Object.freeze({
   id: 'work',
   routePath: '/work',
+  routePattern: 'work/:caseStudySlug?',
   pageKey: 'work-page',
   sceneStateKey: 'work-page',
   label: 'Our Work',

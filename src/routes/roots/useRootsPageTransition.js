@@ -4,6 +4,10 @@ import { usePageSceneTransition } from '@/app/landscape/pageSceneTransition'
 import { SCENE_TRANSITION_DURATION_MS } from '@/app/landscape/sceneRegistry'
 
 export const ROOTS_SCENE_TRANSITION_DURATION_MS = SCENE_TRANSITION_DURATION_MS
+const ROOTS_ROUTE_PATH = '/roots'
+
+const isRootsPath = (pathname) =>
+  pathname === ROOTS_ROUTE_PATH || pathname.startsWith(`${ROOTS_ROUTE_PATH}/`)
 
 const useRootsPageTransition = () => {
   const sectionRef = useRef(null)
@@ -12,8 +16,8 @@ const useRootsPageTransition = () => {
   const { transitionSceneToPath } = usePageSceneTransition()
   const leaveRootsBlocker = useBlocker(({ currentLocation, nextLocation }) => {
     const isLeavingRoots =
-      currentLocation.pathname === '/roots' &&
-      nextLocation.pathname !== currentLocation.pathname
+      isRootsPath(currentLocation.pathname) &&
+      !isRootsPath(nextLocation.pathname)
 
     nextPathRef.current = isLeavingRoots ? nextLocation.pathname : null
 

@@ -12,7 +12,10 @@ import {
   resolveSceneStateForPath,
   resolveSceneTransition,
 } from '@/app/landscape/sceneRegistry'
-import { getRouteContentRevealLeadMs } from '@/app/router/routeRegistry'
+import {
+  getRouteContentRevealLeadMs,
+  getRoutePathForPath,
+} from '@/app/router/routeRegistry'
 import {
   animateSharedSceneTransition,
   applySharedSceneState,
@@ -66,18 +69,20 @@ const subscribeToHomeHoverCapability = (onChange) => {
 }
 
 const useLandscapeTransitionController = (pathname) => {
+  const routePath = getRoutePathForPath(pathname)
   const mainRef = useRef(null)
   const hasMountedRef = useRef(false)
   const activeSceneTimelineRef = useRef(null)
   const activeTargetPathRef = useRef(null)
-  const currentScenePathRef = useRef(pathname)
-  const completedScenePathRef = useRef(pathname)
-  const locationPathRef = useRef(pathname)
+  const currentScenePathRef = useRef(routePath)
+  const completedScenePathRef = useRef(routePath)
+  const locationPathRef = useRef(routePath)
   const homeHoverClearTimeoutRef = useRef(null)
   const routeContentRevealTimeoutRef = useRef(null)
   const [homeHoverRegion, setHomeHoverRegion] = useState(null)
   const [pendingNavPath, setPendingNavPath] = useState(null)
-  const [revealedContentPath, setRevealedContentPath] = useState(pathname)
+  const [activeTransitionPath, setActiveTransitionPath] = useState(null)
+  const [revealedContentPath, setRevealedContentPath] = useState(routePath)
   const [earlyRevealedContentPath, setEarlyRevealedContentPath] = useState(null)
   const canUseHoverRegions = useSyncExternalStore(
     subscribeToHomeHoverCapability,
@@ -90,15 +95,17 @@ const useLandscapeTransitionController = (pathname) => {
     () => false,
   )
 
-  const pageKey = getPageKeyForPath(pathname)
-  const isHome = pathname === '/'
+  const pageKey = getPageKeyForPath(routePath)
+  const isHome = routePath === '/'
   const headerContentPath = revealedContentPath
-  const scenePathname = pendingNavPath ?? pathname
+  const headerContentRoutePath = getRoutePathForPath(headerContentPath)
+  const scenePathname = pendingNavPath ?? routePath
   const headerNavPath = scenePathname
-  const shouldShowHeader = headerContentPath !== '/roots' || isMobile
-  const isRouteContentRevealed = revealedContentPath === pathname
+  const shouldShowHeader = headerContentRoutePath !== '/roots' || isMobile
+  const isRouteContentRevealed =
+    revealedContentPath === routePath && activeTransitionPath !== routePath
   const shouldRenderRouteContent =
-    isRouteContentRevealed || earlyRevealedContentPath === pathname
+    isRouteContentRevealed || earlyRevealedContentPath === routePath
   const isPageLabelRevealed = isRouteContentRevealed && pendingNavPath === null
   const areHomeLayerLinksInteractive =
     isHome && isRouteContentRevealed && canUseHoverRegions
@@ -124,6 +131,10 @@ const useLandscapeTransitionController = (pathname) => {
     completedScenePathRef.current = nextPath
     mainRef.current?.removeAttribute('data-transition')
     mainRef.current?.setAttribute('data-scene-page', getPageKeyForPath(nextPath))
+
+    queueMicrotask(() => {
+      setActiveTransitionPath(null)
+    })
 
     if (locationPathRef.current === nextPath) {
       queueMicrotask(() => {
@@ -200,43 +211,51 @@ const useLandscapeTransitionController = (pathname) => {
 
   const transitionSceneToPath = useCallback(
     (nextPath) => {
+      const nextRoutePath = getRoutePathForPath(nextPath)
       const mainElement = mainRef.current
-      const nextSceneState = resolveSceneStateForPath(nextPath)
+      const nextSceneState = resolveSceneStateForPath(nextRoutePath)
       const fromPath = activeTargetPathRef.current ?? currentScenePathRef.current
-      const transitionConfig = resolveSceneTransition(fromPath, nextPath)
+      const transitionConfig = resolveSceneTransition(fromPath, nextRoutePath)
       const shouldReduceMotion =
         typeof window !== 'undefined' &&
         window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
       if (!mainElement || !nextSceneState) return false
 
+      if (fromPath === nextRoutePath) {
+        return true
+      }
+
       cancelPendingHomeHoverClear()
       clearRouteContentRevealTimer()
-      setHomeHoverRegion(null)
-      setEarlyRevealedContentPath(null)
 
       queueMicrotask(() => {
-        setPendingNavPath(nextPath)
+        setHomeHoverRegion(null)
+        setEarlyRevealedContentPath(null)
+        setPendingNavPath(nextRoutePath)
       })
 
       activeSceneTimelineRef.current?.kill()
-      activeTargetPathRef.current = nextPath
-      mainElement.setAttribute('data-scene-page', getPageKeyForPath(nextPath))
-      setSceneTransitionKey(fromPath, nextPath)
+      activeTargetPathRef.current = nextRoutePath
+      mainElement.setAttribute('data-scene-page', getPageKeyForPath(nextRoutePath))
+      setSceneTransitionKey(fromPath, nextRoutePath)
 
       if (!transitionConfig) {
         applySharedSceneState(mainElement, nextSceneState)
-        finishSceneTransition(nextPath)
+        finishSceneTransition(nextRoutePath)
         return true
       }
 
       if (shouldReduceMotion) {
         applySharedSceneState(mainElement, transitionConfig.targetState)
-        finishSceneTransition(nextPath)
+        finishSceneTransition(nextRoutePath)
         return true
       }
 
-      scheduleRouteContentLeadReveal(nextPath, transitionConfig.durationMs)
+      queueMicrotask(() => {
+        setActiveTransitionPath(nextRoutePath)
+      })
+      scheduleRouteContentLeadReveal(nextRoutePath, transitionConfig.durationMs)
 
       activeSceneTimelineRef.current = animateSharedSceneTransition({
         rootElement: mainElement,
@@ -244,7 +263,7 @@ const useLandscapeTransitionController = (pathname) => {
         durationMs: transitionConfig.durationMs,
         pathMorphByLayer: transitionConfig.pathMorphByLayer,
         onComplete: () => {
-          finishSceneTransition(nextPath)
+          finishSceneTransition(nextRoutePath)
         },
       })
 
@@ -260,47 +279,47 @@ const useLandscapeTransitionController = (pathname) => {
   )
 
   useLayoutEffect(() => {
-    locationPathRef.current = pathname
+    locationPathRef.current = routePath
 
-    if (pendingNavPath === pathname) {
+    if (pendingNavPath === routePath) {
       queueMicrotask(() => {
         setPendingNavPath(null)
       })
     }
-  }, [pathname, pendingNavPath])
+  }, [routePath, pendingNavPath])
 
   useLayoutEffect(() => {
     const mainElement = mainRef.current
     if (!mainElement) return
 
     if (!hasMountedRef.current) {
-      applySharedSceneState(mainElement, resolveSceneStateForPath(pathname))
-      currentScenePathRef.current = pathname
-      completedScenePathRef.current = pathname
+      applySharedSceneState(mainElement, resolveSceneStateForPath(routePath))
+      currentScenePathRef.current = routePath
+      completedScenePathRef.current = routePath
       hasMountedRef.current = true
       return
     }
 
-    if (completedScenePathRef.current === pathname) {
+    if (completedScenePathRef.current === routePath) {
       queueMicrotask(() => {
-        setRevealedContentPath(pathname)
+        setRevealedContentPath(routePath)
         setEarlyRevealedContentPath(null)
       })
       return
     }
 
-    if (activeTargetPathRef.current === pathname) {
+    if (activeTargetPathRef.current === routePath) {
       return
     }
 
-    if (!transitionSceneToPath(pathname)) {
-      completedScenePathRef.current = pathname
+    if (!transitionSceneToPath(routePath)) {
+      completedScenePathRef.current = routePath
       queueMicrotask(() => {
-        setRevealedContentPath(pathname)
+        setRevealedContentPath(routePath)
         setEarlyRevealedContentPath(null)
       })
     }
-  }, [pathname, transitionSceneToPath])
+  }, [routePath, transitionSceneToPath])
 
   useLayoutEffect(() => {
     if (typeof window === 'undefined' || !window.matchMedia) {
@@ -311,7 +330,7 @@ const useLandscapeTransitionController = (pathname) => {
     const applyCurrentViewportSceneState = () => {
       const mainElement = mainRef.current
       const targetPath =
-        activeTargetPathRef.current ?? currentScenePathRef.current ?? pathname
+        activeTargetPathRef.current ?? currentScenePathRef.current ?? routePath
       const sceneState = resolveSceneStateForPath(targetPath)
 
       if (!mainElement || !sceneState) return
@@ -330,7 +349,7 @@ const useLandscapeTransitionController = (pathname) => {
     return () => {
       mediaQuery.removeEventListener('change', applyCurrentViewportSceneState)
     }
-  }, [finishSceneTransition, pathname])
+  }, [finishSceneTransition, routePath])
 
   useLayoutEffect(() => clearRouteContentRevealTimer, [clearRouteContentRevealTimer])
 

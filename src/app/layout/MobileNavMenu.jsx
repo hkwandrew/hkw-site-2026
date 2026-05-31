@@ -2,7 +2,7 @@ import { createPortal } from 'react-dom'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router'
 import styled from 'styled-components'
-import { PHONE_NAV_ITEMS } from '@/app/router/routeRegistry'
+import { PHONE_NAV_ITEMS, getRoutePathForPath } from '@/app/router/routeRegistry'
 import {
   canStartSceneTransitionFromClick,
   usePageSceneTransition,
@@ -15,8 +15,7 @@ const ToggleButton = styled.button`
   justify-content: center;
   width: 24px;
   height: 22px;
-  color: ${({ $isRootsPage, theme }) =>
-    $isRootsPage ? theme.colors.white : theme.colors.blue.dark};
+  color: ${({ theme }) => theme.colors.blue.dark};
   pointer-events: auto;
   z-index: 90;
   translate: ${({
@@ -35,7 +34,10 @@ const ToggleButton = styled.button`
   svg {
     width: 24px;
     height: 22px;
+
   }
+
+
 
   &:focus-visible {
     outline: 2px solid ${({ theme }) => theme.colors.yellow.gold};
@@ -75,7 +77,7 @@ const Sheet = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
-
+${'' /*
   &::after {
     content: '';
     position: absolute;
@@ -87,7 +89,7 @@ const Sheet = styled.div`
     background: rgba(64, 84, 65, 0.12);
     filter: blur(8px);
     pointer-events: none;
-  }
+  } */}
 `
 
 const MenuLabel = styled.div`
@@ -156,7 +158,7 @@ const MobileNavMenu = ({
 }) => {
   const location = useLocation()
   const { transitionSceneToPath } = usePageSceneTransition()
-  const activePath = activePathname ?? location.pathname
+  const activePath = getRoutePathForPath(activePathname ?? location.pathname)
   const [isOpen, setIsOpen] = useState(false)
   const buttonRef = useRef(null)
   const panelRef = useRef(null)

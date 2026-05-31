@@ -1,11 +1,13 @@
 import styled, { css, keyframes } from 'styled-components'
 import { BodySmall, H4, applyTypography } from '@/shared/ui/Typography'
+import { ROOTS_DROP_DURATION_MS } from '@/routes/roots/rootsEntry'
 import { HOME_HOVER_REGION } from './homeHoverRegions'
 import { getHomeHoverRegionPosition } from './homeHoverConfig'
 
+export { ROOTS_DROP_DURATION_MS } from '@/routes/roots/rootsEntry'
+
 // Shared timing and positioning
 const MASCOT_HOVER_ART = getHomeHoverRegionPosition(HOME_HOVER_REGION.mascot)
-export const ROOTS_DROP_DURATION_MS = 420
 const ROOTS_DROP_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)'
 const MARMOT_BURIED_OFFSET_PX = 280
 const MARMOT_BURIED_SCALE = 0.985

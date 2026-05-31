@@ -6,7 +6,7 @@ import {
   within,
 } from '@/__tests__/testUtils'
 import { createMemoryRouter, Link, RouterProvider } from 'react-router'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { PageSceneTransitionProvider } from '@/app/landscape/pageSceneTransition'
 import WorkPage from '@/routes/work/WorkPage'
 import {
@@ -14,18 +14,26 @@ import {
   resolveNavButtonLayout,
 } from '@/routes/work/navButtonLayout'
 import caseStudies from '@/routes/work/caseStudies'
+import {
+  ROOTS_DROP_DURATION_MS,
+  ROOTS_ENTRY_STATE_KEY,
+  WORK_ROOTS_ENTRY_STATE_KEY,
+} from '@/routes/roots/rootsEntry'
 import { convertCssPxToViewportUnit } from '@/styles/viewportUnits'
 
-const renderWorkPage = () => {
+const originalMatchMedia = window.matchMedia
+
+const renderWorkPage = ({ initialEntries = ['/work'], initialIndex } = {}) => {
   const router = createMemoryRouter(
     [
       {
-        path: '/work',
+        path: '/work/:caseStudySlug?',
         element: <WorkPage />,
       },
     ],
     {
-      initialEntries: ['/work'],
+      initialEntries,
+      initialIndex,
     },
   )
 
@@ -39,7 +47,7 @@ const renderWorkPageWithExitLink = (transitionSceneToPath) => {
   const router = createMemoryRouter(
     [
       {
-        path: '/work',
+        path: '/work/:caseStudySlug?',
         element: (
           <PageSceneTransitionProvider value={{ transitionSceneToPath }}>
             <WorkPage />
@@ -63,11 +71,40 @@ const renderWorkPageWithExitLink = (transitionSceneToPath) => {
   }
 }
 
+const renderWorkPageWithRootsTransition = (transitionSceneToPath) => {
+  const router = createMemoryRouter(
+    [
+      {
+        path: '/work/:caseStudySlug?',
+        element: (
+          <PageSceneTransitionProvider value={{ transitionSceneToPath }}>
+            <WorkPage />
+          </PageSceneTransitionProvider>
+        ),
+      },
+      {
+        path: '/roots',
+        element: <div>Roots route body</div>,
+      },
+    ],
+    {
+      initialEntries: ['/work'],
+    },
+  )
+
+  return {
+    router,
+    ...render(<RouterProvider router={router} />),
+  }
+}
+
 const getDesktopNav = () => screen.getByTestId('work-nav-desktop')
 const getDesktopNavRail = () => getDesktopNav().parentElement.parentElement
 const getPreviousArrowButton = () =>
   screen.getByRole('button', { name: /show previous work item/i })
 const getWorkMarmot = () => screen.getByTestId('work-marmot')
+const getWorkMarmotTrigger = () =>
+  screen.getByRole('button', { name: /enter non-profit roots/i })
 const getActiveStudyPane = () => screen.getByTestId('work-study-active')
 const getMainContent = () =>
   getActiveStudyPane().parentElement.parentElement.parentElement
@@ -167,6 +204,10 @@ const expectedCaseStudyContent = [
 ]
 
 describe('WorkPage', () => {
+  afterEach(() => {
+    window.matchMedia = originalMatchMedia
+  })
+
   const getStudy = (id) => caseStudies.find((study) => study.id === id)
   const toCssLength = (value, fallback = 'none') =>
     value === undefined || value === null || value === ''
@@ -348,6 +389,45 @@ describe('WorkPage', () => {
     expect(
       screen.getByRole('img', { name: 'Conviva' }).parentElement,
     ).toHaveAttribute('data-work-example', 'conviva')
+  })
+
+  it('opens the requested case study from the URL slug', async () => {
+    renderWorkPage({ initialEntries: ['/work/voxus-pr'] })
+
+    await waitForActiveStudy('voxus')
+
+    expect(screen.getByRole('img', { name: 'Voxus PR' })).toBeInTheDocument()
+  })
+
+  it('updates the URL when selecting a work case study', async () => {
+    const { router } = renderWorkPage()
+
+    await selectDesktopStudy(getStudy('voxus'))
+
+    expect(router.state.location.pathname).toBe('/work/voxus-pr')
+  })
+
+  it('updates the selected work case study on browser history changes', async () => {
+    const { router } = renderWorkPage({
+      initialEntries: ['/work/celdf', '/work/voxus-pr'],
+      initialIndex: 1,
+    })
+
+    await waitForActiveStudy('voxus')
+
+    await router.navigate(-1)
+
+    await waitForActiveStudy('celdf')
+    expect(router.state.location.pathname).toBe('/work/celdf')
+  })
+
+  it('replaces invalid work slugs with the parent work route', async () => {
+    const { router } = renderWorkPage({ initialEntries: ['/work/nope'] })
+
+    await waitFor(() => {
+      expect(router.state.location.pathname).toBe('/work')
+    })
+    expect(getActiveStudyPane()).toHaveAttribute('data-work-example', 'celdf')
   })
 
   it('keeps the desktop copy stage on fallback sizing when values are blank or omitted', async () => {
@@ -612,6 +692,121 @@ describe('WorkPage', () => {
       expect(getComputedStyle(getPreviousArrowButton()).opacity).toBe('1')
       expect(getComputedStyle(getWorkMarmot()).opacity).toBe('1')
     }, { timeout: 2000 })
+  })
+
+  it('reveals the Non-profit Roots sign when the work marmot is focused', async () => {
+    renderWorkPage()
+
+    await waitFor(() => {
+      expect(getComputedStyle(getWorkMarmot()).opacity).toBe('1')
+    }, { timeout: 2000 })
+
+    const trigger = getWorkMarmotTrigger()
+    const sign = document.querySelector('[data-work-marmot-sign]')
+
+    expect(trigger).toBe(getWorkMarmot())
+    expect(sign).not.toBeNull()
+    expect(getComputedStyle(sign).opacity).toBe('0')
+
+    fireEvent.focus(trigger)
+
+    expect(trigger).toHaveAttribute('data-work-marmot-hover-active', 'true')
+    expect(getComputedStyle(sign).opacity).toBe('1')
+    expect(getComputedStyle(sign).transform).toContain('translate3d')
+  })
+
+  it('clips the sign and descending marmot artwork at the work hole', async () => {
+    renderWorkPage()
+
+    await waitFor(() => {
+      expect(getComputedStyle(getWorkMarmot()).opacity).toBe('1')
+    }, { timeout: 2000 })
+
+    const character = document.querySelector('#marmot-character-idle')
+    const hole = document.querySelector('[data-work-marmot-hole]')
+    const sign = document.querySelector('[data-work-marmot-sign]')
+    const signMask = document.querySelector('[data-work-marmot-sign-mask]')
+    const characterMask = document.querySelector(
+      '[data-work-marmot-character-mask]',
+    )
+    const marmotClipRect = document.querySelector('#workMarmotAboveHoleClip rect')
+
+    expect(character).not.toBeNull()
+    expect(hole).not.toBeNull()
+    expect(signMask).not.toBeNull()
+    expect(signMask).toContainElement(sign)
+    expect(getComputedStyle(signMask).overflow).toBe('hidden')
+    expect(getComputedStyle(signMask).height).toBe(toRenderedCssLength(195.6))
+    expect(normalizeCssFunction(getComputedStyle(signMask).clipPath)).toContain(
+      'polygon',
+    )
+    expect(characterMask).toContainElement(character)
+    expect(characterMask).toHaveAttribute(
+      'clip-path',
+      'url(#workMarmotAboveHoleClip)',
+    )
+    expect(marmotClipRect).toHaveAttribute('height', '190')
+    expect(
+      character.compareDocumentPosition(hole) &
+        Node.DOCUMENT_POSITION_PRECEDING,
+    ).toBeTruthy()
+  })
+
+  it('drops the work marmot before routing directly to Non-profit Roots', async () => {
+    const transitionSceneToPath = vi.fn(() => true)
+    const { router } = renderWorkPageWithRootsTransition(transitionSceneToPath)
+
+    await waitFor(() => {
+      expect(getComputedStyle(getWorkMarmot()).opacity).toBe('1')
+    }, { timeout: 2000 })
+
+    fireEvent.click(getWorkMarmotTrigger())
+
+    expect(transitionSceneToPath).toHaveBeenCalledWith('/roots')
+    expect(router.state.location.pathname).toBe('/work')
+    expect(getWorkMarmot()).toHaveAttribute(
+      'data-work-marmot-transition-active',
+      'true',
+    )
+
+    const styles = normalizeCssFunction(getInjectedStyles())
+    expect(styles).toContain('#marmot-character-idle{animation:')
+    expect(styles).toContain(`${ROOTS_DROP_DURATION_MS}ms`)
+
+    await waitFor(() => {
+      expect(router.state.location.pathname).toBe('/roots')
+    }, { timeout: 1000 })
+
+    expect(router.state.location.state).toEqual({
+      [ROOTS_ENTRY_STATE_KEY]: true,
+      [WORK_ROOTS_ENTRY_STATE_KEY]: true,
+    })
+  })
+
+  it('routes immediately from the work marmot when reduced motion is preferred', async () => {
+    window.matchMedia = vi.fn().mockImplementation((query) => ({
+      matches: query === '(prefers-reduced-motion: reduce)',
+      media: query,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }))
+
+    const transitionSceneToPath = vi.fn(() => true)
+    const { router } = renderWorkPageWithRootsTransition(transitionSceneToPath)
+
+    await waitFor(() => {
+      expect(getComputedStyle(getWorkMarmot()).opacity).toBe('1')
+    }, { timeout: 2000 })
+
+    fireEvent.click(getWorkMarmotTrigger())
+
+    await waitFor(() => {
+      expect(router.state.location.pathname).toBe('/roots')
+    })
+    expect(transitionSceneToPath).not.toHaveBeenCalled()
   })
 
   it('keeps the work route mounted while the dirt foreground exits down', async () => {

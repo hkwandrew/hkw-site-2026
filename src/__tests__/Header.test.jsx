@@ -90,7 +90,7 @@ describe('Header', () => {
     ).toBe('#AFD3FC')
   })
 
-  it('renders the roots mobile header without a page label and uses white controls', () => {
+  it('renders the roots mobile header without a page label and uses dark controls', () => {
     isPhoneViewport = true
 
     const { container } = renderHeader(['/roots'], {
@@ -104,9 +104,9 @@ describe('Header', () => {
 
     expect(screen.queryByText('Non-profit Roots')).not.toBeInTheDocument()
     expect(getComputedStyle(logoLink).getPropertyValue('--fill-0').trim()).toBe(
-      '#FFFFFF',
+      '#1C2D38',
     )
-    expect(getComputedStyle(menuButton).color).toBe('rgb(255, 255, 255)')
+    expect(getComputedStyle(menuButton).color).toBe('rgb(28, 45, 56)')
 
     isPhoneViewport = false
   })

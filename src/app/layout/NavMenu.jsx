@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router'
 import styled from 'styled-components'
-import { NAV_ITEMS } from '@/app/router/routeRegistry'
+import { NAV_ITEMS, getRoutePathForPath } from '@/app/router/routeRegistry'
 import { applyTypography } from '@/shared/ui/Typography'
 import {
   canStartSceneTransitionFromClick,
@@ -203,7 +203,7 @@ const ContactRevealInner = styled.div`
 const NavMenu = ({ activePathname }) => {
   const location = useLocation()
   const { transitionSceneToPath } = usePageSceneTransition()
-  const activePath = activePathname ?? location.pathname
+  const activePath = getRoutePathForPath(activePathname ?? location.pathname)
   const [isClickCollapsed, setIsClickCollapsed] = useState(false)
   const contentRef = useRef(null)
   const menuRef = useRef(null)

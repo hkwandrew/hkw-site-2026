@@ -1,5 +1,6 @@
 import styled, { css, keyframes } from 'styled-components'
 import ArrowButton from '@/shared/ui/ArrowButton'
+import { ROOTS_DROP_DURATION_MS } from '@/routes/roots/rootsEntry'
 import { applyTypography } from '@/shared/ui/Typography'
 import ViewContainer from '@/shared/ui/ViewContainer'
 
@@ -31,6 +32,23 @@ const marmotIdleFloat = keyframes`
 
   50% {
     transform: translate3d(0, -1.6px, 0);
+  }
+`
+
+const workMarmotDescend = keyframes`
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  42% {
+    opacity: 1;
+    transform: translate3d(0, -6px, 0) scale(1.003);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 156px, 0) scale(0.985);
   }
 `
 
@@ -212,14 +230,16 @@ export const Page = styled(ViewContainer)`
   ${'' /* overflow: hidden; */}
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    ${'' /* background: linear-gradient(
+    ${
+      '' /* background: linear-gradient(
       to top,
       white 70%,
       transparent 70%,
       transparent 100%
     );
     overflow-y: auto;
-  } */}
+  } */
+    }
 `
 
 export const MainContent = styled.div`
@@ -323,6 +343,16 @@ export const AnimatedStudyText = styled(StudyText)`
   }
 `
 
+export const ClientType = styled.p`
+  font-size: 16px;
+  font-variation-settings:
+    'wdth' ${({ theme }) => theme.font.width.condensed},
+    'wght' ${({ theme }) => theme.font.weight.bold};
+  text-transform: uppercase;
+  color: ${({ theme }) => theme.colors.blue.dark};
+  margin-bottom: 8px;
+`
+
 export const ClientName = styled.h2`
   font-size: ${({ theme }) => theme.typography.h4.size};
   text-box: ${({ theme }) => theme.typography.textBox};
@@ -353,7 +383,7 @@ export const Quote = styled.p`
     toCssLength($letterSpacing, '-0.24px')};
   font-variation-settings:
     'wdth' ${({ theme }) => theme.font.width.regular},
-    'wght' ${({ theme }) => theme.font.weight.medium};
+    'wght' ${({ theme }) => theme.font.weight.regular};
   color: ${({ theme }) => theme.colors.blue.dark};
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
@@ -363,7 +393,7 @@ export const Quote = styled.p`
 
 export const Attribution = styled.p`
   font-size: ${({ theme }) => theme.typography.bodyMedium.size};
-  font-weight: ${({ theme }) => theme.font.weight.medium};
+  font-weight: ${({ theme }) => theme.font.weight.regular};
   font-variation-settings:
     'wdth' ${({ theme }) => theme.font.width.semicondensed},
     'wght' ${({ theme }) => theme.font.weight.regular},
@@ -376,6 +406,10 @@ export const Attribution = styled.p`
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     font-size: 16px;
+  }
+
+  [data-work-example='conviva'] & {
+    width: 365px;
   }
 `
 
@@ -622,15 +656,47 @@ export const FallbackDot = styled.span`
   }
 `
 
-export const MarmotWrapper = styled.div`
+export const MarmotWrapper = styled.button`
   position: absolute;
   top: 142px;
   right: 114.84px;
   z-index: 2;
+  display: block;
+  width: 214px;
+  height: 150px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: visible;
   opacity: ${({ $isVisible }) => ($isVisible ? 1 : 0)};
-  pointer-events: none;
+  pointer-events: ${({ $isVisible, $isRootsTransitioning }) =>
+    $isVisible && !$isRootsTransitioning ? 'auto' : 'none'};
+  cursor: ${({ $isVisible, $isRootsTransitioning }) =>
+    $isVisible && !$isRootsTransitioning ? 'pointer' : 'default'};
   transition: opacity 320ms ease;
   will-change: opacity;
+  -webkit-tap-highlight-color: transparent;
+
+  &:focus-visible {
+    outline: 3px solid ${({ theme }) => theme.colors.yellow.gold};
+    outline-offset: 6px;
+  }
+
+  &:disabled {
+    cursor: default;
+  }
+
+  [data-work-marmot-sign] {
+    opacity: ${({ $isRootsHoverActive }) => ($isRootsHoverActive ? 1 : 0)};
+    transform: translate3d(
+      0,
+      ${({ $isRootsHoverActive }) => ($isRootsHoverActive ? '0' : '78px')},
+      0
+    );
+    transition:
+      opacity 260ms ease,
+      transform 340ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
 
   #marmot-character-idle,
   #left-ear,
@@ -684,7 +750,36 @@ export const MarmotWrapper = styled.div`
     animation: ${steamRiseRight} 2.95s ease-out 1.18s infinite;
   }
 
+  ${({ $isRootsTransitioning }) =>
+    $isRootsTransitioning &&
+    css`
+      [data-work-marmot-sign] {
+        opacity: 0;
+        transform: translate3d(0, 78px, 0);
+        transition-duration: 160ms;
+      }
+
+      #marmot-character-idle {
+        animation: ${workMarmotDescend} ${ROOTS_DROP_DURATION_MS}ms
+          cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+
+      #left-ear,
+      #right-ear,
+      #left-eye,
+      #right-eye,
+      #coffee-steam path {
+        animation: none;
+        transform: none;
+      }
+    `}
+
   @media (prefers-reduced-motion: reduce) {
+    [data-work-marmot-sign] {
+      transition: none;
+      transform: none;
+    }
+
     #marmot-character-idle,
     #left-ear,
     #right-ear,

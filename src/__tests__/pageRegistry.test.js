@@ -7,6 +7,7 @@ import {
   PAGE_DEFINITIONS,
   NAV_ITEMS,
   PHONE_NAV_ITEMS,
+  getRouteChildrenConfig,
 } from '@/app/router/routeRegistry'
 
 describe('getPageKeyForPath', () => {
@@ -15,8 +16,10 @@ describe('getPageKeyForPath', () => {
     expect(getPageKeyForPath('/about')).toBe('about-page')
     expect(getPageKeyForPath('/services')).toBe('services-page')
     expect(getPageKeyForPath('/work')).toBe('work-page')
+    expect(getPageKeyForPath('/work/voxus-pr')).toBe('work-page')
     expect(getPageKeyForPath('/contact')).toBe('contact-page')
     expect(getPageKeyForPath('/roots')).toBe('roots-page')
+    expect(getPageKeyForPath('/roots/meals-on-wheels')).toBe('roots-page')
   })
 
   it('returns unknown for unrecognized paths', () => {
@@ -51,6 +54,18 @@ describe('getPageDefinitionForPath', () => {
     expect(aboutPage.sceneStateKey).toBe('about-page')
   })
 
+  it('returns parent page definitions for item-level route paths', () => {
+    const workPage = getPageDefinitionForPath('/work/voxus-pr')
+    const rootsPage = getPageDefinitionForPath('/roots/meals-on-wheels')
+
+    expect(workPage).not.toBeNull()
+    expect(workPage.id).toBe('work')
+    expect(workPage.routePath).toBe('/work')
+    expect(rootsPage).not.toBeNull()
+    expect(rootsPage.id).toBe('roots')
+    expect(rootsPage.routePath).toBe('/roots')
+  })
+
   it('returns the mobile-only Non-profit Roots page definition', () => {
     const rootsPage = getPageDefinitionForPath('/roots')
 
@@ -73,16 +88,37 @@ describe('getTransitionKey', () => {
     expect(getTransitionKey('/', '/about')).toBe('home-to-about')
     expect(getTransitionKey('/about', '/services')).toBe('about-to-services')
     expect(getTransitionKey('/work', '/')).toBe('work-to-home')
+    expect(getTransitionKey('/work/celdf', '/services')).toBe(
+      'work-to-services',
+    )
+    expect(getTransitionKey('/roots/meals-on-wheels', '/work')).toBe(
+      'roots-to-work',
+    )
   })
 
   it('returns empty string for same-page transitions', () => {
     expect(getTransitionKey('/', '/')).toBe('')
     expect(getTransitionKey('/about', '/about')).toBe('')
+    expect(getTransitionKey('/work/celdf', '/work/voxus-pr')).toBe('')
+    expect(getTransitionKey('/roots', '/roots/meals-on-wheels')).toBe('')
   })
 
   it('returns empty string when either path is unknown', () => {
     expect(getTransitionKey('/unknown', '/about')).toBe('')
     expect(getTransitionKey('/', '/unknown')).toBe('')
+  })
+})
+
+describe('getRouteChildrenConfig', () => {
+  it('registers optional slug segments for item-level routes', () => {
+    const routeChildren = getRouteChildrenConfig()
+
+    expect(routeChildren).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ path: 'work/:caseStudySlug?' }),
+        expect.objectContaining({ path: 'roots/:portfolioSlug?' }),
+      ]),
+    )
   })
 })
 

@@ -83,8 +83,10 @@ const HKWLogo = styled(Link)`
   height: 68px;
   display: grid;
   place-items: center;
-  --fill-0: ${({ $isRootsPage, theme }) =>
-    $isRootsPage ? theme.colors.white : theme.colors.blue.dark};
+  --fill-0: ${({ $isRootsPage, $isPhoneViewport, theme }) =>
+    $isRootsPage && !$isPhoneViewport
+      ? theme.colors.white
+      : theme.colors.blue.dark};
   --logo-background: ${({ $isServicesPage, $isWorkPage, theme }) =>
     $isWorkPage
       ? theme.colors.yellow.gold
@@ -185,6 +187,7 @@ const Header = ({ contentPathname, isPageLabelReady = true, navPathname }) => {
           $isServicesPage={isServicesPage}
           $isWorkPage={isWorkPage}
           $isRootsPage={isRootsPage}
+          $isPhoneViewport={isPhoneViewport}
           $isActive={isPageLabelActive}
         >
           <svg

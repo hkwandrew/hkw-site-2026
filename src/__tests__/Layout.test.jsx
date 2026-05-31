@@ -80,6 +80,14 @@ const AboutTransitionProbe = () => {
   )
 }
 
+const WorkRouteProbe = () => (
+  <div data-testid='work-route-probe'>Work route body</div>
+)
+
+const RootsRouteProbe = () => (
+  <div data-testid='roots-route-probe'>Roots route body</div>
+)
+
 const renderLayoutRoute = (initialPath) => {
   const router = createMemoryRouter(
     [
@@ -100,8 +108,12 @@ const renderLayoutRoute = (initialPath) => {
             element: <AboutTransitionProbe />,
           },
           {
-            path: 'work',
-            element: <div>Work route body</div>,
+            path: 'work/:caseStudySlug?',
+            element: <WorkRouteProbe />,
+          },
+          {
+            path: 'roots/:portfolioSlug?',
+            element: <RootsRouteProbe />,
           },
         ],
       },
@@ -272,6 +284,40 @@ describe('Layout shared scene links', () => {
     })
 
     expect(screen.getByText('Services route body')).toBeInTheDocument()
+  })
+
+  it('keeps the work route mounted when only the work slug changes', async () => {
+    const { router } = renderLayoutRoute('/work/celdf')
+    const workRouteProbe = screen.getByTestId('work-route-probe')
+
+    expect(workRouteProbe).toBeInTheDocument()
+    expect(sharedSceneRuntimeMocks.applySharedSceneState).toHaveBeenCalledTimes(1)
+
+    await act(async () => {
+      await router.navigate('/work/voxus-pr')
+    })
+
+    expect(router.state.location.pathname).toBe('/work/voxus-pr')
+    expect(screen.getByTestId('work-route-probe')).toBe(workRouteProbe)
+    expect(sharedSceneRuntimeMocks.animateSharedSceneTransition).not.toHaveBeenCalled()
+    expect(sharedSceneRuntimeMocks.applySharedSceneState).toHaveBeenCalledTimes(1)
+  })
+
+  it('keeps the roots route mounted when only the roots slug changes', async () => {
+    const { router } = renderLayoutRoute('/roots/meals-on-wheels')
+    const rootsRouteProbe = screen.getByTestId('roots-route-probe')
+
+    expect(rootsRouteProbe).toBeInTheDocument()
+    expect(sharedSceneRuntimeMocks.applySharedSceneState).toHaveBeenCalledTimes(1)
+
+    await act(async () => {
+      await router.navigate('/roots/community-building')
+    })
+
+    expect(router.state.location.pathname).toBe('/roots/community-building')
+    expect(screen.getByTestId('roots-route-probe')).toBe(rootsRouteProbe)
+    expect(sharedSceneRuntimeMocks.animateSharedSceneTransition).not.toHaveBeenCalled()
+    expect(sharedSceneRuntimeMocks.applySharedSceneState).toHaveBeenCalledTimes(1)
   })
 
   it('mounts the about route when the scene transition starts', async () => {

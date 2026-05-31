@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react'
 
-export default function useCarousel(itemCount) {
-  const [index, setIndex] = useState(0)
+export default function useCarousel(itemCount, initialIndex = 0) {
+  const [index, setIndex] = useState(initialIndex)
 
   const next = useCallback(() => {
     setIndex((i) => (i + 1) % itemCount)

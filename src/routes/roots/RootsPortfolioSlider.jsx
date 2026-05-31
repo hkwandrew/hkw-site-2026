@@ -106,6 +106,10 @@ const Dialog = styled.div`
       }
     }
   }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    height: 100%;
+  }
 `
 
 const FrameChrome = styled.div`

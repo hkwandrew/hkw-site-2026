@@ -6,11 +6,12 @@ const RootsPage = lazy(() => import('./RootsPage.jsx'))
 export const rootsRoute = Object.freeze({
   id: 'roots',
   routePath: '/roots',
+  routePattern: 'roots/:portfolioSlug?',
   pageKey: 'roots-page',
   sceneStateKey: 'roots-page',
   label: 'Non-profit Roots',
   navLabel: null,
-  phoneNavLabel: 'Roots',
+  phoneNavLabel: 'Non-Profit',
   showInNav: false,
   showInPhoneNav: true,
   sceneSpec: rootsSceneSpec,
