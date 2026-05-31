@@ -11,7 +11,7 @@ export const rootsRoute = Object.freeze({
   sceneStateKey: 'roots-page',
   label: 'Non-profit Roots',
   navLabel: null,
-  phoneNavLabel: 'Non-Profit',
+  phoneNavLabel: 'Non-Profits',
   showInNav: false,
   showInPhoneNav: true,
   sceneSpec: rootsSceneSpec,

@@ -10,8 +10,8 @@ export const ROUTE_DEFINITIONS = [
   aboutRoute,
   servicesRoute,
   workRoute,
-  contactRoute,
   rootsRoute,
+  contactRoute,
 ]
 
 export const PAGE_DEFINITIONS = ROUTE_DEFINITIONS

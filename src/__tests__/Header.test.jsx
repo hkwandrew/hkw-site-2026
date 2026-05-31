@@ -1,6 +1,6 @@
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
+import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter } from 'react-router'
-import { fireEvent, render, screen } from '@/__tests__/testUtils'
+import { fireEvent, render, screen, within } from '@/__tests__/testUtils'
 import Header from '@/app/layout/Header'
 import { convertCssPxToViewportUnit } from '@/styles/viewportUnits'
 
@@ -36,12 +36,35 @@ describe('Header', () => {
     }
   })
 
+  afterEach(() => {
+    isPhoneViewport = false
+    window.requestAnimationFrame = originalRequestAnimationFrame
+    window.cancelAnimationFrame = originalCancelAnimationFrame
+    document.body.style.overflow = ''
+    document.body.style.touchAction = ''
+    delete document.body.dataset.mobileNavOpen
+  })
+
   afterAll(() => {
     window.matchMedia = originalMatchMedia
     window.ResizeObserver = originalResizeObserver
     window.requestAnimationFrame = originalRequestAnimationFrame
     window.cancelAnimationFrame = originalCancelAnimationFrame
   })
+
+  const openMobileNavigation = () => {
+    const menuButton = screen.getByRole('button', {
+      name: 'Open navigation menu',
+    })
+
+    fireEvent.click(menuButton)
+
+    const dialog = screen.getByRole('dialog', {
+      name: 'Mobile navigation',
+    })
+
+    return { dialog, menuButton }
+  }
 
   it('does not capture pointer events across the full header width', () => {
     renderHeader()
@@ -187,17 +210,101 @@ describe('Header', () => {
     })
 
     renderHeader(['/'])
-    fireEvent.click(screen.getByRole('button', { name: 'Open navigation menu' }))
-    fireEvent.keyDown(document, { key: 'Tab' })
+    const { dialog, menuButton } = openMobileNavigation()
 
-    expect(screen.getByRole('dialog', { name: 'Mobile navigation' })).toBeVisible()
-    expect(screen.getByRole('button', { name: 'Close navigation menu' })).toHaveAttribute(
-      'tabindex',
-      '-1',
+    expect(dialog).toBeVisible()
+    expect(within(dialog).getByRole('button', { name: 'Close navigation menu' })).toBeVisible()
+    expect(menuButton).toHaveAttribute('aria-hidden', 'true')
+    expect(within(dialog).getByRole('link', { name: 'About' })).toHaveFocus()
+  })
+
+  it('focuses the active mobile nav link when the current page is in the drawer', () => {
+    isPhoneViewport = true
+    window.requestAnimationFrame = vi.fn((callback) => {
+      callback(0)
+      return 1
+    })
+
+    renderHeader(['/roots'], {
+      contentPathname: '/roots',
+    })
+    const { dialog } = openMobileNavigation()
+
+    expect(within(dialog).getByRole('link', { name: 'Non-Profits' })).toHaveFocus()
+  })
+
+  it('renders a right-edge off-canvas drawer with the mobile nav order', () => {
+    isPhoneViewport = true
+
+    renderHeader(['/work'], {
+      contentPathname: '/work',
+    })
+    const { dialog } = openMobileNavigation()
+    const drawerStyles = getComputedStyle(dialog)
+    const linkLabels = within(dialog)
+      .getAllByRole('link')
+      .map((link) => link.textContent)
+
+    expect(drawerStyles.position).toBe('fixed')
+    expect(drawerStyles.right).toBe('0px')
+    expect(drawerStyles.width).toBe(
+      convertCssPxToViewportUnit('min(86vw, 360px)'),
     )
-    expect(screen.getByRole('link', { name: 'About' })).toHaveFocus()
+    expect(drawerStyles.height).toBe('100dvh')
+    expect(linkLabels).toEqual([
+      'About',
+      'Services',
+      'Work',
+      'Non-Profits',
+      'Contact',
+    ])
+    expect(within(dialog).getByRole('link', { name: 'Work' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    )
+  })
 
-    isPhoneViewport = false
-    window.requestAnimationFrame = originalRequestAnimationFrame
+  it('locks body scroll while the mobile drawer is open and clears it on close', () => {
+    isPhoneViewport = true
+
+    renderHeader(['/contact'], {
+      contentPathname: '/contact',
+    })
+    const { dialog } = openMobileNavigation()
+
+    expect(document.body.dataset.mobileNavOpen).toBe('true')
+    expect(document.body.style.overflow).toBe('hidden')
+    expect(document.body.style.touchAction).toBe('none')
+
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Close navigation menu' }))
+
+    expect(screen.queryByRole('dialog', { name: 'Mobile navigation' })).not.toBeInTheDocument()
+    expect(document.body.dataset.mobileNavOpen).toBeUndefined()
+    expect(document.body.style.overflow).toBe('')
+    expect(document.body.style.touchAction).toBe('')
+  })
+
+  it('closes the mobile drawer with Escape and backdrop clicks', () => {
+    isPhoneViewport = true
+
+    const { rerender } = renderHeader(['/services'], {
+      contentPathname: '/services',
+    })
+    let { dialog } = openMobileNavigation()
+
+    fireEvent.keyDown(document, { key: 'Escape' })
+
+    expect(screen.queryByRole('dialog', { name: 'Mobile navigation' })).not.toBeInTheDocument()
+
+    rerender(
+      <MemoryRouter initialEntries={['/services']}>
+        <Header contentPathname='/services' />
+      </MemoryRouter>,
+    )
+
+    dialog = openMobileNavigation().dialog
+    fireEvent.mouseDown(dialog.parentElement)
+
+    expect(screen.queryByRole('dialog', { name: 'Mobile navigation' })).not.toBeInTheDocument()
   })
 })

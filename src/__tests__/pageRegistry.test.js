@@ -158,25 +158,33 @@ describe('PHONE_NAV_ITEMS', () => {
     })
   })
 
-  it('includes contact page (phone nav only)', () => {
-    const contactItem = PHONE_NAV_ITEMS.find((item) => item.id === 'contact')
-    expect(contactItem).toBeDefined()
-  })
-
-  it('includes Work and Roots pages', () => {
-    expect(PHONE_NAV_ITEMS).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          id: 'work',
-          label: 'Work',
-          path: '/work',
-        }),
-        expect.objectContaining({
-          id: 'roots',
-          label: 'Roots',
-          path: '/roots',
-        }),
-      ]),
-    )
+  it('uses the mobile navigation order and labels', () => {
+    expect(PHONE_NAV_ITEMS).toEqual([
+      {
+        id: 'about',
+        label: 'About',
+        path: '/about',
+      },
+      {
+        id: 'services',
+        label: 'Services',
+        path: '/services',
+      },
+      {
+        id: 'work',
+        label: 'Work',
+        path: '/work',
+      },
+      {
+        id: 'roots',
+        label: 'Non-Profits',
+        path: '/roots',
+      },
+      {
+        id: 'contact',
+        label: 'Contact',
+        path: '/contact',
+      },
+    ])
   })
 })
