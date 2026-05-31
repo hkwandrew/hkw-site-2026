@@ -122,9 +122,28 @@ export const SubmitButton = styled(PillButton)`
   color: ${({ theme }) => theme.colors.white};
   text-box: trim-both cap alphabetic;
 
+  &:disabled {
+    cursor: wait;
+    opacity: 0.72;
+  }
+
   @media (max-width: ${PHONE_BREAKPOINT}) {
     font-size: 16px;
   }
+`
+
+export const FormStatus = styled.p`
+  min-height: 20px;
+  margin: 4px 0 0;
+  color: ${({ theme, $tone }) =>
+    $tone === 'error' ? theme.colors.peach : theme.colors.yellow.light};
+  text-align: center;
+  font-size: 14px;
+  font-style: italic;
+  font-variation-settings:
+    'wdth' ${({ theme }) => theme.font.width.semicondensed},
+    'slnt' ${({ theme }) => theme.font.slant.italic};
+  line-height: 1.35;
 `
 
 export const RequiredNote = styled.p`

@@ -1,8 +1,13 @@
-import { describe, it, expect, vi } from 'vitest'
+import { beforeEach, describe, it, expect, vi } from 'vitest'
 import { createMemoryRouter, MemoryRouter, RouterProvider } from 'react-router'
-import { fireEvent, render, screen, withTheme } from '@/__tests__/testUtils'
+import { fireEvent, render, screen, waitFor, withTheme } from '@/__tests__/testUtils'
 import Contact from '@/routes/contact/ContactPage'
+import { sendContactEmail } from '@/routes/contact/sendContactEmail'
 import { CONTACT_SCENE_STATE } from '@/routes/contact/sceneSpec'
+
+vi.mock('@/routes/contact/sendContactEmail', () => ({
+  sendContactEmail: vi.fn(),
+}))
 
 const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
@@ -39,7 +44,32 @@ const renderContactRoute = (props = {}) => {
   }
 }
 
+const fillValidContactForm = () => {
+  fireEvent.click(screen.getByRole('combobox', { name: /project type/i }))
+  fireEvent.click(screen.getByRole('option', { name: 'Branding' }))
+  fireEvent.change(screen.getByLabelText(/enter name/i), {
+    target: { value: 'A.J. Hughes' },
+  })
+  fireEvent.change(screen.getByLabelText(/organization/i), {
+    target: { value: 'HKW' },
+  })
+  fireEvent.change(screen.getByLabelText(/enter email address/i), {
+    target: { value: 'aj@example.com' },
+  })
+  fireEvent.change(screen.getByLabelText(/enter website/i), {
+    target: { value: 'https://example.com' },
+  })
+  fireEvent.change(screen.getByLabelText(/tell us about your project/i), {
+    target: { value: 'We need a new site.' },
+  })
+}
+
 describe('Contact page', () => {
+  beforeEach(() => {
+    sendContactEmail.mockReset()
+    sendContactEmail.mockResolvedValue({ status: 200, text: 'OK' })
+  })
+
   it('renders without crashing', () => {
     renderContact()
     expect(screen.getByText('Get In Touch')).toBeInTheDocument()
@@ -77,6 +107,7 @@ describe('Contact page', () => {
     const sendButtons = screen.getAllByRole('button', { name: /send message/i })
     fireEvent.submit(sendButtons[0].closest('form'))
     expect(screen.getAllByText('Please fill out this field.').length).toBeGreaterThan(0)
+    expect(sendContactEmail).not.toHaveBeenCalled()
   })
 
   it('applies Figma validation and active field styling on desktop', () => {
@@ -170,5 +201,72 @@ describe('Contact page', () => {
     await vi.waitFor(() => {
       expect(router.state.location.pathname).toBe('/')
     })
+  })
+
+  it('sends valid contact values to the EmailJS template variables', async () => {
+    renderContact()
+    fillValidContactForm()
+
+    fireEvent.submit(screen.getByRole('button', { name: /send message/i }).closest('form'))
+
+    await waitFor(() => {
+      expect(sendContactEmail).toHaveBeenCalledWith({
+        product_type: 'Branding',
+        from_name: 'A.J. Hughes',
+        organization: 'HKW',
+        from_email: 'aj@example.com',
+        website: 'https://example.com',
+        project: 'We need a new site.',
+      })
+    })
+  })
+
+  it('shows confirmation and clears the form after a successful send', async () => {
+    renderContact()
+    fillValidContactForm()
+
+    fireEvent.submit(screen.getByRole('button', { name: /send message/i }).closest('form'))
+
+    expect(await screen.findByText('Thanks, we received your message.')).toBeInTheDocument()
+    expect(screen.getByLabelText(/enter name/i)).toHaveValue('')
+    expect(screen.getByLabelText(/enter email address/i)).toHaveValue('')
+    expect(screen.getByRole('combobox', { name: /project type/i })).toHaveTextContent(
+      'Select option',
+    )
+  })
+
+  it('keeps form values and shows a generic error when EmailJS fails', async () => {
+    sendContactEmail.mockRejectedValue(new Error('EmailJS request failed'))
+    renderContact()
+    fillValidContactForm()
+
+    fireEvent.submit(screen.getByRole('button', { name: /send message/i }).closest('form'))
+
+    expect(await screen.findByText('Message could not be sent. Please try again.')).toBeInTheDocument()
+    expect(screen.getByLabelText(/enter name/i)).toHaveValue('A.J. Hughes')
+    expect(screen.getByLabelText(/enter email address/i)).toHaveValue('aj@example.com')
+  })
+
+  it('prevents duplicate submits while EmailJS is sending', async () => {
+    let resolveSend
+    sendContactEmail.mockReturnValue(
+      new Promise((resolve) => {
+        resolveSend = resolve
+      }),
+    )
+    renderContact()
+    fillValidContactForm()
+
+    const form = screen.getByRole('button', { name: /send message/i }).closest('form')
+    fireEvent.submit(form)
+
+    const sendingButton = await screen.findByRole('button', { name: /sending/i })
+    expect(sendingButton).toBeDisabled()
+
+    fireEvent.submit(form)
+    expect(sendContactEmail).toHaveBeenCalledTimes(1)
+
+    resolveSend({ status: 200, text: 'OK' })
+    expect(await screen.findByText('Thanks, we received your message.')).toBeInTheDocument()
   })
 })

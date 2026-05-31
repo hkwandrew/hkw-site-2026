@@ -2,10 +2,12 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import CloseButton from '@/shared/ui/CloseButton'
 import FormField from '@/shared/ui/FormField'
+import { sendContactEmail } from './sendContactEmail'
 import { validateContact } from './validateContact'
 import {
   CloseWrapper,
   ContactForm,
+  FormStatus,
   Panel,
   Page,
   RequiredNote,
@@ -34,10 +36,30 @@ const initialValues = {
   message: '',
 }
 
+const submitMessages = {
+  success: 'Thanks, we received your message.',
+  error: 'Message could not be sent. Please try again.',
+}
 
-function ContactFormFields({ values, errors, onChange, onSubmit }) {
+const getContactTemplateParams = (values) => ({
+  product_type: values.projectType.trim(),
+  from_name: values.name.trim(),
+  organization: values.organization.trim(),
+  from_email: values.email.trim(),
+  website: values.website.trim(),
+  project: values.message.trim(),
+})
+
+function ContactFormFields({ values, errors, onChange, onSubmit, submitStatus }) {
+  const isSubmitting = submitStatus === 'submitting'
+  const statusMessage = submitMessages[submitStatus]
+
   return (
-    <ContactForm noValidate onSubmit={onSubmit}>
+    <ContactForm
+      noValidate
+      aria-busy={isSubmitting || undefined}
+      onSubmit={onSubmit}
+    >
       <FormField
         label='PROJECT TYPE'
         type='select'
@@ -89,10 +111,19 @@ function ContactFormFields({ values, errors, onChange, onSubmit }) {
         onChange={onChange}
       />
       <SubmitRow>
-        <SubmitButton variant='send' type='submit'>
-          SEND MESSAGE
+        <SubmitButton variant='send' type='submit' disabled={isSubmitting}>
+          {isSubmitting ? 'SENDING...' : 'SEND MESSAGE'}
         </SubmitButton>
       </SubmitRow>
+      {statusMessage ? (
+        <FormStatus
+          role={submitStatus === 'error' ? 'alert' : 'status'}
+          aria-live='polite'
+          $tone={submitStatus}
+        >
+          {statusMessage}
+        </FormStatus>
+      ) : null}
       <RequiredNote>* REQUIRED</RequiredNote>
     </ContactForm>
   )
@@ -102,6 +133,7 @@ export default function Contact({ onClose } = {}) {
   const navigate = useNavigate()
   const [values, setValues] = useState(initialValues)
   const [errors, setErrors] = useState({})
+  const [submitStatus, setSubmitStatus] = useState('idle')
 
   const handleClose = () => {
     if (onClose) {
@@ -127,16 +159,34 @@ export default function Contact({ onClose } = {}) {
       delete next[name]
       return next
     })
+
+    setSubmitStatus((current) => (current === 'submitting' ? current : 'idle'))
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
+
+    if (submitStatus === 'submitting') {
+      return
+    }
 
     const nextErrors = validateContact(values)
     setErrors(nextErrors)
+    setSubmitStatus('idle')
 
     if (Object.keys(nextErrors).length > 0) {
       return
+    }
+
+    setSubmitStatus('submitting')
+
+    try {
+      await sendContactEmail(getContactTemplateParams(values))
+      setValues(initialValues)
+      setErrors({})
+      setSubmitStatus('success')
+    } catch {
+      setSubmitStatus('error')
     }
   }
 
@@ -156,6 +206,7 @@ export default function Contact({ onClose } = {}) {
             errors={errors}
             onChange={handleChange}
             onSubmit={handleSubmit}
+            submitStatus={submitStatus}
           />
         </Panel>
       </Stage>
