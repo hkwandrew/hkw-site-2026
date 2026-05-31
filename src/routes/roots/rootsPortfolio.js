@@ -1,3 +1,5 @@
+import { memo } from 'react'
+
 import ApicWashington from './ApicWashington'
 import Celdf from './Celdf'
 import CitizenNineTwoSix from './CitizenNineTwoSix'
@@ -38,6 +40,41 @@ import terrainDetail from './assets/roots-slider/terrain-detail.png'
 import watersMeetDetail from './assets/roots-slider/waters-meet-detail.png'
 import womenOfColorCandidatesDetail from './assets/roots-slider/women-of-color-candidates-detail.png'
 
+const memoFrame = (FrameComponent, displayName) => {
+  const MemoizedFrame = memo(FrameComponent)
+  MemoizedFrame.displayName = displayName
+  return MemoizedFrame
+}
+
+const ApicWashingtonFrame = memoFrame(ApicWashington, 'ApicWashington')
+const CeldfFrame = memoFrame(Celdf, 'Celdf')
+const CitizenNineTwoSixFrame = memoFrame(
+  CitizenNineTwoSix,
+  'CitizenNineTwoSix',
+)
+const CommunityWhistleFrame = memoFrame(CommunityWhistle, 'CommunityWhistle')
+const ScarFrame = memoFrame(Scar, 'Scar')
+const WatersMeetFrame = memoFrame(WatersMeet, 'WatersMeet')
+const EwiFrame = memoFrame(Ewi, 'Ewi')
+const TerrainFrame = memoFrame(Terrain, 'Terrain')
+const RjpmcFrame = memoFrame(Rjpmc, 'Rjpmc')
+const AclFrame = memoFrame(Acl, 'Acl')
+const MarthasKitchenFrame = memoFrame(MarthasKitchen, 'MarthasKitchen')
+const JusticeNotJailsFrame = memoFrame(JusticeNotJails, 'JusticeNotJails')
+const CommunityDevelopmentInitiativeFrame = memoFrame(
+  CommunityDevelopmentInitiative,
+  'CommunityDevelopmentInitiative',
+)
+const PjalsFrame = memoFrame(Pjals, 'Pjals')
+const CommunityBuildingFrame = memoFrame(CommunityBuilding, 'CommunityBuilding')
+const FyreFrame = memoFrame(Fyre, 'Fyre')
+const WomenOfColorCandidatesFrame = memoFrame(
+  WomenOfColorCandidates,
+  'WomenOfColorCandidates',
+)
+const SpokaneArtsFrame = memoFrame(SpokaneArts, 'SpokaneArts')
+const MealsOnWheelsFrame = memoFrame(MealsOnWheels, 'MealsOnWheels')
+
 const PLACEHOLDER_COPY = 'TBD'
 const PLACEHOLDER_ROLES = ['TBD']
 
@@ -45,7 +82,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'celdf',
     title: 'CELDF',
-    FrameComponent: Celdf,
+    FrameComponent: CeldfFrame,
     detailImage: celdfDetail,
     maxWidth: 355,
     bio: 'CELDF are at the forefront of the global “Rights of Nature” movement, working to redefine how communities and the environment are protected under the law. Through legal advocacy and systemic change, they help ensure that people and nature have a stronger voice than corporate interests.',
@@ -70,7 +107,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'ewi',
     title: 'Executive Women International of Spokane',
-    FrameComponent: Ewi,
+    FrameComponent: EwiFrame,
     detailImage: ewiDetail,
     maxWidth: 343,
     bio: 'EWI brings together leaders from diverse businesses to give back and make a meaningful impact. Through philanthropy, community service, and educational initiatives, their members are committed to strengthening the communities they work and live in.',
@@ -86,7 +123,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'citizen-nine26',
     title: 'Citizen Nine26',
-    FrameComponent: CitizenNineTwoSix,
+    FrameComponent: CitizenNineTwoSixFrame,
     detailImage: citizenNine26Detail,
     maxWidth: 372,
     bio: 'Citizen Nine26 helps everyday people navigate complex legal and civil rights challenges with confidence. Whether accessing public records or understanding their rights, they make sure community members have the tools and support they need to advocate for themselves.',
@@ -110,7 +147,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'racial-justice',
     title: 'Racial Justice and Police Misconduct Center (RJPMC)',
-    FrameComponent: Rjpmc,
+    FrameComponent: RjpmcFrame,
     detailImage: racialJusticeDetail,
     maxWidth: 358,
     bio: 'Dedicated to investigating law enforcement misconduct and addressing systemic racism in the criminal legal system, RJPMC provides families impacted by police violence with support, legal resources, and a path forward.',
@@ -127,7 +164,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'waters-meet',
     title: 'Waters Meet C3 & C4',
-    FrameComponent: WatersMeet,
+    FrameComponent: WatersMeetFrame,
     detailImage: watersMeetDetail,
     maxWidth: 355,
     bio: 'Deeply rooted in Spokane, Waters Meet works toward a region where health, opportunity, and justice are accessible to everyone. Their focus is on lifting up historically marginalized communities, including BIPOC, rural low-income, 2SLGBTQIA+, and disability communities, ensuring their voices are centered in the work.',
@@ -150,7 +187,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'community-development-initiative',
     title: 'Community Development Initiative',
-    FrameComponent: CommunityDevelopmentInitiative,
+    FrameComponent: CommunityDevelopmentInitiativeFrame,
     detailImage: communityDevelopmentInitiativeDetail,
     maxWidth: 318,
     bio: 'A civic initiative dedicated to strengthening communities from the ground up, they fund a wide range of local needs, from public services and affordable housing to small business support and neighborhood improvements, ensuring resources reach the people and places that need them most.',
@@ -165,7 +202,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'spokane-community-against-racism',
     title: 'SCAR Spokane',
-    FrameComponent: Scar,
+    FrameComponent: ScarFrame,
     detailImage: spokaneCommunityAgainstRacismDetail,
     maxWidth: 372,
     bio: 'SCAR is a 501c4 and led by a steering committee of six people; four of whom are people of color. They have a multitude of affiliations with local, state, and national organizations. SCAR uses the Hub and Spoke model of organizing with the Steering Committee in the center.',
@@ -189,7 +226,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'asians-for-collective-liberation',
     title: 'Asians for Collective Liberation',
-    FrameComponent: Acl,
+    FrameComponent: AclFrame,
     detailImage: asiansForCollectiveLiberationDetail,
     maxWidth: 358,
     bio: "ACL supports Asian and Asian American communities through civic engagement, cultural celebration, and community wellness. From legislative advocacy to mental health resources and vibrant cultural events, they foster a sense of belonging and ensure their community's voices are heard and represented.",
@@ -207,7 +244,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'justice-not-jails',
     title: 'Justice Not Jails',
-    FrameComponent: JusticeNotJails,
+    FrameComponent: JusticeNotJailsFrame,
     detailImage: justiceNotJailsDetail,
     maxWidth: 358,
     bio: 'Rooted in Spokane, Justice Not Jails works to build a safer, more equitable community by investing in real solutions like mental health care, housing, and substance abuse support. They advocate for approaches that address the root causes of crime and create pathways toward healing and stability for everyone.',
@@ -231,7 +268,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'meals-on-wheels',
     title: 'Meals on Wheels',
-    FrameComponent: MealsOnWheels,
+    FrameComponent: MealsOnWheelsFrame,
     detailImage: mealsOnWheelsDetail,
     maxWidth: 343,
     bio: 'Meals on Wheels nourishes and supports homebound seniors and disabled adults by delivering nutritious meals, daily well-being checks, and a friendly face at the door. Each visit is a small but meaningful moment of connection for those who need it most.',
@@ -249,7 +286,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'community-building',
     title: 'Community Building',
-    FrameComponent: CommunityBuilding,
+    FrameComponent: CommunityBuildingFrame,
     detailImage: communityBuildingDetail,
     maxWidth: 343,
     bio: "The Community Building Foundation supports the Spokane region through grant-making, women's retreat programs, and the Community Building Campus, a downtown hub offering affordable space for local organizations to grow and do their work.",
@@ -267,7 +304,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'fyre',
     title: 'FYRE',
-    FrameComponent: Fyre,
+    FrameComponent: FyreFrame,
     detailImage: fyreDetail,
     maxWidth: 354,
     bio: 'FYRE provides a safe and welcoming space where underserved youth and young adults ages 12 to 24 can socialize, get homework done, and access the resources they need to thrive in Okanogan County.',
@@ -285,7 +322,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'women-of-color-candidates',
     title: 'Women of Color Candidates',
-    FrameComponent: WomenOfColorCandidates,
+    FrameComponent: WomenOfColorCandidatesFrame,
     detailImage: womenOfColorCandidatesDetail,
     maxWidth: 354,
     bio: '"Working with Scott Mueller was an incredible experience. He intentionally prioritizes supporting candidates of color, and his generosity, creativity, and patience made a huge difference in my campaign. He created a kick-ass logo, helped design a website I was truly proud of, supported social media outreach, and even helped produce hundreds of campaign buttons. As someone without established political connections or resources, his support helped me show up professionally and confidently. His work goes far beyond design — he helps elevate voices and candidates who might otherwise not have access to this level of support."\n\n- Nikki Lockwood',
@@ -308,7 +345,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'terrain',
     title: 'Terrain',
-    FrameComponent: Terrain,
+    FrameComponent: TerrainFrame,
     detailImage: terrainDetail,
     maxWidth: 331,
     bio: "COMING SOON: Terrain are a driving force behind Spokane's creative economy, championing local artists and making art accessible to everyone in the Inland Northwest. Through large-scale events, a retail storefront, and year-round artist development, they create real opportunities for creatives to grow and thrive.",
@@ -326,7 +363,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'community-whistle',
     title: 'Community Whistle',
-    FrameComponent: CommunityWhistle,
+    FrameComponent: CommunityWhistleFrame,
     detailImage: communityWhistleDetail,
     maxWidth: 318,
     bio: 'As a grassroots rapid-response system, Community Whistle shares whistle codes, safety guidance, and immigration hotline resources to help neighbors alert each other and respond to raids.',
@@ -343,7 +380,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'spokane-arts',
     title: 'Spokane Arts',
-    FrameComponent: SpokaneArts,
+    FrameComponent: SpokaneArtsFrame,
     detailImage: spokaneArtsDetail,
     maxWidth: 355,
     bio: 'Through grant-making, programming, and advocacy, Spokane Arts works to ensure creativity has the space and support it needs to flourish in Spokane.',
@@ -361,7 +398,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'marthas-kitchen',
     title: "Martha's Kitchen",
-    FrameComponent: MarthasKitchen,
+    FrameComponent: MarthasKitchenFrame,
     detailImage: marthasKitchenDetail,
     maxWidth: 343,
     bio: 'Martha’s Kitchen delivers over 2.4 million meals annually to vulnerable community members, from families in need to seniors, veterans, and those experiencing homelessness. Through hot meal programs, grocery distribution, and food rescue efforts, they have spent over four decades making sure no one in their community goes without.',
@@ -379,7 +416,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'pjals',
     title: 'Peace and Justice Action League of Spokane (PJALS)',
-    FrameComponent: Pjals,
+    FrameComponent: PjalsFrame,
     detailImage: pjalsDetail,
     maxWidth: 343,
     bio: 'For nearly 50 years, PJALS has been a cornerstone of community organizing in Spokane, bringing people together around racial equity, economic justice, human rights, and nonviolence. Through grassroots advocacy and community building, they work toward a more just and peaceful region for all.',
@@ -404,7 +441,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'apic-washington',
     title: 'Asian & Pacific Islander Coalition \nof Washington',
-    FrameComponent: ApicWashington,
+    FrameComponent: ApicWashingtonFrame,
     detailImage: apicWashingtonDetail,
     maxWidth: 358,
     bio: 'For nearly three decades, APICW has been a steady voice for Asian American, Native Hawaiian, and Pacific Islander communities across Washington state, working to close gaps in access and opportunity through advocacy, community building, and meaningful policy change.',

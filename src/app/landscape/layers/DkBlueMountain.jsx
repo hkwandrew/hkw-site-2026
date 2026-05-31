@@ -1,7 +1,8 @@
+import { memo } from 'react'
+import dkBlueMountainHover from '@/assets/images/dk-blue-mountain-hover.svg'
 import { getHomeHoverRegionPosition } from '@/routes/home/homeHoverConfig'
 import { HOME_HOVER_REGION } from '@/routes/home/homeHoverRegions'
 import theme from '@/styles/theme'
-import DkBlueMountainHoverArt from './DkBlueMountainHoverArt'
 import MountainBase from './MountainBase'
 
 const DK_BLUE_MOUNTAIN_PATH =
@@ -11,25 +12,35 @@ const HOVER_POSITION = getHomeHoverRegionPosition(
   HOME_HOVER_REGION.dkBlueMountain,
 )
 
-const DkBlueMountain = () => (
-  <MountainBase
-    containerId='dk-blue-mountain_container'
-    wrapperId='dk-blue-mountain_wrapper'
-    hoverPosition={HOVER_POSITION}
-    hoverRegion={HOME_HOVER_REGION.dkBlueMountain}
-    hoverContent={<DkBlueMountainHoverArt />}
-    mountainContent={
-      <path
-        id='dk-blue-mountain'
-        d={DK_BLUE_MOUNTAIN_PATH}
-        // transform='translate(-2480.5,-700.000031)'
-        fill={theme.colors.blue.dark}
-      />
-    }
-    hitboxId='dk-blue-mountain-hover-hitbox'
-    hitboxPath={DK_BLUE_MOUNTAIN_PATH}
-    // hitboxTransform='translate(-2480.5,-700.000031)'
-  />
-)
+const DkBlueMountain = memo(function DkBlueMountain() {
+  return (
+    <MountainBase
+      containerId='dk-blue-mountain_container'
+      wrapperId='dk-blue-mountain_wrapper'
+      hoverPosition={HOVER_POSITION}
+      hoverRegion={HOME_HOVER_REGION.dkBlueMountain}
+      hoverContent={
+        <image
+          id='dk-blue-mountain-hover-art'
+          href={dkBlueMountainHover}
+          width='680'
+          height='182'
+          preserveAspectRatio='none'
+        />
+      }
+      mountainContent={
+        <path
+          id='dk-blue-mountain'
+          d={DK_BLUE_MOUNTAIN_PATH}
+          // transform='translate(-2480.5,-700.000031)'
+          fill={theme.colors.blue.dark}
+        />
+      }
+      hitboxId='dk-blue-mountain-hover-hitbox'
+      hitboxPath={DK_BLUE_MOUNTAIN_PATH}
+      // hitboxTransform='translate(-2480.5,-700.000031)'
+    />
+  )
+})
 
 export default DkBlueMountain

@@ -1,4 +1,6 @@
-export default function SpokaneArts() {
+import { memo } from 'react'
+
+function SpokaneArts() {
   return (
     <svg
       width='176'
@@ -1428,3 +1430,8 @@ export default function SpokaneArts() {
     </svg>
   )
 }
+
+const MemoizedSpokaneArts = memo(SpokaneArts)
+MemoizedSpokaneArts.displayName = 'SpokaneArts'
+
+export default MemoizedSpokaneArts

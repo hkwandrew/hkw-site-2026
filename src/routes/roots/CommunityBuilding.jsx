@@ -1,4 +1,6 @@
-export default function CommunityBuilding() {
+import { memo } from 'react'
+
+function CommunityBuilding() {
   return (
     <svg
       width='226'
@@ -6973,3 +6975,8 @@ export default function CommunityBuilding() {
     </svg>
   )
 }
+
+const MemoizedCommunityBuilding = memo(CommunityBuilding)
+MemoizedCommunityBuilding.displayName = 'CommunityBuilding'
+
+export default MemoizedCommunityBuilding

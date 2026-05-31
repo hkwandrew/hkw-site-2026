@@ -1,38 +1,80 @@
-import NonProfitSign from './NonProfitSign'
+import { memo } from 'react'
 import { styled } from 'styled-components'
 
-const Marmot = styled.svg`
-  z-index: 1;
+const WorkMarmotScene = styled.span`
+  position: relative;
+  display: block;
+  width: 214px;
+  height: 150px;
+  overflow: visible;
 `
 
-const Sign = styled.g`
+const Marmot = styled.svg`
+  position: relative;
+  display: block;
+  width: 214px;
+  height: 150px;
+  z-index: 1;
+  overflow: visible;
+`
+
+const SignMask = styled.span`
+  position: absolute;
+  top: -53.6px;
+  left: -90px;
+  z-index: 0;
+  display: block;
+  width: 183px;
+  height: 195.6px;
+  overflow: hidden;
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% 97.1%,
+    72% 96%,
+    52% 91%,
+    30% 82%,
+    14% 74%,
+    0 66.5%
+  );
+  pointer-events: none;
+`
+
+const Sign = styled.svg`
   width: 183px;
   height: 175px;
   position: absolute;
-  translate: 0 -53.6px;
-  left: -90px;
-  z-index: 1;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  pointer-events: none;
+  overflow: visible;
+  transform: translate3d(0, 78px, 0);
+  transform-origin: center bottom;
+  will-change: opacity, transform;
 `
 
 const WorkMarmot = () => {
   return (
-    <>
-      <Sign>
-        <path
-          height='175'
+    <WorkMarmotScene data-work-marmot-scene>
+      <SignMask data-work-marmot-sign-mask aria-hidden='true'>
+        <Sign
+          data-work-marmot-sign
+          aria-hidden='true'
+          focusable='false'
           viewBox='0 0 183 175'
           fill='none'
           xmlns='http://www.w3.org/2000/svg'
-        />
+        >
         <path
-          fill-rule='evenodd'
-          clip-rule='evenodd'
+          fillRule='evenodd'
+          clipRule='evenodd'
           d='M72.0642 27.3628L74.0824 26.822L76.7188 34.7467L76.3075 26.2258L83.177 24.3851L122.61 171.551L111.497 174.528L72.0642 27.3628Z'
           fill='#AD7149'
         />
         <path
-          fill-rule='evenodd'
-          clip-rule='evenodd'
+          fillRule='evenodd'
+          clipRule='evenodd'
           d='M18.4647 40.2778L162.108 35.5973L162.761 56.6185L150.353 58.8709L162.823 58.3533L163.931 94.1176L149.616 96.0247L164.048 96.9374L164.1 98.8204L155.702 100.64L164.196 101.605L164.464 110.087L20.7786 114.756L20.1425 95.0591L32.0437 93.052L21.73 90.4826L26.3724 88.0604L19.9561 86.4547L19.0595 57.7563L31.3195 55.4944C31.3195 55.4944 25.1993 55.0453 18.9556 54.6083L18.4647 40.2778Z'
           fill='white'
         />
@@ -46,23 +88,38 @@ const WorkMarmot = () => {
           r='2.54153'
           fill='#DF975E'
           stroke='#A4673A'
-          stroke-width='0.726151'
+          strokeWidth='0.726151'
         />
-      </Sign>
+        </Sign>
+      </SignMask>
       <Marmot
+        data-work-marmot-art
         width='214'
         height='150'
         viewBox='0 0 214 150'
         fill='none'
         xmlns='http://www.w3.org/2000/svg'
       >
+        <defs>
+          <clipPath
+            id='workMarmotAboveHoleClip'
+            clipPathUnits='userSpaceOnUse'
+          >
+            <rect x='-32' y='-48' width='278' height='190' />
+          </clipPath>
+        </defs>
+
         <path
+          data-work-marmot-hole
           transform='translate(0,107)'
           d='M106.579 34.585C165.439 34.585 213.159 26.841 213.159 17.2879C213.159 7.73477 165.439 0 106.579 0C47.7193 0 0 7.744 0 17.2879C0 26.8317 47.7193 34.585 106.579 34.585Z'
           fill='#1C2D38'
         />
 
-        <g>
+        <g
+          data-work-marmot-character-mask
+          clipPath='url(#workMarmotAboveHoleClip)'
+        >
           <g id='marmot-character-idle'>
             <path
               d='M44.174 138.778C44.174 138.778 44.2294 138.787 44.257 138.797C45.9646 139.064 47.7275 139.341 49.5551 139.609C49.592 139.609 49.6197 139.618 49.6566 139.627C51.4934 139.895 53.3856 140.163 55.3331 140.43C55.3608 140.43 55.3885 140.43 55.4162 140.44C57.3822 140.707 59.4036 140.966 61.4803 141.215C61.4895 141.215 61.508 141.215 61.5172 141.215C75.4731 142.922 91.8102 144.307 109.181 144.575L144.846 143.402C149.636 142.987 154.445 142.461 159.236 141.806C159.245 141.806 159.254 141.806 159.273 141.806C163.269 141.252 167.247 140.624 171.207 139.886C175.176 139.147 179.117 138.317 183.012 137.375L180.289 126.373L183.908 130.665C183.908 130.665 181.36 123.429 179.348 119.137C177.336 114.845 169.832 102.375 169.961 93.1263C170.099 83.8778 153.873 50.8989 143.286 51.9696L69.8243 61.3565C69.8243 61.3565 41.9403 92.591 39.5313 114.309C37.9991 128.136 38.5713 134.892 39.199 137.984C40.7773 138.252 42.4387 138.529 44.1555 138.797L44.174 138.778Z'
@@ -314,8 +371,11 @@ const WorkMarmot = () => {
           </g>
         </g>
       </Marmot>
-    </>
+    </WorkMarmotScene>
   )
 }
 
-export default WorkMarmot
+const MemoizedWorkMarmot = memo(WorkMarmot)
+MemoizedWorkMarmot.displayName = 'WorkMarmot'
+
+export default MemoizedWorkMarmot

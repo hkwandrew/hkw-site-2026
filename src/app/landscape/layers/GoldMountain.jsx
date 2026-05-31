@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import goldMountainHover from '@/assets/images/gold-mountain-hover.png'
 import { getHomeHoverRegionPosition } from '@/routes/home/homeHoverConfig'
 import { HOME_HOVER_REGION } from '@/routes/home/homeHoverRegions'
@@ -11,36 +12,38 @@ const HOVER_POSITION = getHomeHoverRegionPosition(
   HOME_HOVER_REGION.goldMountain,
 )
 
-const GoldMountain = () => (
-  <MountainBase
-    containerId='gold-mountain__container'
-    wrapperId='gold-mountain__wrapper'
-    hoverPosition={HOVER_POSITION}
-    hoverRegion={HOME_HOVER_REGION.goldMountain}
-    hoverContent={
-      <image
-        href={goldMountainHover}
-        width={HOVER_POSITION.width}
-        height={HOVER_POSITION.height}
-        preserveAspectRatio='none'
-      />
-    }
-    mountainContent={
-      <path
-        id='gold-mountain-path'
-        d={GOLD_MOUNTAIN_PATH}
-        transform='translate(-5.492666 -75.016071)'
-        clipRule='evenodd'
-        fill={theme.colors.yellow.gold}
-        fillRule='evenodd'
-      />
-    }
-    hitboxId='gold-mountain-hover-hitbox'
-    hitboxPath={GOLD_MOUNTAIN_PATH}
-    hitboxTransform='translate(-5.492666 -75.016071)'
-    innerGroupId='gold-mountain'
-    innerGroupTransform='translate(-2005,-666.210876)'
-  />
-)
+const GoldMountain = memo(function GoldMountain() {
+  return (
+    <MountainBase
+      containerId='gold-mountain__container'
+      wrapperId='gold-mountain__wrapper'
+      hoverPosition={HOVER_POSITION}
+      hoverRegion={HOME_HOVER_REGION.goldMountain}
+      hoverContent={
+        <image
+          href={goldMountainHover}
+          width={HOVER_POSITION.width}
+          height={HOVER_POSITION.height}
+          preserveAspectRatio='none'
+        />
+      }
+      mountainContent={
+        <path
+          id='gold-mountain-path'
+          d={GOLD_MOUNTAIN_PATH}
+          transform='translate(-5.492666 -75.016071)'
+          clipRule='evenodd'
+          fill={theme.colors.yellow.gold}
+          fillRule='evenodd'
+        />
+      }
+      hitboxId='gold-mountain-hover-hitbox'
+      hitboxPath={GOLD_MOUNTAIN_PATH}
+      hitboxTransform='translate(-5.492666 -75.016071)'
+      innerGroupId='gold-mountain'
+      innerGroupTransform='translate(-2005,-666.210876)'
+    />
+  )
+})
 
 export default GoldMountain

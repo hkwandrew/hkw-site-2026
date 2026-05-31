@@ -1,3 +1,5 @@
+import { memo } from 'react'
+
 const MarmotCheer = () => {
     return (
         <svg overflow="visible"
@@ -1141,4 +1143,4 @@ const MarmotCheer = () => {
     )
 }
 
-export default MarmotCheer
+export default memo(MarmotCheer)

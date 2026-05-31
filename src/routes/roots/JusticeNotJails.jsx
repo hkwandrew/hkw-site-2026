@@ -1,4 +1,6 @@
-export default function JusticeNotJails() {
+import { memo } from 'react'
+
+function JusticeNotJails() {
   return (
     <svg
       width='182'
@@ -1479,3 +1481,8 @@ export default function JusticeNotJails() {
     </svg>
   )
 }
+
+const MemoizedJusticeNotJails = memo(JusticeNotJails)
+MemoizedJusticeNotJails.displayName = 'JusticeNotJails'
+
+export default MemoizedJusticeNotJails

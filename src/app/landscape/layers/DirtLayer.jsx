@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import styled from 'styled-components'
 
 const SCENE_FRAME_WIDTH = 1440
@@ -18,14 +19,9 @@ const RootsDirtLayer = styled.g`
 
 const WorkDirtLayer = styled.g``
 
-const DirtLayer = ({
-  showWorkDirtLayer = false,
-  containerId = 'dirt-layer__container',
-}) => {
+const RootsDirtArtwork = memo(function RootsDirtArtwork() {
   return (
-    <DirtLayerContainer id={containerId}>
-      <RootsDirtLayer id='dirt-layer__wrapper'>
-        <g transform={`translate(${ROOTS_DIRT_ARTWORK_OFFSET_X},0)`}>
+    <g transform={`translate(${ROOTS_DIRT_ARTWORK_OFFSET_X},0)`}>
           <path
             d='M2944 462.079H0V142.261C0 142.261 414 9.76095 612 17.0788C630.792 17.6562 649.866 19.0347 669 18.5788C692.918 18.0015 717.026 7.1411 741 6.57892C766.227 6.00154 792.716 6.22777 818 6.57724C842.772 6.89631 890 13.5772 890 13.5772C914.715 14.2002 966 23.0772 966 23.0772C990.5 26.9921 1013.84 36.2292 1038.5 36.761C1061.16 37.2472 1083.29 31.8094 1105.5 30.761C1129.47 29.6214 1152.63 18.2016 1177 17.761C1202.17 17.3052 1228.83 11.656 1254 11.261C1304.17 10.4557 1352.22 5.26098 1402.5 5.26098C1452.9 5.27618 1499.94 13.696 1550 15.261C1572.84 15.9751 1598.44 21.5345 1621.5 21.261C1643.37 21.0027 1687.5 11.261 1687.5 11.261C1709 9.76095 1743 -3.23911 1782 0.760947C1798.57 1.17119 1833 9.76095 1833 9.76095C1849 14.2609 1863.61 16.3659 1879.5 16.7609C1934.5 24.2609 1988 29.7609 2054 14.7609C2361.5 -10.239 2944 144.261 2944 144.261V462.079Z'
             id='light-dirt'
@@ -394,8 +390,20 @@ const DirtLayer = ({
               />
             </g>
           </g>
-        </g>
+    </g>
+  )
+})
+
+const DirtLayer = ({
+  showWorkDirtLayer = false,
+  containerId = 'dirt-layer__container',
+}) => {
+  return (
+    <DirtLayerContainer id={containerId}>
+      <RootsDirtLayer id='dirt-layer__wrapper'>
+        <RootsDirtArtwork />
       </RootsDirtLayer>
+      {showWorkDirtLayer && <WorkDirtLayer />}
     </DirtLayerContainer>
   )
 }

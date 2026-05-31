@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { getHomeHoverRegionPosition } from '@/routes/home/homeHoverConfig'
 import { HOME_HOVER_REGION } from '@/routes/home/homeHoverRegions'
 import theme from '@/styles/theme'
@@ -9,25 +10,27 @@ const BLUE_MOUNTAIN_PATH =
 
 const HOVER_POSITION = getHomeHoverRegionPosition(HOME_HOVER_REGION.blueMountain)
 
-const BlueMountain = () => (
-  <MountainBase
-    containerId='blue-mountain__container'
-    wrapperId='blue-mountain__wrapper'
-    hoverPosition={HOVER_POSITION}
-    hoverRegion={HOME_HOVER_REGION.blueMountain}
-    hoverContent={<BlueMountainHoverArt />}
-    mountainContent={
-      <path
-        id='blue-mountain'
-        d={BLUE_MOUNTAIN_PATH}
-        clipRule='evenodd'
-        fill={theme.colors.blue.light}
-        fillRule='evenodd'
-      />
-    }
-    hitboxId='blue-mountain-hover-hitbox'
-    hitboxPath={BLUE_MOUNTAIN_PATH}
-  />
-)
+const BlueMountain = memo(function BlueMountain() {
+  return (
+    <MountainBase
+      containerId='blue-mountain__container'
+      wrapperId='blue-mountain__wrapper'
+      hoverPosition={HOVER_POSITION}
+      hoverRegion={HOME_HOVER_REGION.blueMountain}
+      hoverContent={<BlueMountainHoverArt />}
+      mountainContent={
+        <path
+          id='blue-mountain'
+          d={BLUE_MOUNTAIN_PATH}
+          clipRule='evenodd'
+          fill={theme.colors.blue.light}
+          fillRule='evenodd'
+        />
+      }
+      hitboxId='blue-mountain-hover-hitbox'
+      hitboxPath={BLUE_MOUNTAIN_PATH}
+    />
+  )
+})
 
 export default BlueMountain

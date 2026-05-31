@@ -1,3 +1,5 @@
+import { memo } from 'react'
+
 const ApicWashington = () => {
   return (
     <svg width="157" height="155" viewBox="0 0 157 155" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -400,4 +402,7 @@ const ApicWashington = () => {
   )
 }
 
-export default ApicWashington
+const MemoizedApicWashington = memo(ApicWashington)
+MemoizedApicWashington.displayName = 'ApicWashington'
+
+export default MemoizedApicWashington

@@ -1,4 +1,15 @@
+import { memo } from 'react'
 import { useHomeHover } from '@/routes/home/homeHoverContext'
+
+const StaticMountainContent = memo(function StaticMountainContent({
+  mountainContent,
+}) {
+  return mountainContent
+})
+
+const StaticHoverContent = memo(function StaticHoverContent({ hoverContent }) {
+  return hoverContent
+})
 
 const MountainBase = ({
   containerId,
@@ -33,7 +44,7 @@ const MountainBase = ({
       }}
       transform={`translate(${hoverPosition.x ?? 0} ${hoverPosition.y ?? 0})`}
     >
-      {hoverContent}
+      <StaticHoverContent hoverContent={hoverContent} />
     </g>
   )
 
@@ -62,13 +73,13 @@ const MountainBase = ({
 
   const innerContent = innerGroupId ? (
     <g id={innerGroupId} transform={innerGroupTransform}>
-      {mountainContent}
+      <StaticMountainContent mountainContent={mountainContent} />
       {hoverGroup}
       {hitbox}
     </g>
   ) : (
     <>
-      {mountainContent}
+      <StaticMountainContent mountainContent={mountainContent} />
       {hoverGroup}
       {hitbox}
     </>
