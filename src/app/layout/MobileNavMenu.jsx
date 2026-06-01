@@ -31,6 +31,12 @@ const drawerIn = keyframes`
   }
 `
 
+const MobileNavWrapper = styled.div`
+  @media (min-width: 1025px) or ((orientation: landscape) and (max-aspect-ratio: 1440 / 1024)) {
+    display: none;
+  }
+`
+
 const ToggleButton = styled.button`
   position: relative;
   display: inline-flex;
@@ -48,11 +54,12 @@ const ToggleButton = styled.button`
     $isWorkPage,
     $isContactPage,
   }) =>
-    $isRootsPage || $isHomePage || $isWorkPage || $isContactPage
+    $isRootsPage || $isHomePage || $isContactPage
       ? '0 0'
-      : $isServicesPage
+      : $isServicesPage || $isWorkPage
         ? '0 -24px'
         : '0 -16px'};
+  opacity: ${({ $isActive }) => ($isActive ? 1 : 0)};
 
   svg {
     width: 24px;
@@ -206,6 +213,7 @@ const MobileNavMenu = ({
   isServicesPage = false,
   isWorkPage = false,
   isContactPage = false,
+  isActive = true,
 }) => {
   const location = useLocation()
   const { transitionSceneToPath } = usePageSceneTransition()
@@ -319,7 +327,7 @@ const MobileNavMenu = ({
   if (!PHONE_NAV_ITEMS.length) return null
 
   return (
-    <>
+    <MobileNavWrapper>
       <ToggleButton
         ref={buttonRef}
         type='button'
@@ -333,6 +341,7 @@ const MobileNavMenu = ({
         $isServicesPage={isServicesPage}
         $isWorkPage={isWorkPage}
         $isContactPage={isContactPage}
+        $isActive={isActive}
         onClick={() => setIsOpen((value) => !value)}
       >
         <svg
@@ -423,7 +432,7 @@ const MobileNavMenu = ({
             document.body,
           )
         : null}
-    </>
+    </MobileNavWrapper>
   )
 }
 

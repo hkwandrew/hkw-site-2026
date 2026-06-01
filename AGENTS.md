@@ -29,7 +29,7 @@ src/
 ## Conventions
 
 - **Styling**: Use styled-components with the theme from `src/styles/theme.js`. Access colors via `theme.colors.*`, typography via `theme.typography.*`, breakpoints via `theme.breakpoints.*`.
-- **Breakpoints**: Mobile `767px`, Tablet `1024px`
+- **Breakpoints**: Mobile `1024px`
 - **Font**: Acumin Variable Concept (variable font with weight 100-900 and width 68%-100%)
 - **Animations**: Use GSAP timelines. Respect `prefers-reduced-motion` (already handled in GlobalStyle).
 - **SVGs**: Import as React components via SVGR (`import { ReactComponent as Icon } from './icon.svg'` or `import Icon from './icon.svg?react'`)

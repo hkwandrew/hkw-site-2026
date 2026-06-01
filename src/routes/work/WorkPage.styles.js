@@ -248,14 +248,6 @@ export const MainContent = styled.div`
   transition: opacity 320ms ease;
   will-change: opacity;
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    padding: 252px 72px 190px
-      ${({ $isWide }) =>
-        $isWide
-          ? 'calc(clamp(132px, 17.5vw, 180px) - 60px)'
-          : 'clamp(132px, 17.5vw, 180px)'};
-  }
-
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     align-items: flex-start;
     padding: 112px 20px 36px;
@@ -268,12 +260,6 @@ export const StudyArea = styled.div`
   gap: 64px;
   width: min(calc(100vw - clamp(132px, 17.5vw, 252px)), 1044px);
   min-height: 0;
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    gap: 36px;
-    width: min(100%, 1000px);
-    height: 460px;
-  }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     flex-direction: column;
@@ -293,11 +279,6 @@ export const StudyTextStage = styled.div`
   display: grid;
   align-content: start;
   min-width: 0;
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    flex-basis: 340px;
-    min-height: 460px;
-  }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     flex-basis: auto;
@@ -340,6 +321,7 @@ export const ClientType = styled.p`
     'wght' ${({ theme }) => theme.font.weight.bold};
   text-transform: uppercase;
   color: ${({ theme }) => theme.colors.blue.dark};
+      margin-top: 24px;
   margin-bottom: 8px;
 `
 
@@ -355,7 +337,7 @@ export const ClientName = styled.h2`
   color: ${({ theme }) => theme.colors.orange.base};
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    margin-top: 24px;
+
   }
 `
 
@@ -436,10 +418,6 @@ export const HeroStage = styled.div`
   justify-items: start;
   min-height: 0;
   overflow: visible;
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    flex: 1 1 auto;
-  }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     width: 100%;
@@ -533,11 +511,6 @@ export const DesktopNavRail = styled.div`
     display: none;
   }
 
-  @media (min-width: ${({ theme }) =>
-      theme.breakpoints.mobile}) and (max-width: ${({ theme }) =>
-      theme.breakpoints.tablet}) {
-    bottom: -36px;
-  }
 `
 
 export const DesktopNavViewport = styled.div`
@@ -787,10 +760,6 @@ export const MarmotWrapper = styled.button`
     }
   }
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    right: 72px;
-  }
-
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     display: none;
   }
@@ -808,11 +777,8 @@ export const DesktopArrowButton = styled(ArrowButton)`
 
   ${({ $side }) => ($side === 'left' ? 'left: 68px;' : 'right: 68px;')}
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    ${({ $side }) => ($side === 'left' ? 'left: 20px;' : 'right: 20px;')}
-  }
-
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    ${({ $side }) => ($side === 'left' ? 'left: 20px;' : 'right: 20px;')}
     top: 95%;
   }
 `

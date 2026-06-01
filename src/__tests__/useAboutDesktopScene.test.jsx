@@ -6,6 +6,7 @@ import {
   ABOUT_DESKTOP_QUOTE_LAYOUTS,
   ABOUT_HERO_CLOUD,
 } from '@/routes/about/aboutSceneData'
+import theme from '@/styles/theme'
 
 const originalRequestAnimationFrame = window.requestAnimationFrame
 const originalCancelAnimationFrame = window.cancelAnimationFrame
@@ -256,8 +257,20 @@ describe('useAboutDesktopScene', () => {
     )
   })
 
-  it('fits desktop cloud and quote coordinates to portrait-tablet viewports without stretching vertically', () => {
-    withMockedSceneViewport({ width: 768, height: 1024 }, () => {
+  it('does not initialize the desktop scene at the mobile breakpoint', () => {
+    window.matchMedia = vi.fn().mockImplementation((query) => ({
+      matches: query.includes(`max-width: ${theme.breakpoints.mobile}`),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    }))
+
+    render(<AboutPage />)
+
+    expect(gsapMocks.timeline).not.toHaveBeenCalled()
+  })
+
+  it('fits desktop cloud and quote coordinates to narrow desktop viewports without stretching vertically', () => {
+    withMockedSceneViewport({ width: 1280, height: 1024 }, () => {
       const { container } = render(<AboutPage />)
       const darkCloud = ABOUT_DESKTOP_CLOUDS.find(
         (cloud) => cloud.id === 'dark-left',
@@ -266,7 +279,7 @@ describe('useAboutDesktopScene', () => {
         (quote) => quote.id === 'jonathan',
       )
       const sceneScale = Math.min(
-        768 / ABOUT_DESIGN_FRAME.width,
+        1280 / ABOUT_DESIGN_FRAME.width,
         1024 / ABOUT_DESIGN_FRAME.height,
       )
       const darkCloudElement = container.querySelector(

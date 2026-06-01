@@ -16,7 +16,7 @@ const LabelRow = styled.div`
   gap: 12px;
   min-height: 24px;
 
-  @media (max-width: 767px) {
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     min-height: 19px;
   }
 `
@@ -25,7 +25,7 @@ const FieldLabel = styled.label`
   ${applyTypography('label')}
   color: ${({ theme }) => theme.colors.white};
 
-  @media (max-width: 767px) {
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     font-size: 14px;
     line-height: 18px;
     letter-spacing: 1.4px;
@@ -75,7 +75,7 @@ const controlBase = css`
     color: rgba(28, 45, 56, 0.7);
   }
 
-  @media (max-width: 767px) {
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     height: 40px;
     padding: 8px 24px 10px;
   }
@@ -95,7 +95,7 @@ const StyledTextarea = styled.textarea`
   padding-bottom: 14px;
   ${({ $invalid }) => $invalid && invalidControlStyles}
 
-  @media (max-width: 767px) {
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     min-height: 80px;
     border-radius: 20px;
   }
@@ -136,7 +136,7 @@ const SelectTrigger = styled.button`
     outline-offset: 2px;
   }
 
-  @media (max-width: 767px) {
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     line-height: 1;
     padding-top: 10px;
     padding-bottom: 10px;
@@ -174,7 +174,7 @@ const TriggerCaret = styled.span`
     height: 100%;
   }
 
-  @media (max-width: 767px) {
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     right: 20px;
     width: 26px;
     height: 16px;

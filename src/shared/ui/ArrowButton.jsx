@@ -35,7 +35,7 @@ const StyledButton = styled.button`
     outline-offset: 2px;
   }
 
-  @media (max-width: 767px) {
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     width: 32px;
     height: 32px;
 

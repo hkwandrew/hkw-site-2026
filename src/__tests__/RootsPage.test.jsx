@@ -25,12 +25,13 @@ const createMatchMedia = (matches) =>
 
 const createRootsViewportMatchMedia = ({
   phone = false,
-  portraitTablet = false,
+  largeMobile = false,
 } = {}) =>
   vi.fn().mockImplementation((query) => ({
     matches:
       (query === '(max-width: 767px)' && phone) ||
-      (query.includes('(orientation: portrait)') && portraitTablet),
+      (query === '(min-width: 768px) and (max-width: 1024px)' &&
+        largeMobile),
     media: query,
     addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
@@ -591,9 +592,9 @@ describe('RootsPage', () => {
     expect(rowOrderedIds).toEqual(ROOTS_PORTFOLIO_ITEMS.map((item) => item.id))
   })
 
-  it('renders a portrait-tablet mobile frame grid in portfolio data order', () => {
+  it('renders a large-mobile frame grid in portfolio data order', () => {
     window.matchMedia = createRootsViewportMatchMedia({
-      portraitTablet: true,
+      largeMobile: true,
     })
 
     renderRootsRoute()
@@ -605,7 +606,7 @@ describe('RootsPage', () => {
       '[data-roots-welcome-sign]',
     )
     const mobileFrames = mobileScene.querySelector(
-      '[data-roots-mobile-layout="portrait-tablet"]',
+      '[data-roots-mobile-layout="large-mobile"]',
     )
     const frameButtons = Array.from(
       mobileFrames.querySelectorAll(
@@ -615,11 +616,11 @@ describe('RootsPage', () => {
 
     expect(mobileScene).toHaveAttribute(
       'data-roots-mobile-layout',
-      'portrait-tablet',
+      'large-mobile',
     )
     expect(mobileFrames).toHaveAttribute(
       'data-roots-mobile-layout',
-      'portrait-tablet',
+      'large-mobile',
     )
     expect(mobileScene.firstElementChild).toBe(mobileWelcome)
     expect(mobileWelcome.nextElementSibling).toBe(mobileFrames)

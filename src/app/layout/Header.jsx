@@ -4,6 +4,7 @@ import styled, { css, keyframes, useTheme } from 'styled-components'
 import { getPageLabelForPath } from '@/app/router/routeRegistry'
 import MobileNavMenu from './MobileNavMenu'
 import NavMenu from './NavMenu'
+import { convertCssPxToCappedViewportUnit } from '../../styles/viewportUnits'
 
 const pageLabelFadeIn = keyframes`
   from {
@@ -16,7 +17,7 @@ const pageLabelFadeIn = keyframes`
 `
 
 const StyledHeader = styled.header`
-  max-width: 1440px;
+  max-width: ${convertCssPxToCappedViewportUnit(1440)};
   margin-inline: auto;
   position: fixed;
   top: 0;
@@ -134,32 +135,32 @@ const PageLabel = styled.div`
   }
 `
 
-const usePhoneViewport = (mobileBreakpoint) => {
-  const mediaQueryString = `(max-width: ${mobileBreakpoint})`
-  const [isPhoneViewport, setIsPhoneViewport] = useState(() =>
-    typeof window !== 'undefined'
-      ? window.matchMedia(mediaQueryString).matches
-      : false,
-  )
+// const usePhoneViewport = (mobileBreakpoint) => {
+//   const mediaQueryString = `(max-width: ${mobileBreakpoint})`
+//   const [isPhoneViewport, setIsPhoneViewport] = useState(() =>
+//     typeof window !== 'undefined'
+//       ? window.matchMedia(mediaQueryString).matches
+//       : false,
+//   )
 
-  useEffect(() => {
-    const mediaQuery = window.matchMedia(mediaQueryString)
+//   useEffect(() => {
+//     const mediaQuery = window.matchMedia(mediaQueryString)
 
-    const update = () => {
-      setIsPhoneViewport(mediaQuery.matches)
-    }
+//     const update = () => {
+//       setIsPhoneViewport(mediaQuery.matches)
+//     }
 
-    update()
+//     update()
 
-    mediaQuery.addEventListener('change', update)
+//     mediaQuery.addEventListener('change', update)
 
-    return () => {
-      mediaQuery.removeEventListener('change', update)
-    }
-  }, [mediaQueryString])
+//     return () => {
+//       mediaQuery.removeEventListener('change', update)
+//     }
+//   }, [mediaQueryString])
 
-  return isPhoneViewport
-}
+//   return isPhoneViewport
+// }
 
 const Header = ({ contentPathname, isPageLabelReady = true, navPathname }) => {
   const theme = useTheme()
@@ -174,7 +175,7 @@ const Header = ({ contentPathname, isPageLabelReady = true, navPathname }) => {
   const isHomePage = contentPath === '/'
   const isContactPage = contentPath === '/contact'
   const isPageLabelActive = isPageLabelReady
-  const isPhoneViewport = usePhoneViewport(theme.breakpoints.mobile)
+  // const isPhoneViewport = usePhoneViewport(theme.breakpoints.mobile)
 
   return (
     <StyledHeader $isRootsPage={isRootsPage}>
@@ -184,7 +185,7 @@ const Header = ({ contentPathname, isPageLabelReady = true, navPathname }) => {
           $isServicesPage={isServicesPage}
           $isWorkPage={isWorkPage}
           $isRootsPage={isRootsPage}
-          $isPhoneViewport={isPhoneViewport}
+          // $isPhoneViewport={isPhoneViewport}
           $isActive={isPageLabelActive}
         >
           <svg
@@ -219,18 +220,17 @@ const Header = ({ contentPathname, isPageLabelReady = true, navPathname }) => {
         )}
       </BrandBlock>
 
-      {isPhoneViewport ? (
-        <MobileNavMenu
-          activePathname={activeNavPath}
-          isRootsPage={isRootsPage}
-          isHomePage={isHomePage}
-          isServicesPage={isServicesPage}
-          isWorkPage={isWorkPage}
-          isContactPage={isContactPage}
-        />
-      ) : (
-        <NavMenu activePathname={activeNavPath} />
-      )}
+      <MobileNavMenu
+        activePathname={activeNavPath}
+        isRootsPage={isRootsPage}
+        isHomePage={isHomePage}
+        isServicesPage={isServicesPage}
+        isWorkPage={isWorkPage}
+        isContactPage={isContactPage}
+        isActive={isPageLabelActive}
+      />
+
+      <NavMenu activePathname={activeNavPath} />
     </StyledHeader>
   )
 }

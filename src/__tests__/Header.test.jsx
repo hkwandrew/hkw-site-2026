@@ -202,6 +202,30 @@ describe('Header', () => {
     )
   })
 
+  it('applies the page label active state to the mobile nav toggle opacity', () => {
+    isPhoneViewport = true
+
+    const { rerender } = renderHeader(['/work'], {
+      contentPathname: '/work',
+      isPageLabelReady: false,
+    })
+    const menuButton = screen.getByRole('button', {
+      name: 'Open navigation menu',
+    })
+
+    expect(getComputedStyle(menuButton).opacity).toBe('0')
+
+    rerender(
+      <MemoryRouter initialEntries={['/work']}>
+        <Header contentPathname='/work' isPageLabelReady />
+      </MemoryRouter>,
+    )
+
+    expect(getComputedStyle(menuButton).opacity).toBe('1')
+
+    isPhoneViewport = false
+  })
+
   it('focuses the first mobile nav link when the menu opens', () => {
     isPhoneViewport = true
     window.requestAnimationFrame = vi.fn((callback) => {

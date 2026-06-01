@@ -16,14 +16,12 @@ import waveArmSrc from './assets/marmot-hover-wave-arm.svg'
 const HOVER_FRAME_X = 190
 const HOVER_FRAME_Y = 4
 const HOVER_FRAME_SCALE = 1.041
-const FIGMA_ORIGIN_X = 1037
-const FIGMA_ORIGIN_Y = 615
 
 const toFrameLayer = ({ height, width, x, y }) => ({
   height,
   width,
-  x: x - FIGMA_ORIGIN_X,
-  y: y - FIGMA_ORIGIN_Y,
+  x: x - 1037,
+  y: y - 615,
 })
 
 const HoverLayer = ({

@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
 import { useLocation, useNavigate, useParams } from 'react-router'
+import theme from '@/styles/theme'
 import useCarousel from '@/shared/hooks/useCarousel'
 import usePageActive from '@/shared/hooks/usePageActive'
 import ROOTS_PORTFOLIO_ITEMS from './rootsPortfolio'
@@ -14,17 +15,16 @@ import RootsUpButton from './RootsUpButton'
 const DESKTOP_SCENE_WIDTH = 1440
 const DESKTOP_SCENE_HEIGHT = 1024
 const PHONE_MAX_WIDTH = 767
-const PORTRAIT_TABLET_MAX_WIDTH = 1024
+const MOBILE_MAX_WIDTH = Number.parseFloat(theme.breakpoints.mobile)
 const PHONE_MEDIA_QUERY = `(max-width: ${PHONE_MAX_WIDTH}px)`
-const PORTRAIT_TABLET_MEDIA_QUERY = [
+const LARGE_MOBILE_MEDIA_QUERY = [
   `(min-width: ${PHONE_MAX_WIDTH + 1}px)`,
-  `(max-width: ${PORTRAIT_TABLET_MAX_WIDTH}px)`,
-  '(orientation: portrait)',
+  `(max-width: ${MOBILE_MAX_WIDTH}px)`,
 ].join(' and ')
 const ROOTS_VIEWPORT_LAYOUT = Object.freeze({
   DESKTOP: 'desktop',
   PHONE: 'phone',
-  PORTRAIT_TABLET: 'portrait-tablet',
+  LARGE_MOBILE: 'large-mobile',
 })
 const ROOTS_ROUTE_PATH = '/roots'
 
@@ -133,7 +133,7 @@ const Root = styled.section`
   isolation: isolate;
   z-index: 20;
 
-  &[data-roots-viewport-layout='portrait-tablet'] {
+  &[data-roots-viewport-layout='large-mobile'] {
     --hkw-viewport-px-unit: 1px;
   }
 
@@ -369,7 +369,7 @@ const MobileWelcome = styled(WelcomeSign)`
   height: auto;
   margin: 0 auto 24px;
 
-  [data-roots-mobile-layout='portrait-tablet'] & {
+  [data-roots-mobile-layout='large-mobile'] & {
     width: min(30vw, 224px);
     margin-bottom: 28px;
   }
@@ -393,7 +393,7 @@ const MobileScene = styled.div`
     transform 500ms ease;
   will-change: transform, opacity;
 
-  &[data-roots-mobile-layout='portrait-tablet'] {
+  &[data-roots-mobile-layout='large-mobile'] {
     padding-top: 96px;
     padding-inline: 40px;
   }
@@ -427,7 +427,7 @@ const MobileFrames = styled.div`
   margin-inline: auto;r;
 `
 
-const PortraitTabletFrames = styled.div`
+const LargeMobileFrames = styled.div`
   position: relative;
   z-index: 1;
   display: grid;
@@ -474,7 +474,7 @@ const RootsMarmotLayer = styled.div`
     z-index: 3;
   }
 
-  [data-roots-viewport-layout='portrait-tablet'] & {
+  [data-roots-viewport-layout='large-mobile'] & {
     right: -8px;
     bottom: -8px;
     width: min(32vw, 260px);
@@ -559,11 +559,8 @@ const getFallbackRootsViewportLayout = () => {
     return ROOTS_VIEWPORT_LAYOUT.PHONE
   }
 
-  if (
-    window.innerWidth <= PORTRAIT_TABLET_MAX_WIDTH &&
-    window.innerHeight > window.innerWidth
-  ) {
-    return ROOTS_VIEWPORT_LAYOUT.PORTRAIT_TABLET
+  if (window.innerWidth <= MOBILE_MAX_WIDTH) {
+    return ROOTS_VIEWPORT_LAYOUT.LARGE_MOBILE
   }
 
   return ROOTS_VIEWPORT_LAYOUT.DESKTOP
@@ -571,11 +568,11 @@ const getFallbackRootsViewportLayout = () => {
 
 const resolveRootsViewportLayout = (
   phoneMediaQuery,
-  portraitTabletMediaQuery,
+  largeMobileMediaQuery,
 ) => {
   if (phoneMediaQuery.matches) return ROOTS_VIEWPORT_LAYOUT.PHONE
-  if (portraitTabletMediaQuery.matches) {
-    return ROOTS_VIEWPORT_LAYOUT.PORTRAIT_TABLET
+  if (largeMobileMediaQuery.matches) {
+    return ROOTS_VIEWPORT_LAYOUT.LARGE_MOBILE
   }
 
   return ROOTS_VIEWPORT_LAYOUT.DESKTOP
@@ -591,7 +588,7 @@ const getRootsViewportLayout = () => {
 
   return resolveRootsViewportLayout(
     window.matchMedia(PHONE_MEDIA_QUERY),
-    window.matchMedia(PORTRAIT_TABLET_MEDIA_QUERY),
+    window.matchMedia(LARGE_MOBILE_MEDIA_QUERY),
   )
 }
 
@@ -617,7 +614,7 @@ function useRootsViewportLayout() {
 
     const mediaQueries = [
       window.matchMedia(PHONE_MEDIA_QUERY),
-      window.matchMedia(PORTRAIT_TABLET_MEDIA_QUERY),
+      window.matchMedia(LARGE_MOBILE_MEDIA_QUERY),
     ]
     const updateLayout = () => {
       setViewportLayout(
@@ -822,9 +819,9 @@ export default function RootsScene({ sceneRef }) {
               ))}
             </MobileFrames>
           ) : (
-            <PortraitTabletFrames data-roots-mobile-layout={viewportLayout}>
+            <LargeMobileFrames data-roots-mobile-layout={viewportLayout}>
               {mobileFrameEntries.map(renderMobileFrameButton)}
-            </PortraitTabletFrames>
+            </LargeMobileFrames>
           )}
         </MobileScene>
       ) : (

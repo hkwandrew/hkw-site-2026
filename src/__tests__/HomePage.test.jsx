@@ -261,7 +261,7 @@ describe('HomePage', () => {
     expect(clipClassName).toBeDefined()
     expect(styles).toMatch(
       new RegExp(
-        `@media \\(max-width:\\s*767px\\)\\{\\.${escapeRegExp(
+        `@media \\(max-width:\\s*1024px\\)\\{\\.${escapeRegExp(
           clipClassName,
         )}\\{overflow:hidden;\\}\\}`,
       ),

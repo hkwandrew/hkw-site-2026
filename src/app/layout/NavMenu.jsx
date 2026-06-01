@@ -81,6 +81,12 @@ const Content = styled.div`
   }
 `
 
+const NavWrapper = styled.nav`
+  @media (max-width: 1023px) or ((orientation: portrait) and (min-aspect-ratio: 1024 / 1440)) {
+    display: none;
+  }
+`
+
 const Pill = styled.div`
   position: absolute;
   top: 50%;
@@ -214,8 +220,7 @@ const ContactRevealInner = styled.div`
   background-color: ${({ theme }) => theme.colors.orange.dark};
   border-radius: 0 ${({ theme }) => theme.components.navTabs.borderRadius}
     ${({ theme }) => theme.components.navTabs.borderRadius} 0;
-  transition:
-    -0.21s transform 0.42s ease;
+  transition: -0.21s transform 0.42s ease;
   ${'' /* opacity 0.16s ease; */}
 `
 
@@ -359,7 +364,7 @@ const NavMenu = ({ activePathname }) => {
   }
 
   return (
-    <nav>
+    <NavWrapper aria-label='Primary navigation'>
       <Content
         ref={contentRef}
         data-has-contact-reveal={
@@ -415,7 +420,7 @@ const NavMenu = ({ activePathname }) => {
           </ContactReveal>
         ) : null}
       </Content>
-    </nav>
+    </NavWrapper>
   )
 }
 

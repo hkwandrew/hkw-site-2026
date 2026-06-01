@@ -1,6 +1,7 @@
 import { useCallback, useLayoutEffect, useRef } from 'react'
 import gsap from 'gsap'
 import MorphSVGPlugin from 'gsap/MorphSVGPlugin'
+import theme from '@/styles/theme'
 import {
   ABOUT_DESIGN_FRAME,
   ABOUT_DESKTOP_CLOUDS,
@@ -15,8 +16,10 @@ import findShapeIndex from './findShapeIndex'
 
 gsap.registerPlugin(MorphSVGPlugin)
 
-const DESKTOP_SCENE_QUERY =
-  '(max-width: 767px), (prefers-reduced-motion: reduce)'
+const DESKTOP_SCENE_QUERY = [
+  `(max-width: ${theme.breakpoints.mobile})`,
+  '(prefers-reduced-motion: reduce)',
+].join(', ')
 const ABOUT_SHAPE_INDEX_DEBUG_PARAM = 'aboutShapeIndexDebug'
 const HERO_STAGE_ONE_PROGRESS = 1 / (ABOUT_HERO_CLOUD.states.length - 1)
 const ABOUT_FINAL_STAGE_START_PROGRESS =
@@ -161,10 +164,7 @@ const useAboutDesktopScene = () => {
 
       const sceneWidth = scene.clientWidth || ABOUT_DESIGN_FRAME.width
       const sceneHeight = scene.clientHeight || ABOUT_DESIGN_FRAME.height
-      const { offsetX, scale } = getFittedSceneGeometry(
-        sceneWidth,
-        sceneHeight,
-      )
+      const { offsetX, scale } = getFittedSceneGeometry(sceneWidth, sceneHeight)
       const toX = (value) => offsetX + value * scale
       const toY = (value) => value * scale
       const toWidth = (value) => value * scale
@@ -268,7 +268,9 @@ const useAboutDesktopScene = () => {
 
         if (!elements.length) return
 
-        gsap.set(elements, { autoAlpha: ABOUT_QUOTE_FRAME_VISIBILITY[0][layer] })
+        gsap.set(elements, {
+          autoAlpha: ABOUT_QUOTE_FRAME_VISIBILITY[0][layer],
+        })
 
         ABOUT_QUOTE_FRAME_VISIBILITY.slice(1).forEach((frame, index) => {
           timeline.to(elements, { autoAlpha: frame[layer] }, index)

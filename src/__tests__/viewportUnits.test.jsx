@@ -12,7 +12,9 @@ import {
   DESKTOP_VIEWPORT_WIDTH,
   MOBILE_VIEWPORT_HEIGHT,
   MOBILE_VIEWPORT_WIDTH,
+  CAPPED_VIEWPORT_PX_UNIT_CUSTOM_PROPERTY,
   VIEWPORT_PX_UNIT_CUSTOM_PROPERTY,
+  convertCssPxToCappedViewportUnit,
   convertCssPxToViewportUnit,
   convertCssPxToVw,
   getCappedViewportPxUnitValue,
@@ -38,14 +40,12 @@ describe('viewport unit conversion', () => {
     ).toBe('min(0.06944vw, 0.09766vh)')
   })
 
-  it('caps the mobile viewport-pixel unit at the design pixel size', () => {
-    expect(
-      getCappedViewportPxUnitValue(
-        MOBILE_VIEWPORT_WIDTH,
-        MOBILE_VIEWPORT_HEIGHT,
-      ),
-    ).toBe(
-      'min(0.25445vw, 0.15625vh, 1px)',
+  it('caps the viewport-pixel unit through a dedicated custom property', () => {
+    expect(getCappedViewportPxUnitValue()).toBe(
+      `min(var(${VIEWPORT_PX_UNIT_CUSTOM_PROPERTY}), 1px)`,
+    )
+    expect(convertCssPxToCappedViewportUnit('72px')).toBe(
+      `calc(72 * var(${CAPPED_VIEWPORT_PX_UNIT_CUSTOM_PROPERTY}))`,
     )
   })
 
@@ -109,7 +109,9 @@ describe('viewport unit conversion', () => {
         `padding:calc(72 * var(${VIEWPORT_PX_UNIT_CUSTOM_PROPERTY}))`,
       )
       expect(styles).toContain("background-image:url('/images/card-72px.png')")
-      expect(styles).toContain('@media (max-width: 767px)')
+      expect(styles).toContain(
+        `@media (max-width: ${theme.breakpoints.mobile})`,
+      )
       expect(styles).toContain(
         `width:calc(19 * var(${VIEWPORT_PX_UNIT_CUSTOM_PROPERTY}))`,
       )
@@ -121,7 +123,7 @@ describe('viewport unit conversion', () => {
     }
   })
 
-  it('switches the viewport-pixel unit at the mobile breakpoint', () => {
+  it('switches the viewport-pixel unit at the mobile breakpoint without capping the default', () => {
     const sheet = new ServerStyleSheet()
 
     try {
@@ -144,9 +146,14 @@ describe('viewport unit conversion', () => {
           DESKTOP_VIEWPORT_HEIGHT,
         )}`,
       )
-      expect(styles).toContain('@media (max-width: 767px)')
       expect(styles).toContain(
-        `${VIEWPORT_PX_UNIT_CUSTOM_PROPERTY}:${getCappedViewportPxUnitValue(
+        `@media (max-width: ${theme.breakpoints.mobile})`,
+      )
+      expect(styles).toContain(
+        `${CAPPED_VIEWPORT_PX_UNIT_CUSTOM_PROPERTY}:${getCappedViewportPxUnitValue()}`,
+      )
+      expect(styles).toContain(
+        `${VIEWPORT_PX_UNIT_CUSTOM_PROPERTY}:${getFittedViewportPxUnitValue(
           MOBILE_VIEWPORT_WIDTH,
           MOBILE_VIEWPORT_HEIGHT,
         )}`,

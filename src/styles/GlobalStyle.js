@@ -4,6 +4,7 @@ import {
   DESKTOP_VIEWPORT_HEIGHT,
   MOBILE_VIEWPORT_HEIGHT,
   MOBILE_VIEWPORT_WIDTH,
+  CAPPED_VIEWPORT_PX_UNIT_CUSTOM_PROPERTY,
   VIEWPORT_PX_UNIT_CUSTOM_PROPERTY,
   getCappedViewportPxUnitValue,
   getFittedViewportPxUnitValue,
@@ -23,6 +24,7 @@ const GlobalStyle = createGlobalStyle`
       DESKTOP_VIEWPORT_WIDTH,
       DESKTOP_VIEWPORT_HEIGHT,
     )};
+    ${CAPPED_VIEWPORT_PX_UNIT_CUSTOM_PROPERTY}: ${getCappedViewportPxUnitValue()};
   }
 
   html, body, #root {
@@ -53,29 +55,10 @@ const GlobalStyle = createGlobalStyle`
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     :root {
-      ${VIEWPORT_PX_UNIT_CUSTOM_PROPERTY}: ${getCappedViewportPxUnitValue(
+      ${VIEWPORT_PX_UNIT_CUSTOM_PROPERTY}: ${getFittedViewportPxUnitValue(
         MOBILE_VIEWPORT_WIDTH,
         MOBILE_VIEWPORT_HEIGHT,
       )};
-    }
-
-    html, body, #root {
-      ${'' /* height: auto;
-      min-height: 100%;
-      overflow-x: hidden;
-      overflow-y: auto; */}
-    }
-
-    main {
-      ${'' /* min-height: 100dvh; */}
-    }
-
-    #scene-svg {
-      ${'' /* display: none; */}
-    }
-
-    main.about-page #scene-svg {
-      ${'' /* display: block !important; */}
     }
   }
 

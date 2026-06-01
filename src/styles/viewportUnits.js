@@ -3,6 +3,8 @@ export const DESKTOP_VIEWPORT_HEIGHT = 1024
 export const MOBILE_VIEWPORT_WIDTH = 393
 export const MOBILE_VIEWPORT_HEIGHT = 640
 export const VIEWPORT_PX_UNIT_CUSTOM_PROPERTY = '--hkw-viewport-px-unit'
+export const CAPPED_VIEWPORT_PX_UNIT_CUSTOM_PROPERTY =
+  '--hkw-capped-viewport-px-unit'
 
 const PX_VALUE_PATTERN = /^[-+]?(?:\d*\.\d+|\d+\.?\d*)px\b/i
 const URL_FUNCTION_PATTERN = /^url\(/i
@@ -34,17 +36,18 @@ export const getFittedViewportPxUnitValue = (viewportWidth, viewportHeight) =>
     viewportHeight,
   )})`
 
-export const getCappedViewportPxUnitValue = (viewportWidth, viewportHeight) =>
-  `min(${getViewportPxUnitValue(viewportWidth)}, ${getViewportPxHeightUnitValue(
-    viewportHeight,
-  )}, 1px)`
+export const getCappedViewportPxUnitValue = () =>
+  `min(var(${VIEWPORT_PX_UNIT_CUSTOM_PROPERTY}), 1px)`
 
-const formatResponsiveViewportValue = (pxValue) => {
+const formatResponsiveViewportValue = (
+  pxValue,
+  customProperty = VIEWPORT_PX_UNIT_CUSTOM_PROPERTY,
+) => {
   const numberValue = Number.parseFloat(pxValue)
 
   if (!numberValue) return '0'
 
-  return `calc(${Number(numberValue.toFixed(5))} * var(${VIEWPORT_PX_UNIT_CUSTOM_PROPERTY}))`
+  return `calc(${Number(numberValue.toFixed(5))} * var(${customProperty}))`
 }
 
 const copyCssFunction = (value, startIndex) => {
@@ -148,16 +151,30 @@ const convertCssPxValues = (value, formatPxValue) => {
 export const convertCssPxToVw = (
   value,
   viewportWidth = DESKTOP_VIEWPORT_WIDTH,
-) => convertCssPxValues(value, (pxValue) =>
-  formatViewportValue(pxValue, viewportWidth),
-)
+) =>
+  convertCssPxValues(value, (pxValue) =>
+    formatViewportValue(pxValue, viewportWidth),
+  )
 
 export const convertCssPxToViewportUnit = (value) =>
   convertCssPxValues(value, formatResponsiveViewportValue)
 
+export const convertCssPxToCappedViewportUnit = (value) =>
+  convertCssPxValues(value, (pxValue) =>
+    formatResponsiveViewportValue(
+      pxValue,
+      CAPPED_VIEWPORT_PX_UNIT_CUSTOM_PROPERTY,
+    ),
+  )
+
 export function viewportPxToVwPlugin(element) {
   if (element.type !== 'decl' || typeof element.children !== 'string') return
-  if (element.props === VIEWPORT_PX_UNIT_CUSTOM_PROPERTY) return
+  if (
+    element.props === VIEWPORT_PX_UNIT_CUSTOM_PROPERTY ||
+    element.props === CAPPED_VIEWPORT_PX_UNIT_CUSTOM_PROPERTY
+  ) {
+    return
+  }
 
   const convertedValue = convertCssPxToViewportUnit(element.children)
 

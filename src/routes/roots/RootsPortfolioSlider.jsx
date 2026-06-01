@@ -212,7 +212,7 @@ const Content = styled.div`
   min-height: 0;
   padding: 96px 84px 72px;
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     gap: 40px;
     grid-template-columns: minmax(0, 1fr) minmax(280px, 372px);
     padding: 96px 56px 64px;
@@ -309,7 +309,7 @@ const Copy = styled.div`
   max-width: ${({ $maxWidth }) =>
     typeof $maxWidth === 'number' ? `${$maxWidth}px` : ($maxWidth ?? 'none')};
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     gap: 30px;
     padding-right: 0;
   }

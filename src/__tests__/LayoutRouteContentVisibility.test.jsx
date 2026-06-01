@@ -31,7 +31,7 @@ const {
 
       return control
     }),
-    sceneViewportMobileQuery: '(max-width: 767px)',
+    sceneViewportMobileQuery: '(max-width: 1024px)',
     transitionControls,
   }
 })

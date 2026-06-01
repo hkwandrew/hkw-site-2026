@@ -58,10 +58,26 @@ export const Description = styled.section`
   transition: opacity 500ms ease-in-out;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    right: 19px;
-    top: 218px;
+    right: 20px;
+    top: 228px;
     width: 165px;
     z-index: 2;
+  }
+
+  @media (${({ theme }) => theme.breakpoints.mobile} and (max-height: 960px)) {
+    position: absolute;
+    right: 5%;
+    top: 302px;
+    width: 454px;
+    transition: opacity 500ms ease-in-out;
+  }
+
+  @media (orientation: landscape) and (max-aspect-ratio: 1440 / 1024) {
+    position: absolute;
+    right: 20px;
+    ${'' /* top: 302px; */}
+    width: 454px;
+    transition: opacity 500ms ease-in-out;
   }
 `
 
@@ -98,6 +114,12 @@ export const DescriptionText = styled(BodyMedium)`
     font-variation-settings:
       'wdth' 100,
       'wght' ${({ theme }) => theme.font.weight.regular};
+  }
+
+  @media (orientation: landscape) and (min-aspect-ratio: 1440 / 1024) {
+    color: ${({ theme }) => theme.colors.blue.dark};
+    text-align: right;
+    right: 20px !important;
   }
 `
 
@@ -145,11 +167,13 @@ export const ServicesStage = styled.div`
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     overflow: hidden;
-    background-image: linear-gradient(
+    ${
+      '' /* background-image: linear-gradient(
       to bottom,
       transparent 0 360px,
       ${({ theme }) => theme.colors.blue.dark} 360px 100%
-    );
+    ); */
+    }
   }
 `
 

@@ -5,7 +5,7 @@ import { act, fireEvent, render, withTheme } from '@/__tests__/testUtils'
 const sharedSceneRuntimeMocks = vi.hoisted(() => ({
   animateSharedSceneTransition: vi.fn(),
   applySharedSceneState: vi.fn(),
-  sceneViewportMobileQuery: '(max-width: 767px)',
+  sceneViewportMobileQuery: '(max-width: 1024px)',
 }))
 
 vi.mock('@/app/landscape/runtime/sharedSceneRuntime', () => ({
