@@ -79,6 +79,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'celdf',
     title: 'CELDF',
+    type: 'Non-Profit',
     FrameComponent: CeldfFrame,
     detailImage: celdfDetail,
     maxWidth: 355,
@@ -104,6 +105,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'ewi',
     title: 'Executive Women International of Spokane',
+    type: 'Non-Profit',
     FrameComponent: EwiFrame,
     detailImage: ewiDetail,
     maxWidth: 343,
@@ -120,10 +122,11 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'racial-justice',
     title: 'Racial Justice and Police Misconduct Center (RJPMC)',
+    type: 'Non-Profit',
     FrameComponent: RjpmcFrame,
     detailImage: racialJusticeDetail,
     maxWidth: 358,
-    bio: 'Dedicated to investigating law enforcement misconduct and addressing systemic racism in the criminal legal system, RJPMC provides families impacted by police violence with support, legal resources, and a path forward.',
+    bio: '"HKW came to the Racial Justice and Police Misconduct Project through a referral and truly knocked it out of the park with our web design. They stepped up and supported us when very few others would, ensuring our community could see the important work we are doing. I can’t thank you enough for the belief you had in our organization."\n\n- Nickeia Hunter, Co-Founder and Executive Director of RJPMC',
     roles: ['Website Design', 'Website Development'],
     desktopFrame: {
       left: 681.11,
@@ -137,6 +140,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'waters-meet',
     title: 'Waters Meet C3 & C4',
+    type: 'Non-Profit',
     FrameComponent: WatersMeetFrame,
     detailImage: watersMeetDetail,
     maxWidth: 355,
@@ -160,6 +164,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'community-development-initiative',
     title: 'Community Development Initiative',
+    type: 'Non-Profit',
     FrameComponent: CommunityDevelopmentInitiativeFrame,
     detailImage: communityDevelopmentInitiativeDetail,
     maxWidth: 318,
@@ -175,6 +180,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'spokane-community-against-racism',
     title: 'SCAR Spokane',
+    type: 'Non-Profit',
     FrameComponent: ScarFrame,
     detailImage: spokaneCommunityAgainstRacismDetail,
     maxWidth: 372,
@@ -199,6 +205,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'asians-for-collective-liberation',
     title: 'Asians for Collective Liberation',
+    type: 'Non-Profit',
     FrameComponent: AclFrame,
     detailImage: asiansForCollectiveLiberationDetail,
     maxWidth: 358,
@@ -217,6 +224,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'justice-not-jails',
     title: 'Justice Not Jails',
+    type: 'Non-Profit',
     FrameComponent: JusticeNotJailsFrame,
     detailImage: justiceNotJailsDetail,
     maxWidth: 358,
@@ -241,6 +249,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'citizen-nine26',
     title: 'Citizen Nine26',
+    type: 'Non-Profit',
     FrameComponent: CitizenNineTwoSixFrame,
     detailImage: citizenNine26Detail,
     maxWidth: 372,
@@ -265,6 +274,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'meals-on-wheels',
     title: 'Meals on Wheels',
+    type: 'Non-Profit',
     FrameComponent: MealsOnWheelsFrame,
     detailImage: mealsOnWheelsDetail,
     maxWidth: 343,
@@ -283,6 +293,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'community-building',
     title: 'Community Building',
+    type: 'Non-Profit',
     FrameComponent: CommunityBuildingFrame,
     detailImage: communityBuildingDetail,
     maxWidth: 343,
@@ -301,6 +312,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'fyre',
     title: 'FYRE',
+    type: 'Non-Profit',
     FrameComponent: FyreFrame,
     detailImage: fyreDetail,
     maxWidth: 354,
@@ -319,6 +331,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'women-of-color-candidates',
     title: 'Women of Color Candidates',
+    type: 'Non-Profit',
     FrameComponent: WomenOfColorCandidatesFrame,
     detailImage: womenOfColorCandidatesDetail,
     maxWidth: 354,
@@ -342,6 +355,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'terrain',
     title: 'Terrain',
+    type: 'Non-Profit',
     FrameComponent: TerrainFrame,
     detailImage: terrainDetail,
     maxWidth: 331,
@@ -360,6 +374,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'spokane-arts',
     title: 'Spokane Arts',
+    type: 'Non-Profit',
     FrameComponent: SpokaneArtsFrame,
     detailImage: spokaneArtsDetail,
     maxWidth: 355,
@@ -378,6 +393,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'marthas-kitchen',
     title: "Martha's Kitchen",
+    type: 'Non-Profit',
     FrameComponent: MarthasKitchenFrame,
     detailImage: marthasKitchenDetail,
     maxWidth: 343,
@@ -396,6 +412,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'pjals',
     title: 'Peace and Justice Action League of Spokane (PJALS)',
+    type: 'Non-Profit',
     FrameComponent: PjalsFrame,
     detailImage: pjalsDetail,
     maxWidth: 343,
@@ -421,6 +438,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'apic-washington',
     title: 'Asian & Pacific Islander Coalition \nof Washington',
+    type: 'Non-Profit',
     FrameComponent: ApicWashingtonFrame,
     detailImage: apicWashingtonDetail,
     maxWidth: 358,
@@ -438,6 +456,7 @@ const ROOTS_PORTFOLIO_ITEMS = [
   {
     id: 'community-whistle',
     title: 'Community Whistle',
+    type: 'Non-Profit',
     FrameComponent: CommunityWhistleFrame,
     detailImage: communityWhistleDetail,
     maxWidth: 318,

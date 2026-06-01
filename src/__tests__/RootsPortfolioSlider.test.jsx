@@ -241,6 +241,22 @@ describe('RootsPortfolioSlider', () => {
     expect(title).toHaveStyle({ whiteSpace: 'pre-line' })
   })
 
+  it('renders the item type above the title in the copy column', () => {
+    renderSlider('Typed Project', {
+      type: 'Non-Profit',
+    })
+
+    const copy = document.querySelector('[data-roots-slide-copy]')
+    const type = screen.getByText('Non-Profit')
+    const title = screen.getByRole('heading', { name: 'Typed Project' })
+
+    expect(copy).toContainElement(type)
+    expect(copy).toContainElement(title)
+    expect(
+      type.compareDocumentPosition(title) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy()
+  })
+
   it('fades the current slide out before fading the next slide in', () => {
     vi.useFakeTimers()
 

@@ -340,6 +340,25 @@ const Title = styled.h2`
   }
 `
 
+const HeadingGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`
+
+const ItemType = styled.p`
+  font-size: 16px;
+  font-variation-settings:
+    'wdth' ${({ theme }) => theme.font.width.condensed},
+    'wght' ${({ theme }) => theme.font.weight.bold};
+  text-transform: uppercase;
+  color: ${({ theme }) => theme.colors.blue.dark};
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    font-size: 14px;
+  }
+`
+
 const Bio = styled.p`
   color: ${({ theme }) => theme.colors.blue.dark};
   font-size: ${({ theme }) => theme.typography.formButton.size};
@@ -696,7 +715,12 @@ export default function RootsPortfolioSlider({
           </ArtworkStage>
 
           <Copy $maxWidth={displayItem.maxWidth} data-roots-slide-copy>
-            <Title id={titleId}>{displayItem.title}</Title>
+            <HeadingGroup>
+              {displayItem.type ? (
+                <ItemType>{displayItem.type}</ItemType>
+              ) : null}
+              <Title id={titleId}>{displayItem.title}</Title>
+            </HeadingGroup>
 
             <Bio>{displayItem.bio}</Bio>
 
