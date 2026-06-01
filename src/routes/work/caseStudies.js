@@ -76,8 +76,7 @@ const caseStudies = [
     id: 'voxus',
     slug: 'voxus-pr',
     name: 'Voxus PR',
-    flexBasis: 'calc(35.5% - 64px)',
-    isWide: true,
+    flexBasis: 'calc(40% - 64px)',
     letterSpacing: '-0.24px',
     quote:
       '“We communicate for a living, but HKW helped us crystalize our brand message.”',
@@ -86,12 +85,12 @@ const caseStudies = [
     image: voxusImg,
     navIcon: voxusNavDefault,
     heroImage: {
-      width: 641.456,
-      height: 677.632,
+      width: 841.456,
+      // height: 677.632,
       aspectRatio: '641.456 / 677.632',
       maxWidth: 'none',
       desktop: {
-        x: 140,
+        x: -100,
         y: -135,
       },
       mobile: {
