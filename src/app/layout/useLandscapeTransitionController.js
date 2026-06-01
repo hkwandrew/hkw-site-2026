@@ -104,8 +104,12 @@ const useLandscapeTransitionController = (pathname) => {
   const shouldShowHeader = headerContentRoutePath !== '/roots' || isMobile
   const isRouteContentRevealed =
     revealedContentPath === routePath && activeTransitionPath !== routePath
+  const isAboutRouteContentEntering =
+    routePath === '/about' && activeTransitionPath === routePath
   const shouldRenderRouteContent =
-    isRouteContentRevealed || earlyRevealedContentPath === routePath
+    isRouteContentRevealed ||
+    isAboutRouteContentEntering ||
+    earlyRevealedContentPath === routePath
   const isPageLabelRevealed = isRouteContentRevealed && pendingNavPath === null
   const areHomeLayerLinksInteractive =
     isHome && isRouteContentRevealed && canUseHoverRegions

@@ -197,13 +197,13 @@ const ContactReveal = styled.div`
   width: var(--contact-pill-size);
   height: 100%;
   overflow: hidden;
-  opacity: 0;
+  opacity: 1;
   pointer-events: none;
   z-index: 0;
-  background-color: ${({ theme }) => theme.colors.orange.dark};
   border-radius: 0 ${({ theme }) => theme.components.navTabs.borderRadius}
     ${({ theme }) => theme.components.navTabs.borderRadius} 0;
-  transition: opacity 0.16s ease;
+  transform: translateX(0);
+  transition: transform 0.42s ease;
 `
 
 const ContactRevealInner = styled.div`
@@ -211,10 +211,12 @@ const ContactRevealInner = styled.div`
   width: var(--contact-pill-size);
   transform: translateX(-100%);
   opacity: 0;
-  border-radius: ${({ theme }) => theme.components.navTabs.borderRadius};
+  background-color: ${({ theme }) => theme.colors.orange.dark};
+  border-radius: 0 ${({ theme }) => theme.components.navTabs.borderRadius}
+    ${({ theme }) => theme.components.navTabs.borderRadius} 0;
   transition:
-    transform 0.42s ease,
-    opacity 0.16s ease;
+    -0.21s transform 0.42s ease;
+  ${'' /* opacity 0.16s ease; */}
 `
 
 const ContactNavLink = styled(StyledNavLink)`

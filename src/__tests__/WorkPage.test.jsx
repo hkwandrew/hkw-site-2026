@@ -106,8 +106,8 @@ const getWorkMarmot = () => screen.getByTestId('work-marmot')
 const getWorkMarmotTrigger = () =>
   screen.getByRole('button', { name: /enter non-profit roots/i })
 const getActiveStudyPane = () => screen.getByTestId('work-study-active')
-const getMainContent = () =>
-  getActiveStudyPane().parentElement.parentElement.parentElement
+  const getMainContent = () =>
+    getActiveStudyPane().parentElement.parentElement.parentElement
 const expectedCaseStudyContent = [
   {
     id: 'celdf',
@@ -223,6 +223,8 @@ describe('WorkPage', () => {
     Array.from(document.querySelectorAll('style'))
       .map((styleElement) => styleElement.textContent)
       .join('\n')
+  const hasClassRule = (className, declarations) =>
+    getInjectedStyles().includes(`.${className}{${declarations}}`)
   const hasInjectedAnimationRule = (element) =>
     Array.from(element.classList).some((className) =>
       getInjectedStyles().includes(`.${className}{animation:`),
@@ -573,6 +575,29 @@ describe('WorkPage', () => {
 
     await waitForActiveStudy('computercare')
     expectHeroLayoutApplied('computercare')
+  })
+
+  it('prevents mobile overflow from desktop-width work artwork', () => {
+    renderWorkPage()
+
+    const page = getMainContent().parentElement
+    const activeHero = document.querySelector(
+      '[data-work-example-region="hero"][data-study-pane="active"]',
+    )
+
+    const pageClipClassName = Array.from(page.classList).find((className) =>
+      hasClassRule(className, 'overflow-x:clip;'),
+    )
+    const heroWidthClassName = Array.from(activeHero.classList).find(
+      (className) =>
+        hasClassRule(
+          className,
+          'position:relative;align-items:flex-start;justify-content:flex-start;width:100%;max-width:100%;',
+        ),
+    )
+
+    expect(pageClipClassName).toBeDefined()
+    expect(heroWidthClassName).toBeDefined()
   })
 
   it('renders icon buttons for mapped studies and dot fallback buttons for missing icons', () => {

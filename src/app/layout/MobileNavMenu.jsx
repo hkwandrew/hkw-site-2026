@@ -57,6 +57,8 @@ const ToggleButton = styled.button`
   svg {
     width: 24px;
     height: 22px;
+    color: ${({ $isRootsPage, theme }) =>
+      $isRootsPage ? theme.colors.yellow.light : theme.colors.blue.dark};
   }
 
   &:focus-visible {

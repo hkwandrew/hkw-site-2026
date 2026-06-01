@@ -227,19 +227,9 @@ const toHeroWidth = (value) => {
 }
 
 export const Page = styled(ViewContainer)`
-  ${'' /* overflow: hidden; */}
-
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    ${
-      '' /* background: linear-gradient(
-      to top,
-      white 70%,
-      transparent 70%,
-      transparent 100%
-    );
-    overflow-y: auto;
-  } */
-    }
+    overflow-x: clip;
+  }
 `
 
 export const MainContent = styled.div`
@@ -484,6 +474,8 @@ export const HeroImage = styled.div`
     position: relative;
     align-items: flex-start;
     justify-content: flex-start;
+    width: 100%;
+    max-width: 100%;
 
     img {
       width: min(100%, 360px);

@@ -3,8 +3,6 @@ import { aboutSceneSpec } from './sceneSpec'
 
 const AboutPage = lazy(() => import('./AboutPage.jsx'))
 
-export const ABOUT_ROUTE_CONTENT_REVEAL_LEAD_MS = 1500
-
 export const aboutRoute = Object.freeze({
   id: 'about',
   routePath: '/about',
@@ -15,7 +13,6 @@ export const aboutRoute = Object.freeze({
   phoneNavLabel: 'About',
   showInNav: true,
   showInPhoneNav: true,
-  contentRevealLeadMs: ABOUT_ROUTE_CONTENT_REVEAL_LEAD_MS,
   sceneSpec: aboutSceneSpec,
   Component: AboutPage,
 })

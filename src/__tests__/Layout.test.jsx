@@ -2,8 +2,6 @@ import { act, fireEvent, render, screen, waitFor, withTheme } from '@/__tests__/
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { usePageSceneTransition } from '@/app/landscape/pageSceneTransition'
-import { SCENE_TRANSITION_DURATION_MS } from '@/app/landscape/sceneRegistry'
-import { ABOUT_ROUTE_CONTENT_REVEAL_LEAD_MS } from '@/routes/about/route'
 const sharedSceneRuntimeMocks = vi.hoisted(() => ({
   animateSharedSceneTransition: vi.fn(),
   applySharedSceneState: vi.fn(),
@@ -214,7 +212,7 @@ describe('Layout shared scene links', () => {
     expectRuntimeTransformSentinels(container)
   })
 
-  it('starts the home layer scene transition before the about route commits', async () => {
+  it('starts the home layer scene transition and mounts about content before the scene completes', async () => {
     canUseHoverRegions = true
     const { container, router } = renderLayoutRoute('/')
     activeRouter = router
@@ -228,9 +226,11 @@ describe('Layout shared scene links', () => {
 
     expect(sceneTransitionStartPaths[0]).toBe('/')
     expect(router.state.location.pathname).toBe('/about')
+    expect(completePendingSceneTransition).toEqual(expect.any(Function))
+    expect(screen.getByText('About route body')).toBeInTheDocument()
   })
 
-  it('starts the home nav scene transition before the about route commits', async () => {
+  it('starts the home nav scene transition and mounts about content before the scene completes', async () => {
     const { router } = renderLayoutRoute('/')
     activeRouter = router
 
@@ -240,6 +240,8 @@ describe('Layout shared scene links', () => {
 
     expect(sceneTransitionStartPaths[0]).toBe('/')
     expect(router.state.location.pathname).toBe('/about')
+    expect(completePendingSceneTransition).toEqual(expect.any(Function))
+    expect(screen.getByText('About route body')).toBeInTheDocument()
   })
 
   it('reapplies the active scene state when the scene viewport changes', () => {
@@ -320,34 +322,18 @@ describe('Layout shared scene links', () => {
     expect(sharedSceneRuntimeMocks.applySharedSceneState).toHaveBeenCalledTimes(1)
   })
 
-  it('mounts the about route when the scene transition starts', async () => {
-    vi.useFakeTimers()
+  it('mounts the about route while the scene transition is still running', async () => {
+    const { router } = renderLayoutRoute('/')
 
-    try {
-      const { router } = renderLayoutRoute('/')
-      const aboutRevealDelay = Math.max(
-        SCENE_TRANSITION_DURATION_MS - ABOUT_ROUTE_CONTENT_REVEAL_LEAD_MS,
-        0,
-      )
+    expect(screen.getByText('Home route body')).toBeInTheDocument()
 
-      expect(screen.getByText('Home route body')).toBeInTheDocument()
+    await act(async () => {
+      await router.navigate('/about')
+    })
 
-      await act(async () => {
-        await router.navigate('/about')
-      })
-
-      expect(router.state.location.pathname).toBe('/about')
-      expect(screen.queryByText('About route body')).not.toBeInTheDocument()
-      expect(completePendingSceneTransition).toEqual(expect.any(Function))
-
-      act(() => {
-        vi.advanceTimersByTime(aboutRevealDelay)
-      })
-
-      expect(screen.getByText('About route body')).toBeInTheDocument()
-    } finally {
-      vi.useRealTimers()
-    }
+    expect(router.state.location.pathname).toBe('/about')
+    expect(completePendingSceneTransition).toEqual(expect.any(Function))
+    expect(screen.getByText('About route body')).toBeInTheDocument()
   })
 
   it('keeps the header mounted while the route body stays hidden', async () => {
