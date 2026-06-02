@@ -363,6 +363,15 @@ export const DesktopHome = styled.div`
   flex: 1;
   height: 100%;
   pointer-events: none;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    background-image: linear-gradient(
+      to top,
+      ${({ theme }) => theme.colors.green} 70%,
+      ${({ theme }) => theme.colors.blue.light} 70%,
+      transparent 70%
+    );
+  }
 `
 
 export const Content = styled.div`
@@ -424,7 +433,8 @@ export const Footer = styled.footer`
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     padding: 215px 0 0 20px;
-    position: unset;
+    bottom: 48px;
+    left: unset;
   }
 `
 
@@ -444,6 +454,8 @@ export const FooterText = styled.div`
     display: flex;
     flex-direction: column;
     font-size: 14px;
+
+    width: unset;
 
     .separator {
       display: none;
@@ -617,6 +629,7 @@ export const HomeMarmotWrapper = styled.div`
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     width: min(478px, 122vw);
+    right: -127px;
   }
 
   @media (max-width: ${({ theme }) =>

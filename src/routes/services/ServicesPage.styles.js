@@ -126,7 +126,6 @@ export const TopHatMarmotWrapper = styled.div`
     bottom: -8px;
     width: min(49vw, 193px);
     z-index: 1;
-    ${'' /* transform: scaleX(-1); */}
     transform-origin: center bottom;
 
     svg {
@@ -145,11 +144,6 @@ export const ServicesStage = styled.div`
 
   @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
     overflow: hidden;
-    background-image: linear-gradient(
-      to bottom,
-      transparent 0 360px,
-      ${({ theme }) => theme.colors.blue.dark} 360px 100%
-    );
   }
 `
 

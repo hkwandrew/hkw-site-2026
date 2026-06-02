@@ -307,7 +307,7 @@ const caseStudies = [
     flexBasis: 'calc(42.5% - 64px)',
     quote:
       "From strategy to launch, HKW is the rare agency that combines rock-solid reliability, outstanding design & UI/UX, and genuine partnership — all wrapped up in a team you'll actually love working with.",
-    attribution: 'Karim, Azar, Sr. Director, Global Digital & Web Marketing',
+    attribution: 'Karim Azar, Sr. Director, Global Digital & Web Marketing',
     services: ['Web Design', 'Web Development', 'Marketing Support'],
     image: reltioImg,
     navIcon: reltioNavDefault,

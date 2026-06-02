@@ -341,6 +341,10 @@ export const ClientType = styled.p`
   text-transform: uppercase;
   color: ${({ theme }) => theme.colors.blue.dark};
   margin-bottom: 8px;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    margin-top: 24px;
+  }
 `
 
 export const ClientName = styled.h2`
@@ -353,10 +357,6 @@ export const ClientName = styled.h2`
   line-height: 1;
   letter-spacing: -0.96px;
   color: ${({ theme }) => theme.colors.orange.base};
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    margin-top: 24px;
-  }
 `
 
 export const QuoteAndAttribution = styled.div`

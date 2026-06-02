@@ -72,7 +72,7 @@ export const HOME_SCENE_STATE = {
     wrapper: { scaleX: 1, scaleY: 1 },
     viewports: {
       mobile: {
-        container: { x: 1308, y: '320%' },
+        container: { x: 1308, y: '420%' },
       },
     },
   },

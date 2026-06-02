@@ -67,7 +67,7 @@ export const ABOUT_SCENE_STATE = {
     wrapper: { scaleX: 1, scaleY: 1 },
     viewports: {
       mobile: {
-        container: { x: 0, y: '260%' },
+        container: { x: 0, y: '360%' },
       },
     },
   },
