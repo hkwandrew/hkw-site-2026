@@ -26,14 +26,15 @@ describe('SCENE_TRANSITION_DURATION_MS', () => {
 })
 
 describe('SCENE_PAGE_STATES', () => {
-  it('has entries for all 6 pages', () => {
-    expect(Object.keys(SCENE_PAGE_STATES)).toHaveLength(6)
+  it('has entries for all 7 pages', () => {
+    expect(Object.keys(SCENE_PAGE_STATES)).toHaveLength(7)
     expect(SCENE_PAGE_STATES).toHaveProperty('home-page')
     expect(SCENE_PAGE_STATES).toHaveProperty('about-page')
     expect(SCENE_PAGE_STATES).toHaveProperty('services-page')
     expect(SCENE_PAGE_STATES).toHaveProperty('work-page')
     expect(SCENE_PAGE_STATES).toHaveProperty('contact-page')
     expect(SCENE_PAGE_STATES).toHaveProperty('roots-page')
+    expect(SCENE_PAGE_STATES).toHaveProperty('policy-page')
   })
 
   it('exposes ROOTS_SCENE_STATE through roots-page', () => {
@@ -91,6 +92,9 @@ describe('resolveSceneStateForPath', () => {
     expect(resolveSceneStateForPath('/roots')).toBe(
       SCENE_PAGE_STATES['roots-page'],
     )
+    expect(resolveSceneStateForPath('/policy')).toBe(
+      SCENE_PAGE_STATES['policy-page'],
+    )
   })
 
   it('returns null for unknown paths', () => {
@@ -112,6 +116,11 @@ describe('resolveSceneTransition', () => {
   it('returns null for same-path transitions', () => {
     expect(resolveSceneTransition('/', '/')).toBeNull()
     expect(resolveSceneTransition('/about', '/about')).toBeNull()
+  })
+
+  it('returns null when routes already share the same scene state', () => {
+    expect(resolveSceneTransition('/', '/policy')).toBeNull()
+    expect(resolveSceneTransition('/policy', '/')).toBeNull()
   })
 
   it('returns null when either path is unknown', () => {

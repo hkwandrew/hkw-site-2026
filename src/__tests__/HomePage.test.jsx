@@ -277,4 +277,13 @@ describe('HomePage', () => {
     expect(styles).toContain('rotateX(90deg)')
     expect(styles).not.toContain('transform:rotate(360deg)')
   })
+
+  it('links policies to the local policy route', () => {
+    renderHomePage()
+
+    expect(screen.getByRole('link', { name: 'Policies' })).toHaveAttribute(
+      'href',
+      '/policy',
+    )
+  })
 })

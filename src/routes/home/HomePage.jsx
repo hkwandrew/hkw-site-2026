@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import usePageActive from '@/shared/hooks/usePageActive'
 import ViewContainer from '@/shared/ui/ViewContainer'
 import { HOME_HOVER_REGION } from './homeHoverRegions'
@@ -146,7 +146,7 @@ export default function Home() {
             <FooterText>
               <span>&copy; 2026 HKW</span>
               <span className='separator'> | </span>
-              <a href='https://hkw.io/policy'>Policies</a>
+              <Link to='/policy'>Policies</Link>
             </FooterText>
           </Footer>
         </DesktopHome>

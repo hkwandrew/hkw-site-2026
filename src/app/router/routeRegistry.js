@@ -1,6 +1,7 @@
 import { aboutRoute } from '@/routes/about/route'
 import { contactRoute } from '@/routes/contact/route'
 import { homeRoute } from '@/routes/home/route'
+import { policyRoute } from '@/routes/policy/route'
 import { rootsRoute } from '@/routes/roots/route'
 import { servicesRoute } from '@/routes/services/route'
 import { workRoute } from '@/routes/work/route'
@@ -12,6 +13,7 @@ export const ROUTE_DEFINITIONS = [
   workRoute,
   rootsRoute,
   contactRoute,
+  policyRoute,
 ]
 
 export const PAGE_DEFINITIONS = ROUTE_DEFINITIONS

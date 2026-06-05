@@ -20,6 +20,7 @@ describe('getPageKeyForPath', () => {
     expect(getPageKeyForPath('/contact')).toBe('contact-page')
     expect(getPageKeyForPath('/roots')).toBe('roots-page')
     expect(getPageKeyForPath('/roots/meals-on-wheels')).toBe('roots-page')
+    expect(getPageKeyForPath('/policy')).toBe('policy-page')
   })
 
   it('returns unknown for unrecognized paths', () => {
@@ -120,11 +121,23 @@ describe('getRouteChildrenConfig', () => {
       ]),
     )
   })
+
+  it('registers the policy route as a static route', () => {
+    const routeChildren = getRouteChildrenConfig()
+
+    expect(routeChildren).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          path: 'policy',
+        }),
+      ]),
+    )
+  })
 })
 
 describe('PAGE_DEFINITIONS', () => {
-  it('contains exactly 6 page definitions', () => {
-    expect(PAGE_DEFINITIONS).toHaveLength(6)
+  it('contains exactly 7 page definitions', () => {
+    expect(PAGE_DEFINITIONS).toHaveLength(7)
   })
 
   it('each definition has required properties', () => {
@@ -145,6 +158,10 @@ describe('NAV_ITEMS', () => {
       expect(item).toHaveProperty('label')
       expect(item).toHaveProperty('path')
     })
+  })
+
+  it('does not expose the policy page in desktop navigation', () => {
+    expect(NAV_ITEMS.map((item) => item.path)).not.toContain('/policy')
   })
 })
 
@@ -186,5 +203,9 @@ describe('PHONE_NAV_ITEMS', () => {
         path: '/contact',
       },
     ])
+  })
+
+  it('does not expose the policy page in phone navigation', () => {
+    expect(PHONE_NAV_ITEMS.map((item) => item.path)).not.toContain('/policy')
   })
 })
