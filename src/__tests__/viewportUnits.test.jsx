@@ -121,7 +121,7 @@ describe('viewport unit conversion', () => {
     }
   })
 
-  it('switches the viewport-pixel unit at the mobile breakpoint', () => {
+  it('switches the viewport-pixel unit for phone portrait composition', () => {
     const sheet = new ServerStyleSheet()
 
     try {
@@ -144,7 +144,7 @@ describe('viewport unit conversion', () => {
           DESKTOP_VIEWPORT_HEIGHT,
         )}`,
       )
-      expect(styles).toContain('@media (max-width: 767px)')
+      expect(styles).toContain(":root[data-viewport-layout='phone-portrait']")
       expect(styles).toContain(
         `${VIEWPORT_PX_UNIT_CUSTOM_PROPERTY}:${getCappedViewportPxUnitValue(
           MOBILE_VIEWPORT_WIDTH,

@@ -19,9 +19,24 @@ const GlobalStyle = createGlobalStyle`
   :root {
     color-scheme: light;
     text-rendering: optimizeLegibility;
+    --hkw-debug-mobile-border: transparent;
+    --hkw-debug-wide-border: transparent;
+    --hkw-debug-coarse-border: transparent;
+    --hkw-viewport-width: 100vw;
+    --hkw-viewport-height: 100vh;
+    --hkw-viewport-ratio: 1;
     ${VIEWPORT_PX_UNIT_CUSTOM_PROPERTY}: ${getFittedViewportPxUnitValue(
       DESKTOP_VIEWPORT_WIDTH,
       DESKTOP_VIEWPORT_HEIGHT,
+    )};
+  }
+
+  :root[data-viewport-layout='phone-portrait'] {
+    overflow: hidden;
+    --hkw-debug-mobile-border: red;
+    ${VIEWPORT_PX_UNIT_CUSTOM_PROPERTY}: ${getCappedViewportPxUnitValue(
+      MOBILE_VIEWPORT_WIDTH,
+      MOBILE_VIEWPORT_HEIGHT,
     )};
   }
 
@@ -46,36 +61,37 @@ const GlobalStyle = createGlobalStyle`
     -moz-osx-font-smoothing: grayscale;
   }
 
+  :root[data-hkw-debug-tools='true'] body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 2147483647;
+    pointer-events: none;
+    box-shadow:
+      inset 0 0 0 0.25rem var(--hkw-debug-mobile-border),
+      inset 0 0 0 0.5rem var(--hkw-debug-wide-border),
+      inset 0 0 0 0.75rem var(--hkw-debug-coarse-border);
+  }
+
+  [data-hkw-debug-overflow='true'] {
+    outline: 0.1875rem dashed #ff2e88 !important;
+    outline-offset: -0.1875rem !important;
+  }
+
   body[data-mobile-nav-open='true'] {
     overflow: hidden;
     touch-action: none;
   }
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @media (min-aspect-ratio: 1440/1024) {
     :root {
-      ${VIEWPORT_PX_UNIT_CUSTOM_PROPERTY}: ${getCappedViewportPxUnitValue(
-        MOBILE_VIEWPORT_WIDTH,
-        MOBILE_VIEWPORT_HEIGHT,
-      )};
+      --hkw-debug-wide-border: limegreen;
     }
+  }
 
-    html, body, #root {
-      ${'' /* height: auto;
-      min-height: 100%;
-      overflow-x: hidden;
-      overflow-y: auto; */}
-    }
-
-    main {
-      ${'' /* min-height: 100dvh; */}
-    }
-
-    #scene-svg {
-      ${'' /* display: none; */}
-    }
-
-    main.about-page #scene-svg {
-      ${'' /* display: block !important; */}
+  @media (pointer: coarse) {
+    :root {
+      --hkw-debug-coarse-border: yellow;
     }
   }
 

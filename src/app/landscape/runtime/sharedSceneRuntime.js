@@ -11,14 +11,20 @@
  */
 import gsap from 'gsap'
 import MorphSVGPlugin from 'gsap/MorphSVGPlugin'
-import theme from '@/styles/theme'
+import {
+  getSceneViewportKeyForLayout,
+  getViewportComposition,
+} from '@/app/layout/viewportComposition'
 
 gsap.registerPlugin(MorphSVGPlugin)
 
-export const SCENE_VIEWPORT_MOBILE_QUERY = `(max-width: ${theme.breakpoints.mobile})`
-
-const BASE_SCENE_VIEWPORT = 'base'
-const MOBILE_SCENE_VIEWPORT = 'mobile'
+const SCENE_VIEWPORT_FALLBACKS = Object.freeze({
+  base: ['base'],
+  phoneLandscape: ['phoneLandscape'],
+  phonePortrait: ['phonePortrait', 'mobile'],
+  shortDesktop: ['shortDesktop'],
+  tablet: ['tablet'],
+})
 
 const SCENE_LAYER_SELECTORS = Object.freeze({
   blueMountain: Object.freeze({
@@ -69,19 +75,9 @@ const toTranslate = ({ x, y }) => `translate(${x},${y})`
 const toScale = ({ scaleX, scaleY }) => `scale(${scaleX},${scaleY})`
 
 export const getSceneViewportKey = () => {
-  if (typeof window === 'undefined') return BASE_SCENE_VIEWPORT
+  const { layout } = getViewportComposition()
 
-  if (window.matchMedia) {
-    return window.matchMedia(SCENE_VIEWPORT_MOBILE_QUERY).matches
-      ? MOBILE_SCENE_VIEWPORT
-      : BASE_SCENE_VIEWPORT
-  }
-
-  const mobileBreakpoint = Number.parseFloat(theme.breakpoints.mobile)
-
-  return window.innerWidth <= mobileBreakpoint
-    ? MOBILE_SCENE_VIEWPORT
-    : BASE_SCENE_VIEWPORT
+  return getSceneViewportKeyForLayout(layout)
 }
 
 const mergeViewportState = (baseState, viewportState) => ({
@@ -90,7 +86,12 @@ const mergeViewportState = (baseState, viewportState) => ({
 })
 
 const resolveLayerStateForViewport = (layerState, viewportKey) => {
-  const viewportState = layerState?.viewports?.[viewportKey]
+  const viewportKeys = SCENE_VIEWPORT_FALLBACKS[viewportKey] ?? [viewportKey]
+  const viewportState = viewportKeys.reduce(
+    (resolvedState, nextViewportKey) =>
+      resolvedState ?? layerState?.viewports?.[nextViewportKey],
+    null,
+  )
 
   if (!viewportState) return layerState
 

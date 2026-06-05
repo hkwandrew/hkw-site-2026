@@ -15,6 +15,7 @@ const getStyleText = () =>
   Array.from(document.head.querySelectorAll('style'))
     .map((styleTag) => styleTag.textContent ?? '')
     .join('\n')
+const normalizeCss = (value) => value.replace(/\s+/g, '')
 
 const renderContact = (props = {}) =>
   render(
@@ -82,6 +83,15 @@ describe('Contact page', () => {
     expect(screen.getAllByLabelText(/enter name/i)).toHaveLength(1)
     expect(screen.getAllByLabelText(/enter email address/i)).toHaveLength(1)
     expect(screen.getAllByRole('combobox', { name: /project type/i })).toHaveLength(1)
+  })
+
+  it('sets compact form field density from the contact form on phone layouts', () => {
+    renderContact()
+
+    const styles = normalizeCss(getStyleText())
+
+    expect(styles).toContain('--hkw-field-density:regular')
+    expect(styles).toContain('--hkw-field-density:compact')
   })
 
   it('uses the shared scene sun for the phone contact background', () => {

@@ -8,6 +8,7 @@ import { ROOTS_DROP_DURATION_MS } from '@/routes/home/HomePage.styles'
 const mockNavigate = vi.fn()
 const originalMatchMedia = window.matchMedia
 const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+const normalizeCss = (value) => value.replace(/\s+/g, '')
 
 vi.mock('react-router', async () => {
   const actual = await vi.importActual('react-router')
@@ -244,7 +245,7 @@ describe('HomePage', () => {
     expect(styles).not.toContain('#tow-line{animation:')
   })
 
-  it('clips the off-canvas marmot at phone widths without changing the marmot crop', () => {
+  it('scopes portrait phone composition to the shared viewport layout contract', () => {
     const { container } = renderHomePage()
 
     const clip = container.querySelector('[data-home-marmot-clip]')
@@ -253,22 +254,16 @@ describe('HomePage', () => {
     const styles = Array.from(document.head.querySelectorAll('style'))
       .map((styleTag) => styleTag.textContent ?? '')
       .join('\n')
-    const clipClassName = Array.from(clip.classList).find((className) =>
-      styles.includes(`.${className}{position:absolute;`),
-    )
+    const normalizedStyles = normalizeCss(styles)
 
-    expect(clip).toHaveStyle({ overflow: 'visible' })
-    expect(clipClassName).toBeDefined()
-    expect(styles).toMatch(
-      new RegExp(
-        `@media \\(max-width:\\s*767px\\)\\{\\.${escapeRegExp(
-          clipClassName,
-        )}\\{overflow:hidden;\\}\\}`,
-      ),
+    expect(normalizedStyles).toContain(
+      "[data-viewport-layout='phone-portrait']",
     )
-    expect(styles).toContain(
-      'right:calc(-127 * var(--hkw-viewport-px-unit))',
+    expect(normalizedStyles).toContain(
+      'right:calc(-127*var(--hkw-viewport-px-unit))',
     )
+    expect(normalizedStyles).not.toContain('(pointer:coarse)')
+    expect(normalizedStyles).not.toContain('@media(max-width:767px)')
   })
 
   it('renders the plane propeller with a perpendicular spin treatment', () => {

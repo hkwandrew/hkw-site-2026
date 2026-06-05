@@ -12,16 +12,30 @@ const renderHeader = (initialEntries = ['/contact'], props = {}) =>
   )
 
 describe('Header', () => {
-  let isPhoneViewport = false
   const originalMatchMedia = window.matchMedia
+  const originalInnerHeight = window.innerHeight
+  const originalInnerWidth = window.innerWidth
   const originalResizeObserver = window.ResizeObserver
   const originalRequestAnimationFrame = window.requestAnimationFrame
   const originalCancelAnimationFrame = window.cancelAnimationFrame
 
+  const setViewportSize = (width, height) => {
+    Object.defineProperty(window, 'innerWidth', {
+      configurable: true,
+      value: width,
+    })
+    Object.defineProperty(window, 'innerHeight', {
+      configurable: true,
+      value: height,
+    })
+  }
+
   beforeAll(() => {
-    window.matchMedia = vi.fn().mockImplementation(() => ({
-      matches: isPhoneViewport,
-      media: '',
+    setViewportSize(1440, 1024)
+    window.matchMedia = vi.fn().mockImplementation((query) => ({
+      matches:
+        query === '(hover: hover)' || query === '(pointer: fine)',
+      media: query,
       addEventListener: vi.fn(),
       removeEventListener: vi.fn(),
       addListener: vi.fn(),
@@ -37,7 +51,7 @@ describe('Header', () => {
   })
 
   afterEach(() => {
-    isPhoneViewport = false
+    setViewportSize(1440, 1024)
     window.requestAnimationFrame = originalRequestAnimationFrame
     window.cancelAnimationFrame = originalCancelAnimationFrame
     document.body.style.overflow = ''
@@ -47,6 +61,7 @@ describe('Header', () => {
 
   afterAll(() => {
     window.matchMedia = originalMatchMedia
+    setViewportSize(originalInnerWidth, originalInnerHeight)
     window.ResizeObserver = originalResizeObserver
     window.requestAnimationFrame = originalRequestAnimationFrame
     window.cancelAnimationFrame = originalCancelAnimationFrame
@@ -114,7 +129,7 @@ describe('Header', () => {
   })
 
   it('renders the roots mobile header without a page label and uses dark controls', () => {
-    isPhoneViewport = true
+    setViewportSize(375, 667)
 
     const { container } = renderHeader(['/roots'], {
       contentPathname: '/roots',
@@ -131,11 +146,10 @@ describe('Header', () => {
     )
     expect(getComputedStyle(menuButton).color).toBe('rgb(28, 45, 56)')
 
-    isPhoneViewport = false
   })
 
   it('positions the services mobile nav toggle higher than default pages', () => {
-    isPhoneViewport = true
+    setViewportSize(375, 667)
 
     renderHeader(['/services'], {
       contentPathname: '/services',
@@ -148,8 +162,21 @@ describe('Header', () => {
     expect(getComputedStyle(menuButton).translate).toBe(
       convertCssPxToViewportUnit('0 -24px'),
     )
+  })
 
-    isPhoneViewport = false
+  it('keeps the desktop navigation for phone landscape composition', () => {
+    setViewportSize(667, 375)
+
+    renderHeader(['/services'], {
+      contentPathname: '/services',
+    })
+
+    expect(screen.getByRole('navigation')).toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', {
+        name: 'Open navigation menu',
+      }),
+    ).not.toBeInTheDocument()
   })
 
   it('hides the page label immediately and fades it in when the page is ready', () => {
@@ -203,7 +230,7 @@ describe('Header', () => {
   })
 
   it('focuses the first mobile nav link when the menu opens', () => {
-    isPhoneViewport = true
+    setViewportSize(375, 667)
     window.requestAnimationFrame = vi.fn((callback) => {
       callback(0)
       return 1
@@ -219,7 +246,7 @@ describe('Header', () => {
   })
 
   it('focuses the active mobile nav link when the current page is in the drawer', () => {
-    isPhoneViewport = true
+    setViewportSize(375, 667)
     window.requestAnimationFrame = vi.fn((callback) => {
       callback(0)
       return 1
@@ -234,7 +261,7 @@ describe('Header', () => {
   })
 
   it('renders a right-edge off-canvas drawer with the mobile nav order', () => {
-    isPhoneViewport = true
+    setViewportSize(375, 667)
 
     renderHeader(['/work'], {
       contentPathname: '/work',
@@ -265,7 +292,7 @@ describe('Header', () => {
   })
 
   it('locks body scroll while the mobile drawer is open and clears it on close', () => {
-    isPhoneViewport = true
+    setViewportSize(375, 667)
 
     renderHeader(['/contact'], {
       contentPathname: '/contact',
@@ -285,7 +312,7 @@ describe('Header', () => {
   })
 
   it('closes the mobile drawer with Escape and backdrop clicks', () => {
-    isPhoneViewport = true
+    setViewportSize(375, 667)
 
     const { rerender } = renderHeader(['/services'], {
       contentPathname: '/services',

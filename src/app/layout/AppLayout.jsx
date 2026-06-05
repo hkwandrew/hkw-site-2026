@@ -1,5 +1,6 @@
-import { Suspense } from 'react'
+import { Suspense, useLayoutEffect } from 'react'
 import { Outlet, useLocation } from 'react-router'
+import DebugHud from '@/app/debug/DebugHud'
 import Header from '@/app/layout/Header'
 import LandscapeScene from '@/app/layout/LandscapeScene'
 import useLandscapeTransitionController from '@/app/layout/useLandscapeTransitionController'
@@ -18,9 +19,43 @@ const AppLayout = () => {
     shouldShowHeader,
     shouldRenderRouteContent,
     areHomeLayerLinksInteractive,
+    viewportComposition,
     transitionContextValue,
     homeHoverContextValue,
   } = useLandscapeTransitionController(location.pathname)
+  const viewportRatio = Number(viewportComposition.ratio.toFixed(5))
+  const viewportStyle = {
+    '--hkw-viewport-height': `${viewportComposition.height}px`,
+    '--hkw-viewport-ratio': String(viewportRatio),
+    '--hkw-viewport-width': `${viewportComposition.width}px`,
+  }
+
+  useLayoutEffect(() => {
+    const rootElement = document.documentElement
+
+    rootElement.dataset.viewportLayout = viewportComposition.layout
+    rootElement.style.setProperty(
+      '--hkw-viewport-height',
+      `${viewportComposition.height}px`,
+    )
+    rootElement.style.setProperty('--hkw-viewport-ratio', String(viewportRatio))
+    rootElement.style.setProperty(
+      '--hkw-viewport-width',
+      `${viewportComposition.width}px`,
+    )
+
+    return () => {
+      delete rootElement.dataset.viewportLayout
+      rootElement.style.removeProperty('--hkw-viewport-height')
+      rootElement.style.removeProperty('--hkw-viewport-ratio')
+      rootElement.style.removeProperty('--hkw-viewport-width')
+    }
+  }, [
+    viewportComposition.height,
+    viewportComposition.layout,
+    viewportComposition.width,
+    viewportRatio,
+  ])
 
   return (
     <PageSceneTransitionProvider value={transitionContextValue}>
@@ -29,7 +64,11 @@ const AppLayout = () => {
           ref={mainRef}
           data-page={pageKey}
           data-scene-page={pageKey}
+          data-hover={viewportComposition.hover}
+          data-pointer={viewportComposition.pointer}
+          data-viewport-layout={viewportComposition.layout}
           className={pageKey}
+          style={viewportStyle}
         >
           {shouldShowHeader ? (
             <Header
@@ -49,6 +88,8 @@ const AppLayout = () => {
               <Outlet />
             </Suspense>
           ) : null}
+
+          {import.meta.env.DEV ? <DebugHud /> : null}
         </main>
       </HomeHoverProvider>
     </PageSceneTransitionProvider>

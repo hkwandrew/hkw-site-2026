@@ -5,24 +5,33 @@ import { act, fireEvent, render, withTheme } from '@/__tests__/testUtils'
 const sharedSceneRuntimeMocks = vi.hoisted(() => ({
   animateSharedSceneTransition: vi.fn(),
   applySharedSceneState: vi.fn(),
-  sceneViewportMobileQuery: '(max-width: 767px)',
 }))
 
 vi.mock('@/app/landscape/runtime/sharedSceneRuntime', () => ({
   animateSharedSceneTransition:
     sharedSceneRuntimeMocks.animateSharedSceneTransition,
   applySharedSceneState: sharedSceneRuntimeMocks.applySharedSceneState,
-  SCENE_VIEWPORT_MOBILE_QUERY:
-    sharedSceneRuntimeMocks.sceneViewportMobileQuery,
 }))
 
 import Layout from '@/app/layout/AppLayout'
 
 const originalMatchMedia = window.matchMedia
 const originalResizeObserver = window.ResizeObserver
+const originalInnerHeight = window.innerHeight
+const originalInnerWidth = window.innerWidth
 let completePendingSceneTransition = null
 let canUseHoverRegions = true
-let isMobileViewport = false
+
+const setViewportSize = (width, height) => {
+  Object.defineProperty(window, 'innerWidth', {
+    configurable: true,
+    value: width,
+  })
+  Object.defineProperty(window, 'innerHeight', {
+    configurable: true,
+    value: height,
+  })
+}
 
 const renderLayoutRoute = (initialPath) => {
   const router = createMemoryRouter(
@@ -57,7 +66,7 @@ describe('Home hover landing state', () => {
   beforeEach(() => {
     completePendingSceneTransition = null
     canUseHoverRegions = true
-    isMobileViewport = false
+    setViewportSize(1440, 1024)
     sharedSceneRuntimeMocks.animateSharedSceneTransition.mockReset()
     sharedSceneRuntimeMocks.applySharedSceneState.mockReset()
     sharedSceneRuntimeMocks.animateSharedSceneTransition.mockImplementation(
@@ -68,11 +77,15 @@ describe('Home hover landing state', () => {
     )
     window.matchMedia = vi.fn().mockImplementation((query) => ({
       matches:
-        query === '(hover: hover) and (pointer: fine)'
+        query === '(hover: hover)'
           ? canUseHoverRegions
-          : query === sharedSceneRuntimeMocks.sceneViewportMobileQuery
-            ? isMobileViewport
-          : false,
+          : query === '(hover: none)'
+            ? !canUseHoverRegions
+            : query === '(pointer: fine)'
+              ? canUseHoverRegions
+              : query === '(pointer: coarse)'
+                ? !canUseHoverRegions
+                : false,
       media: query,
       addEventListener: vi.fn(),
       removeEventListener: vi.fn(),
@@ -90,6 +103,14 @@ describe('Home hover landing state', () => {
   afterEach(() => {
     window.matchMedia = originalMatchMedia
     window.ResizeObserver = originalResizeObserver
+    Object.defineProperty(window, 'innerWidth', {
+      configurable: true,
+      value: originalInnerWidth,
+    })
+    Object.defineProperty(window, 'innerHeight', {
+      configurable: true,
+      value: originalInnerHeight,
+    })
   })
 
   it('keeps home hover regions inactive until the home transition completes', async () => {
@@ -157,8 +178,8 @@ describe('Home hover landing state', () => {
     expect(blueMountainHoverGroup).toHaveStyle({ opacity: '0' })
   })
 
-  it('keeps home hover regions inactive on mobile viewport sizes', () => {
-    isMobileViewport = true
+  it('keeps home hover regions inactive on phone viewport layouts', () => {
+    setViewportSize(375, 667)
 
     const { container } = renderLayoutRoute('/')
 

@@ -61,6 +61,12 @@ const Content = styled.div`
       border-radius: ${({ theme }) => theme.components.navTabs.borderRadius} 0 0
         ${({ theme }) => theme.components.navTabs.borderRadius};
     }
+
+    [data-viewport-layout='phone-portrait'] & {
+      position: unset;
+      border-radius: ${({ theme }) =>
+        theme.components.navTabs.borderRadius} !important;
+    }
   }
 
   &[data-click-collapsed='true'] [data-contact-reveal] {
@@ -204,6 +210,12 @@ const ContactReveal = styled.div`
     ${({ theme }) => theme.components.navTabs.borderRadius} 0;
   transform: translateX(0);
   transition: transform 0.42s ease;
+
+  [data-viewport-layout='phone-portrait'] & {
+    position: unset;
+    border-radius: ${({ theme }) => theme.components.navTabs.borderRadius} 0 0
+      ${({ theme }) => theme.components.navTabs.borderRadius};
+  }
 `
 
 const ContactRevealInner = styled.div`
@@ -214,9 +226,7 @@ const ContactRevealInner = styled.div`
   background-color: ${({ theme }) => theme.colors.orange.dark};
   border-radius: 0 ${({ theme }) => theme.components.navTabs.borderRadius}
     ${({ theme }) => theme.components.navTabs.borderRadius} 0;
-  transition:
-    -0.21s transform 0.42s ease;
-  ${'' /* opacity 0.16s ease; */}
+  transition: -0.21s transform 0.42s ease;
 `
 
 const ContactNavLink = styled(StyledNavLink)`

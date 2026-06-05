@@ -107,10 +107,13 @@ describe('RootsPortfolioSlider', () => {
     expect(overlayStyles).toContain('align-items:center')
     expect(overlayStyles).not.toContain('background:#fcfae5')
     expect(dialogStyles).toContain(
-      'width:calc(1440*var(--hkw-viewport-px-unit))',
+      'container:roots-dialog/size',
     )
     expect(dialogStyles).toContain(
-      'height:calc(1024*var(--hkw-viewport-px-unit))',
+      'width:min(calc(1440*var(--hkw-viewport-px-unit)),100%)',
+    )
+    expect(dialogStyles).toContain(
+      'height:min(calc(1024*var(--hkw-viewport-px-unit)),100%)',
     )
     expect(dialogStyles).toContain('background:#fcfae5')
   })
@@ -131,7 +134,7 @@ describe('RootsPortfolioSlider', () => {
       'bottom',
     ])
     expect(
-      frameEdges.every((edge) => edge.getAttribute('src')?.includes('.svg')),
+      frameEdges.every((edge) => Boolean(edge.getAttribute('src'))),
     ).toBe(true)
     expect(normalizeCss(getElementStyles(frameEdges[0]))).toContain(
       'height:calc(100%+calc(86*var(--hkw-viewport-px-unit)))',
@@ -161,10 +164,10 @@ describe('RootsPortfolioSlider', () => {
       'z-index:2',
     )
     expect(normalizeCss(getElementStyles(frameEdges[2]))).toContain(
-      'left:calc(-28*var(--hkw-viewport-px-unit))',
+      'top:calc(-116*var(--hkw-viewport-px-unit))',
     )
     expect(normalizeCss(getElementStyles(frameEdges[2]))).toContain(
-      'width:calc(100%+calc(56*var(--hkw-viewport-px-unit)))',
+      'width:calc(100%+calc(80*var(--hkw-viewport-px-unit)))',
     )
     expect(normalizeCss(getElementStyles(frameEdges[2]))).toContain(
       'height:calc(30*var(--hkw-viewport-px-unit))',
@@ -173,13 +176,13 @@ describe('RootsPortfolioSlider', () => {
       'z-index:2',
     )
     expect(normalizeCss(getElementStyles(frameEdges[3]))).toContain(
-      'bottom:calc(-236*var(--hkw-viewport-px-unit))',
+      'bottom:calc(-116*var(--hkw-viewport-px-unit))',
     )
     expect(normalizeCss(getElementStyles(frameEdges[3]))).toContain(
-      'left:calc(-28*var(--hkw-viewport-px-unit))',
+      'left:0',
     )
     expect(normalizeCss(getElementStyles(frameEdges[3]))).toContain(
-      'width:calc(100%+calc(56*var(--hkw-viewport-px-unit)))',
+      'width:calc(100%+calc(64*var(--hkw-viewport-px-unit)))',
     )
     expect(normalizeCss(getElementStyles(frameEdges[3]))).toContain(
       'height:calc(30*var(--hkw-viewport-px-unit))',
@@ -199,7 +202,13 @@ describe('RootsPortfolioSlider', () => {
     const artwork = screen.getByAltText('Mobile Project project artwork')
     const copy = document.querySelector('[data-roots-slide-copy]')
     const nav = document.querySelector('[data-roots-slide-nav]')
+    const styles = normalizeCss(getInjectedStyles())
 
+    expect(styles).toContain('@containerroots-dialog(max-width:740px)')
+    expect(styles).toContain(
+      '@containerroots-dialog(max-width:740px)and(max-height:700px)',
+    )
+    expect(styles).toContain('34cqb')
     expect(normalizeCss(getElementStyles(artwork))).toContain(
       'object-fit:contain',
     )

@@ -8,7 +8,7 @@ export const ServiceList = styled.ul`
   padding-left: 72px;
   padding-top: 258.982px;
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  [data-viewport-layout='phone-portrait'] & {
     position: absolute;
     left: 19px;
     top: 166px;
@@ -35,7 +35,7 @@ export const ServiceItem = styled.li`
     color: ${({ theme }) => theme.colors.yellow.gold};
   }
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  [data-viewport-layout='phone-portrait'] & {
     font-family: ${({ theme }) => theme.font.family};
     font-size: 24px;
     line-height: 1.25;
@@ -57,7 +57,7 @@ export const Description = styled.section`
   width: 454px;
   transition: opacity 500ms ease-in-out;
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  [data-viewport-layout='phone-portrait'] & {
     right: 19px;
     top: 218px;
     width: 165px;
@@ -78,7 +78,7 @@ export const DescriptionEyebrow = styled.p`
   text-align: right;
   text-box: ${({ theme }) => theme.typography.textBox};
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  [data-viewport-layout='phone-portrait'] & {
     display: none;
   }
 `
@@ -90,7 +90,7 @@ export const DescriptionText = styled(BodyMedium)`
   line-height: 1.4;
   text-box: ${({ theme }) => theme.typography.textBox};
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  [data-viewport-layout='phone-portrait'] & {
     color: ${({ theme }) => theme.colors.yellow.gold};
     font-size: 16px;
     line-height: 1.25;
@@ -110,7 +110,7 @@ export const TopHatMarmotWrapper = styled.div`
     display: block;
   }
 
-  @media (min-width: 768px) and (max-height: 820px) {
+  @container services-stage (min-width: 768px) and (max-height: 820px) {
     right: 5.32%;
     bottom: -2.52%;
     width: 258px;
@@ -121,7 +121,19 @@ export const TopHatMarmotWrapper = styled.div`
     }
   }
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  [data-viewport-layout='short-desktop'] &,
+  [data-viewport-layout='phone-landscape'] & {
+    right: 5.32%;
+    bottom: -2.52%;
+    width: 258px;
+
+    svg {
+      width: 100%;
+      height: auto;
+    }
+  }
+
+  [data-viewport-layout='phone-portrait'] & {
     right: -16px;
     bottom: -8px;
     width: min(49vw, 193px);
@@ -137,14 +149,12 @@ export const TopHatMarmotWrapper = styled.div`
 
 export const ServicesStage = styled.div`
   position: relative;
+  container: services-stage / size;
   width: 100%;
   flex: 1;
   height: 100%;
+  overflow: hidden;
   pointer-events: auto;
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    overflow: hidden;
-  }
 `
 
 export const ServicesTitle = styled.h2`
@@ -162,7 +172,7 @@ export const ServicesTitle = styled.h2`
   line-height: 24px;
   text-box: ${({ theme }) => theme.typography.textBox};
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  [data-viewport-layout='phone-portrait'] & {
     display: block;
     z-index: 2;
   }

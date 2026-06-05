@@ -227,12 +227,25 @@ const toHeroWidth = (value) => {
 }
 
 export const Page = styled(ViewContainer)`
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    overflow-x: clip;
-  }
+  max-width: none;
+  margin-inline: 0;
+  overflow-x: clip;
+`
+
+export const PageFrame = styled.div`
+  position: absolute;
+  inset: 0;
+  container: work-frame / inline-size;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1440px;
+  margin-inline: auto;
+  pointer-events: none;
 `
 
 export const MainContent = styled.div`
+  container: work-content / inline-size;
   flex: 1;
   display: flex;
   align-items: flex-start;
@@ -248,7 +261,7 @@ export const MainContent = styled.div`
   transition: opacity 320ms ease;
   will-change: opacity;
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+  @container work-frame (max-width: 1000px) {
     padding: 252px 72px 190px
       ${({ $isWide }) =>
         $isWide
@@ -256,7 +269,7 @@ export const MainContent = styled.div`
           : 'clamp(132px, 17.5vw, 180px)'};
   }
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @container work-frame (max-width: 740px) {
     align-items: flex-start;
     padding: 112px 20px 36px;
   }
@@ -269,13 +282,13 @@ export const StudyArea = styled.div`
   width: min(calc(100vw - clamp(132px, 17.5vw, 252px)), 1044px);
   min-height: 0;
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+  @container work-content (max-width: 1000px) {
     gap: 36px;
     width: min(100%, 1000px);
     height: 460px;
   }
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @container work-content (max-width: 740px) {
     flex-direction: column;
     align-items: stretch;
     gap: 24px;
@@ -294,12 +307,12 @@ export const StudyTextStage = styled.div`
   align-content: start;
   min-width: 0;
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+  @container work-content (max-width: 1000px) {
     flex-basis: 340px;
     min-height: 460px;
   }
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @container work-content (max-width: 740px) {
     flex-basis: auto;
     width: 100%;
     gap: 16px;
@@ -314,7 +327,7 @@ export const StudyText = styled.div`
   row-gap: ${({ $compactCopy }) => ($compactCopy ? '40px' : '45px')};
   min-width: 0;
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @container work-content (max-width: 740px) {
     row-gap: 16px;
     min-height: 0;
   }
@@ -342,7 +355,7 @@ export const ClientType = styled.p`
   color: ${({ theme }) => theme.colors.blue.dark};
   margin-bottom: 8px;
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @container work-content (max-width: 740px) {
     margin-top: 24px;
   }
 `
@@ -376,7 +389,7 @@ export const Quote = styled.p`
     'wght' ${({ theme }) => theme.font.weight.regular};
   color: ${({ theme }) => theme.colors.blue.dark};
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @container work-content (max-width: 740px) {
     font-size: 18px;
   }
 `
@@ -394,7 +407,7 @@ export const Attribution = styled.p`
   color: ${({ theme }) => theme.colors.blue.dark};
   opacity: 0.8;
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @container work-content (max-width: 740px) {
     font-size: 16px;
   }
 
@@ -421,7 +434,7 @@ export const ServiceTag = styled.li`
   line-height: 1.5;
   color: ${({ theme }) => theme.colors.blue.dark};
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @container work-content (max-width: 740px) {
     font-size: 16px;
   }
 `
@@ -437,11 +450,11 @@ export const HeroStage = styled.div`
   min-height: 0;
   overflow: visible;
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+  @container work-content (max-width: 1000px) {
     flex: 1 1 auto;
   }
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @container work-content (max-width: 740px) {
     width: 100%;
   }
 `
@@ -470,7 +483,7 @@ export const HeroImage = styled.div`
       ${({ $layout }) => toCssLength($layout?.desktop?.y, '0')};
   }
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @container work-content (max-width: 740px) {
     position: relative;
     align-items: flex-start;
     justify-content: flex-start;
@@ -510,8 +523,12 @@ export const WorkDirtForeground = styled.svg`
   transition: transform ${({ $transitionMs }) => $transitionMs}ms linear;
   will-change: transform;
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @container work-frame (max-width: 740px) {
     display: none;
+  }
+
+  @media (pointer: coarse) {
+    position: unset;
   }
 `
 
@@ -529,20 +546,18 @@ export const DesktopNavRail = styled.div`
   transition: opacity 320ms ease;
   will-change: opacity;
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @container work-frame (max-width: 740px) {
     display: none;
   }
 
-  @media (min-width: ${({ theme }) =>
-      theme.breakpoints.mobile}) and (max-width: ${({ theme }) =>
-      theme.breakpoints.tablet}) {
+  @container work-frame (min-width: 741px) and (max-width: 1000px) {
     bottom: -36px;
   }
 `
 
 export const DesktopNavViewport = styled.div`
   width: min(100%, ${({ $viewportWidth }) => `${$viewportWidth}px`});
-  ${'' /* overflow-x: hidden; */}
+  overflow-x: hidden;
   overflow-y: visible;
   cursor: ${({ $dragging }) => ($dragging ? 'grabbing' : 'grab')};
   touch-action: pan-y;
@@ -560,7 +575,7 @@ export const DesktopNavStrip = styled.div`
 export const MobileNavRail = styled.div`
   display: none;
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @container work-frame (max-width: 740px) {
     display: block;
     width: calc(100% + 8px);
     margin-right: -8px;
@@ -787,11 +802,11 @@ export const MarmotWrapper = styled.button`
     }
   }
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+  @container work-frame (max-width: 1000px) {
     right: 72px;
   }
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @container work-frame (max-width: 740px) {
     display: none;
   }
 `
@@ -808,11 +823,11 @@ export const DesktopArrowButton = styled(ArrowButton)`
 
   ${({ $side }) => ($side === 'left' ? 'left: 68px;' : 'right: 68px;')}
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+  @container work-frame (max-width: 1000px) {
     ${({ $side }) => ($side === 'left' ? 'left: 20px;' : 'right: 20px;')}
   }
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @container work-frame (max-width: 740px) {
     top: 95%;
   }
 `

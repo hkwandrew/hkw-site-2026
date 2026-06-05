@@ -363,15 +363,6 @@ export const DesktopHome = styled.div`
   flex: 1;
   height: 100%;
   pointer-events: none;
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    background-image: linear-gradient(
-      to top,
-      ${({ theme }) => theme.colors.green} 70%,
-      ${({ theme }) => theme.colors.blue.light} 70%,
-      transparent 70%
-    );
-  }
 `
 
 export const Content = styled.div`
@@ -385,7 +376,7 @@ export const Content = styled.div`
   flex-direction: column;
   gap: 8px;
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  [data-viewport-layout='phone-portrait'] & {
     padding: 57% 20px 0;
     position: unset;
   }
@@ -401,7 +392,7 @@ export const Title = styled.p`
     'wght' 700;
   display: block;
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  [data-viewport-layout='phone-portrait'] & {
     font-size: 16px;
     line-height: 1.625;
     font-variation-settings:
@@ -418,7 +409,7 @@ export const HeroText = styled(H4)`
   letter-spacing: unset;
   max-width: 560.57px;
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  [data-viewport-layout='phone-portrait'] & {
     font-size: 18px;
     letter-spacing: -0.36px;
   }
@@ -431,7 +422,7 @@ export const Footer = styled.footer`
   z-index: 5;
   pointer-events: auto;
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  [data-viewport-layout='phone-portrait'] & {
     padding: 215px 0 0 20px;
     bottom: 48px;
     left: unset;
@@ -450,7 +441,7 @@ export const FooterText = styled.div`
     text-underline-position: from-font;
   }
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  [data-viewport-layout='phone-portrait'] & {
     display: flex;
     flex-direction: column;
     font-size: 14px;
@@ -469,12 +460,8 @@ export const HomeMarmotClip = styled.div`
   inset: 0;
   width: 100%;
   height: 100%;
-  overflow: visible;
+  overflow: hidden;
   pointer-events: none;
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    overflow: hidden;
-  }
 `
 
 export const HomeMarmotWrapper = styled.div`
@@ -627,16 +614,17 @@ export const HomeMarmotWrapper = styled.div`
     }
   }
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  [data-viewport-layout='phone-portrait'] & {
     width: min(478px, 122vw);
     right: -127px;
   }
 
-  @media (max-width: ${({ theme }) =>
-      theme.breakpoints.mobile}) and (max-height: 760px) {
-    right: -127px;
-    bottom: -38px;
-    width: 457px;
+  [data-viewport-layout='phone-portrait'] & {
+    @media (max-height: 760px) {
+      right: -127px;
+      bottom: -38px;
+      width: 457px;
+    }
   }
 `
 
@@ -764,7 +752,7 @@ export const MarmotCharacterWrap = styled.div`
     }
   }
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  [data-viewport-layout='phone-portrait'] & {
     transform: rotate(-2.012deg);
   }
 `
@@ -813,17 +801,18 @@ export const StumpTrigger = styled.button`
     outline-offset: 6px;
   }
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  [data-viewport-layout='phone-portrait'] & {
     top: 7px;
     left: 48px;
     width: 342px;
     height: 276px;
   }
 
-  @media (max-width: ${({ theme }) =>
-      theme.breakpoints.mobile}) and (max-height: 760px) {
-    top: 4px;
-    left: 40px;
+  [data-viewport-layout='phone-portrait'] & {
+    @media (max-height: 760px) {
+      top: 4px;
+      left: 40px;
+    }
   }
 `
 
@@ -844,7 +833,7 @@ export const PlaneTrack = styled.div`
     animation: none;
   }
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  [data-viewport-layout='phone-portrait'] & {
     top: 12px;
     left: clamp(92px, 29.26vw, 115px);
     animation: none;
@@ -915,7 +904,7 @@ export const PlaneShell = styled.div`
     }
   }
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  [data-viewport-layout='phone-portrait'] & {
     --plane-motion-duration: 4.1s;
     width: min(207px, calc(100vw - 120px));
 

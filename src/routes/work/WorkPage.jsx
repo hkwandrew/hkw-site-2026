@@ -34,6 +34,7 @@ import {
   NavIconLayer,
   NavVisual,
   Page,
+  PageFrame,
   Quote,
   QuoteAndAttribution,
   ServiceTag,
@@ -855,94 +856,96 @@ const WorkPage = () => {
 
   return (
     <Page $isActive={isActive}>
-      <MarmotWrapper
-        type='button'
-        aria-label='Enter Non-profit Roots'
-        disabled={!isWorkChromeVisible || isRootsTransitionActive}
-        data-testid='work-marmot'
-        $isVisible={isWorkChromeVisible}
-        $isRootsHoverActive={
-          isRootsMarmotHoverActive && !isRootsTransitionActive
-        }
-        $isRootsTransitioning={isRootsTransitionActive}
-        data-work-marmot-trigger
-        data-work-marmot-hover-active={
-          isRootsMarmotHoverActive && !isRootsTransitionActive
-            ? 'true'
-            : 'false'
-        }
-        data-work-marmot-transition-active={
-          isRootsTransitionActive ? 'true' : 'false'
-        }
-        onBlur={handleRootsMarmotLeave}
-        onClick={handleRootsMarmotClick}
-        onFocus={handleRootsMarmotEnter}
-        onMouseEnter={handleRootsMarmotEnter}
-        onMouseLeave={handleRootsMarmotLeave}
-      >
-        <WorkMarmot />
-      </MarmotWrapper>
-
-      <DesktopArrowButton
-        direction='left'
-        aria-label='Show previous work item'
-        onClick={prev}
-        $side='left'
-        $isVisible={isWorkChromeVisible}
-      />
-
-      <DesktopArrowButton
-        direction='right'
-        aria-label='Show next work item'
-        onClick={next}
-        $side='right'
-        $isVisible={isWorkChromeVisible}
-      />
-
-      <MainContent
-        $isVisible={isWorkChromeVisible}
-        $isWide={Boolean(study.isWide)}
-      >
-        <StudyArea>
-          <StudyTextStage $layout={study}>
-            {renderStudyPane(study, studyPhase)}
-          </StudyTextStage>
-          <HeroStage>{renderHeroPane(study, studyPhase)}</HeroStage>
-        </StudyArea>
-      </MainContent>
-
-      <WorkDirtForegroundArtwork
-        isActive={isActive}
-        isEntryComplete={isForegroundEntryComplete}
-        isLeaving={isExiting}
-        transitionMs={WORK_DIRT_FOREGROUND_TRANSITION_MS}
-      />
-
-      <DesktopNavRail $isVisible={isWorkChromeVisible}>
-        <DesktopNavViewport
-          $dragging={isDesktopNavDragging}
-          $viewportWidth={desktopNavViewportWidth}
+      <PageFrame data-testid='work-page-frame'>
+        <MarmotWrapper
+          type='button'
+          aria-label='Enter Non-profit Roots'
+          disabled={!isWorkChromeVisible || isRootsTransitionActive}
+          data-testid='work-marmot'
+          $isVisible={isWorkChromeVisible}
+          $isRootsHoverActive={
+            isRootsMarmotHoverActive && !isRootsTransitionActive
+          }
+          $isRootsTransitioning={isRootsTransitionActive}
+          data-work-marmot-trigger
+          data-work-marmot-hover-active={
+            isRootsMarmotHoverActive && !isRootsTransitionActive
+              ? 'true'
+              : 'false'
+          }
+          data-work-marmot-transition-active={
+            isRootsTransitionActive ? 'true' : 'false'
+          }
+          onBlur={handleRootsMarmotLeave}
+          onClick={handleRootsMarmotClick}
+          onFocus={handleRootsMarmotEnter}
+          onMouseEnter={handleRootsMarmotEnter}
+          onMouseLeave={handleRootsMarmotLeave}
         >
-          <DesktopNavStrip
-            ref={desktopNavTrackRef}
-            data-testid='work-nav-desktop'
+          <WorkMarmot />
+        </MarmotWrapper>
+
+        <DesktopArrowButton
+          direction='left'
+          aria-label='Show previous work item'
+          onClick={prev}
+          $side='left'
+          $isVisible={isWorkChromeVisible}
+        />
+
+        <DesktopArrowButton
+          direction='right'
+          aria-label='Show next work item'
+          onClick={next}
+          $side='right'
+          $isVisible={isWorkChromeVisible}
+        />
+
+        <MainContent
+          $isVisible={isWorkChromeVisible}
+          $isWide={Boolean(study.isWide)}
+        >
+          <StudyArea>
+            <StudyTextStage $layout={study}>
+              {renderStudyPane(study, studyPhase)}
+            </StudyTextStage>
+            <HeroStage>{renderHeroPane(study, studyPhase)}</HeroStage>
+          </StudyArea>
+        </MainContent>
+
+        <WorkDirtForegroundArtwork
+          isActive={isActive}
+          isEntryComplete={isForegroundEntryComplete}
+          isLeaving={isExiting}
+          transitionMs={WORK_DIRT_FOREGROUND_TRANSITION_MS}
+        />
+
+        <DesktopNavRail $isVisible={isWorkChromeVisible}>
+          <DesktopNavViewport
+            $dragging={isDesktopNavDragging}
+            $viewportWidth={desktopNavViewportWidth}
           >
-            {desktopNavItems.map(
-              ({ caseStudy, itemIndex, visualIndex, isDuplicate }) =>
-                renderNavButton({
-                  caseStudy,
-                  itemIndex,
-                  visualIndex,
-                  isCurrent: visualIndex === desktopNavVisualIndex,
-                  isAccessibleCurrent: !isDuplicate && itemIndex === index,
-                  isDuplicate,
-                  handleSelect: handleNavButtonSelect,
-                  keyPrefix: `desktop-${visualIndex}`,
-                }),
-            )}
-          </DesktopNavStrip>
-        </DesktopNavViewport>
-      </DesktopNavRail>
+            <DesktopNavStrip
+              ref={desktopNavTrackRef}
+              data-testid='work-nav-desktop'
+            >
+              {desktopNavItems.map(
+                ({ caseStudy, itemIndex, visualIndex, isDuplicate }) =>
+                  renderNavButton({
+                    caseStudy,
+                    itemIndex,
+                    visualIndex,
+                    isCurrent: visualIndex === desktopNavVisualIndex,
+                    isAccessibleCurrent: !isDuplicate && itemIndex === index,
+                    isDuplicate,
+                    handleSelect: handleNavButtonSelect,
+                    keyPrefix: `desktop-${visualIndex}`,
+                  }),
+              )}
+            </DesktopNavStrip>
+          </DesktopNavViewport>
+        </DesktopNavRail>
+      </PageFrame>
     </Page>
   )
 }

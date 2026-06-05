@@ -91,6 +91,8 @@ export const Subtitle = styled.p`
 `
 
 export const ContactForm = styled.form`
+  --hkw-field-density: regular;
+
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -98,6 +100,8 @@ export const ContactForm = styled.form`
   margin-top: 48px;
 
   @media (max-width: ${PHONE_BREAKPOINT}) {
+    --hkw-field-density: compact;
+
     gap: 0;
     width: 300px;
     margin-top: 18px;

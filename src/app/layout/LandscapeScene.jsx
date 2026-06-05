@@ -17,9 +17,15 @@ import {
 const LandscapeSceneWrapper = styled.svg`
   width: 100%;
   height: auto;
-  max-width: 1440px;
   margin-inline: auto;
   overflow: visible;
+
+  [data-viewport-layout='base'] &,
+  [data-viewport-layout='phone-landscape'] &,
+  [data-viewport-layout='short-desktop'] &,
+  [data-viewport-layout='tablet'] & {
+    width: min(calc(1440 * var(--hkw-viewport-px-unit)), 100%);
+  }
 `
 
 const getHomeLayerLinkProps = (isInteractive, to, transitionSceneToPath) => ({

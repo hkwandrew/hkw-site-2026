@@ -88,10 +88,11 @@ const Overlay = styled.div`
 const Dialog = styled.div`
   position: relative;
   z-index: 2;
+  container: roots-dialog / size;
   display: flex;
   flex-direction: column;
-  width: calc(1440 * var(--hkw-viewport-px-unit));
-  height: calc(1024 * var(--hkw-viewport-px-unit));
+  width: min(calc(1440 * var(--hkw-viewport-px-unit)), 100%);
+  height: min(calc(1024 * var(--hkw-viewport-px-unit)), 100%);
   overflow: hidden;
   isolation: isolate;
   background: #fcfae5;
@@ -101,14 +102,10 @@ const Dialog = styled.div`
     p {
       font-size: 18px;
 
-      @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+      @container roots-dialog (max-width: 740px) {
         font-size: 14px;
       }
     }
-  }
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
-    height: 100%;
   }
 `
 
@@ -132,7 +129,7 @@ const FrameSide = styled.img`
   object-fit: fill;
   user-select: none;
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @container roots-dialog (max-width: 740px) {
     top: ${({ $mobileTop, $top }) => $mobileTop ?? $top ?? 'auto'};
     right: ${({ $mobileRight, $right }) => $mobileRight ?? $right ?? 'auto'};
     bottom: ${({ $mobileBottom, $bottom }) =>
@@ -160,7 +157,7 @@ const ClosePill = styled(PillButton)`
     outline-offset: 4px;
   }
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @container roots-dialog (max-width: 740px) {
     top: max(24px, calc(36px + env(safe-area-inset-top)));
     right: 34px;
     width: 24px;
@@ -187,14 +184,14 @@ const ClosePill = styled(PillButton)`
 `
 
 const CloseLabel = styled.span`
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @container roots-dialog (max-width: 740px) {
     display: none;
   }
 `
 const MobileCloseIcon = styled.svg`
   display: none;
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @container roots-dialog (max-width: 740px) {
     display: block;
     width: 18px;
     height: 18px;
@@ -212,13 +209,13 @@ const Content = styled.div`
   min-height: 0;
   padding: 96px 84px 72px;
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+  @container roots-dialog (max-width: 1024px) {
     gap: 40px;
     grid-template-columns: minmax(0, 1fr) minmax(280px, 372px);
     padding: 96px 56px 64px;
   }
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @container roots-dialog (max-width: 740px) {
     display: flex;
     flex-direction: column;
     flex: 1 1 auto;
@@ -240,12 +237,16 @@ const ArtworkStage = styled.div`
   min-width: 0;
   min-height: 0;
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @container roots-dialog (max-width: 740px) {
     flex: 0 0 auto;
-    height: min(34dvh, 220px);
+    height: 220px;
     min-height: 140px;
     padding: 0;
     overflow: visible;
+  }
+
+  @container roots-dialog (max-width: 740px) and (max-height: 700px) {
+    height: 34cqb;
   }
 `
 
@@ -261,16 +262,20 @@ const ArtworkImage = styled.img`
   max-block-size: none;
   transform: ${getArtworkTranslate};
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @container roots-dialog (max-width: 740px) {
     position: relative;
     top: auto;
     left: auto;
     width: min(100%, 360px);
     height: auto;
     max-width: 100%;
-    max-height: min(34dvh, 220px);
+    max-height: 220px;
     object-fit: contain;
     transform: none;
+  }
+
+  @container roots-dialog (max-width: 740px) and (max-height: 700px) {
+    max-height: 34cqb;
   }
 `
 
@@ -286,13 +291,17 @@ const ArtworkFrame = styled.div`
     width: 100%;
   }
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @container roots-dialog (max-width: 740px) {
     width: min(100%, 300px);
-    max-height: min(34dvh, 220px);
+    max-height: 220px;
 
     > * {
       max-height: inherit;
     }
+  }
+
+  @container roots-dialog (max-width: 740px) and (max-height: 700px) {
+    max-height: 34cqb;
   }
 `
 
@@ -309,12 +318,12 @@ const Copy = styled.div`
   max-width: ${({ $maxWidth }) =>
     typeof $maxWidth === 'number' ? `${$maxWidth}px` : ($maxWidth ?? 'none')};
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
+  @container roots-dialog (max-width: 1024px) {
     gap: 30px;
     padding-right: 0;
   }
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @container roots-dialog (max-width: 740px) {
     gap: 18px;
     margin-top: 0;
     padding-inline: 2px;
@@ -334,7 +343,7 @@ const Title = styled.h2`
     'wght' ${({ theme }) => theme.font.weight.bold};
   color: ${({ theme }) => theme.colors.blue.dark};
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @container roots-dialog (max-width: 740px) {
     font-size: 24px;
     letter-spacing: 0;
   }
@@ -354,7 +363,7 @@ const ItemType = styled.p`
   text-transform: uppercase;
   color: ${({ theme }) => theme.colors.blue.dark};
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @container roots-dialog (max-width: 740px) {
     font-size: 14px;
   }
 `
@@ -371,7 +380,7 @@ const Bio = styled.p`
     'wght' ${({ theme }) => theme.font.weight.medium};
   text-transform: none;
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @container roots-dialog (max-width: 740px) {
     font-size: 14px;
     line-height: 1.2;
     letter-spacing: 0;
@@ -388,7 +397,7 @@ const RolesLabel = styled.p`
   ${applyTypography('bodyMedium')}
   line-height: 1.3;
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @container roots-dialog (max-width: 740px) {
     font-size: 14px;
   }
 `
@@ -411,7 +420,7 @@ const Role = styled.li`
     'wdth' 100,
     'wght' ${({ theme }) => theme.font.weight.semibold};
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @container roots-dialog (max-width: 740px) {
     font-size: 14px;
   }
 `
@@ -426,7 +435,7 @@ const NavCluster = styled.div`
   justify-content: space-between;
   padding: 0 68px;
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @container roots-dialog (max-width: 740px) {
     position: absolute;
     top: auto;
     right: 0;
@@ -469,7 +478,7 @@ const MarmotAccent = styled.div`
     height: auto;
   }
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @container roots-dialog (max-width: 740px) {
     display: none;
   }
 `

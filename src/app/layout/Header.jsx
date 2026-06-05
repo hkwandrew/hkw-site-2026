@@ -1,7 +1,10 @@
-import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router'
-import styled, { css, keyframes, useTheme } from 'styled-components'
+import styled, { css, keyframes } from 'styled-components'
 import { getPageLabelForPath } from '@/app/router/routeRegistry'
+import {
+  VIEWPORT_LAYOUT,
+  useViewportComposition,
+} from '@/app/layout/viewportComposition'
 import MobileNavMenu from './MobileNavMenu'
 import NavMenu from './NavMenu'
 
@@ -40,7 +43,7 @@ const StyledHeader = styled.header`
   ${({ $isRootsPage }) =>
     $isRootsPage &&
     css`
-      @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+      [data-viewport-layout='phone-portrait'] & {
         min-height: 64px;
 
         &::before {
@@ -60,7 +63,7 @@ const StyledHeader = styled.header`
       }
     `}
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  [data-viewport-layout='phone-portrait'] & {
     align-items: center;
     gap: 16px;
     padding: 11px 20px 0;
@@ -72,7 +75,7 @@ const BrandBlock = styled.div`
   flex-direction: column;
   gap: ${({ $isServicesPage }) => ($isServicesPage ? '72px' : '20px')};
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  [data-viewport-layout='phone-portrait'] & {
     gap: 0;
   }
 `
@@ -93,7 +96,7 @@ const HKWLogo = styled(Link)`
   background-color: transparent;
   border-radius: 8px;
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  [data-viewport-layout='phone-portrait'] & {
     width: 76px;
     height: 38px;
     border-radius: ${({ $isServicesPage }) =>
@@ -124,7 +127,7 @@ const PageLabel = styled.div`
 
   translate: ${({ $isServicesPage }) => ($isServicesPage ? '10px 0' : '0')};
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  [data-viewport-layout='phone-portrait'] & {
     margin-top: ${({ $isServicesPage }) => ($isServicesPage ? '22px' : '6px')};
     will-change: opacity;
     font-weight: 700;
@@ -134,35 +137,8 @@ const PageLabel = styled.div`
   }
 `
 
-const usePhoneViewport = (mobileBreakpoint) => {
-  const mediaQueryString = `(max-width: ${mobileBreakpoint})`
-  const [isPhoneViewport, setIsPhoneViewport] = useState(() =>
-    typeof window !== 'undefined'
-      ? window.matchMedia(mediaQueryString).matches
-      : false,
-  )
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia(mediaQueryString)
-
-    const update = () => {
-      setIsPhoneViewport(mediaQuery.matches)
-    }
-
-    update()
-
-    mediaQuery.addEventListener('change', update)
-
-    return () => {
-      mediaQuery.removeEventListener('change', update)
-    }
-  }, [mediaQueryString])
-
-  return isPhoneViewport
-}
-
 const Header = ({ contentPathname, isPageLabelReady = true, navPathname }) => {
-  const theme = useTheme()
+  const viewportComposition = useViewportComposition()
   const location = useLocation()
   const contentPath = contentPathname ?? location.pathname
   const activeNavPath = navPathname ?? contentPath
@@ -174,7 +150,8 @@ const Header = ({ contentPathname, isPageLabelReady = true, navPathname }) => {
   const isHomePage = contentPath === '/'
   const isContactPage = contentPath === '/contact'
   const isPageLabelActive = isPageLabelReady
-  const isPhoneViewport = usePhoneViewport(theme.breakpoints.mobile)
+  const isPhoneViewport =
+    viewportComposition.layout === VIEWPORT_LAYOUT.PHONE_PORTRAIT
 
   return (
     <StyledHeader $isRootsPage={isRootsPage}>

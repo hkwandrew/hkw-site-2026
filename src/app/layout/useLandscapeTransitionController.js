@@ -4,7 +4,6 @@ import {
   useMemo,
   useRef,
   useState,
-  useSyncExternalStore,
 } from 'react'
 import {
   SCENE_TRANSITION_DURATION_MS,
@@ -19,59 +18,25 @@ import {
 import {
   animateSharedSceneTransition,
   applySharedSceneState,
-  SCENE_VIEWPORT_MOBILE_QUERY,
 } from '@/app/landscape/runtime/sharedSceneRuntime'
+import {
+  VIEWPORT_LAYOUT,
+  useViewportComposition,
+} from '@/app/layout/viewportComposition'
 
-const HOME_HOVER_DEVICE_QUERY = '(hover: hover) and (pointer: fine)'
+const isPhoneLayout = (layout) =>
+  layout === VIEWPORT_LAYOUT.PHONE_PORTRAIT ||
+  layout === VIEWPORT_LAYOUT.PHONE_LANDSCAPE
 
-const isMobileViewport = () =>
-  typeof window !== 'undefined' &&
-  window.matchMedia?.(SCENE_VIEWPORT_MOBILE_QUERY).matches === true
-
-const subscribeToMobileViewport = (onChange) => {
-  if (typeof window === 'undefined' || !window.matchMedia) {
-    return () => {}
-  }
-
-  const mediaQuery = window.matchMedia(SCENE_VIEWPORT_MOBILE_QUERY)
-
-  mediaQuery.addEventListener('change', onChange)
-
-  return () => {
-    mediaQuery.removeEventListener('change', onChange)
-  }
-}
-
-const canUseHomeHoverRegions = () =>
-  typeof window !== 'undefined' &&
-  window.matchMedia?.(HOME_HOVER_DEVICE_QUERY).matches === true &&
-  window.matchMedia?.(SCENE_VIEWPORT_MOBILE_QUERY).matches !== true
-
-const subscribeToHomeHoverCapability = (onChange) => {
-  if (typeof window === 'undefined' || !window.matchMedia) {
-    return () => {}
-  }
-
-  const mediaQueries = [
-    window.matchMedia(HOME_HOVER_DEVICE_QUERY),
-    window.matchMedia(SCENE_VIEWPORT_MOBILE_QUERY),
-  ]
-
-  mediaQueries.forEach((mediaQuery) => {
-    mediaQuery.addEventListener('change', onChange)
-  })
-
-  return () => {
-    mediaQueries.forEach((mediaQuery) => {
-      mediaQuery.removeEventListener('change', onChange)
-    })
-  }
-}
+const canUseHomeHoverRegions = ({ hover, layout, pointer }) =>
+  hover === 'hover' && pointer === 'fine' && !isPhoneLayout(layout)
 
 const useLandscapeTransitionController = (pathname) => {
+  const viewportComposition = useViewportComposition()
   const routePath = getRoutePathForPath(pathname)
   const mainRef = useRef(null)
   const hasMountedRef = useRef(false)
+  const sceneViewportKeyRef = useRef(viewportComposition.sceneViewportKey)
   const activeSceneTimelineRef = useRef(null)
   const activeTargetPathRef = useRef(null)
   const currentScenePathRef = useRef(routePath)
@@ -84,16 +49,9 @@ const useLandscapeTransitionController = (pathname) => {
   const [activeTransitionPath, setActiveTransitionPath] = useState(null)
   const [revealedContentPath, setRevealedContentPath] = useState(routePath)
   const [earlyRevealedContentPath, setEarlyRevealedContentPath] = useState(null)
-  const canUseHoverRegions = useSyncExternalStore(
-    subscribeToHomeHoverCapability,
-    canUseHomeHoverRegions,
-    () => false,
-  )
-  const isMobile = useSyncExternalStore(
-    subscribeToMobileViewport,
-    isMobileViewport,
-    () => false,
-  )
+  const canUseHoverRegions = canUseHomeHoverRegions(viewportComposition)
+  const isPhonePortrait =
+    viewportComposition.layout === VIEWPORT_LAYOUT.PHONE_PORTRAIT
 
   const pageKey = getPageKeyForPath(routePath)
   const isHome = routePath === '/'
@@ -101,7 +59,8 @@ const useLandscapeTransitionController = (pathname) => {
   const headerContentRoutePath = getRoutePathForPath(headerContentPath)
   const scenePathname = pendingNavPath ?? routePath
   const headerNavPath = scenePathname
-  const shouldShowHeader = headerContentRoutePath !== '/roots' || isMobile
+  const shouldShowHeader =
+    headerContentRoutePath !== '/roots' || isPhonePortrait
   const isRouteContentRevealed =
     revealedContentPath === routePath && activeTransitionPath !== routePath
   const isAboutRouteContentEntering =
@@ -326,34 +285,27 @@ const useLandscapeTransitionController = (pathname) => {
   }, [routePath, transitionSceneToPath])
 
   useLayoutEffect(() => {
-    if (typeof window === 'undefined' || !window.matchMedia) {
-      return undefined
+    if (sceneViewportKeyRef.current === viewportComposition.sceneViewportKey) {
+      return
     }
 
-    const mediaQuery = window.matchMedia(SCENE_VIEWPORT_MOBILE_QUERY)
-    const applyCurrentViewportSceneState = () => {
-      const mainElement = mainRef.current
-      const targetPath =
-        activeTargetPathRef.current ?? currentScenePathRef.current ?? routePath
-      const sceneState = resolveSceneStateForPath(targetPath)
+    sceneViewportKeyRef.current = viewportComposition.sceneViewportKey
 
-      if (!mainElement || !sceneState) return
+    const mainElement = mainRef.current
+    const targetPath =
+      activeTargetPathRef.current ?? currentScenePathRef.current ?? routePath
+    const sceneState = resolveSceneStateForPath(targetPath)
 
-      activeSceneTimelineRef.current?.kill()
-      activeSceneTimelineRef.current = null
-      applySharedSceneState(mainElement, sceneState)
+    if (!mainElement || !sceneState) return
 
-      if (activeTargetPathRef.current) {
-        finishSceneTransition(targetPath)
-      }
+    activeSceneTimelineRef.current?.kill()
+    activeSceneTimelineRef.current = null
+    applySharedSceneState(mainElement, sceneState)
+
+    if (activeTargetPathRef.current) {
+      finishSceneTransition(targetPath)
     }
-
-    mediaQuery.addEventListener('change', applyCurrentViewportSceneState)
-
-    return () => {
-      mediaQuery.removeEventListener('change', applyCurrentViewportSceneState)
-    }
-  }, [finishSceneTransition, routePath])
+  }, [finishSceneTransition, routePath, viewportComposition.sceneViewportKey])
 
   useLayoutEffect(() => clearRouteContentRevealTimer, [clearRouteContentRevealTimer])
 
@@ -369,6 +321,7 @@ const useLandscapeTransitionController = (pathname) => {
     isRouteContentRevealed,
     shouldRenderRouteContent,
     areHomeLayerLinksInteractive,
+    viewportComposition,
     transitionContextValue: useMemo(
       () => ({ transitionSceneToPath }),
       [transitionSceneToPath],

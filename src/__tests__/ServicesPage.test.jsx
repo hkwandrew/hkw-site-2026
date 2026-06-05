@@ -4,8 +4,34 @@ import ServicesPage from '@/routes/services/ServicesPage'
 import services from '@/routes/services/services'
 
 const normalizedText = (value) => value.replace(/\s+/g, ' ').trim()
+const normalizeCss = (value) => value.replace(/\s+/g, '')
+const getStyleText = () =>
+  Array.from(document.head.querySelectorAll('style'))
+    .map((styleTag) => styleTag.textContent ?? '')
+    .join('\n')
 
 describe('ServicesPage', () => {
+  it('scopes phone composition to phone portrait while keeping height-aware desktop rules', () => {
+    render(<ServicesPage />)
+
+    const styles = normalizeCss(getStyleText())
+
+    expect(styles).toContain('container:services-stage/size')
+    expect(styles).toContain(
+      "[data-viewport-layout='phone-portrait']",
+    )
+    expect(styles).toContain(
+      "[data-viewport-layout='phone-landscape']",
+    )
+    expect(styles).toContain(
+      "[data-viewport-layout='short-desktop']",
+    )
+    expect(styles).not.toContain('@containerservices-stage(max-width:767px)')
+    expect(styles).toContain(
+      '@containerservices-stage(min-width:768px)and(max-height:820px)',
+    )
+  })
+
   it('shows a dynamic eyebrow above the active desktop description', () => {
     render(<ServicesPage />)
 

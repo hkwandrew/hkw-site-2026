@@ -5,23 +5,21 @@ import { usePageSceneTransition } from '@/app/landscape/pageSceneTransition'
 const sharedSceneRuntimeMocks = vi.hoisted(() => ({
   animateSharedSceneTransition: vi.fn(),
   applySharedSceneState: vi.fn(),
-  sceneViewportMobileQuery: '(max-width: 767px)',
 }))
 
 vi.mock('@/app/landscape/runtime/sharedSceneRuntime', () => ({
   animateSharedSceneTransition:
     sharedSceneRuntimeMocks.animateSharedSceneTransition,
   applySharedSceneState: sharedSceneRuntimeMocks.applySharedSceneState,
-  SCENE_VIEWPORT_MOBILE_QUERY:
-    sharedSceneRuntimeMocks.sceneViewportMobileQuery,
 }))
 
 import Layout from '@/app/layout/AppLayout'
 
 const originalMatchMedia = window.matchMedia
 const originalResizeObserver = window.ResizeObserver
+const originalInnerHeight = window.innerHeight
+const originalInnerWidth = window.innerWidth
 let completePendingSceneTransition = null
-let sceneViewportChangeHandlers = []
 let activeRouter = null
 let canUseHoverRegions = false
 let sceneTransitionStartPaths = []
@@ -44,6 +42,33 @@ const SCENE_RUNTIME_LAYER_SELECTORS = [
   '#dirt-layer__container',
   '#dirt-layer__wrapper',
 ]
+
+const normalizeCss = (value) => value.replace(/\s+/g, '')
+const getInjectedStyles = () =>
+  Array.from(document.querySelectorAll('style'))
+    .map((styleElement) => styleElement.textContent)
+    .join('\n')
+const getElementStyles = (element) =>
+  Array.from(element.classList)
+    .map((className) => {
+      const matches = getInjectedStyles().match(
+        new RegExp(`\\.${className}\\{[^}]*\\}`, 'g'),
+      )
+
+      return matches?.join('\n') ?? ''
+    })
+    .join('\n')
+
+const setViewportSize = (width, height) => {
+  Object.defineProperty(window, 'innerWidth', {
+    configurable: true,
+    value: width,
+  })
+  Object.defineProperty(window, 'innerHeight', {
+    configurable: true,
+    value: height,
+  })
+}
 
 const assignRuntimeTransformSentinels = (container) => {
   SCENE_RUNTIME_LAYER_SELECTORS.forEach((selector, index) => {
@@ -130,10 +155,10 @@ const renderLayoutRoute = (initialPath) => {
 describe('Layout shared scene links', () => {
   beforeEach(() => {
     completePendingSceneTransition = null
-    sceneViewportChangeHandlers = []
     activeRouter = null
     canUseHoverRegions = false
     sceneTransitionStartPaths = []
+    setViewportSize(1440, 1024)
     sharedSceneRuntimeMocks.animateSharedSceneTransition.mockReset()
     sharedSceneRuntimeMocks.applySharedSceneState.mockReset()
     sharedSceneRuntimeMocks.animateSharedSceneTransition.mockImplementation(
@@ -145,18 +170,17 @@ describe('Layout shared scene links', () => {
     )
     window.matchMedia = vi.fn().mockImplementation((query) => ({
       matches:
-        query === '(hover: hover) and (pointer: fine)'
+        query === '(hover: hover)'
           ? canUseHoverRegions
-          : false,
+          : query === '(hover: none)'
+            ? !canUseHoverRegions
+            : query === '(pointer: fine)'
+              ? canUseHoverRegions
+              : query === '(pointer: coarse)'
+                ? !canUseHoverRegions
+                : false,
       media: query,
-      addEventListener: vi.fn((eventName, handler) => {
-        if (
-          query === sharedSceneRuntimeMocks.sceneViewportMobileQuery &&
-          eventName === 'change'
-        ) {
-          sceneViewportChangeHandlers.push(handler)
-        }
-      }),
+      addEventListener: vi.fn(),
       removeEventListener: vi.fn(),
       addListener: vi.fn(),
       removeListener: vi.fn(),
@@ -172,6 +196,18 @@ describe('Layout shared scene links', () => {
   afterEach(() => {
     window.matchMedia = originalMatchMedia
     window.ResizeObserver = originalResizeObserver
+    Object.defineProperty(window, 'innerWidth', {
+      configurable: true,
+      value: originalInnerWidth,
+    })
+    Object.defineProperty(window, 'innerHeight', {
+      configurable: true,
+      value: originalInnerHeight,
+    })
+    delete document.documentElement.dataset.viewportLayout
+    document.documentElement.style.removeProperty('--hkw-viewport-height')
+    document.documentElement.style.removeProperty('--hkw-viewport-ratio')
+    document.documentElement.style.removeProperty('--hkw-viewport-width')
   })
 
   it('keeps TreeMountain under the services link on home', () => {
@@ -197,6 +233,62 @@ describe('Layout shared scene links', () => {
 
     const workRender = renderLayoutRoute('/work')
     expect(workRender.container.querySelector('.work-dirt-layer')).toBeTruthy()
+  })
+
+  it('sizes the shared scene from the desktop viewport frame unit', () => {
+    const { container } = renderLayoutRoute('/')
+    const scene = container.querySelector('#scene-svg')
+    const sceneStyles = normalizeCss(getElementStyles(scene))
+
+    expect(sceneStyles).toContain(
+      'width:min(calc(1440*var(--hkw-viewport-px-unit)),100%)',
+    )
+    expect(sceneStyles).toContain('height:auto')
+    expect(sceneStyles).not.toContain(
+      'max-width:calc(1440*var(--hkw-viewport-px-unit))',
+    )
+  })
+
+  it('emits the shared viewport composition on the app shell and root', () => {
+    setViewportSize(1366, 768)
+
+    const { container } = renderLayoutRoute('/')
+    const mainElement = container.querySelector('main')
+
+    expect(mainElement).toHaveAttribute(
+      'data-viewport-layout',
+      'short-desktop',
+    )
+    expect(mainElement).toHaveAttribute('data-pointer', 'coarse')
+    expect(mainElement).toHaveAttribute('data-hover', 'none')
+    expect(mainElement.style.getPropertyValue('--hkw-viewport-width')).toBe(
+      '1366px',
+    )
+    expect(mainElement.style.getPropertyValue('--hkw-viewport-height')).toBe(
+      '768px',
+    )
+    expect(mainElement.style.getPropertyValue('--hkw-viewport-ratio')).toBe(
+      '1.77865',
+    )
+    expect(document.documentElement).toHaveAttribute(
+      'data-viewport-layout',
+      'short-desktop',
+    )
+  })
+
+  it('shows the roots header only for phone portrait layout', () => {
+    setViewportSize(667, 375)
+    const landscapeRender = renderLayoutRoute('/roots')
+
+    expect(screen.queryByRole('banner')).not.toBeInTheDocument()
+
+    landscapeRender.unmount()
+    setViewportSize(375, 667)
+    renderLayoutRoute('/roots')
+
+    expect(screen.getByRole('banner')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Open navigation menu' }))
+      .toBeInTheDocument()
   })
 
   it('keeps runtime-owned scene transforms through route re-render', async () => {
@@ -249,12 +341,10 @@ describe('Layout shared scene links', () => {
     const mainElement = container.querySelector('main')
 
     expect(sharedSceneRuntimeMocks.applySharedSceneState).toHaveBeenCalledTimes(1)
-    expect(sceneViewportChangeHandlers.length).toBeGreaterThan(0)
 
     act(() => {
-      sceneViewportChangeHandlers.forEach((handler) => {
-        handler({ matches: true })
-      })
+      setViewportSize(375, 667)
+      window.dispatchEvent(new Event('resize'))
     })
 
     expect(sharedSceneRuntimeMocks.applySharedSceneState).toHaveBeenCalledTimes(2)

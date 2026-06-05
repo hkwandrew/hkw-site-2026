@@ -1,12 +1,14 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
-  SCENE_VIEWPORT_MOBILE_QUERY,
   animateSharedSceneTransition,
   applySharedSceneState,
+  getSceneViewportKey,
 } from '@/app/landscape/runtime/sharedSceneRuntime'
 import { HOME_SCENE_STATE } from '@/routes/home/sceneSpec'
 
 const originalMatchMedia = window.matchMedia
+const originalInnerHeight = window.innerHeight
+const originalInnerWidth = window.innerWidth
 
 const createSceneRoot = ({
   dirtLayerTransform = 'translate(1308,1100)',
@@ -36,9 +38,23 @@ const createSceneRoot = ({
   return root
 }
 
-const setMobileViewport = (matches) => {
+const setViewport = ({
+  height,
+  hover = 'hover',
+  pointer = 'fine',
+  width,
+}) => {
+  Object.defineProperty(window, 'innerWidth', {
+    configurable: true,
+    value: width,
+  })
+  Object.defineProperty(window, 'innerHeight', {
+    configurable: true,
+    value: height,
+  })
   window.matchMedia = vi.fn().mockImplementation((query) => ({
-    matches: query === SCENE_VIEWPORT_MOBILE_QUERY ? matches : false,
+    matches:
+      query === `(pointer: ${pointer})` || query === `(hover: ${hover})`,
     media: query,
     addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
@@ -82,39 +98,118 @@ const createTreeMountainPathSceneState = () => ({
   },
 })
 
+const createViewportPrioritySceneState = () => ({
+  ...HOME_SCENE_STATE,
+  treeMountain: {
+    ...HOME_SCENE_STATE.treeMountain,
+    viewports: {
+      mobile: {
+        wrapper: { scaleX: 1.84, scaleY: 1.82 },
+      },
+      phonePortrait: {
+        wrapper: { scaleX: 2.2, scaleY: 2.1 },
+      },
+      phoneLandscape: {
+        wrapper: { scaleX: 1.4, scaleY: 1.3 },
+      },
+      shortDesktop: {
+        wrapper: { scaleX: 1.2, scaleY: 1.1 },
+      },
+      tablet: {
+        wrapper: { scaleX: 1.6, scaleY: 1.5 },
+      },
+    },
+  },
+})
+
 describe('shared scene runtime viewport state', () => {
   afterEach(() => {
     window.matchMedia = originalMatchMedia
+    Object.defineProperty(window, 'innerWidth', {
+      configurable: true,
+      value: originalInnerWidth,
+    })
+    Object.defineProperty(window, 'innerHeight', {
+      configurable: true,
+      value: originalInnerHeight,
+    })
   })
 
-  it('uses base wrapper state when the viewport does not match', () => {
-    setMobileViewport(false)
+  it('uses base wrapper state for base viewport composition', () => {
+    setViewport({ height: 1024, width: 1440 })
 
     const root = createSceneRoot()
 
     applySharedSceneState(root, HOME_SCENE_STATE)
 
+    expect(getSceneViewportKey()).toBe('base')
     expect(root.querySelector('#tree-mountain__wrapper')).toHaveAttribute(
       'transform',
       'scale(1,1)',
     )
   })
 
-  it('applies mobile wrapper overrides when the viewport matches', () => {
-    setMobileViewport(true)
+  it('uses legacy mobile overrides only as the phonePortrait fallback', () => {
+    setViewport({ height: 667, width: 375 })
 
     const root = createSceneRoot()
 
     applySharedSceneState(root, HOME_SCENE_STATE)
 
+    expect(getSceneViewportKey()).toBe('phonePortrait')
     expect(root.querySelector('#tree-mountain__wrapper')).toHaveAttribute(
       'transform',
       'scale(1.84,1.82)',
     )
   })
 
-  it('applies mobile TreeMountain path data when the viewport matches', () => {
-    setMobileViewport(true)
+  it('prefers exact phonePortrait overrides over legacy mobile overrides', () => {
+    setViewport({ height: 667, width: 375 })
+
+    const root = createSceneRoot()
+
+    applySharedSceneState(root, createViewportPrioritySceneState())
+
+    expect(root.querySelector('#tree-mountain__wrapper')).toHaveAttribute(
+      'transform',
+      'scale(2.2,2.1)',
+    )
+  })
+
+  it('does not fall into legacy mobile overrides for phoneLandscape', () => {
+    setViewport({ height: 375, width: 667 })
+
+    const root = createSceneRoot()
+
+    applySharedSceneState(root, HOME_SCENE_STATE)
+
+    expect(getSceneViewportKey()).toBe('phoneLandscape')
+    expect(root.querySelector('#tree-mountain__wrapper')).toHaveAttribute(
+      'transform',
+      'scale(1,1)',
+    )
+  })
+
+  it.each([
+    [{ height: 375, width: 667 }, 'phoneLandscape', 'scale(1.4,1.3)'],
+    [{ height: 768, width: 1366 }, 'shortDesktop', 'scale(1.2,1.1)'],
+    [{ height: 1024, width: 768 }, 'tablet', 'scale(1.6,1.5)'],
+  ])('resolves exact %s scene overrides', (viewport, key, transform) => {
+    setViewport(viewport)
+
+    const root = createSceneRoot()
+
+    applySharedSceneState(root, createViewportPrioritySceneState())
+
+    expect(getSceneViewportKey()).toBe(key)
+    expect(root.querySelector('#tree-mountain__wrapper')).toHaveAttribute(
+      'transform',
+      transform,
+    )
+  })
+
+  it('applies phonePortrait fallback TreeMountain path data', () => {
+    setViewport({ height: 667, width: 375 })
 
     const root = createSceneRoot()
 
@@ -126,8 +221,8 @@ describe('shared scene runtime viewport state', () => {
     expect(paths[1]).toHaveAttribute('d', 'M9 9L10 10')
   })
 
-  it('animates toward mobile TreeMountain path data when the viewport matches', () => {
-    setMobileViewport(true)
+  it('animates toward phonePortrait fallback TreeMountain path data', () => {
+    setViewport({ height: 667, width: 375 })
 
     const root = createSceneRoot()
     const timeline = animateSharedSceneTransition({
@@ -148,7 +243,7 @@ describe('shared scene runtime viewport state', () => {
   })
 
   it('applies percentage y coordinate values from scene state', () => {
-    setMobileViewport(true)
+    setViewport({ height: 667, width: 375 })
 
     const root = createSceneRoot()
 
@@ -161,7 +256,7 @@ describe('shared scene runtime viewport state', () => {
   })
 
   it('applies negative percentage coordinate values from scene state', () => {
-    setMobileViewport(true)
+    setViewport({ height: 667, width: 375 })
 
     const root = createSceneRoot()
 
@@ -176,8 +271,8 @@ describe('shared scene runtime viewport state', () => {
     )
   })
 
-  it('animates toward mobile wrapper overrides when the viewport matches', () => {
-    setMobileViewport(true)
+  it('animates toward phonePortrait fallback wrapper overrides', () => {
+    setViewport({ height: 667, width: 375 })
 
     const root = createSceneRoot()
     const timeline = animateSharedSceneTransition({
@@ -198,7 +293,7 @@ describe('shared scene runtime viewport state', () => {
   })
 
   it('uses existing percentage translate values as animation start values', () => {
-    setMobileViewport(false)
+    setViewport({ height: 1024, width: 1440 })
 
     const root = createSceneRoot({
       dirtLayerTransform: 'translate(0,100%)',
@@ -214,7 +309,7 @@ describe('shared scene runtime viewport state', () => {
 
     expect(root.querySelector('#dirt-layer__container')).toHaveAttribute(
       'transform',
-      'translate(654,230)',
+      'translate(654,330)',
     )
 
     timeline.kill()

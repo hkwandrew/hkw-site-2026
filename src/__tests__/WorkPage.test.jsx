@@ -100,6 +100,7 @@ const renderWorkPageWithRootsTransition = (transitionSceneToPath) => {
 
 const getDesktopNav = () => screen.getByTestId('work-nav-desktop')
 const getDesktopNavRail = () => getDesktopNav().parentElement.parentElement
+const getPageFrame = () => screen.getByTestId('work-page-frame')
 const getPreviousArrowButton = () =>
   screen.getByRole('button', { name: /show previous work item/i })
 const getWorkMarmot = () => screen.getByTestId('work-marmot')
@@ -115,7 +116,14 @@ const expectedCaseStudyContent = [
     quote:
       '"HKW exceeded our expectations in their creative design and development of our branding, and in providing us with innovative web development and solutions."',
     attribution: 'Emelyn Lybarger, Outreach Coordinator',
-    services: ['Website Design', 'Graphic Design', 'Branding', 'Logo Design'],
+    services: [
+      'Website Design',
+      'Graphic Design',
+      'Branding',
+      'Logo Design',
+      'Collateral Design',
+      'Website Development',
+    ],
   },
   {
     id: 'voxus',
@@ -123,7 +131,7 @@ const expectedCaseStudyContent = [
     quote:
       '“We communicate for a living, but HKW helped us crystalize our brand message.”',
     attribution: 'Kevin Pedraja, Partner at Voxus PR',
-    services: ['Website Design', 'Web Development', 'Branding'],
+    services: ['Website Design', 'Web Development'],
   },
   {
     id: 'lumiere',
@@ -169,14 +177,21 @@ const expectedCaseStudyContent = [
     quote:
       "Working with HKW's web design team has been one of the easiest experiences for our organization — they understood our vision right away and have continued to turn it into a site we’re proud to share with our community.",
     attribution: 'Evee Polanski, Director of Operations',
-    services: ['Web Design', 'Web Development'],
+    services: [
+      'Website Design',
+      'Website Development',
+      'Graphic Design',
+      'Branding',
+      'Logo Design',
+      'Marketing Support',
+    ],
   },
   {
     id: 'reltio',
     name: 'Reltio',
     quote:
       "From strategy to launch, HKW is the rare agency that combines rock-solid reliability, outstanding design & UI/UX, and genuine partnership — all wrapped up in a team you'll actually love working with.",
-    attribution: 'Sr. Director, Global Digital & Web Marketing',
+    attribution: 'Karim Azar, Sr. Director, Global Digital & Web Marketing',
     services: ['Web Design', 'Web Development', 'Marketing Support'],
   },
   {
@@ -199,7 +214,11 @@ const expectedCaseStudyContent = [
     quote:
       '“HKW has done many wonderful projects for us over the years. Most recently they helped us implement a new and modern looking website, as well as a huge integration project for our website to connect to our internal systems, which has automated so much of our manual processes. They built a user friendly interface for our customers, and keep our site well maintained.”',
     attribution: 'Melissa Marsh, Senior Business Systems Analyst at ComputerCare',
-    services: ['Web Design', 'Web Development'],
+    services: [
+      'Web Design',
+      'Web Development',
+      'Backend Customer Portal Design and Development',
+    ],
   },
 ]
 
@@ -577,16 +596,21 @@ describe('WorkPage', () => {
     expectHeroLayoutApplied('computercare')
   })
 
-  it('prevents mobile overflow from desktop-width work artwork', () => {
+  it('clips work artwork at the viewport while keeping the content frame centered', () => {
     renderWorkPage()
 
-    const page = getMainContent().parentElement
+    const frame = getPageFrame()
+    const page = frame.parentElement
     const activeHero = document.querySelector(
       '[data-work-example-region="hero"][data-study-pane="active"]',
     )
+    const styles = normalizeCssFunction(getInjectedStyles())
 
     const pageClipClassName = Array.from(page.classList).find((className) =>
-      hasClassRule(className, 'overflow-x:clip;'),
+      hasClassRule(
+        className,
+        'max-width:none;margin-inline:0;overflow-x:clip;',
+      ),
     )
     const heroWidthClassName = Array.from(activeHero.classList).find(
       (className) =>
@@ -597,6 +621,21 @@ describe('WorkPage', () => {
     )
 
     expect(pageClipClassName).toBeDefined()
+    expect(styles).toContain('container:work-frame/inline-size')
+    expect(styles).toContain('container:work-content/inline-size')
+    expect(styles).toContain('@containerwork-frame(max-width:740px)')
+    expect(styles).toContain('@containerwork-content(max-width:1000px)')
+    expect(styles).toContain('@containerwork-content(max-width:740px)')
+    expect(frame).toHaveStyle(`
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      max-width: ${convertCssPxToViewportUnit('1440px')};
+      margin-inline: auto;
+      pointer-events: none;
+    `)
+    expect(activeHero).toHaveStyle({ overflow: 'visible' })
     expect(heroWidthClassName).toBeDefined()
   })
 

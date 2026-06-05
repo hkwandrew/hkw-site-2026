@@ -2,7 +2,52 @@ import { useEffect, useId, useRef, useState } from 'react'
 import styled, { css } from 'styled-components'
 import { applyTypography } from './Typography'
 
+const applyCompactFieldStyles = (styles) => css`
+  @container form-field (max-width: 320px) {
+    ${styles}
+  }
+
+  @container form-field style(--hkw-field-density: compact) {
+    ${styles}
+  }
+`
+
+const compactLabelRowStyles = css`
+  min-height: 19px;
+`
+
+const compactLabelStyles = css`
+  font-size: 14px;
+  line-height: 18px;
+  letter-spacing: 1.4px;
+`
+
+const compactControlStyles = css`
+  height: 40px;
+  padding: 8px 24px 10px;
+`
+
+const compactTextareaStyles = css`
+  min-height: 80px;
+  border-radius: 20px;
+`
+
+const compactSelectTriggerStyles = css`
+  line-height: 1;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-right: 56px;
+  padding-left: 20px;
+`
+
+const compactCaretStyles = css`
+  right: 20px;
+  width: 26px;
+  height: 16px;
+`
+
 const Wrapper = styled.div`
+  container: form-field / inline-size;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -16,20 +61,14 @@ const LabelRow = styled.div`
   gap: 12px;
   min-height: 24px;
 
-  @media (max-width: 767px) {
-    min-height: 19px;
-  }
+  ${applyCompactFieldStyles(compactLabelRowStyles)}
 `
 
 const FieldLabel = styled.label`
   ${applyTypography('label')}
   color: ${({ theme }) => theme.colors.white};
 
-  @media (max-width: 767px) {
-    font-size: 14px;
-    line-height: 18px;
-    letter-spacing: 1.4px;
-  }
+  ${applyCompactFieldStyles(compactLabelStyles)}
 `
 
 const ErrorText = styled.span`
@@ -75,10 +114,7 @@ const controlBase = css`
     color: rgba(28, 45, 56, 0.7);
   }
 
-  @media (max-width: 767px) {
-    height: 40px;
-    padding: 8px 24px 10px;
-  }
+  ${applyCompactFieldStyles(compactControlStyles)}
 `
 
 const StyledInput = styled.input`
@@ -95,10 +131,7 @@ const StyledTextarea = styled.textarea`
   padding-bottom: 14px;
   ${({ $invalid }) => $invalid && invalidControlStyles}
 
-  @media (max-width: 767px) {
-    min-height: 80px;
-    border-radius: 20px;
-  }
+  ${applyCompactFieldStyles(compactTextareaStyles)}
 `
 
 const SelectControl = styled.div`
@@ -136,13 +169,7 @@ const SelectTrigger = styled.button`
     outline-offset: 2px;
   }
 
-  @media (max-width: 767px) {
-    line-height: 1;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    padding-right: 56px;
-    padding-left: 20px;
-  }
+  ${applyCompactFieldStyles(compactSelectTriggerStyles)}
 `
 
 const TriggerValue = styled.span`
@@ -174,11 +201,7 @@ const TriggerCaret = styled.span`
     height: 100%;
   }
 
-  @media (max-width: 767px) {
-    right: 20px;
-    width: 26px;
-    height: 16px;
-  }
+  ${applyCompactFieldStyles(compactCaretStyles)}
 `
 
 const SelectMenu = styled.ul`

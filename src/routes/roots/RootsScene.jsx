@@ -829,12 +829,12 @@ export default function RootsScene({ sceneRef }) {
         </MobileScene>
       ) : (
         <DesktopScene aria-hidden={isSliderOpen} $isActive={isActive}>
-          <BackButton
+          {/* <BackButton
             type='button'
             aria-label='Return to home'
             onClick={handleReturnHome}
             disabled={isSliderOpen}
-          />
+          /> */}
 
           <Welcome />
 
