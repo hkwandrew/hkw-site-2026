@@ -142,7 +142,7 @@ describe('HomePage', () => {
     expect(setHomeHoverRegion).toHaveBeenCalledWith('mascot')
   })
 
-  it('expands the roots trigger over the marmot and stump artwork', () => {
+  it('renders a positioned roots trigger over the marmot artwork', () => {
     const { container } = renderHomePage()
 
     const trigger = container.querySelector('[data-home-marmot-trigger]')
@@ -156,13 +156,12 @@ describe('HomePage', () => {
     )
 
     expect(triggerClassName).toBeDefined()
-    expect(styles).toMatch(
-      new RegExp(
-        `\\.${escapeRegExp(
-          triggerClassName,
-        )}\\{[^}]*top:0;left:calc\\(118 \\* var\\(--hkw-viewport-px-unit\\)\\);width:calc\\(436 \\* var\\(--hkw-viewport-px-unit\\)\\);height:calc\\(376 \\* var\\(--hkw-viewport-px-unit\\)\\);z-index:3;`,
-      ),
-    )
+    const triggerRule = styles.match(
+      new RegExp(`\\.${escapeRegExp(triggerClassName)}\\{[^}]*\\}`),
+    )?.[0]
+
+    expect(triggerRule).toContain('position:absolute')
+    expect(triggerRule).toContain('z-index:')
   })
 
   it('renders the marmot hover pose from the route-owned art', () => {

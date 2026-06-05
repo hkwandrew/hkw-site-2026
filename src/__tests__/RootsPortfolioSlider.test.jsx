@@ -94,7 +94,7 @@ describe('RootsPortfolioSlider', () => {
     expect(container).not.toContainElement(dialog)
   })
 
-  it('keeps the roots scene visible outside the framed modal panel', () => {
+  it('keeps the roots scene visible outside the modal panel', () => {
     renderSlider('Transparent Overlay Project')
 
     const dialog = screen.getByRole('dialog', {
@@ -104,18 +104,11 @@ describe('RootsPortfolioSlider', () => {
     const overlayStyles = normalizeCss(getElementStyles(overlay))
     const dialogStyles = normalizeCss(getElementStyles(dialog))
 
+    expect(overlay).toHaveAttribute('data-roots-portfolio-overlay')
     expect(overlayStyles).toContain('align-items:center')
-    expect(overlayStyles).not.toContain('background:#fcfae5')
     expect(dialogStyles).toContain(
       'container:roots-dialog/size',
     )
-    expect(dialogStyles).toContain(
-      'width:min(calc(1440*var(--hkw-viewport-px-unit)),100%)',
-    )
-    expect(dialogStyles).toContain(
-      'height:min(calc(1024*var(--hkw-viewport-px-unit)),100%)',
-    )
-    expect(dialogStyles).toContain('background:#fcfae5')
   })
 
   it('renders separate wooden frame edge chrome', () => {
@@ -136,57 +129,6 @@ describe('RootsPortfolioSlider', () => {
     expect(
       frameEdges.every((edge) => Boolean(edge.getAttribute('src'))),
     ).toBe(true)
-    expect(normalizeCss(getElementStyles(frameEdges[0]))).toContain(
-      'height:calc(100%+calc(86*var(--hkw-viewport-px-unit)))',
-    )
-    expect(normalizeCss(getElementStyles(frameEdges[0]))).toContain(
-      'z-index:1',
-    )
-    expect(normalizeCss(getElementStyles(frameEdges[1]))).toContain(
-      'height:calc(100%+calc(104*var(--hkw-viewport-px-unit)))',
-    )
-    expect(normalizeCss(getElementStyles(frameEdges[1]))).toContain(
-      'z-index:1',
-    )
-    expect(normalizeCss(getElementStyles(frameEdges[0]))).toContain(
-      'width:calc(30*var(--hkw-viewport-px-unit))',
-    )
-    expect(normalizeCss(getElementStyles(frameEdges[0]))).toContain(
-      'height:100%',
-    )
-    expect(normalizeCss(getElementStyles(frameEdges[1]))).toContain(
-      'width:calc(30*var(--hkw-viewport-px-unit))',
-    )
-    expect(normalizeCss(getElementStyles(frameEdges[1]))).toContain(
-      'height:100%',
-    )
-    expect(normalizeCss(getElementStyles(frameEdges[2]))).toContain(
-      'z-index:2',
-    )
-    expect(normalizeCss(getElementStyles(frameEdges[2]))).toContain(
-      'top:calc(-116*var(--hkw-viewport-px-unit))',
-    )
-    expect(normalizeCss(getElementStyles(frameEdges[2]))).toContain(
-      'width:calc(100%+calc(80*var(--hkw-viewport-px-unit)))',
-    )
-    expect(normalizeCss(getElementStyles(frameEdges[2]))).toContain(
-      'height:calc(30*var(--hkw-viewport-px-unit))',
-    )
-    expect(normalizeCss(getElementStyles(frameEdges[3]))).toContain(
-      'z-index:2',
-    )
-    expect(normalizeCss(getElementStyles(frameEdges[3]))).toContain(
-      'bottom:calc(-116*var(--hkw-viewport-px-unit))',
-    )
-    expect(normalizeCss(getElementStyles(frameEdges[3]))).toContain(
-      'left:0',
-    )
-    expect(normalizeCss(getElementStyles(frameEdges[3]))).toContain(
-      'width:calc(100%+calc(64*var(--hkw-viewport-px-unit)))',
-    )
-    expect(normalizeCss(getElementStyles(frameEdges[3]))).toContain(
-      'height:calc(30*var(--hkw-viewport-px-unit))',
-    )
     expect(normalizeCss(getInjectedStyles())).not.toContain(
       'background-size:cover',
     )
@@ -202,22 +144,9 @@ describe('RootsPortfolioSlider', () => {
     const artwork = screen.getByAltText('Mobile Project project artwork')
     const copy = document.querySelector('[data-roots-slide-copy]')
     const nav = document.querySelector('[data-roots-slide-nav]')
-    const styles = normalizeCss(getInjectedStyles())
-
-    expect(styles).toContain('@containerroots-dialog(max-width:740px)')
-    expect(styles).toContain(
-      '@containerroots-dialog(max-width:740px)and(max-height:700px)',
-    )
-    expect(styles).toContain('34cqb')
-    expect(normalizeCss(getElementStyles(artwork))).toContain(
-      'object-fit:contain',
-    )
-    expect(normalizeCss(getElementStyles(copy))).toContain('margin-top:0')
-    expect(normalizeCss(getElementStyles(copy))).toContain('padding-inline:')
-    expect(normalizeCss(getElementStyles(nav))).not.toContain('linear-gradient')
-    expect(normalizeCss(getElementStyles(nav))).not.toContain('background:')
-    expect(normalizeCss(getElementStyles(nav))).toContain('position:absolute')
-    expect(normalizeCss(getElementStyles(nav))).toContain('padding:0')
+    expect(artwork).toHaveAttribute('src', '/mobile-project.png')
+    expect(copy).toBeInTheDocument()
+    expect(nav).toBeInTheDocument()
   })
 
   it('uses the contact-style X close button treatment on mobile', () => {

@@ -47,9 +47,14 @@ describe('Plane', () => {
     })
   })
 
-  it('wires a banner morph timeline when motion is allowed', () => {
-    gsapMocks.matchMediaAdd.mockImplementation((_query, callback) => {
-      callback()
+  it('wires a banner wave tween when motion is allowed', () => {
+    gsapMocks.matchMediaAdd.mockImplementation((_conditions, callback) => {
+      callback({
+        conditions: {
+          isMobile: false,
+          motionOk: true,
+        },
+      })
     })
 
     const { container } = render(<Plane />)
@@ -61,16 +66,20 @@ describe('Plane', () => {
     expect(bannerClipShape).not.toBeNull()
     expect(bannerShape.getAttribute('d')).toBe(bannerClipShape.getAttribute('d'))
     expect(gsapMocks.matchMediaAdd).toHaveBeenCalledWith(
-      '(prefers-reduced-motion: no-preference)',
+      expect.objectContaining({
+        motionOk: '(prefers-reduced-motion: no-preference)',
+      }),
       expect.any(Function),
     )
     expect(gsapMocks.to).toHaveBeenCalledWith(
       expect.objectContaining({
-        phase: 0,
+        phase: expect.any(Number),
       }),
       expect.objectContaining({
+        duration: expect.any(Number),
         ease: 'none',
         onUpdate: expect.any(Function),
+        phase: expect.any(Number),
         repeat: -1,
       }),
     )

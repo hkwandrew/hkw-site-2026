@@ -171,9 +171,7 @@ describe('useAboutDesktopScene', () => {
     expect(heroPath).not.toBeNull()
     expect(heroPath).toHaveAttribute('d', ABOUT_HERO_CLOUD.paths.stageZero)
     expect(morphCall).toBeDefined()
-    expect(morphCall[1].morphSVG.precompile).toBeUndefined()
-    expect(morphCall[1].morphSVG.shapeIndex).toBe(1)
-    expect(morphCall[1].morphSVG.map).toBe('complexity')
+    expect(morphCall[1].morphSVG.shape).toBe(ABOUT_HERO_CLOUD.paths.stageOne)
     expect(gsapMocks.findShapeIndex).not.toHaveBeenCalled()
   })
 

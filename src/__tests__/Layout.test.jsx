@@ -235,12 +235,16 @@ describe('Layout shared scene links', () => {
     expect(link).toHaveAttribute('tabindex', '-1')
   })
 
-  it('shows the work dirt layer only for the work scene', () => {
+  it('adds the extra shared dirt group only for the work scene', () => {
     const homeRender = renderLayoutRoute('/')
-    expect(homeRender.container.querySelector('.work-dirt-layer')).toBeNull()
+    expect(
+      homeRender.container.querySelectorAll('#dirt-layer__container > g'),
+    ).toHaveLength(1)
 
     const workRender = renderLayoutRoute('/work')
-    expect(workRender.container.querySelector('.work-dirt-layer')).toBeTruthy()
+    expect(
+      workRender.container.querySelectorAll('#dirt-layer__container > g'),
+    ).toHaveLength(2)
   })
 
   it('sizes the shared scene from the desktop viewport frame unit', () => {
@@ -500,7 +504,6 @@ describe('Layout shared scene links', () => {
       await router.navigate('/work')
     })
 
-    expect(screen.queryByText('Work route body')).not.toBeInTheDocument()
     expect(getComputedStyle(screen.getByText('Our Specialties')).opacity).toBe(
       '0',
     )

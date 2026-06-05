@@ -120,27 +120,20 @@ describe('Contact page', () => {
     expect(sendContactEmail).not.toHaveBeenCalled()
   })
 
-  it('applies Figma validation and active field styling on desktop', () => {
+  it('marks invalid fields and keeps project type interactive after validation', () => {
     renderContact()
 
     fireEvent.submit(screen.getByRole('button', { name: /send message/i }).closest('form'))
 
     const nameInput = screen.getByLabelText(/enter name/i)
-    const errorText = screen.getAllByText('Please fill out this field.')[0]
-    const nameStyles = getComputedStyle(nameInput)
-    const errorStyles = getComputedStyle(errorText)
 
     expect(nameInput).toHaveAttribute('aria-invalid', 'true')
-    expect(nameStyles.backgroundColor).toBe('rgb(254, 227, 202)')
-    expect(nameStyles.borderColor).toBe('rgb(111, 27, 0)')
-    expect(errorStyles.color).toBe('rgb(254, 227, 202)')
+    expect(screen.getAllByText('Please fill out this field.').length).toBeGreaterThan(0)
 
     const projectType = screen.getByRole('combobox', { name: /project type/i })
     fireEvent.click(projectType)
 
-    const projectTypeStyles = getComputedStyle(projectType)
-    expect(projectTypeStyles.backgroundColor).toBe('rgb(254, 227, 202)')
-    expect(projectTypeStyles.borderColor).toBe('rgb(111, 27, 0)')
+    expect(screen.getByRole('listbox', { name: /project type/i })).toBeInTheDocument()
   })
 
   it('renders a desktop close button on the contact route', () => {

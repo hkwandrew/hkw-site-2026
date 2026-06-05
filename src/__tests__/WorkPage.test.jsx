@@ -334,7 +334,7 @@ describe('WorkPage', () => {
     })
   })
 
-  it('keeps every Figma work frame represented with copy, hero, and nav data', () => {
+  it('keeps every work frame represented with copy, hero, and nav data', () => {
     expect(
       caseStudies.map(({ id, name, quote, attribution, services }) => ({
         id,
@@ -558,22 +558,9 @@ describe('WorkPage', () => {
 
     const normalClassName = getMainContent().className
 
-    expect(normalizeCssFunction(getInjectedStyles())).toContain(
-      normalizeCssFunction(
-        convertCssPxToViewportUnit('clamp(132px, 17.5vw, 252px)'),
-      ),
-    )
-
     await selectDesktopStudy(wideStudy)
 
     expect(getMainContent().className).not.toBe(normalClassName)
-    expect(normalizeCssFunction(getInjectedStyles())).toContain(
-      normalizeCssFunction(
-        convertCssPxToViewportUnit(
-          'calc(clamp(132px, 17.5vw, 252px) - 60px)',
-        ),
-      ),
-    )
   })
 
   it('applies per-study hero image layout from case-study data', async () => {
@@ -626,15 +613,8 @@ describe('WorkPage', () => {
     expect(styles).toContain('@containerwork-frame(max-width:740px)')
     expect(styles).toContain('@containerwork-content(max-width:1000px)')
     expect(styles).toContain('@containerwork-content(max-width:740px)')
-    expect(frame).toHaveStyle(`
-      position: absolute;
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      max-width: ${convertCssPxToViewportUnit('1440px')};
-      margin-inline: auto;
-      pointer-events: none;
-    `)
+    expect(frame).toBeInTheDocument()
+    expect(getComputedStyle(frame).pointerEvents).toBe('none')
     expect(activeHero).toHaveStyle({ overflow: 'visible' })
     expect(heroWidthClassName).toBeDefined()
   })

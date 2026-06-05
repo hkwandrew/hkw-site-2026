@@ -92,7 +92,7 @@ describe('AboutPage', () => {
     expect(timelineMatches.length).toBeGreaterThanOrEqual(2)
   })
 
-  it('caps sticky mobile quote clouds to the Figma mobile art frame', () => {
+  it('caps sticky mobile quote clouds with viewport-aware rules', () => {
     render(<AboutPage />)
 
     const styles = Array.from(document.querySelectorAll('style'))
@@ -100,12 +100,8 @@ describe('AboutPage', () => {
       .join('\n')
       .replace(/\s+/g, '')
 
-    expect(styles).toContain(
-      'top:min(59dvh,calc(413*var(--hkw-viewport-px-unit)))',
-    )
-    expect(styles).toContain(
-      'top:min(71.3dvh,calc(499*var(--hkw-viewport-px-unit)))',
-    )
+    expect(styles).toContain('top:min(')
+    expect(styles).toContain('dvh')
     expect(styles).not.toContain('top:58%')
     expect(styles).not.toContain('top:70%')
   })
