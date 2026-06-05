@@ -556,19 +556,21 @@ export const DesktopNavRail = styled.div`
 `
 
 export const DesktopNavViewport = styled.div`
-  width: min(100%, ${({ $viewportWidth }) => `${$viewportWidth}px`});
-  overflow-x: hidden;
-  overflow-y: visible;
-  cursor: ${({ $dragging }) => ($dragging ? 'grabbing' : 'grab')};
-  touch-action: pan-y;
-  user-select: none;
+  display: flex;
+  justify-content: center;
+  width: min(100%, ${({ $naturalWidth }) => `${$naturalWidth}px`});
+  overflow: visible;
 `
 
 export const DesktopNavStrip = styled.div`
-  overflow-y: hidden;
   display: flex;
+  flex: 0 0 var(--work-desktop-nav-natural-width);
   gap: 24px;
-  width: max-content;
+  width: var(--work-desktop-nav-natural-width);
+  overflow: visible;
+  transform: scale(var(--work-desktop-nav-scale));
+  transform-origin: center bottom;
+  transition: transform 180ms ease;
   will-change: transform;
 `
 

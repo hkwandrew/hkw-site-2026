@@ -1,9 +1,8 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useBlocker, useLocation, useNavigate, useParams } from 'react-router'
-import gsap from 'gsap'
-import Draggable from 'gsap/Draggable'
 import usePageActive from '@/shared/hooks/usePageActive'
 import { usePageSceneTransition } from '@/app/landscape/pageSceneTransition'
+import { SCENE_TRANSITION_DURATION_MS } from '@/app/landscape/sceneTiming'
 import DirtLayer from '@/app/landscape/layers/DirtLayer'
 import {
   ROOTS_DROP_DURATION_MS,
@@ -43,18 +42,10 @@ import {
   StudyTextStage,
 } from './WorkPage.styles'
 
-gsap.registerPlugin(Draggable)
-
-const DESKTOP_NAV_VISIBLE_COUNT = 8
-const DESKTOP_NAV_COPY_COUNT = 3
-const DESKTOP_NAV_BASE_COPY_INDEX = 1
 const DESKTOP_NAV_GAP = 24
-const DESKTOP_NAV_DRAG_THRESHOLD = 10
-const WORK_DIRT_FOREGROUND_TRANSITION_MS = 1500
+const WORK_DIRT_FOREGROUND_TRANSITION_MS = SCENE_TRANSITION_DURATION_MS
 const STUDY_FADE_DURATION_MS = 420
 const WORK_ROUTE_PATH = '/work'
-const DESKTOP_NAV_BASE_VISUAL_INDEX =
-  DESKTOP_NAV_BASE_COPY_INDEX * caseStudies.length
 
 const preloadRootsPage = () => import('../roots/RootsPage.jsx')
 
@@ -150,199 +141,21 @@ const useWorkPageExitTransition = () => {
 const normalizeIndex = (index, itemCount) =>
   ((index % itemCount) + itemCount) % itemCount
 
-const getDesktopNavWindowStart = (index, itemCount) => {
-  const visibleCount = Math.min(DESKTOP_NAV_VISIBLE_COUNT, itemCount)
+const getDesktopNavNaturalWidth = (widths) =>
+  widths.reduce((sum, width) => sum + width, 0) +
+  Math.max(0, widths.length - 1) * DESKTOP_NAV_GAP
 
-  if (itemCount <= visibleCount) return 0
+const getDesktopNavFitScale = (availableWidth, naturalWidth) => {
+  if (availableWidth <= 0 || naturalWidth <= 0) return 1
 
-  return Math.max(0, Math.min(index - 3, itemCount - visibleCount))
+  return Math.min(1, availableWidth / naturalWidth)
 }
-
-const getDesktopNavViewportWidth = (widths) => {
-  const visibleCount = Math.min(DESKTOP_NAV_VISIBLE_COUNT, widths.length)
-  const lastStart = Math.max(0, widths.length - visibleCount)
-  let maxWindowWidth = 0
-
-  for (let start = 0; start <= lastStart; start += 1) {
-    const windowWidths = widths.slice(start, start + visibleCount)
-    const windowWidth =
-      windowWidths.reduce((sum, width) => sum + width, 0) +
-      Math.max(0, windowWidths.length - 1) * DESKTOP_NAV_GAP
-
-    maxWindowWidth = Math.max(maxWindowWidth, windowWidth)
-  }
-
-  return maxWindowWidth
-}
-
-const getDesktopNavTrackOffset = (widths, startIndex) =>
-  widths.slice(0, startIndex).reduce((sum, width) => sum + width, 0) +
-  startIndex * DESKTOP_NAV_GAP
-
-const getDesktopNavSnapPoints = (widths, itemCount) => {
-  const visibleCount = Math.min(DESKTOP_NAV_VISIBLE_COUNT, itemCount)
-  const maxStart = Math.max(0, itemCount - visibleCount)
-
-  return Array.from({ length: maxStart + 1 }, (_, start) => ({
-    start,
-    offset: getDesktopNavTrackOffset(widths, start),
-  }))
-}
-
-const getClosestDesktopNavSnapPoint = (offset, snapPoints) =>
-  snapPoints.reduce(
-    (closestPoint, point) => {
-      if (
-        Math.abs(point.offset - offset) < Math.abs(closestPoint.offset - offset)
-      ) {
-        return point
-      }
-
-      return closestPoint
-    },
-    snapPoints[0] ?? { start: 0, offset: 0 },
-  )
-
-const getDesktopNavVisualCycleStart = (visualIndex, itemCount) =>
-  visualIndex - normalizeIndex(visualIndex, itemCount)
-
-const getFiniteDesktopNavWindowStart = (visualIndex, itemCount) =>
-  getDesktopNavVisualCycleStart(visualIndex, itemCount) +
-  getDesktopNavWindowStart(normalizeIndex(visualIndex, itemCount), itemCount)
-
-const clampDesktopNavWindowStart = (start, totalCount, itemCount) => {
-  const visibleCount = Math.min(DESKTOP_NAV_VISIBLE_COUNT, itemCount)
-  const maxStart = Math.max(0, totalCount - visibleCount)
-
-  return Math.max(0, Math.min(start, maxStart))
-}
-
-const getWindowStartKeepingVisualIndexVisible = (
-  visualIndex,
-  windowStart,
-  itemCount,
-) => {
-  const visibleCount = Math.min(DESKTOP_NAV_VISIBLE_COUNT, itemCount)
-
-  if (visualIndex < windowStart) return visualIndex
-
-  if (visualIndex >= windowStart + visibleCount) {
-    return visualIndex - visibleCount + 1
-  }
-
-  return windowStart
-}
-
-const getDesktopNavWindowStartForVisualChange = ({
-  currentVisualIndex,
-  nextVisualIndex,
-  currentWindowStart,
-  itemCount,
-}) => {
-  const currentFiniteStart = getFiniteDesktopNavWindowStart(
-    currentVisualIndex,
-    itemCount,
-  )
-  const nextFiniteStart = getFiniteDesktopNavWindowStart(
-    nextVisualIndex,
-    itemCount,
-  )
-  const isAdjacent = Math.abs(nextVisualIndex - currentVisualIndex) === 1
-  const isContinuingLoopWindow = currentWindowStart !== currentFiniteStart
-  const currentItemIndex = normalizeIndex(currentVisualIndex, itemCount)
-  const nextItemIndex = normalizeIndex(nextVisualIndex, itemCount)
-  const isForwardWrap =
-    nextVisualIndex > currentVisualIndex &&
-    currentItemIndex === itemCount - 1 &&
-    nextItemIndex === 0
-  const isBackwardWrap =
-    nextVisualIndex < currentVisualIndex &&
-    currentItemIndex === 0 &&
-    nextItemIndex === itemCount - 1
-
-  if (
-    isAdjacent &&
-    (isContinuingLoopWindow || isForwardWrap || isBackwardWrap)
-  ) {
-    return getWindowStartKeepingVisualIndexVisible(
-      nextVisualIndex,
-      currentWindowStart,
-      itemCount,
-    )
-  }
-
-  return nextFiniteStart
-}
-
-const getNearestDesktopNavVisualIndex = (
-  itemIndex,
-  currentVisualIndex,
-  itemCount,
-) => {
-  const nearestCycle = Math.round((currentVisualIndex - itemIndex) / itemCount)
-  const candidates = [nearestCycle - 1, nearestCycle, nearestCycle + 1].map(
-    (cycle) => cycle * itemCount + itemIndex,
-  )
-
-  return candidates.reduce((nearestVisualIndex, candidate) => {
-    if (
-      Math.abs(candidate - currentVisualIndex) <
-      Math.abs(nearestVisualIndex - currentVisualIndex)
-    ) {
-      return candidate
-    }
-
-    return nearestVisualIndex
-  }, candidates[0])
-}
-
-const getNormalizedDesktopNavPosition = ({
-  visualIndex,
-  windowStart,
-  itemCount,
-  totalCount,
-}) => {
-  const baseStart = DESKTOP_NAV_BASE_VISUAL_INDEX
-  const baseEnd = baseStart + itemCount - 1
-
-  if (visualIndex >= baseStart && visualIndex <= baseEnd) {
-    return { visualIndex, windowStart }
-  }
-
-  const normalizedVisualIndex =
-    baseStart + normalizeIndex(visualIndex, itemCount)
-  const copyOffset = normalizedVisualIndex - visualIndex
-
-  return {
-    visualIndex: normalizedVisualIndex,
-    windowStart: clampDesktopNavWindowStart(
-      windowStart + copyOffset,
-      totalCount,
-      itemCount,
-    ),
-  }
-}
-
-const getDesktopNavItems = () =>
-  Array.from({ length: DESKTOP_NAV_COPY_COUNT }, (_, copyIndex) =>
-    caseStudies.map((caseStudy, itemIndex) => ({
-      caseStudy,
-      itemIndex,
-      visualIndex: copyIndex * caseStudies.length + itemIndex,
-      isDuplicate: copyIndex !== DESKTOP_NAV_BASE_COPY_INDEX,
-    })),
-  ).flat()
-
-const getDesktopNavWidths = (widths) =>
-  Array.from({ length: DESKTOP_NAV_COPY_COUNT }, () => widths).flat()
 
 const renderNavButton = ({
   caseStudy,
   itemIndex,
-  visualIndex,
   isCurrent,
   isAccessibleCurrent,
-  isDuplicate = false,
   handleSelect,
   compact = false,
   keyPrefix,
@@ -354,16 +167,14 @@ const renderNavButton = ({
     <NavButton
       key={`${keyPrefix}-${caseStudy.id}`}
       type='button'
-      aria-label={isDuplicate ? undefined : `Show ${caseStudy.name}`}
+      aria-label={`Show ${caseStudy.name}`}
       aria-current={isAccessibleCurrent ? 'true' : undefined}
-      aria-hidden={isDuplicate ? 'true' : undefined}
-      tabIndex={isDuplicate ? -1 : undefined}
       data-nav-kind={hasIcon ? 'icon' : 'dot'}
       data-work-example={caseStudy.id}
       data-work-example-region={compact ? 'mobile-nav' : 'desktop-nav'}
       $compact={compact}
       $layout={navButtonLayout}
-      onClick={() => handleSelect(itemIndex, visualIndex)}
+      onClick={() => handleSelect(itemIndex)}
     >
       <NavVisual>
         {hasIcon ? (
@@ -455,35 +266,18 @@ const WorkPage = () => {
   const { transitionSceneToPath } = usePageSceneTransition()
   const routeStudyIndex = getCaseStudyIndexForSlug(caseStudySlug)
   const initialStudyIndex = routeStudyIndex >= 0 ? routeStudyIndex : 0
-  const initialDesktopNavVisualIndex =
-    DESKTOP_NAV_BASE_VISUAL_INDEX + initialStudyIndex
   const [index, setIndex] = useState(initialStudyIndex)
   const [displayIndex, setDisplayIndex] = useState(initialStudyIndex)
   const [studyPhase, setStudyPhase] = useState('active')
-  const [desktopNavVisualIndex, setDesktopNavVisualIndex] = useState(
-    initialDesktopNavVisualIndex,
-  )
-  const [desktopNavWindowStart, setDesktopNavWindowStart] = useState(
-    getFiniteDesktopNavWindowStart(
-      initialDesktopNavVisualIndex,
-      caseStudies.length,
-    ),
-  )
-  const [isDesktopNavDragging, setIsDesktopNavDragging] = useState(false)
+  const [desktopNavScale, setDesktopNavScale] = useState(1)
   const [isForegroundEntryComplete, setIsForegroundEntryComplete] =
     useState(false)
-  const [shouldBlockNavClick, setShouldBlockNavClick] = useState(false)
   const [isRootsMarmotHoverActive, setIsRootsMarmotHoverActive] =
     useState(false)
   const [isRootsTransitionActive, setIsRootsTransitionActive] = useState(false)
-  const desktopNavTrackRef = useRef(null)
-  const desktopNavDraggableRef = useRef(null)
-  const hasPositionedDesktopNavRef = useRef(false)
-  const shouldSnapDesktopNavRef = useRef(false)
-  const releaseNavClickBlockTimerRef = useRef(null)
+  const desktopNavRailRef = useRef(null)
   const rootsTransitionTimeoutRef = useRef(null)
   const study = caseStudies[displayIndex]
-  const desktopNavItems = useMemo(() => getDesktopNavItems(), [])
   const desktopNavWidths = useMemo(
     () =>
       caseStudies.map(
@@ -491,23 +285,10 @@ const WorkPage = () => {
       ),
     [],
   )
-  const desktopNavLoopWidths = useMemo(
-    () => getDesktopNavWidths(desktopNavWidths),
+  const desktopNavNaturalWidth = useMemo(
+    () => getDesktopNavNaturalWidth(desktopNavWidths),
     [desktopNavWidths],
   )
-  const desktopNavViewportWidth = useMemo(
-    () => getDesktopNavViewportWidth(desktopNavLoopWidths),
-    [desktopNavLoopWidths],
-  )
-  const desktopNavSnapPoints = useMemo(
-    () => getDesktopNavSnapPoints(desktopNavLoopWidths, desktopNavItems.length),
-    [desktopNavItems.length, desktopNavLoopWidths],
-  )
-  const desktopNavTrackOffset =
-    desktopNavSnapPoints.find((point) => point.start === desktopNavWindowStart)
-      ?.offset ?? 0
-  const maxDesktopNavTrackOffset =
-    desktopNavSnapPoints[desktopNavSnapPoints.length - 1]?.offset ?? 0
   const isWorkChromeVisible = isForegroundEntryComplete && !isExiting
 
   useEffect(() => {
@@ -519,30 +300,11 @@ const WorkPage = () => {
   useEffect(() => {
     if (routeStudyIndex < 0 || routeStudyIndex === index) return undefined
 
-    const nextVisualIndex = getNearestDesktopNavVisualIndex(
-      routeStudyIndex,
-      desktopNavVisualIndex,
-      caseStudies.length,
-    )
-
     let isActive = true
 
     queueMicrotask(() => {
       if (!isActive) return
 
-      setDesktopNavWindowStart(
-        clampDesktopNavWindowStart(
-          getDesktopNavWindowStartForVisualChange({
-            currentVisualIndex: desktopNavVisualIndex,
-            nextVisualIndex,
-            currentWindowStart: desktopNavWindowStart,
-            itemCount: caseStudies.length,
-          }),
-          desktopNavItems.length,
-          caseStudies.length,
-        ),
-      )
-      setDesktopNavVisualIndex(nextVisualIndex)
       setStudyPhase('leaving')
       setIndex(routeStudyIndex)
     })
@@ -550,13 +312,7 @@ const WorkPage = () => {
     return () => {
       isActive = false
     }
-  }, [
-    desktopNavItems.length,
-    desktopNavVisualIndex,
-    desktopNavWindowStart,
-    index,
-    routeStudyIndex,
-  ])
+  }, [index, routeStudyIndex])
 
   useEffect(() => {
     if (!isActive) return undefined
@@ -595,19 +351,6 @@ const WorkPage = () => {
     return undefined
   }, [index, studyPhase])
 
-  useEffect(() => {
-    if (releaseNavClickBlockTimerRef.current) {
-      window.clearTimeout(releaseNavClickBlockTimerRef.current)
-      releaseNavClickBlockTimerRef.current = null
-    }
-
-    return () => {
-      if (releaseNavClickBlockTimerRef.current) {
-        window.clearTimeout(releaseNavClickBlockTimerRef.current)
-      }
-    }
-  }, [])
-
   useEffect(
     () => () => {
       if (
@@ -620,151 +363,46 @@ const WorkPage = () => {
     [],
   )
 
-  useLayoutEffect(() => {
-    const trackElement = desktopNavTrackRef.current
-
-    if (!trackElement) return undefined
-
-    const trackX = -desktopNavTrackOffset
-
-    if (
-      !hasPositionedDesktopNavRef.current ||
-      shouldSnapDesktopNavRef.current
-    ) {
-      gsap.set(trackElement, { x: trackX })
-      hasPositionedDesktopNavRef.current = true
-      shouldSnapDesktopNavRef.current = false
-
-      return undefined
-    }
-
-    const tween = gsap.to(trackElement, {
-      x: trackX,
-      duration: isDesktopNavDragging ? 0 : 0.42,
-      ease: 'power3.out',
-      overwrite: true,
-      onComplete() {
-        if (isDesktopNavDragging) return
-
-        const normalizedPosition = getNormalizedDesktopNavPosition({
-          visualIndex: desktopNavVisualIndex,
-          windowStart: desktopNavWindowStart,
-          itemCount: caseStudies.length,
-          totalCount: desktopNavItems.length,
-        })
-
-        if (
-          normalizedPosition.visualIndex === desktopNavVisualIndex &&
-          normalizedPosition.windowStart === desktopNavWindowStart
-        ) {
-          return
-        }
-
-        shouldSnapDesktopNavRef.current = true
-        setDesktopNavVisualIndex(normalizedPosition.visualIndex)
-        setDesktopNavWindowStart(normalizedPosition.windowStart)
-      },
-    })
-
-    return () => {
-      tween.kill()
-    }
-  }, [
-    desktopNavItems.length,
-    desktopNavTrackOffset,
-    desktopNavVisualIndex,
-    desktopNavWindowStart,
-    isDesktopNavDragging,
-  ])
-
   useEffect(() => {
-    const trackElement = desktopNavTrackRef.current
+    const railElement = desktopNavRailRef.current
 
-    if (!trackElement) return undefined
+    if (!railElement) return undefined
 
-    if (desktopNavDraggableRef.current) {
-      desktopNavDraggableRef.current.kill()
-      desktopNavDraggableRef.current = null
+    const updateScale = () => {
+      const availableWidth =
+        railElement.clientWidth || railElement.getBoundingClientRect().width
+      const nextScale = getDesktopNavFitScale(
+        availableWidth,
+        desktopNavNaturalWidth,
+      )
+
+      setDesktopNavScale((currentScale) =>
+        Math.abs(currentScale - nextScale) < 0.001 ? currentScale : nextScale,
+      )
     }
 
-    if (desktopNavSnapPoints.length <= 1) {
-      gsap.set(trackElement, { x: 0 })
-      return undefined
+    updateScale()
+
+    window.addEventListener('resize', updateScale)
+
+    if (typeof ResizeObserver === 'undefined') {
+      return () => {
+        window.removeEventListener('resize', updateScale)
+      }
     }
 
-    const draggable = Draggable.create(trackElement, {
-      type: 'x',
-      bounds: {
-        minX: -maxDesktopNavTrackOffset,
-        maxX: 0,
-      },
-      minimumMovement: DESKTOP_NAV_DRAG_THRESHOLD,
-      dragClickables: true,
-      allowContextMenu: true,
-      activeCursor: 'grabbing',
-      cursor: 'grab',
-      onPress() {
-        gsap.killTweensOf(trackElement)
-      },
-      onDragStart() {
-        setShouldBlockNavClick(true)
-        setIsDesktopNavDragging(true)
-      },
-      onDragEnd() {
-        const currentX = draggable?.x ?? 0
-        const nearestSnapPoint = getClosestDesktopNavSnapPoint(
-          -currentX,
-          desktopNavSnapPoints,
-        )
+    const observer = new ResizeObserver(updateScale)
 
-        setIsDesktopNavDragging(false)
-        setDesktopNavWindowStart(nearestSnapPoint.start)
-
-        if (releaseNavClickBlockTimerRef.current) {
-          window.clearTimeout(releaseNavClickBlockTimerRef.current)
-        }
-
-        releaseNavClickBlockTimerRef.current = window.setTimeout(() => {
-          setShouldBlockNavClick(false)
-          releaseNavClickBlockTimerRef.current = null
-        }, 0)
-      },
-      onRelease() {
-        setIsDesktopNavDragging(false)
-      },
-    })[0]
-
-    desktopNavDraggableRef.current = draggable
+    observer.observe(railElement)
 
     return () => {
-      draggable.kill()
-      desktopNavDraggableRef.current = null
+      observer.disconnect()
+      window.removeEventListener('resize', updateScale)
     }
-  }, [desktopNavSnapPoints, maxDesktopNavTrackOffset])
+  }, [desktopNavNaturalWidth])
 
-  const goToVisualIndex = (nextVisualIndex) => {
-    const normalizedIndex = normalizeIndex(nextVisualIndex, caseStudies.length)
-
-    if (
-      normalizedIndex === index &&
-      nextVisualIndex === desktopNavVisualIndex
-    ) {
-      return
-    }
-
-    setDesktopNavWindowStart(
-      clampDesktopNavWindowStart(
-        getDesktopNavWindowStartForVisualChange({
-          currentVisualIndex: desktopNavVisualIndex,
-          nextVisualIndex,
-          currentWindowStart: desktopNavWindowStart,
-          itemCount: caseStudies.length,
-        }),
-        desktopNavItems.length,
-        caseStudies.length,
-      ),
-    )
-    setDesktopNavVisualIndex(nextVisualIndex)
+  const goTo = (nextIndex) => {
+    const normalizedIndex = normalizeIndex(nextIndex, caseStudies.length)
 
     if (normalizedIndex !== index) {
       setStudyPhase('leaving')
@@ -778,30 +416,9 @@ const WorkPage = () => {
     }
   }
 
-  const goTo = (nextIndex) => {
-    const normalizedIndex = normalizeIndex(nextIndex, caseStudies.length)
-
-    goToVisualIndex(
-      getNearestDesktopNavVisualIndex(
-        normalizedIndex,
-        desktopNavVisualIndex,
-        caseStudies.length,
-      ),
-    )
-  }
-
-  const next = () => goToVisualIndex(desktopNavVisualIndex + 1)
-  const prev = () => goToVisualIndex(desktopNavVisualIndex - 1)
-  const handleNavButtonSelect = (nextIndex, visualIndex) => {
-    if (shouldBlockNavClick) return
-
-    if (visualIndex === undefined) {
-      goTo(nextIndex)
-      return
-    }
-
-    goToVisualIndex(visualIndex)
-  }
+  const next = () => goTo(index + 1)
+  const prev = () => goTo(index - 1)
+  const handleNavButtonSelect = (nextIndex) => goTo(nextIndex)
 
   const navigateToRoots = () => {
     navigate('/roots', {
@@ -920,27 +537,24 @@ const WorkPage = () => {
           transitionMs={WORK_DIRT_FOREGROUND_TRANSITION_MS}
         />
 
-        <DesktopNavRail $isVisible={isWorkChromeVisible}>
-          <DesktopNavViewport
-            $dragging={isDesktopNavDragging}
-            $viewportWidth={desktopNavViewportWidth}
-          >
+        <DesktopNavRail ref={desktopNavRailRef} $isVisible={isWorkChromeVisible}>
+          <DesktopNavViewport $naturalWidth={desktopNavNaturalWidth}>
             <DesktopNavStrip
-              ref={desktopNavTrackRef}
               data-testid='work-nav-desktop'
+              style={{
+                '--work-desktop-nav-natural-width': `${desktopNavNaturalWidth}px`,
+                '--work-desktop-nav-scale': desktopNavScale,
+              }}
             >
-              {desktopNavItems.map(
-                ({ caseStudy, itemIndex, visualIndex, isDuplicate }) =>
-                  renderNavButton({
-                    caseStudy,
-                    itemIndex,
-                    visualIndex,
-                    isCurrent: visualIndex === desktopNavVisualIndex,
-                    isAccessibleCurrent: !isDuplicate && itemIndex === index,
-                    isDuplicate,
-                    handleSelect: handleNavButtonSelect,
-                    keyPrefix: `desktop-${visualIndex}`,
-                  }),
+              {caseStudies.map((caseStudy, itemIndex) =>
+                renderNavButton({
+                  caseStudy,
+                  itemIndex,
+                  isCurrent: itemIndex === index,
+                  isAccessibleCurrent: itemIndex === index,
+                  handleSelect: handleNavButtonSelect,
+                  keyPrefix: 'desktop',
+                }),
               )}
             </DesktopNavStrip>
           </DesktopNavViewport>

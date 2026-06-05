@@ -242,6 +242,12 @@ describe('WorkPage', () => {
     Array.from(document.querySelectorAll('style'))
       .map((styleElement) => styleElement.textContent)
       .join('\n')
+  const getDesktopNavNaturalWidth = () =>
+    caseStudies.reduce(
+      (sum, study) => sum + resolveNavButtonLayout(study.navButton).width,
+      0,
+    ) +
+    Math.max(0, caseStudies.length - 1) * 24
   const hasClassRule = (className, declarations) =>
     getInjectedStyles().includes(`.${className}{${declarations}}`)
   const hasInjectedAnimationRule = (element) =>
@@ -378,14 +384,39 @@ describe('WorkPage', () => {
     renderWorkPage()
 
     const buttons = within(getDesktopNav()).getAllByRole('button')
+    const domButtons = Array.from(getDesktopNav().querySelectorAll('button'))
 
     expect(buttons).toHaveLength(caseStudies.length)
+    expect(domButtons).toHaveLength(caseStudies.length)
     expect(buttons.map((button) => button.getAttribute('aria-label'))).toEqual(
       caseStudies.map((study) => `Show ${study.name}`),
+    )
+    expect(buttons.every((button) => !button.hasAttribute('aria-hidden'))).toBe(
+      true,
     )
     expect(buttons.map((button) => button.dataset.workExample)).toEqual(
       caseStudies.map((study) => study.id),
     )
+  })
+
+  it('sizes the finite desktop nav strip without a draggable overflow window', () => {
+    renderWorkPage()
+
+    const desktopNav = getDesktopNav()
+    const styles = normalizeCssFunction(getInjectedStyles())
+
+    expect(desktopNav.style.getPropertyValue('--work-desktop-nav-scale')).toBe(
+      '1',
+    )
+    expect(
+      desktopNav.style.getPropertyValue('--work-desktop-nav-natural-width'),
+    ).toBe(`${getDesktopNavNaturalWidth()}px`)
+    expect(styles).toContain('overflow:visible')
+    expect(styles).toContain(
+      'transform:scale(var(--work-desktop-nav-scale))',
+    )
+    expect(styles).not.toContain('cursor:grab')
+    expect(styles).not.toContain('cursor:grabbing')
   })
 
   it('exposes the active case study id on work copy and hero panes', async () => {
@@ -928,7 +959,6 @@ describe('WorkPage', () => {
 
     const firstStudy = caseStudies[0]
     const lastStudy = caseStudies.at(-1)
-    const initialNavTransform = getComputedStyle(getDesktopNav()).transform
 
     await selectDesktopStudy(lastStudy)
 
@@ -937,20 +967,11 @@ describe('WorkPage', () => {
       lastStudy.id,
     )
 
-    const lastStudyNavTransform = getComputedStyle(getDesktopNav()).transform
-
-    expect(lastStudyNavTransform).not.toBe(initialNavTransform)
-
     fireEvent.click(
       screen.getByRole('button', { name: /show next work item/i }),
     )
 
     await waitForActiveStudy(firstStudy.id)
-    await waitFor(() => {
-      expect(getComputedStyle(getDesktopNav()).transform).not.toBe(
-        initialNavTransform,
-      )
-    })
 
     expect(getActiveStudyPane()).toHaveAttribute(
       'data-work-example',
@@ -965,34 +986,34 @@ describe('WorkPage', () => {
     const currentNavButton = getDesktopNav().querySelector('[aria-current="true"]')
 
     expect(currentNavButton).toHaveAttribute('data-work-example', firstStudy.id)
-    expect(currentNavButton.previousElementSibling).toHaveAttribute(
-      'data-work-example',
-      lastStudy.id,
-    )
+    expect(currentNavButton.previousElementSibling).toBeNull()
   })
 
-  it('slides the desktop nav track when the active item moves beyond the first eight buttons', async () => {
+  it('keeps the finite desktop nav strip stationary when selecting later items', async () => {
     renderWorkPage()
 
     const desktopNav = getDesktopNav()
     const initialTransform = getComputedStyle(desktopNav).transform
-    const firstStudyBeyondInitialWindow = caseStudies[8]
+    const laterStudy = caseStudies[8]
 
-    expect(firstStudyBeyondInitialWindow).toBeDefined()
+    expect(laterStudy).toBeDefined()
 
     fireEvent.click(
       within(desktopNav).getByRole('button', {
-        name: `Show ${firstStudyBeyondInitialWindow.name}`,
+        name: `Show ${laterStudy.name}`,
       }),
     )
 
-    await waitFor(() => {
-      expect(getComputedStyle(desktopNav).transform).not.toBe(initialTransform)
-    })
-    await waitForActiveStudy(firstStudyBeyondInitialWindow.id)
+    await waitForActiveStudy(laterStudy.id)
+    expect(getComputedStyle(desktopNav).transform).toBe(initialTransform)
+    expect(desktopNav.querySelectorAll('[aria-current="true"]')).toHaveLength(1)
+    expect(desktopNav.querySelector('[aria-current="true"]')).toHaveAttribute(
+      'data-work-example',
+      laterStudy.id,
+    )
     expect(
       within(getActiveStudyPane()).getByRole('heading', {
-        name: firstStudyBeyondInitialWindow.name,
+        name: laterStudy.name,
       }),
     ).toBeInTheDocument()
   })
