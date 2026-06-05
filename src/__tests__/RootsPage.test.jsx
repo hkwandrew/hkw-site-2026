@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, fireEvent, render, screen, withTheme } from '@/__tests__/testUtils'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { PageSceneTransitionProvider } from '@/app/landscape/pageSceneTransition'
+import Header from '@/app/layout/Header'
 import RootsPage from '@/routes/roots/RootsPage'
 import ROOTS_PORTFOLIO_ITEMS from '@/routes/roots/rootsPortfolio'
 import { ROOTS_SCENE_TRANSITION_DURATION_MS } from '@/routes/roots/useRootsPageTransition'
@@ -10,6 +11,7 @@ import { convertCssPxToViewportUnit } from '@/styles/viewportUnits'
 const originalMatchMedia = window.matchMedia
 const originalRequestAnimationFrame = window.requestAnimationFrame
 const originalCancelAnimationFrame = window.cancelAnimationFrame
+const originalResizeObserver = window.ResizeObserver
 const ROOTS_PORTFOLIO_SLIDE_FADE_DURATION_MS = 180
 
 const createMatchMedia = (matches) =>
@@ -80,6 +82,47 @@ const renderRootsRoute = ({
   }
 }
 
+const renderRootsRouteWithHeader = () => {
+  const transitionSceneToPath = vi.fn()
+  const rootsElement = withTheme(
+    <PageSceneTransitionProvider value={{ transitionSceneToPath }}>
+      <Header contentPathname='/roots' navPathname='/work' />
+      <RootsPage />
+    </PageSceneTransitionProvider>,
+  )
+  const router = createMemoryRouter(
+    [
+      {
+        path: '/roots/:portfolioSlug?',
+        element: rootsElement,
+      },
+      {
+        path: '/about',
+        element: <div>About page</div>,
+      },
+      {
+        path: '/services',
+        element: <div>Services page</div>,
+      },
+      {
+        path: '/work',
+        element: <div>Work page</div>,
+      },
+      {
+        path: '/contact',
+        element: <div>Contact page</div>,
+      },
+    ],
+    { initialEntries: ['/roots'] },
+  )
+
+  return {
+    router,
+    transitionSceneToPath,
+    ...render(<RouterProvider router={router} />),
+  }
+}
+
 const renderRootsRouteFromHome = () => {
   const transitionSceneToPath = vi.fn()
   const router = createMemoryRouter(
@@ -115,6 +158,11 @@ describe('RootsPage', () => {
   beforeEach(() => {
     vi.useFakeTimers()
     window.matchMedia = createMatchMedia(false)
+    window.ResizeObserver = class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    }
   })
 
   afterEach(() => {
@@ -122,36 +170,45 @@ describe('RootsPage', () => {
     window.matchMedia = originalMatchMedia
     window.requestAnimationFrame = originalRequestAnimationFrame
     window.cancelAnimationFrame = originalCancelAnimationFrame
+    window.ResizeObserver = originalResizeObserver
   })
 
-  it('waits for the exit transition before navigating home', async () => {
-    const { router, transitionSceneToPath } = renderRootsRoute()
+  it.each([
+    ['About', '/about'],
+    ['Services', '/services'],
+    ['Work', '/work'],
+    ['Contact', '/contact'],
+  ])(
+    'waits for the exit transition before navigating to %s from the roots header',
+    async (linkLabel, expectedPath) => {
+      const { router, transitionSceneToPath } = renderRootsRouteWithHeader()
 
-    fireEvent.click(screen.getByRole('button', { name: /return to home/i }))
+      fireEvent.click(screen.getByRole('link', { name: linkLabel }))
 
-    expect(router.state.location.pathname).toBe('/roots')
-    expect(transitionSceneToPath).toHaveBeenCalledWith('/')
+      expect(router.state.location.pathname).toBe('/roots')
+      expect(transitionSceneToPath).toHaveBeenCalledWith(expectedPath)
 
-    act(() => {
-      vi.advanceTimersByTime(ROOTS_SCENE_TRANSITION_DURATION_MS)
-    })
+      act(() => {
+        vi.advanceTimersByTime(ROOTS_SCENE_TRANSITION_DURATION_MS)
+      })
 
-    await vi.waitFor(() => {
-      expect(router.state.location.pathname).toBe('/')
-    })
-  })
+      await vi.waitFor(() => {
+        expect(router.state.location.pathname).toBe(expectedPath)
+      })
+    },
+  )
 
-  it('navigates home immediately when reduced motion is preferred', async () => {
+  it('navigates immediately from roots when reduced motion is preferred', async () => {
     window.matchMedia = createMatchMedia(true)
 
-    const { router, transitionSceneToPath } = renderRootsRoute()
+    const { router, transitionSceneToPath } = renderRootsRouteWithHeader()
 
-    fireEvent.click(screen.getByRole('button', { name: /return to home/i }))
+    fireEvent.click(screen.getByRole('link', { name: 'About' }))
 
-    expect(transitionSceneToPath).toHaveBeenCalledWith('/')
+    expect(transitionSceneToPath).toHaveBeenCalledWith('/about')
 
     await vi.waitFor(() => {
-      expect(router.state.location.pathname).toBe('/')
+      expect(router.state.location.pathname).toBe('/about')
     })
   })
 
@@ -166,9 +223,9 @@ describe('RootsPage', () => {
 
     renderRootsRoute()
 
-    const sceneContent = screen
-      .getByRole('button', { name: /return to home/i })
-      .parentElement
+    const sceneContent = screen.getByRole('button', {
+      name: /open celdf/i,
+    }).parentElement
 
     expect(getComputedStyle(sceneContent).opacity).toBe('0')
     expect(getComputedStyle(sceneContent).transform).toContain(
@@ -276,11 +333,21 @@ describe('RootsPage', () => {
   })
 
   it('opens a portfolio dialog from a frame button and restores focus on close', async () => {
+    const frameCallbacks = []
+
+    window.requestAnimationFrame = vi.fn((callback) => {
+      frameCallbacks.push(callback)
+      return frameCallbacks.length
+    })
+    window.cancelAnimationFrame = vi.fn()
+
     renderRootsRoute()
 
     const trigger = screen.getByRole('button', { name: /open celdf/i })
 
-    fireEvent.click(trigger)
+    act(() => {
+      fireEvent.click(trigger)
+    })
 
     const dialog = screen.getByRole('dialog', { name: /celdf/i })
     const closeButton = screen.getByRole('button', { name: /close/i })
@@ -290,10 +357,19 @@ describe('RootsPage', () => {
     expect(dialog).toHaveAttribute('data-roots-example-region', 'dialog')
     expect(closeButton).toHaveFocus()
 
-    fireEvent.click(closeButton)
+    act(() => {
+      fireEvent.click(closeButton)
+    })
 
     await vi.waitFor(() => {
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    })
+
+    act(() => {
+      frameCallbacks.splice(0).forEach((callback) => callback())
+    })
+
+    await vi.waitFor(() => {
       expect(trigger).toHaveFocus()
     })
   })
@@ -435,8 +511,8 @@ describe('RootsPage', () => {
     expect(item).toMatchObject({
       title: 'Women of Color Candidates',
       desktopFrame: {
-        left: 1267.75,
-        top: 557.01,
+        left: 1275.9,
+        top: 601.03,
         width: 143.189,
       },
       artworkTop: 68.7,
@@ -478,6 +554,92 @@ describe('RootsPage', () => {
       maxInlineSize: 'none',
       maxBlockSize: 'none',
     })
+  })
+
+  it('keeps the full desktop frame map aligned with the header-shifted Figma layout', () => {
+    expect(
+      ROOTS_PORTFOLIO_ITEMS.map(({ id, desktopFrame }) => ({
+        id,
+        desktopFrame,
+      })),
+    ).toEqual([
+      {
+        id: 'celdf',
+        desktopFrame: { left: 245.97, top: 156.6, width: 195.145 },
+      },
+      {
+        id: 'ewi',
+        desktopFrame: { left: 61.54, top: 233.6, width: 158.482 },
+      },
+      {
+        id: 'racial-justice',
+        desktopFrame: { left: 725.19, top: 179.75, width: 143.189 },
+      },
+      {
+        id: 'waters-meet',
+        desktopFrame: { left: 925.11, top: 208.78, width: 206 },
+      },
+      {
+        id: 'community-development-initiative',
+        desktopFrame: { left: 74.61, top: 835.17, width: 150.266 },
+      },
+      {
+        id: 'spokane-community-against-racism',
+        desktopFrame: { left: 288.98, top: 537.6, width: 183.207 },
+      },
+      {
+        id: 'asians-for-collective-liberation',
+        desktopFrame: { left: 73.72, top: 443.76, width: 167.643 },
+      },
+      {
+        id: 'justice-not-jails',
+        desktopFrame: { left: 854.94, top: 404, width: 138.443 },
+      },
+      {
+        id: 'citizen-nine26',
+        desktopFrame: { left: 495.54, top: 177.8, width: 158.933 },
+      },
+      {
+        id: 'meals-on-wheels',
+        desktopFrame: { left: 1152.03, top: 327.33, width: 223.859 },
+      },
+      {
+        id: 'community-building',
+        desktopFrame: { left: 835.02, top: 590.02, width: 183.638 },
+      },
+      {
+        id: 'fyre',
+        desktopFrame: { left: 1061.44, top: 515.51, width: 168.953 },
+      },
+      {
+        id: 'women-of-color-candidates',
+        desktopFrame: { left: 1275.9, top: 601.03, width: 143.189 },
+      },
+      {
+        id: 'terrain',
+        desktopFrame: { left: 23.01, top: 661.02, width: 195.541 },
+      },
+      {
+        id: 'spokane-arts',
+        desktopFrame: { left: 270.02, top: 787.63, width: 175.853 },
+      },
+      {
+        id: 'marthas-kitchen',
+        desktopFrame: { left: 679.08, top: 815.7, width: 227.826 },
+      },
+      {
+        id: 'pjals',
+        desktopFrame: { left: 949.04, top: 747.12, width: 166.613 },
+      },
+      {
+        id: 'apic-washington',
+        desktopFrame: { left: 280.99, top: 326.69, width: 156.042 },
+      },
+      {
+        id: 'community-whistle',
+        desktopFrame: { left: 500.16, top: 752.01, width: 139.814 },
+      },
+    ])
   })
 
   it('does not cap configured artwork dimensions to the stage width', () => {
@@ -653,9 +815,6 @@ describe('RootsPage', () => {
     expect(frameButtons).toHaveLength(ROOTS_PORTFOLIO_ITEMS.length)
     expect(ROOTS_PORTFOLIO_ITEMS.length).toBeGreaterThan(6)
     expect(document.querySelector('[data-roots-welcome-sign]')).not.toBeNull()
-    expect(
-      screen.getByRole('button', { name: /return to home/i }),
-    ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /open terrain/i })).toHaveAttribute(
       'data-roots-example',
       'terrain',

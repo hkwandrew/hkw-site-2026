@@ -1,8 +1,6 @@
 export default function MealsOnWheels() {
   return (
     <svg
-      width='224'
-      height='138'
       viewBox='0 0 224 138'
       fill='none'
       xmlns='http://www.w3.org/2000/svg'

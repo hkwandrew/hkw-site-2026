@@ -113,6 +113,29 @@ describe('Header', () => {
     ).toBe('#FA9C38')
   })
 
+  it('renders the roots desktop header with the roots nav palette and Work active', () => {
+    const { container } = renderHeader(['/roots'], {
+      contentPathname: '/roots',
+    })
+
+    const logoLink = container.querySelector('header > div a[href="/"]')
+    const navContent = container.querySelector('nav > div')
+
+    expect(screen.queryByText('Non-profit Roots')).not.toBeInTheDocument()
+    expect(screen.getByRole('navigation')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Work' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    )
+    expect(
+      getComputedStyle(logoLink).getPropertyValue('--fill-0').trim(),
+    ).toBe('#FFFFFF')
+    expect(navContent).toHaveAttribute('data-nav-scheme', 'roots')
+    expect(getComputedStyle(navContent).backgroundColor).toBe(
+      'rgb(28, 45, 56)',
+    )
+  })
+
   it('keeps the services logo color inside the SVG instead of the link box', () => {
     const { container } = renderHeader(['/services'], {
       contentPathname: '/services',
@@ -229,7 +252,7 @@ describe('Header', () => {
     )
   })
 
-  it('focuses the first mobile nav link when the menu opens', () => {
+  it('focuses the first mobile drawer link when the menu opens', () => {
     setViewportSize(375, 667)
     window.requestAnimationFrame = vi.fn((callback) => {
       callback(0)
@@ -242,7 +265,7 @@ describe('Header', () => {
     expect(dialog).toBeVisible()
     expect(within(dialog).getByRole('button', { name: 'Close navigation menu' })).toBeVisible()
     expect(menuButton).toHaveAttribute('aria-hidden', 'true')
-    expect(within(dialog).getByRole('link', { name: 'About' })).toHaveFocus()
+    expect(within(dialog).getAllByRole('link')[0]).toHaveFocus()
   })
 
   it('focuses the active mobile nav link when the current page is in the drawer', () => {
@@ -268,7 +291,10 @@ describe('Header', () => {
     })
     const { dialog } = openMobileNavigation()
     const drawerStyles = getComputedStyle(dialog)
-    const linkLabels = within(dialog)
+    const primaryNav = within(dialog).getByRole('navigation', {
+      name: 'Primary mobile navigation',
+    })
+    const linkLabels = within(primaryNav)
       .getAllByRole('link')
       .map((link) => link.textContent)
 

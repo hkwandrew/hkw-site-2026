@@ -3,8 +3,6 @@ export default function WelcomeSign({ className }) {
     <svg
       className={className}
       data-roots-welcome-sign
-      width='310'
-      height='311'
       viewBox='0 0 310 311'
       fill='none'
       xmlns='http://www.w3.org/2000/svg'

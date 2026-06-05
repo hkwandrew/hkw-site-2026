@@ -30,8 +30,8 @@ const HOME_HOVER_POSITION_REGISTRY = Object.freeze({
     clipTop: 22,
   }),
   [HOME_HOVER_REGION.treeMountain]: Object.freeze({
-    x: 1201.222193,
-    y: 233.24,
+    x: 1182.222193,
+    y: 140.24,
   }),
 })
 

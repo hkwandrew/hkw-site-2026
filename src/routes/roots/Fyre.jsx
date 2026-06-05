@@ -1,12 +1,6 @@
 export default function Fyre() {
   return (
-    <svg
-      width='169'
-      height='202'
-      viewBox='0 0 169 202'
-      fill='none'
-      xmlns='http://www.w3.org/2000/svg'
-    >
+    <svg viewBox='0 0 169 202' fill='none' xmlns='http://www.w3.org/2000/svg'>
       <g clipPath='url(#clip0_5975_11593)'>
         <g clipPath='url(#clip1_5975_11593)'>
           <rect

@@ -111,6 +111,10 @@ const RootsRouteProbe = () => (
   <div data-testid='roots-route-probe'>Roots route body</div>
 )
 
+const PolicyRouteProbe = () => (
+  <div data-testid='policy-route-probe'>Policy route body</div>
+)
+
 const renderLayoutRoute = (initialPath) => {
   const router = createMemoryRouter(
     [
@@ -137,6 +141,10 @@ const renderLayoutRoute = (initialPath) => {
           {
             path: 'roots/:portfolioSlug?',
             element: <RootsRouteProbe />,
+          },
+          {
+            path: 'policy',
+            element: <PolicyRouteProbe />,
           },
         ],
       },
@@ -276,11 +284,21 @@ describe('Layout shared scene links', () => {
     )
   })
 
-  it('shows the roots header only for phone portrait layout', () => {
+  it('shows the roots header on desktop and phone portrait layouts', () => {
     setViewportSize(667, 375)
     const landscapeRender = renderLayoutRoute('/roots')
 
-    expect(screen.queryByRole('banner')).not.toBeInTheDocument()
+    expect(screen.getByRole('banner')).toBeInTheDocument()
+    expect(screen.getByRole('navigation')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Work' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    )
+    expect(
+      screen.queryByRole('button', {
+        name: 'Open navigation menu',
+      }),
+    ).not.toBeInTheDocument()
 
     landscapeRender.unmount()
     setViewportSize(375, 667)
@@ -424,6 +442,21 @@ describe('Layout shared scene links', () => {
     expect(router.state.location.pathname).toBe('/about')
     expect(completePendingSceneTransition).toEqual(expect.any(Function))
     expect(screen.getByText('About route body')).toBeInTheDocument()
+  })
+
+  it('mounts the policy route from home without waiting on a scene transition', async () => {
+    const { router } = renderLayoutRoute('/')
+
+    expect(screen.getByText('Home route body')).toBeInTheDocument()
+
+    await act(async () => {
+      await router.navigate('/policy')
+    })
+
+    expect(router.state.location.pathname).toBe('/policy')
+    expect(sharedSceneRuntimeMocks.animateSharedSceneTransition).not.toHaveBeenCalled()
+    expect(completePendingSceneTransition).toBeNull()
+    expect(screen.getByTestId('policy-route-probe')).toBeInTheDocument()
   })
 
   it('keeps the header mounted while the route body stays hidden', async () => {

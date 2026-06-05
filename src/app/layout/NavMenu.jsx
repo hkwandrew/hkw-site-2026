@@ -16,7 +16,8 @@ const Content = styled.div`
   position: relative;
   display: flex;
   align-items: center;
-  background-color: ${({ theme }) => theme.colors.orange.dark};
+  background-color: ${({ $isRootsPage, theme }) =>
+    $isRootsPage ? theme.colors.blue.dark : theme.colors.orange.dark};
   border-radius: ${({ theme }) => theme.components.navTabs.borderRadius};
 
   --pill-x: 0px;
@@ -96,7 +97,8 @@ const Pill = styled.div`
   width: var(--pill-w);
   height: var(--pill-h);
 
-  background-color: ${({ theme }) => theme.colors.orange.base};
+  background-color: ${({ $isRootsPage, theme }) =>
+    $isRootsPage ? theme.colors.blue.medDark : theme.colors.orange.base};
   border-radius: 9999px;
 
   opacity: var(--pill-o);
@@ -130,7 +132,8 @@ const StyledNavLink = styled(Link)`
   ${applyTypography('navButton')}
   border-radius: ${({ theme }) => theme.components.navTabs.borderRadius};
 
-  color: ${({ theme }) => theme.colors.yellow.light};
+  color: ${({ $isRootsPage, theme }) =>
+    $isRootsPage ? theme.colors.white : theme.colors.yellow.light};
 
   transition:
     font-variation-settings 0.45s ease,
@@ -181,7 +184,8 @@ const StyledNavLink = styled(Link)`
   &:not([aria-current='page']):hover,
   &:not([aria-current='page']):focus-visible {
     border-radius: ${({ theme }) => theme.components.navTabs.borderRadius};
-    background-color: ${({ theme }) => theme.colors.orange.base};
+    background-color: ${({ $isRootsPage, theme }) =>
+      $isRootsPage ? theme.colors.blue.medDark : theme.colors.orange.base};
     color: ${({ theme }) => theme.colors.white};
 
     font-weight: ${({ theme }) => theme.typography.navButton.activeWeight};
@@ -206,6 +210,8 @@ const ContactReveal = styled.div`
   opacity: 1;
   pointer-events: none;
   z-index: 0;
+  ${'' /* background-color: ${({ $isRootsPage, theme }) =>
+    $isRootsPage ? theme.colors.blue.dark : theme.colors.orange.dark}; */}
   border-radius: 0 ${({ theme }) => theme.components.navTabs.borderRadius}
     ${({ theme }) => theme.components.navTabs.borderRadius} 0;
   transform: translateX(0);
@@ -223,7 +229,8 @@ const ContactRevealInner = styled.div`
   width: var(--contact-pill-size);
   transform: translateX(-100%);
   opacity: 0;
-  background-color: ${({ theme }) => theme.colors.orange.dark};
+  background-color: ${({ $isRootsPage, theme }) =>
+    $isRootsPage ? theme.colors.blue.dark : theme.colors.orange.dark};
   border-radius: 0 ${({ theme }) => theme.components.navTabs.borderRadius}
     ${({ theme }) => theme.components.navTabs.borderRadius} 0;
   transition: -0.21s transform 0.42s ease;
@@ -242,7 +249,8 @@ const ContactNavLink = styled(StyledNavLink)`
   }
 
   &[aria-current='page'] {
-    background-color: ${({ theme }) => theme.colors.orange.base};
+    background-color: ${({ $isRootsPage, theme }) =>
+      $isRootsPage ? theme.colors.blue.medDark : theme.colors.orange.base};
   }
 `
 
@@ -253,7 +261,7 @@ const ContactIcon = styled.svg`
   fill: currentColor;
 `
 
-const NavMenu = ({ activePathname }) => {
+const NavMenu = ({ activePathname, isRootsPage = false }) => {
   const location = useLocation()
   const { transitionSceneToPath } = usePageSceneTransition()
   const activePath = getRoutePathForPath(activePathname ?? location.pathname)
@@ -372,6 +380,8 @@ const NavMenu = ({ activePathname }) => {
     <nav>
       <Content
         ref={contentRef}
+        $isRootsPage={isRootsPage}
+        data-nav-scheme={isRootsPage ? 'roots' : 'default'}
         data-has-contact-reveal={
           CONTACT_NAV_ITEM && !isContactActive ? 'true' : undefined
         }
@@ -379,12 +389,13 @@ const NavMenu = ({ activePathname }) => {
         onFocusCapture={() => setIsClickCollapsed(false)}
         onPointerLeave={() => setIsClickCollapsed(false)}
       >
-        <Pill />
+        <Pill $isRootsPage={isRootsPage} />
         <Items ref={menuRef}>
           {PRIMARY_NAV_ITEMS.map(({ label, path }, index) => (
             <Item key={path}>
               <StyledNavLink
                 to={path}
+                $isRootsPage={isRootsPage}
                 data-text={label}
                 aria-current={activePath === path ? 'page' : undefined}
                 onClick={(event) => handleNavLinkClick(event, path)}
@@ -398,10 +409,14 @@ const NavMenu = ({ activePathname }) => {
           ))}
         </Items>
         {CONTACT_NAV_ITEM && !isContactActive ? (
-          <ContactReveal data-contact-reveal>
-            <ContactRevealInner data-contact-reveal-inner>
+          <ContactReveal $isRootsPage={isRootsPage} data-contact-reveal>
+            <ContactRevealInner
+              $isRootsPage={isRootsPage}
+              data-contact-reveal-inner
+            >
               <ContactNavLink
                 to={CONTACT_NAV_ITEM.path}
+                $isRootsPage={isRootsPage}
                 aria-label={CONTACT_NAV_ITEM.label}
                 data-text=''
                 aria-current={

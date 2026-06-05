@@ -8,10 +8,10 @@ const originalCancelAnimationFrame = window.cancelAnimationFrame
 const originalResizeObserver = window.ResizeObserver
 const originalGetBoundingClientRect = HTMLElement.prototype.getBoundingClientRect
 
-const renderNavMenu = (activePathname) =>
+const renderNavMenu = (activePathname, props = {}) =>
   render(
     <MemoryRouter initialEntries={['/about']}>
-      <NavMenu activePathname={activePathname} />
+      <NavMenu activePathname={activePathname} {...props} />
     </MemoryRouter>,
   )
 
@@ -140,6 +140,32 @@ describe('NavMenu', () => {
     expect(navContent?.style.getPropertyValue('--pill-w')).toBe('90px')
     expect(navContent?.style.getPropertyValue('--pill-h')).toBe('62px')
     expect(navContent?.style.getPropertyValue('--pill-o')).toBe('1')
+  })
+
+  it('uses the roots nav colors while keeping Work active', () => {
+    const { container } = renderNavMenu('/work', { isRootsPage: true })
+    const navContent = container.querySelector('nav > div')
+    const pill = navContent.querySelector('div')
+    const workLink = screen.getByRole('link', { name: 'Work' })
+    const aboutLink = screen.getByRole('link', { name: 'About' })
+    const contactReveal = container.querySelector('[data-contact-reveal]')
+    const contactRevealInner = container.querySelector(
+      '[data-contact-reveal-inner]',
+    )
+
+    expect(navContent).toHaveAttribute('data-nav-scheme', 'roots')
+    expect(workLink).toHaveAttribute('aria-current', 'page')
+    expect(getComputedStyle(navContent).backgroundColor).toBe(
+      'rgb(28, 45, 56)',
+    )
+    expect(getComputedStyle(pill).backgroundColor).toBe('rgb(84, 149, 214)')
+    expect(getComputedStyle(aboutLink).color).toBe('rgb(255, 255, 255)')
+    expect(getComputedStyle(contactReveal).backgroundColor).toBe(
+      'rgb(28, 45, 56)',
+    )
+    expect(getComputedStyle(contactRevealInner).backgroundColor).toBe(
+      'rgb(28, 45, 56)',
+    )
   })
 
   it('renders Contact as a trailing reveal link outside the primary nav group', () => {

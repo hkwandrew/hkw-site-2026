@@ -1,8 +1,6 @@
 const CitizenNineTwoSix = () => {
   return (
     <svg
-      width='159'
-      height='166'
       viewBox='0 0 159 166'
       fill='none'
       xmlns='http://www.w3.org/2000/svg'

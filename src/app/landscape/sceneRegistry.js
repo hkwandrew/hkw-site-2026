@@ -63,12 +63,19 @@ export const resolveSceneTransition = (fromPath, toPath) => {
     return null
   }
 
+  const fromSceneState = fromRoute.sceneSpec?.state ?? null
+  const toSceneState = toRoute.sceneSpec?.state ?? null
+
+  if (!fromSceneState || !toSceneState || fromSceneState === toSceneState) {
+    return null
+  }
+
   return {
     transitionKey: getTransitionKey(fromPath, toPath),
     durationMs: SCENE_TRANSITION_DURATION_MS,
     fromPage: fromRoute,
     toPage: toRoute,
-    targetState: toRoute.sceneSpec?.state ?? null,
+    targetState: toSceneState,
     pathMorphByLayer: getPathMorphConfig(fromPath, toPath),
   }
 }

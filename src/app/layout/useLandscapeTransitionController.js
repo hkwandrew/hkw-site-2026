@@ -50,17 +50,12 @@ const useLandscapeTransitionController = (pathname) => {
   const [revealedContentPath, setRevealedContentPath] = useState(routePath)
   const [earlyRevealedContentPath, setEarlyRevealedContentPath] = useState(null)
   const canUseHoverRegions = canUseHomeHoverRegions(viewportComposition)
-  const isPhonePortrait =
-    viewportComposition.layout === VIEWPORT_LAYOUT.PHONE_PORTRAIT
-
   const pageKey = getPageKeyForPath(routePath)
   const isHome = routePath === '/'
   const headerContentPath = revealedContentPath
-  const headerContentRoutePath = getRoutePathForPath(headerContentPath)
   const scenePathname = pendingNavPath ?? routePath
   const headerNavPath = scenePathname
-  const shouldShowHeader =
-    headerContentRoutePath !== '/roots' || isPhonePortrait
+  const shouldShowHeader = true
   const isRouteContentRevealed =
     revealedContentPath === routePath && activeTransitionPath !== routePath
   const isAboutRouteContentEntering =

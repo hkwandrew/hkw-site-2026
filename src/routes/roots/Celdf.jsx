@@ -1,8 +1,6 @@
 const Celdf = () => {
   return (
     <svg
-      width='196'
-      height='133'
       viewBox='0 0 196 133'
       fill='none'
       xmlns='http://www.w3.org/2000/svg'

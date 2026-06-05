@@ -66,7 +66,10 @@ const StyledHeader = styled.header`
   [data-viewport-layout='phone-portrait'] & {
     align-items: center;
     gap: 16px;
-    padding: 11px 20px 0;
+    padding: 11px 20px
+      ${({ $isPolicyPage }) => ($isPolicyPage ? '11px' : '11px')};
+    background: ${({ $isPolicyPage, theme }) =>
+      $isPolicyPage ? theme.colors.yellow.light : 'transparent'};
   }
 `
 
@@ -86,7 +89,10 @@ const HKWLogo = styled(Link)`
   height: 68px;
   display: grid;
   place-items: center;
-  --fill-0: ${({ $isRootsPage, theme }) => $isRootsPage && theme.colors.white};
+  --fill-0: ${({ $isPhoneViewport, $isRootsPage, theme }) =>
+    $isRootsPage && !$isPhoneViewport
+      ? theme.colors.white
+      : theme.colors.blue.dark};
   --logo-background: ${({ $isServicesPage, $isWorkPage, theme }) =>
     $isWorkPage
       ? theme.colors.yellow.gold
@@ -149,12 +155,14 @@ const Header = ({ contentPathname, isPageLabelReady = true, navPathname }) => {
   const isRootsPage = contentPath === '/roots'
   const isHomePage = contentPath === '/'
   const isContactPage = contentPath === '/contact'
+  const isPolicyPage = contentPath === '/policy'
   const isPageLabelActive = isPageLabelReady
   const isPhoneViewport =
     viewportComposition.layout === VIEWPORT_LAYOUT.PHONE_PORTRAIT
+  const navActivePath = isRootsPage ? '/work' : activeNavPath
 
   return (
-    <StyledHeader $isRootsPage={isRootsPage}>
+    <StyledHeader $isRootsPage={isRootsPage} $isPolicyPage={isPolicyPage}>
       <BrandBlock $isServicesPage={isServicesPage}>
         <HKWLogo
           to='/'
@@ -204,9 +212,10 @@ const Header = ({ contentPathname, isPageLabelReady = true, navPathname }) => {
           isServicesPage={isServicesPage}
           isWorkPage={isWorkPage}
           isContactPage={isContactPage}
+          isPolicyPage={isPolicyPage}
         />
       ) : (
-        <NavMenu activePathname={activeNavPath} />
+        <NavMenu activePathname={navActivePath} isRootsPage={isRootsPage} />
       )}
     </StyledHeader>
   )

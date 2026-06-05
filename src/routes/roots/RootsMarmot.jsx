@@ -161,8 +161,6 @@ const RootsMarmot = () => {
   return (
     <Marmot
       data-roots-marmot=''
-      width='404'
-      height='262'
       viewBox='0 0 404 262'
       fill='none'
       xmlns='http://www.w3.org/2000/svg'

@@ -349,7 +349,7 @@ const BackButton = styled(RootsUpButton)`
 const Welcome = styled(WelcomeSign)`
   position: absolute;
   left: ${(500.64 / DESKTOP_SCENE_WIDTH) * 100}%;
-  top: ${(382.35 / DESKTOP_SCENE_HEIGHT) * 100}%;
+  top: ${(388.35 / DESKTOP_SCENE_HEIGHT) * 100}%;
   width: ${(309.255 / DESKTOP_SCENE_WIDTH) * 100}%;
   height: auto;
   display: block;
@@ -862,6 +862,7 @@ export default function RootsScene({ sceneRef }) {
               </DesktopFrameButton>
             )
           })}
+
         </DesktopScene>
       )}
 

@@ -46,8 +46,9 @@ const ToggleButton = styled.button`
     $isHomePage,
     $isServicesPage,
     $isContactPage,
+    $isPolicyPage,
   }) =>
-    $isRootsPage || $isHomePage || $isContactPage
+    $isRootsPage || $isHomePage || $isContactPage || $isPolicyPage
       ? '0 0'
       : $isServicesPage
         ? '0 -24px'
@@ -222,6 +223,7 @@ const MobileNavMenu = ({
   isServicesPage = false,
   isWorkPage = false,
   isContactPage = false,
+  isPolicyPage = false,
 }) => {
   const location = useLocation()
   const { transitionSceneToPath } = usePageSceneTransition()
@@ -349,6 +351,7 @@ const MobileNavMenu = ({
         $isServicesPage={isServicesPage}
         $isWorkPage={isWorkPage}
         $isContactPage={isContactPage}
+        $isPolicyPage={isPolicyPage}
         onClick={() => setIsOpen((value) => !value)}
       >
         <svg
