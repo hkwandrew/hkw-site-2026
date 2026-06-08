@@ -1,27 +1,42 @@
 import styled from 'styled-components'
 import PillButton from '@/shared/ui/PillButton'
 import { applyTypography } from '@/shared/ui/Typography'
-
-const PHONE_BREAKPOINT = ({ theme }) => theme.breakpoints.mobile
+import { MEDIA_QUERIES } from '@/styles/breakpoints'
+import {
+  CONTENT_FRAME_HEIGHT_CUSTOM_PROPERTY,
+  CONTENT_FRAME_TOP_CUSTOM_PROPERTY,
+  CONTENT_FRAME_WIDTH_CUSTOM_PROPERTY,
+} from '@/styles/viewportUnits'
 
 export const Page = styled.section`
   position: absolute;
-  top: 0;
-  width: 100%;
-  min-height: 100dvh;
-  overflow-x: hidden;
+  top: var(${CONTENT_FRAME_TOP_CUSTOM_PROPERTY}, 0);
+  right: 0;
+  left: 0;
+  width: var(${CONTENT_FRAME_WIDTH_CUSTOM_PROPERTY}, 100%);
+  height: var(${CONTENT_FRAME_HEIGHT_CUSTOM_PROPERTY}, 100%);
+  margin-inline: auto;
+  ${'' /* overflow-x: hidden; */}
   overflow-y: auto;
+
+  @media ${MEDIA_QUERIES.mobilePortrait} {
+    top: 0;
+    width: 100%;
+    height: auto;
+    min-height: 100dvh;
+  }
 `
 
 export const Stage = styled.section`
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100dvh;
+  min-height: 100%;
 
-  @media (max-width: ${PHONE_BREAKPOINT}) {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     display: block;
     position: relative;
+    min-height: 100dvh;
     padding: 42px 20px 28px;
   }
 `
@@ -34,7 +49,7 @@ export const Panel = styled.div`
   width: 365px;
   overflow: visible;
 
-  @media (max-width: ${PHONE_BREAKPOINT}) {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     z-index: 1;
     top: 24px;
     width: 100%;
@@ -48,7 +63,7 @@ export const CloseWrapper = styled.div`
   left: 50%;
   transform: translateX(-50%);
 
-  @media (max-width: ${PHONE_BREAKPOINT}) {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     display: none;
   }
 `
@@ -66,7 +81,7 @@ export const Title = styled.h1`
   font-size: 40px;
   letter-spacing: unset;
 
-  @media (max-width: ${PHONE_BREAKPOINT}) {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     ${applyTypography('pillButton')}
     color: ${({ theme }) => theme.colors.yellow.light};
     text-box: unset !important;
@@ -83,7 +98,7 @@ export const Subtitle = styled.p`
     'wght' ${({ theme }) => theme.font.weight.regular};
   line-height: calc(29 / 16);
 
-  @media (max-width: ${PHONE_BREAKPOINT}) {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     margin: 6px 0 0;
     font-size: 14px;
     line-height: 1.42857;
@@ -99,7 +114,7 @@ export const ContactForm = styled.form`
   width: 365px;
   margin-top: 48px;
 
-  @media (max-width: ${PHONE_BREAKPOINT}) {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     --hkw-field-density: compact;
 
     gap: 0;
@@ -113,7 +128,7 @@ export const SubmitRow = styled.div`
   justify-content: center;
   margin-top: 16px;
 
-  @media (max-width: ${PHONE_BREAKPOINT}) {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     margin-top: 12px;
   }
 `
@@ -131,7 +146,7 @@ export const SubmitButton = styled(PillButton)`
     opacity: 0.72;
   }
 
-  @media (max-width: ${PHONE_BREAKPOINT}) {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     font-size: 16px;
   }
 `
@@ -156,7 +171,7 @@ export const RequiredNote = styled.p`
   text-align: center;
   ${applyTypography('label')}
 
-  @media (max-width: ${PHONE_BREAKPOINT}) {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     margin-top: 2px;
     font-size: 14px;
     line-height: 24px;

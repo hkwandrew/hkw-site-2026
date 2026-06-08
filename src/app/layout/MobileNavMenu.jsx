@@ -6,6 +6,7 @@ import {
   PHONE_NAV_ITEMS,
   getRoutePathForPath,
 } from '@/app/router/routeRegistry'
+import { MEDIA_QUERIES } from '@/styles/breakpoints'
 import {
   canStartSceneTransitionFromClick,
   usePageSceneTransition,
@@ -126,7 +127,7 @@ const HKWLogo = styled(Link)`
   background-color: transparent;
   border-radius: 8px;
 
-  [data-viewport-layout='phone-portrait'] & {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     width: 76px;
     height: 38px;
     border-radius: 2px;

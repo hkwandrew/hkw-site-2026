@@ -1,8 +1,18 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
 import { useLocation, useNavigate, useParams } from 'react-router'
+import {
+  VIEWPORT_LAYOUT,
+  useViewportComposition,
+} from '@/app/layout/viewportComposition'
 import useCarousel from '@/shared/hooks/useCarousel'
 import usePageActive from '@/shared/hooks/usePageActive'
+import { BREAKPOINT_WIDTHS, MEDIA_QUERIES } from '@/styles/breakpoints'
+import {
+  CONTENT_FRAME_HEIGHT_CUSTOM_PROPERTY,
+  CONTENT_FRAME_TOP_CUSTOM_PROPERTY,
+  CONTENT_FRAME_WIDTH_CUSTOM_PROPERTY,
+} from '@/styles/viewportUnits'
 import ROOTS_PORTFOLIO_ITEMS from './rootsPortfolio'
 import BookShelf from './BookShelf'
 import RootsPortfolioSlider from './RootsPortfolioSlider'
@@ -13,14 +23,8 @@ import RootsUpButton from './RootsUpButton'
 
 const DESKTOP_SCENE_WIDTH = 1440
 const DESKTOP_SCENE_HEIGHT = 1024
-const PHONE_MAX_WIDTH = 767
-const PORTRAIT_TABLET_MAX_WIDTH = 1024
-const PHONE_MEDIA_QUERY = `(max-width: ${PHONE_MAX_WIDTH}px)`
-const PORTRAIT_TABLET_MEDIA_QUERY = [
-  `(min-width: ${PHONE_MAX_WIDTH + 1}px)`,
-  `(max-width: ${PORTRAIT_TABLET_MAX_WIDTH}px)`,
-  '(orientation: portrait)',
-].join(' and ')
+const ROOTS_PORTRAIT_TABLET_MIN_WIDTH = 768
+const ROOTS_PORTRAIT_TABLET_MAX_WIDTH = BREAKPOINT_WIDTHS.mobileMax
 const ROOTS_VIEWPORT_LAYOUT = Object.freeze({
   DESKTOP: 'desktop',
   PHONE: 'phone',
@@ -119,11 +123,13 @@ const citizenStarTwinkle = keyframes`
 
 const Root = styled.section`
   position: absolute;
-  inset: 0;
-  width: 100%;
-  max-width: 1440px;
+  top: var(${CONTENT_FRAME_TOP_CUSTOM_PROPERTY}, 0);
+  right: 0;
+  left: 0;
+  width: var(${CONTENT_FRAME_WIDTH_CUSTOM_PROPERTY}, 100%);
+  max-width: none;
   margin-inline: auto;
-  height: 100dvh;
+  height: var(${CONTENT_FRAME_HEIGHT_CUSTOM_PROPERTY}, 100%);
   overflow: hidden;
   pointer-events: auto;
   transform: translate3d(0, 0, 0);
@@ -142,7 +148,7 @@ const Root = styled.section`
     transform: translate3d(0, 100%, 0);
   }
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     overflow: hidden;
   }
 
@@ -355,7 +361,7 @@ const Welcome = styled(WelcomeSign)`
   display: block;
   z-index: 0;
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     width: 50%;
   }
 `
@@ -467,7 +473,7 @@ const RootsMarmotLayer = styled.div`
     height: auto;
   }
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     right: -8px;
     bottom: -8px;
     width: min(52vw, 200px);
@@ -552,91 +558,22 @@ function SceneBackIcon() {
   )
 }
 
-const getFallbackRootsViewportLayout = () => {
-  if (typeof window === 'undefined') return ROOTS_VIEWPORT_LAYOUT.DESKTOP
+const getRootsViewportLayout = ({ layout, ratio, width = 0 }) => {
+  if (
+    width >= ROOTS_PORTRAIT_TABLET_MIN_WIDTH &&
+    width <= ROOTS_PORTRAIT_TABLET_MAX_WIDTH &&
+    ratio < 1
+  ) {
+    return ROOTS_VIEWPORT_LAYOUT.PORTRAIT_TABLET
+  }
 
-  if (window.innerWidth <= PHONE_MAX_WIDTH) {
+  if (
+    layout === VIEWPORT_LAYOUT.MOBILE_PORTRAIT
+  ) {
     return ROOTS_VIEWPORT_LAYOUT.PHONE
   }
 
-  if (
-    window.innerWidth <= PORTRAIT_TABLET_MAX_WIDTH &&
-    window.innerHeight > window.innerWidth
-  ) {
-    return ROOTS_VIEWPORT_LAYOUT.PORTRAIT_TABLET
-  }
-
   return ROOTS_VIEWPORT_LAYOUT.DESKTOP
-}
-
-const resolveRootsViewportLayout = (
-  phoneMediaQuery,
-  portraitTabletMediaQuery,
-) => {
-  if (phoneMediaQuery.matches) return ROOTS_VIEWPORT_LAYOUT.PHONE
-  if (portraitTabletMediaQuery.matches) {
-    return ROOTS_VIEWPORT_LAYOUT.PORTRAIT_TABLET
-  }
-
-  return ROOTS_VIEWPORT_LAYOUT.DESKTOP
-}
-
-const getRootsViewportLayout = () => {
-  if (
-    typeof window === 'undefined' ||
-    typeof window.matchMedia !== 'function'
-  ) {
-    return getFallbackRootsViewportLayout()
-  }
-
-  return resolveRootsViewportLayout(
-    window.matchMedia(PHONE_MEDIA_QUERY),
-    window.matchMedia(PORTRAIT_TABLET_MEDIA_QUERY),
-  )
-}
-
-function useRootsViewportLayout() {
-  const [viewportLayout, setViewportLayout] = useState(getRootsViewportLayout)
-
-  useEffect(() => {
-    if (typeof window === 'undefined') {
-      return undefined
-    }
-
-    if (typeof window.matchMedia !== 'function') {
-      const updateLayout = () => {
-        setViewportLayout(getFallbackRootsViewportLayout())
-      }
-
-      window.addEventListener('resize', updateLayout)
-
-      return () => {
-        window.removeEventListener('resize', updateLayout)
-      }
-    }
-
-    const mediaQueries = [
-      window.matchMedia(PHONE_MEDIA_QUERY),
-      window.matchMedia(PORTRAIT_TABLET_MEDIA_QUERY),
-    ]
-    const updateLayout = () => {
-      setViewportLayout(
-        resolveRootsViewportLayout(mediaQueries[0], mediaQueries[1]),
-      )
-    }
-
-    mediaQueries.forEach((mediaQuery) => {
-      mediaQuery.addEventListener('change', updateLayout)
-    })
-
-    return () => {
-      mediaQueries.forEach((mediaQuery) => {
-        mediaQuery.removeEventListener('change', updateLayout)
-      })
-    }
-  }, [])
-
-  return viewportLayout
 }
 
 export default function RootsScene({ sceneRef }) {
@@ -644,7 +581,8 @@ export default function RootsScene({ sceneRef }) {
   const location = useLocation()
   const { portfolioSlug } = useParams()
   const isActive = usePageActive()
-  const viewportLayout = useRootsViewportLayout()
+  const viewportComposition = useViewportComposition()
+  const viewportLayout = getRootsViewportLayout(viewportComposition)
   const isMobileLayout = viewportLayout !== ROOTS_VIEWPORT_LAYOUT.DESKTOP
   const isPhoneLayout = viewportLayout === ROOTS_VIEWPORT_LAYOUT.PHONE
   const triggerRefs = useRef({})
@@ -829,13 +767,6 @@ export default function RootsScene({ sceneRef }) {
         </MobileScene>
       ) : (
         <DesktopScene aria-hidden={isSliderOpen} $isActive={isActive}>
-          {/* <BackButton
-            type='button'
-            aria-label='Return to home'
-            onClick={handleReturnHome}
-            disabled={isSliderOpen}
-          /> */}
-
           <Welcome />
 
           {ROOTS_PORTFOLIO_ITEMS.map((item, itemIndex) => {
@@ -862,7 +793,6 @@ export default function RootsScene({ sceneRef }) {
               </DesktopFrameButton>
             )
           })}
-
         </DesktopScene>
       )}
 

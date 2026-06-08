@@ -19,6 +19,7 @@ import {
   MarmotCharacterWrap,
   PlaneShell,
   PlaneTrack,
+  PlaneViewport,
   ROOTS_DROP_DURATION_MS,
   StumpHoverOverlay,
   StumpTrigger,
@@ -127,11 +128,13 @@ export default function Home() {
 
   return (
     <>
-      <PlaneTrack>
-        <PlaneShell>
-          <Plane />
-        </PlaneShell>
-      </PlaneTrack>
+      <PlaneViewport data-home-plane-viewport>
+        <PlaneTrack>
+          <PlaneShell>
+            <Plane />
+          </PlaneShell>
+        </PlaneTrack>
+      </PlaneViewport>
       <ViewContainer $isActive={isActive}>
         <DesktopHome>
           <Content>

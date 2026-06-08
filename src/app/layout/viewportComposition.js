@@ -3,18 +3,12 @@ import {
   DESKTOP_VIEWPORT_HEIGHT,
   DESKTOP_VIEWPORT_WIDTH,
 } from '@/styles/viewportUnits'
+import { BREAKPOINT_WIDTHS } from '@/styles/breakpoints'
 
 export const VIEWPORT_LAYOUT = Object.freeze({
-  BASE: 'base',
-  PHONE_PORTRAIT: 'phone-portrait',
-  PHONE_LANDSCAPE: 'phone-landscape',
-  TABLET: 'tablet',
-  SHORT_DESKTOP: 'short-desktop',
+  DESKTOP_FRAME: 'desktop-frame',
+  MOBILE_PORTRAIT: 'mobile-portrait',
 })
-
-const PHONE_MAX_WIDTH = 767
-const TABLET_MAX_WIDTH = 1024
-const SHORT_DESKTOP_MAX_HEIGHT = 820
 
 const POINTER_TRAITS = Object.freeze([
   ['(pointer: coarse)', 'coarse'],
@@ -35,7 +29,7 @@ const SUBSCRIPTION_QUERIES = Object.freeze([
 const DEFAULT_VIEWPORT_COMPOSITION = Object.freeze({
   height: DESKTOP_VIEWPORT_HEIGHT,
   hover: 'unknown',
-  layout: VIEWPORT_LAYOUT.BASE,
+  layout: VIEWPORT_LAYOUT.DESKTOP_FRAME,
   pointer: 'unknown',
   ratio: DESKTOP_VIEWPORT_WIDTH / DESKTOP_VIEWPORT_HEIGHT,
   sceneViewportKey: 'base',
@@ -69,36 +63,18 @@ const getMediaTrait = (win, traits) => {
 }
 
 const getViewportLayout = ({ height, width }) => {
-  if (width <= PHONE_MAX_WIDTH && width > height) {
-    return VIEWPORT_LAYOUT.PHONE_LANDSCAPE
+  if (width <= BREAKPOINT_WIDTHS.mobileMax && width <= height) {
+    return VIEWPORT_LAYOUT.MOBILE_PORTRAIT
   }
 
-  if (width <= PHONE_MAX_WIDTH) {
-    return VIEWPORT_LAYOUT.PHONE_PORTRAIT
-  }
-
-  if (width <= TABLET_MAX_WIDTH) {
-    return VIEWPORT_LAYOUT.TABLET
-  }
-
-  if (height <= SHORT_DESKTOP_MAX_HEIGHT) {
-    return VIEWPORT_LAYOUT.SHORT_DESKTOP
-  }
-
-  return VIEWPORT_LAYOUT.BASE
+  return VIEWPORT_LAYOUT.DESKTOP_FRAME
 }
 
 export const getSceneViewportKeyForLayout = (layout) => {
   switch (layout) {
-    case VIEWPORT_LAYOUT.PHONE_PORTRAIT:
+    case VIEWPORT_LAYOUT.MOBILE_PORTRAIT:
       return 'phonePortrait'
-    case VIEWPORT_LAYOUT.PHONE_LANDSCAPE:
-      return 'phoneLandscape'
-    case VIEWPORT_LAYOUT.TABLET:
-      return 'tablet'
-    case VIEWPORT_LAYOUT.SHORT_DESKTOP:
-      return 'shortDesktop'
-    case VIEWPORT_LAYOUT.BASE:
+    case VIEWPORT_LAYOUT.DESKTOP_FRAME:
     default:
       return 'base'
   }

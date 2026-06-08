@@ -20,10 +20,7 @@ gsap.registerPlugin(MorphSVGPlugin)
 
 const SCENE_VIEWPORT_FALLBACKS = Object.freeze({
   base: ['base'],
-  phoneLandscape: ['phoneLandscape'],
   phonePortrait: ['phonePortrait', 'mobile'],
-  shortDesktop: ['shortDesktop'],
-  tablet: ['tablet'],
 })
 
 const SCENE_LAYER_SELECTORS = Object.freeze({

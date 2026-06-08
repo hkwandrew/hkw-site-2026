@@ -1,6 +1,7 @@
 import { useCallback, useLayoutEffect, useRef } from 'react'
 import gsap from 'gsap'
 import MorphSVGPlugin from 'gsap/MorphSVGPlugin'
+import { MEDIA_QUERIES } from '@/styles/breakpoints'
 import {
   ABOUT_DESIGN_FRAME,
   ABOUT_DESKTOP_CLOUDS,
@@ -15,8 +16,8 @@ import findShapeIndex from './findShapeIndex'
 
 gsap.registerPlugin(MorphSVGPlugin)
 
-const DESKTOP_SCENE_QUERY =
-  '(max-width: 767px), (prefers-reduced-motion: reduce)'
+const MOBILE_PORTRAIT_SCENE_QUERY = MEDIA_QUERIES.mobilePortrait
+const REDUCED_MOTION_SCENE_QUERY = '(prefers-reduced-motion: reduce)'
 const ABOUT_SHAPE_INDEX_DEBUG_PARAM = 'aboutShapeIndexDebug'
 const HERO_STAGE_ONE_PROGRESS = 1 / (ABOUT_HERO_CLOUD.states.length - 1)
 const ABOUT_FINAL_STAGE_START_PROGRESS =
@@ -28,23 +29,42 @@ const HERO_STAGE_ONE_VIEWBOX = ABOUT_HERO_CLOUD.viewBoxes.stageOne
   .split(' ')
   .map(Number)
 
-const buildStateProps = ({ state, toX, toY, toWidth, width }) => ({
-  x: toX(state.x),
-  y: toY(state.y),
-  width: toWidth(state.width ?? width),
-  ...(typeof state.opacity === 'number' ? { opacity: state.opacity } : {}),
-})
-
 const getFittedSceneGeometry = (sceneWidth, sceneHeight) => {
-  const scale = Math.min(
-    sceneWidth / ABOUT_DESIGN_FRAME.width,
-    sceneHeight / ABOUT_DESIGN_FRAME.height,
+  const viewportScale = sceneWidth / ABOUT_DESIGN_FRAME.width
+  const fittedWidth = Math.min(
+    sceneWidth,
+    (sceneHeight * ABOUT_DESIGN_FRAME.width) / ABOUT_DESIGN_FRAME.height,
   )
-  const fittedWidth = ABOUT_DESIGN_FRAME.width * scale
+  const aspectScale = fittedWidth / sceneWidth
 
   return {
     offsetX: Math.max((sceneWidth - fittedWidth) / 2, 0),
-    scale,
+    aspectScale,
+    viewportScale,
+  }
+}
+
+const createViewportStateConverter = (sceneWidth, sceneHeight) => {
+  const { aspectScale, offsetX, viewportScale } = getFittedSceneGeometry(
+    sceneWidth,
+    sceneHeight,
+  )
+  const convertViewportPx = (value) => value * viewportScale
+  const convertContentPx = (value) => convertViewportPx(value) * aspectScale
+
+  return {
+    contentProps: (state, fallbackWidth) => ({
+      x: offsetX + convertContentPx(state.x),
+      y: convertContentPx(state.y),
+      width: convertContentPx(state.width ?? fallbackWidth),
+      ...(typeof state.opacity === 'number' ? { opacity: state.opacity } : {}),
+    }),
+    viewportBandProps: (state, fallbackWidth) => ({
+      x: convertViewportPx(state.x),
+      y: convertContentPx(state.y),
+      width: convertViewportPx(state.width ?? fallbackWidth),
+      ...(typeof state.opacity === 'number' ? { opacity: state.opacity } : {}),
+    }),
   }
 }
 
@@ -72,6 +92,11 @@ const syncHeroViewBox = (heroSvg, progress) => {
   heroSvg.setAttribute('viewBox', buildHeroViewBox(progress))
 }
 
+const getSceneMediaQuery = (query) =>
+  typeof window.matchMedia === 'function'
+    ? window.matchMedia(query)
+    : { matches: false }
+
 const useAboutDesktopScene = () => {
   const scrollerRef = useRef(null)
   const sceneRef = useRef(null)
@@ -96,12 +121,12 @@ const useAboutDesktopScene = () => {
 
     if (!scroller || !scene) return undefined
 
-    const mediaQuery =
-      typeof window.matchMedia === 'function'
-        ? window.matchMedia(DESKTOP_SCENE_QUERY)
-        : { matches: false }
+    const mobilePortraitQuery = getSceneMediaQuery(MOBILE_PORTRAIT_SCENE_QUERY)
+    const reducedMotionQuery = getSceneMediaQuery(REDUCED_MOTION_SCENE_QUERY)
+    const shouldSkipDesktopScene = () =>
+      reducedMotionQuery.matches || mobilePortraitQuery.matches
 
-    if (mediaQuery.matches) return undefined
+    if (shouldSkipDesktopScene()) return undefined
 
     let animationFrameId = 0
     let timeline = null
@@ -122,37 +147,16 @@ const useAboutDesktopScene = () => {
       selector,
       states,
       width,
-      toX,
-      toY,
-      toWidth,
+      getStateProps,
     }) => {
       const element = scene.querySelector(selector)
 
       if (!element) return
 
-      gsap.set(
-        element,
-        buildStateProps({
-          state: states[0],
-          toX,
-          toY,
-          toWidth,
-          width,
-        }),
-      )
+      gsap.set(element, getStateProps(states[0], width))
 
       states.slice(1).forEach((state, index) => {
-        timeline.to(
-          element,
-          buildStateProps({
-            state,
-            toX,
-            toY,
-            toWidth,
-            width,
-          }),
-          index,
-        )
+        timeline.to(element, getStateProps(state, width), index)
       })
     }
 
@@ -161,13 +165,12 @@ const useAboutDesktopScene = () => {
 
       const sceneWidth = scene.clientWidth || ABOUT_DESIGN_FRAME.width
       const sceneHeight = scene.clientHeight || ABOUT_DESIGN_FRAME.height
-      const { offsetX, scale } = getFittedSceneGeometry(
+      const viewportConverter = createViewportStateConverter(
         sceneWidth,
         sceneHeight,
       )
-      const toX = (value) => offsetX + value * scale
-      const toY = (value) => value * scale
-      const toWidth = (value) => value * scale
+      const getContentStateProps = viewportConverter.contentProps
+      const getViewportBandStateProps = viewportConverter.viewportBandProps
 
       timeline = gsap.timeline({
         paused: true,
@@ -178,9 +181,7 @@ const useAboutDesktopScene = () => {
         selector: '[data-about-hero]',
         states: ABOUT_HERO_CLOUD.states,
         width: ABOUT_HERO_CLOUD.states[0].width,
-        toX,
-        toY,
-        toWidth,
+        getStateProps: getContentStateProps,
       })
 
       const heroPath = scene.querySelector('[data-about-hero-path="desktop"]')
@@ -210,9 +211,7 @@ const useAboutDesktopScene = () => {
           selector: `[data-about-cloud="${cloud.id}"]`,
           states: cloud.states,
           width: cloud.width,
-          toX,
-          toY,
-          toWidth,
+          getStateProps: getContentStateProps,
         })
       })
 
@@ -221,9 +220,7 @@ const useAboutDesktopScene = () => {
           selector: `[data-about-fill="${fill.id}"]`,
           states: fill.states,
           width: fill.width,
-          toX: () => 0,
-          toY,
-          toWidth: () => sceneWidth,
+          getStateProps: getViewportBandStateProps,
         })
       })
 
@@ -232,9 +229,7 @@ const useAboutDesktopScene = () => {
           selector: `[data-about-quote="${quote.id}"]`,
           states: quote.states,
           width: quote.width,
-          toX,
-          toY,
-          toWidth,
+          getStateProps: getContentStateProps,
         })
       })
 
@@ -242,9 +237,7 @@ const useAboutDesktopScene = () => {
         selector: '[data-about-mascot]',
         states: ABOUT_MASCOT.states,
         width: ABOUT_MASCOT.width,
-        toX,
-        toY,
-        toWidth,
+        getStateProps: getContentStateProps,
       })
 
       Object.keys(ABOUT_FRAME_VISIBILITY[0]).forEach((layer) => {
@@ -300,7 +293,7 @@ const useAboutDesktopScene = () => {
     }
 
     const handleResize = () => {
-      if (mediaQuery.matches) return
+      if (shouldSkipDesktopScene()) return
       buildTimeline()
       requestSync()
     }

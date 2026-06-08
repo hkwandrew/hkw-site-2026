@@ -3,6 +3,8 @@ import ArrowButton from '@/shared/ui/ArrowButton'
 import { ROOTS_DROP_DURATION_MS } from '@/routes/roots/rootsEntry'
 import { applyTypography } from '@/shared/ui/Typography'
 import ViewContainer from '@/shared/ui/ViewContainer'
+import { MEDIA_QUERIES } from '@/styles/breakpoints'
+import { CONTENT_FRAME_WIDTH_CUSTOM_PROPERTY } from '@/styles/viewportUnits'
 
 const studyPaneFadeIn = keyframes`
   from {
@@ -228,24 +230,22 @@ const toHeroWidth = (value) => {
 
 export const Page = styled(ViewContainer)`
   max-width: none;
-  margin-inline: 0;
-  overflow-x: clip;
+  margin-inline: auto;
 `
 
 export const PageFrame = styled.div`
   position: absolute;
   inset: 0;
-  container: work-frame / inline-size;
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 1440px;
+  max-width: var(${CONTENT_FRAME_WIDTH_CUSTOM_PROPERTY}, 100%);
+  height: 100%;
   margin-inline: auto;
   pointer-events: none;
 `
 
 export const MainContent = styled.div`
-  container: work-content / inline-size;
   flex: 1;
   display: flex;
   align-items: flex-start;
@@ -261,15 +261,7 @@ export const MainContent = styled.div`
   transition: opacity 320ms ease;
   will-change: opacity;
 
-  @container work-frame (max-width: 1000px) {
-    padding: 252px 72px 190px
-      ${({ $isWide }) =>
-        $isWide
-          ? 'calc(clamp(132px, 17.5vw, 180px) - 60px)'
-          : 'clamp(132px, 17.5vw, 180px)'};
-  }
-
-  @container work-frame (max-width: 740px) {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     align-items: flex-start;
     padding: 112px 20px 36px;
   }
@@ -282,13 +274,7 @@ export const StudyArea = styled.div`
   width: min(calc(100vw - clamp(132px, 17.5vw, 252px)), 1044px);
   min-height: 0;
 
-  @container work-content (max-width: 1000px) {
-    gap: 36px;
-    width: min(100%, 1000px);
-    height: 460px;
-  }
-
-  @container work-content (max-width: 740px) {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     flex-direction: column;
     align-items: stretch;
     gap: 24px;
@@ -307,12 +293,7 @@ export const StudyTextStage = styled.div`
   align-content: start;
   min-width: 0;
 
-  @container work-content (max-width: 1000px) {
-    flex-basis: 340px;
-    min-height: 460px;
-  }
-
-  @container work-content (max-width: 740px) {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     flex-basis: auto;
     width: 100%;
     gap: 16px;
@@ -327,7 +308,7 @@ export const StudyText = styled.div`
   row-gap: ${({ $compactCopy }) => ($compactCopy ? '40px' : '45px')};
   min-width: 0;
 
-  @container work-content (max-width: 740px) {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     row-gap: 16px;
     min-height: 0;
   }
@@ -338,6 +319,10 @@ export const AnimatedStudyText = styled(StudyText)`
   display: flex;
   flex-direction: column;
   gap: 45px;
+
+  @media ${MEDIA_QUERIES.mobilePortrait} {
+    margin-top: 24px;
+  }
 
   .quote-and-attribution {
     display: flex;
@@ -354,10 +339,6 @@ export const ClientType = styled.p`
   text-transform: uppercase;
   color: ${({ theme }) => theme.colors.blue.dark};
   margin-bottom: 8px;
-
-  @container work-content (max-width: 740px) {
-    margin-top: 24px;
-  }
 `
 
 export const ClientName = styled.h2`
@@ -370,6 +351,10 @@ export const ClientName = styled.h2`
   line-height: 1;
   letter-spacing: -0.96px;
   color: ${({ theme }) => theme.colors.orange.base};
+
+  @media ${MEDIA_QUERIES.mobilePortrait} {
+    font-size: 24px;
+  }
 `
 
 export const QuoteAndAttribution = styled.div`
@@ -389,8 +374,8 @@ export const Quote = styled.p`
     'wght' ${({ theme }) => theme.font.weight.regular};
   color: ${({ theme }) => theme.colors.blue.dark};
 
-  @container work-content (max-width: 740px) {
-    font-size: 18px;
+  @media ${MEDIA_QUERIES.mobilePortrait} {
+    font-size: 16px;
   }
 `
 
@@ -407,8 +392,8 @@ export const Attribution = styled.p`
   color: ${({ theme }) => theme.colors.blue.dark};
   opacity: 0.8;
 
-  @container work-content (max-width: 740px) {
-    font-size: 16px;
+  @media ${MEDIA_QUERIES.mobilePortrait} {
+    font-size: 14px;
   }
 
   [data-work-example='conviva'] & {
@@ -434,8 +419,9 @@ export const ServiceTag = styled.li`
   line-height: 1.5;
   color: ${({ theme }) => theme.colors.blue.dark};
 
-  @container work-content (max-width: 740px) {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     font-size: 16px;
+    line-height: 1.4;
   }
 `
 
@@ -450,11 +436,7 @@ export const HeroStage = styled.div`
   min-height: 0;
   overflow: visible;
 
-  @container work-content (max-width: 1000px) {
-    flex: 1 1 auto;
-  }
-
-  @container work-content (max-width: 740px) {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     width: 100%;
   }
 `
@@ -483,7 +465,7 @@ export const HeroImage = styled.div`
       ${({ $layout }) => toCssLength($layout?.desktop?.y, '0')};
   }
 
-  @container work-content (max-width: 740px) {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     position: relative;
     align-items: flex-start;
     justify-content: flex-start;
@@ -523,12 +505,8 @@ export const WorkDirtForeground = styled.svg`
   transition: transform ${({ $transitionMs }) => $transitionMs}ms linear;
   will-change: transform;
 
-  @container work-frame (max-width: 740px) {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     display: none;
-  }
-
-  @media (pointer: coarse) {
-    position: unset;
   }
 `
 
@@ -546,12 +524,8 @@ export const DesktopNavRail = styled.div`
   transition: opacity 320ms ease;
   will-change: opacity;
 
-  @container work-frame (max-width: 740px) {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     display: none;
-  }
-
-  @container work-frame (min-width: 741px) and (max-width: 1000px) {
-    bottom: -36px;
   }
 `
 
@@ -564,7 +538,7 @@ export const DesktopNavViewport = styled.div`
 
 export const DesktopNavStrip = styled.div`
   display: flex;
-  flex: 0 0 var(--work-desktop-nav-natural-width);
+  ${'' /* flex: 0 0 var(--work-desktop-nav-natural-width); */}
   gap: 24px;
   width: var(--work-desktop-nav-natural-width);
   overflow: visible;
@@ -572,30 +546,6 @@ export const DesktopNavStrip = styled.div`
   transform-origin: center bottom;
   transition: transform 180ms ease;
   will-change: transform;
-`
-
-export const MobileNavRail = styled.div`
-  display: none;
-
-  @container work-frame (max-width: 740px) {
-    display: block;
-    width: calc(100% + 8px);
-    margin-right: -8px;
-    overflow-x: auto;
-    pointer-events: auto;
-    scrollbar-width: none;
-
-    &::-webkit-scrollbar {
-      display: none;
-    }
-  }
-`
-
-export const MobileNavStrip = styled.div`
-  display: flex;
-  gap: 8px;
-  width: max-content;
-  padding: 4px 8px 8px 0;
 `
 
 export const NavButton = styled.button`
@@ -608,8 +558,8 @@ export const NavButton = styled.button`
   height: ${({ $layout }) => `${$layout.height}px`};
   padding: 0;
   border: none;
-  border-radius: ${({ $compact, $layout }) =>
-    `${Math.min($layout.width, $layout.height, $compact ? 18 : 28)}px`};
+  border-radius: ${({ $layout }) =>
+    `${Math.min($layout.width, $layout.height, 28)}px`};
   background: transparent;
   cursor: pointer;
   pointer-events: auto;
@@ -648,8 +598,8 @@ export const NavIconLayer = styled.img`
 `
 
 export const FallbackDot = styled.span`
-  width: ${({ $compact }) => ($compact ? '10px' : '14px')};
-  height: ${({ $compact }) => ($compact ? '10px' : '14px')};
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   background: ${({ $current, theme }) =>
     $current ? theme.colors.orange.base : theme.colors.blue.dark};
@@ -804,11 +754,7 @@ export const MarmotWrapper = styled.button`
     }
   }
 
-  @container work-frame (max-width: 1000px) {
-    right: 72px;
-  }
-
-  @container work-frame (max-width: 740px) {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     display: none;
   }
 `
@@ -825,11 +771,8 @@ export const DesktopArrowButton = styled(ArrowButton)`
 
   ${({ $side }) => ($side === 'left' ? 'left: 68px;' : 'right: 68px;')}
 
-  @container work-frame (max-width: 1000px) {
-    ${({ $side }) => ($side === 'left' ? 'left: 20px;' : 'right: 20px;')}
-  }
-
-  @container work-frame (max-width: 740px) {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     top: 95%;
+    ${({ $side }) => ($side === 'left' ? 'left: 20px;' : 'right: 20px;')}
   }
 `

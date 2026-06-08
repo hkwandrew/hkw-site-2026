@@ -232,7 +232,7 @@ const AboutPage = () => {
               </DesktopCloud>
             ))}
 
-            {ABOUT_DESKTOP_FILLS.map(({ id, layer }) => (
+            {/* {ABOUT_DESKTOP_FILLS.map(({ id, layer }) => (
               <DesktopBandFill
                 key={id}
                 data-about-fill={id}
@@ -240,7 +240,7 @@ const AboutPage = () => {
                 $layer={layer}
                 aria-hidden='true'
               />
-            ))}
+            ))} */}
 
             {ABOUT_DESKTOP_QUOTE_LAYOUTS.map((quote) => (
               <DesktopQuote

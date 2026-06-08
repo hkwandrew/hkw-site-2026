@@ -5,8 +5,9 @@ import {
   getTransitionKey,
 } from '@/app/router/routeRegistry'
 import { ROOTS_SCENE_STATE } from '@/routes/roots/sceneSpec'
+import { SCENE_TRANSITION_DURATION_MS } from '@/app/landscape/sceneTiming'
 
-export const SCENE_TRANSITION_DURATION_MS = 1500
+export { SCENE_TRANSITION_DURATION_MS }
 
 const REQUIRED_LAYER_KEYS = [
   'blueMountain',

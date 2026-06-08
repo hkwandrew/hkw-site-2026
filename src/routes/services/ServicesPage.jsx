@@ -22,9 +22,6 @@ export default function Services() {
   return (
     <ViewContainer $isActive={isActive}>
       <ServicesStage>
-        <TopHatMarmotWrapper>
-          <TopHatMarmot />
-        </TopHatMarmotWrapper>
         <ServiceList>
           {services.map((service, i) => (
             <ServiceItem
@@ -42,10 +39,15 @@ export default function Services() {
           aria-label={`${activeEntry.name} service description`}
           aria-live='polite'
         >
-          <DescriptionEyebrow>{activeEntry.name.toUpperCase()}</DescriptionEyebrow>
+          <DescriptionEyebrow>
+            {activeEntry.name.toUpperCase()}
+          </DescriptionEyebrow>
           <DescriptionText>{activeEntry.description}</DescriptionText>
         </Description>
       </ServicesStage>
+      <TopHatMarmotWrapper>
+        <TopHatMarmot />
+      </TopHatMarmotWrapper>
     </ViewContainer>
   )
 }

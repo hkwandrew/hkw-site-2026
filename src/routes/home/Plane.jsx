@@ -1,17 +1,20 @@
 import { useRef } from 'react'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
+import { BREAKPOINT_WIDTHS } from '@/styles/breakpoints'
+import {
+    BANNER_RIGHT_X,
+    getBannerWaveMotionConfig,
+    getWaveOffset,
+} from './planeMotion'
 
-const BANNER_RIGHT_X = 280.024
 const BANNER_NOTCH_POINT = { x: 18.9817, y: 27.5996 }
 const BANNER_TOP_Y = 6.3243
 const BANNER_BOTTOM_Y = 53.963
 const BANNER_CENTER_Y = (BANNER_TOP_Y + BANNER_BOTTOM_Y) / 2
 const BANNER_SAMPLE_XS = [0, 34, 68, 102, 136, 170, 204, 232, 252, 266, BANNER_RIGHT_X]
-const DEFAULT_PLANE_MOTION_DURATION_SECONDS = 3.2
-const PLANE_DESCENT_START_PROGRESS = 0.2
-const PLANE_MOBILE_BREAKPOINT_PX = 767
-const BANNER_WAVE_LOOP_PHASE = Math.PI * 4
+const PLANE_MOBILE_BREAKPOINT_PX = BREAKPOINT_WIDTHS.mobileMax
+const PLANE_PORTRAIT_MOBILE_QUERY = `(max-width: ${PLANE_MOBILE_BREAKPOINT_PX}px) and (orientation: portrait)`
 const BANNER_TEXT_SAMPLE_DELTA = 4
 const BANNER_GLYPH_VERTICAL_ADJUSTMENTS = {
     4: 2.1,
@@ -20,29 +23,6 @@ const BANNER_GLYPH_VERTICAL_ADJUSTMENTS = {
 }
 
 const formatValue = (value) => Number(value.toFixed(3))
-
-const parseDurationSeconds = (
-    durationValue,
-    fallbackDuration = DEFAULT_PLANE_MOTION_DURATION_SECONDS,
-) => {
-    const parsedDuration = Number.parseFloat(durationValue)
-
-    return Number.isFinite(parsedDuration) && parsedDuration > 0
-        ? parsedDuration
-        : fallbackDuration
-}
-
-export const getBannerWaveMotionConfig = (planeMotionDurationValue) => {
-    const duration = parseDurationSeconds(planeMotionDurationValue)
-    const startPhase =
-        BANNER_WAVE_LOOP_PHASE * (1 - PLANE_DESCENT_START_PROGRESS)
-
-    return {
-        duration,
-        endPhase: startPhase + BANNER_WAVE_LOOP_PHASE,
-        startPhase,
-    }
-}
 
 const buildCurveCommands = (points) => {
     let commands = ''
@@ -65,21 +45,6 @@ const buildCurveCommands = (points) => {
     }
 
     return commands
-}
-
-export const getWaveOffset = (x, phase, intensity = 1) => {
-    if (!intensity) {
-        return 0
-    }
-
-    const distanceFromRig = BANNER_RIGHT_X - x
-    const travelProgress = Math.max(0, Math.min(1, distanceFromRig / BANNER_RIGHT_X))
-    const amplitude = 8.2 * Math.pow(travelProgress, 0.92)
-    const primaryWave = Math.sin(phase - distanceFromRig * 0.02)
-    const secondaryWave =
-        0.28 * Math.sin(phase * 1.5 - distanceFromRig * 0.034 + 0.8)
-
-    return amplitude * intensity * (primaryWave * 0.82 + secondaryWave)
 }
 
 const getBannerEdgePoints = (baseY, phase, intensity = 1) =>
@@ -214,7 +179,7 @@ const Plane = () => {
 
             media.add(
                 {
-                    isMobile: `(max-width: ${PLANE_MOBILE_BREAKPOINT_PX}px)`,
+                    isPortraitMobile: PLANE_PORTRAIT_MOBILE_QUERY,
                     motionOk: '(prefers-reduced-motion: no-preference)',
                 },
                 ({ conditions }) => {

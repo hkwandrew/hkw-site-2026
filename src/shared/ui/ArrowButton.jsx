@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import { MEDIA_QUERIES } from '@/styles/breakpoints'
 
 const rotations = {
   left: '180deg',
@@ -20,6 +21,8 @@ const StyledButton = styled.button`
   cursor: pointer;
 
   svg {
+    width: 12px;
+    height: 20px;
     transform: rotate(${({ $direction }) => rotations[$direction] || '0deg'});
     transition: ${({ theme }) => theme.transition.fast};
     translate: ${({ $direction }) => ($direction === 'right' ? '2px' : '-2px')}
@@ -35,7 +38,7 @@ const StyledButton = styled.button`
     outline-offset: 2px;
   }
 
-  @media (max-width: 767px) {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     width: 32px;
     height: 32px;
 

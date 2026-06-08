@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 import ViewContainer from '@/shared/ui/ViewContainer'
 import { applyTypography } from '@/shared/ui/Typography'
+import { MEDIA_QUERIES } from '@/styles/breakpoints'
 
 export const Page = styled(ViewContainer)`
   max-width: 100%;
@@ -12,7 +13,7 @@ export const Page = styled(ViewContainer)`
   color: ${({ theme }) => theme.colors.blue.dark};
   scroll-padding-top: 164px;
 
-  [data-viewport-layout='phone-portrait'] & {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     padding: 84px 20px 56px;
     scroll-padding-top: 84px;
   }
@@ -87,7 +88,7 @@ export const Document = styled.article`
     margin-top: 8px;
   }
 
-  [data-viewport-layout='phone-portrait'] & {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     p,
     li {
       font-size: 16px;
@@ -108,7 +109,7 @@ export const Title = styled.h1`
   letter-spacing: 0;
   text-transform: uppercase;
 
-  [data-viewport-layout='phone-portrait'] & {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     font-size: 42px;
     line-height: 1.08;
   }
@@ -117,7 +118,7 @@ export const Title = styled.h1`
 export const PolicySection = styled.section`
   margin-top: 56px;
 
-  [data-viewport-layout='phone-portrait'] & {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     margin-top: 40px;
   }
 `
@@ -139,7 +140,7 @@ export const SectionTitle = styled.h2`
     border-radius: 9999px;
   }
 
-  [data-viewport-layout='phone-portrait'] & {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     font-size: 28px;
     line-height: 1.12;
   }

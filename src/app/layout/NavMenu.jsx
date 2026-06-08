@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router'
 import styled from 'styled-components'
 import { NAV_ITEMS, getRoutePathForPath } from '@/app/router/routeRegistry'
 import { applyTypography } from '@/shared/ui/Typography'
+import { MEDIA_QUERIES } from '@/styles/breakpoints'
 import {
   canStartSceneTransitionFromClick,
   usePageSceneTransition,
@@ -19,6 +20,7 @@ const Content = styled.div`
   background-color: ${({ $isRootsPage, theme }) =>
     $isRootsPage ? theme.colors.blue.dark : theme.colors.orange.dark};
   border-radius: ${({ theme }) => theme.components.navTabs.borderRadius};
+  overflow: hidden;
 
   --pill-x: 0px;
   --pill-w: 0px;
@@ -27,57 +29,43 @@ const Content = styled.div`
   --pill-move-dur: 0.5s;
   --contact-pill-size: 62px;
 
-  &[data-has-contact-reveal='true']:not([data-click-collapsed='true']):hover,
-  &[data-has-contact-reveal='true']:not(
-      [data-click-collapsed='true']
-    ):focus-within {
-    border-radius: ${({ theme }) => theme.components.navTabs.borderRadius} 0 0
-      ${({ theme }) => theme.components.navTabs.borderRadius};
-  }
+  @media (hover: hover) {
+    overflow: visible;
 
-  &:hover [data-contact-reveal],
-  &:focus-within [data-contact-reveal] {
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  &:hover [data-contact-reveal-inner],
-  &:focus-within [data-contact-reveal-inner] {
-    transform: translateX(0);
-    opacity: 1;
-  }
-
-  @media (hover: none) {
-    [data-contact-reveal] {
-      opacity: 1;
-      pointer-events: auto;
+    &[data-has-contact-reveal='true']:not(:hover):not(:focus-within),
+    &[data-has-contact-reveal='true'][data-click-collapsed='true'] {
+      border-radius: ${({ theme }) => theme.components.navTabs.borderRadius};
     }
 
-    [data-contact-reveal-inner] {
-      transform: translateX(0);
-      opacity: 1;
-    }
-
-    &[data-has-contact-reveal='true']:not([data-click-collapsed='true']) {
+    &[data-has-contact-reveal='true']:not([data-click-collapsed='true']):hover,
+    &[data-has-contact-reveal='true']:not(
+        [data-click-collapsed='true']
+      ):focus-within {
       border-radius: ${({ theme }) => theme.components.navTabs.borderRadius} 0 0
         ${({ theme }) => theme.components.navTabs.borderRadius};
     }
 
-    [data-viewport-layout='phone-portrait'] & {
-      position: unset;
-      border-radius: ${({ theme }) =>
-        theme.components.navTabs.borderRadius} !important;
+    &:hover [data-contact-reveal],
+    &:focus-within [data-contact-reveal] {
+      opacity: 1;
+      pointer-events: auto;
     }
-  }
 
-  &[data-click-collapsed='true'] [data-contact-reveal] {
-    opacity: 0;
-    pointer-events: none;
-  }
+    &:hover [data-contact-reveal-inner],
+    &:focus-within [data-contact-reveal-inner] {
+      transform: translateX(0);
+      opacity: 1;
+    }
 
-  &[data-click-collapsed='true'] [data-contact-reveal-inner] {
-    transform: translateX(-100%);
-    opacity: 0;
+    &[data-click-collapsed='true'] [data-contact-reveal] {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    &[data-click-collapsed='true'] [data-contact-reveal-inner] {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -113,9 +101,6 @@ const Pill = styled.div`
 const Items = styled.ul`
   display: flex;
   gap: ${({ theme }) => theme.components.navTabs.gap};
-  ${
-    '' /* min-height: ${({ theme }) => theme.components.navTabs.containerHeight}; */
-  }
 `
 
 const Item = styled.li`
@@ -125,24 +110,19 @@ const Item = styled.li`
 
 const StyledNavLink = styled(Link)`
   position: relative;
-  display: inline-block;
-
-  ${'' /* min-height: ${({ theme }) => theme.components.navTabs.itemHeight}; */}
+  display: block;
   padding: ${({ theme }) => theme.components.navTabs.itemPadding};
-  ${applyTypography('navButton')}
   border-radius: ${({ theme }) => theme.components.navTabs.borderRadius};
-
-  color: ${({ $isRootsPage, theme }) =>
-    $isRootsPage ? theme.colors.white : theme.colors.yellow.light};
-
   transition:
     font-variation-settings 0.45s ease,
     color 0.45s ease,
     background-color 0.45s ease;
 
   > span {
+    ${applyTypography('navButton')}
+    color: ${({ $isRootsPage, theme }) =>
+      $isRootsPage ? theme.colors.white : theme.colors.yellow.light};
     display: block;
-    text-box: ${({ theme }) => theme.typography.navButton.textBox};
   }
 
   &::after {
@@ -201,23 +181,30 @@ const StyledNavLink = styled(Link)`
 `
 
 const ContactReveal = styled.div`
-  position: absolute;
-  top: 0;
-  left: 100%;
+  align-self: stretch;
+  display: flex;
+  flex: 0 0 var(--contact-pill-size);
+  position: unset;
   width: var(--contact-pill-size);
-  height: 100%;
   overflow: hidden;
   opacity: 1;
-  pointer-events: none;
+  pointer-events: auto;
   z-index: 0;
-  ${'' /* background-color: ${({ $isRootsPage, theme }) =>
-    $isRootsPage ? theme.colors.blue.dark : theme.colors.orange.dark}; */}
   border-radius: 0 ${({ theme }) => theme.components.navTabs.borderRadius}
     ${({ theme }) => theme.components.navTabs.borderRadius} 0;
   transform: translateX(0);
   transition: transform 0.42s ease;
 
-  [data-viewport-layout='phone-portrait'] & {
+  @media (hover: hover) {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    height: 100%;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     position: unset;
     border-radius: ${({ theme }) => theme.components.navTabs.borderRadius} 0 0
       ${({ theme }) => theme.components.navTabs.borderRadius};
@@ -225,24 +212,32 @@ const ContactReveal = styled.div`
 `
 
 const ContactRevealInner = styled.div`
-  height: 100%;
-  width: var(--contact-pill-size);
-  transform: translateX(-100%);
-  opacity: 0;
+  display: flex;
+  flex: 1;
+  width: 100%;
+  transform: translateX(0);
+  opacity: 1;
   background-color: ${({ $isRootsPage, theme }) =>
     $isRootsPage ? theme.colors.blue.dark : theme.colors.orange.dark};
   border-radius: 0 ${({ theme }) => theme.components.navTabs.borderRadius}
     ${({ theme }) => theme.components.navTabs.borderRadius} 0;
   transition: -0.21s transform 0.42s ease;
+
+  @media (hover: hover) {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
 `
 
 const ContactNavLink = styled(StyledNavLink)`
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: var(--contact-pill-size);
-  height: 100%;
+  width: 100%;
   padding: 0;
+  color: ${({ $isRootsPage, theme }) =>
+    $isRootsPage ? theme.colors.white : theme.colors.yellow.light};
 
   &::after {
     display: none;
@@ -256,8 +251,8 @@ const ContactNavLink = styled(StyledNavLink)`
 
 const ContactIcon = styled.svg`
   display: block;
-  width: 24px;
-  height: 24px;
+  width: 25px;
+  height: 25px;
   fill: currentColor;
 `
 
@@ -305,12 +300,12 @@ const NavMenu = ({ activePathname, isRootsPage = false }) => {
       const activeLink = linkRefs.current[matchIndex]
       if (!activeLink) return
 
-      const menuRect = menuEl.getBoundingClientRect()
+      const contentRect = contentEl.getBoundingClientRect()
       const linkRect = activeLink.getBoundingClientRect()
 
-      const nextX = linkRect.left - menuRect.left
+      const nextX = linkRect.left - contentRect.left
       const nextW = linkRect.width
-      const nextH = linkRect.height
+      const nextH = contentRect.height
 
       // If the pill was previously hidden, place it instantly at the target.
       // Then re-enable transitions for subsequent link-to-link moves.

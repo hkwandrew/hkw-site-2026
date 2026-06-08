@@ -1,28 +1,17 @@
 export const NAV_BUTTON_LAYOUT_DEFAULTS = {
-  desktop: {
-    width: 96,
-    height: 96,
-    x: 0,
-    y: 0,
-  },
-  mobile: {
-    width: 56,
-    height: 56,
-    x: 0,
-    y: 0,
-  },
+  width: 96,
+  height: 96,
+  x: 0,
+  y: 0,
 }
 
-export const resolveNavButtonLayout = (navButton, compact = false) => {
-  const defaults = compact
-    ? NAV_BUTTON_LAYOUT_DEFAULTS.mobile
-    : NAV_BUTTON_LAYOUT_DEFAULTS.desktop
-  const overrides = compact ? navButton?.mobile : navButton?.desktop
+export const resolveNavButtonLayout = (navButton) => {
+  const overrides = navButton?.desktop
 
   return {
-    width: overrides?.width ?? defaults.width,
-    height: overrides?.height ?? defaults.height,
-    x: overrides?.x ?? defaults.x,
-    y: overrides?.y ?? defaults.y,
+    width: overrides?.width ?? NAV_BUTTON_LAYOUT_DEFAULTS.width,
+    height: overrides?.height ?? NAV_BUTTON_LAYOUT_DEFAULTS.height,
+    x: overrides?.x ?? NAV_BUTTON_LAYOUT_DEFAULTS.x,
+    y: overrides?.y ?? NAV_BUTTON_LAYOUT_DEFAULTS.y,
   }
 }

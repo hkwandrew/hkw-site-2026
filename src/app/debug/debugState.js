@@ -1,9 +1,9 @@
-import theme from '@/styles/theme'
+import { MEDIA_QUERIES } from '@/styles/breakpoints'
 
 export const DEBUG_STORAGE_KEY = 'hkw-debug-tools'
 
 const DEBUG_QUERY_PARAM = 'debug'
-const MOBILE_MEDIA_QUERY = `(max-width: ${theme.breakpoints.mobile})`
+const MOBILE_MEDIA_QUERY = MEDIA_QUERIES.mobilePortrait
 
 export const DEBUG_MEDIA_QUERIES = [
   {
@@ -12,9 +12,9 @@ export const DEBUG_MEDIA_QUERIES = [
     query: MOBILE_MEDIA_QUERY,
   },
   {
-    id: 'wide',
-    label: 'wide',
-    query: '(min-aspect-ratio: 1440/1024)',
+    id: 'desktop-frame',
+    label: 'desktop-frame',
+    query: MEDIA_QUERIES.desktopFrame,
   },
   {
     id: 'coarse',

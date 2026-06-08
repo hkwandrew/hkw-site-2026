@@ -1,5 +1,6 @@
 import { Link } from 'react-router'
 import theme from '@/styles/theme'
+import { CONTENT_FRAME_WIDTH_CUSTOM_PROPERTY } from '@/styles/viewportUnits'
 import BlueMountain from '@/app/landscape/layers/BlueMountain'
 import DirtLayer from '@/app/landscape/layers/DirtLayer'
 import DkBlueMountain from '@/app/landscape/layers/DkBlueMountain'
@@ -15,17 +16,15 @@ import {
 } from '@/app/landscape/pageSceneTransition'
 
 const LandscapeSceneWrapper = styled.svg`
-  width: 100%;
-  height: auto;
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  display: block;
+  width: var(${CONTENT_FRAME_WIDTH_CUSTOM_PROPERTY}, 100%);
+  max-width: none;
   margin-inline: auto;
   overflow: visible;
-
-  [data-viewport-layout='base'] &,
-  [data-viewport-layout='phone-landscape'] &,
-  [data-viewport-layout='short-desktop'] &,
-  [data-viewport-layout='tablet'] & {
-    width: min(calc(1440 * var(--hkw-viewport-px-unit)), 100%);
-  }
 `
 
 const getHomeLayerLinkProps = (isInteractive, to, transitionSceneToPath) => ({

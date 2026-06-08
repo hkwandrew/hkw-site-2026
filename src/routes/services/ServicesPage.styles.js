@@ -1,5 +1,7 @@
 import styled from 'styled-components'
 import { BodyMedium, applyTypography } from '@/shared/ui/Typography'
+import { MEDIA_QUERIES } from '@/styles/breakpoints'
+import { DESKTOP_VIEWPORT_ASPECT_RATIO } from '@/styles/viewportUnits'
 
 export const ServiceList = styled.ul`
   display: flex;
@@ -8,10 +10,10 @@ export const ServiceList = styled.ul`
   padding-left: 72px;
   padding-top: 258.982px;
 
-  [data-viewport-layout='phone-portrait'] & {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     position: absolute;
     left: 19px;
-    top: 166px;
+    top: 127px;
     gap: 24px;
     width: 184px;
     padding: 0;
@@ -35,7 +37,7 @@ export const ServiceItem = styled.li`
     color: ${({ theme }) => theme.colors.yellow.gold};
   }
 
-  [data-viewport-layout='phone-portrait'] & {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     font-family: ${({ theme }) => theme.font.family};
     font-size: 24px;
     line-height: 1.25;
@@ -52,16 +54,15 @@ export const ServiceItem = styled.li`
 
 export const Description = styled.section`
   position: absolute;
-  right: 5%;
+  right: 70px;
   top: 302px;
-  width: 454px;
+  max-width: 454px;
   transition: opacity 500ms ease-in-out;
 
-  [data-viewport-layout='phone-portrait'] & {
-    right: 19px;
-    top: 218px;
-    width: 165px;
-    z-index: 2;
+  @media ${MEDIA_QUERIES.mobilePortrait} {
+    max-width: 165px;
+    top: 251px;
+    right: 20px;
   }
 `
 
@@ -78,7 +79,7 @@ export const DescriptionEyebrow = styled.p`
   text-align: right;
   text-box: ${({ theme }) => theme.typography.textBox};
 
-  [data-viewport-layout='phone-portrait'] & {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     display: none;
   }
 `
@@ -88,9 +89,10 @@ export const DescriptionText = styled(BodyMedium)`
   text-align: right;
   font-size: 20px;
   line-height: 1.4;
+  letter-spacing: -0.32px;
   text-box: ${({ theme }) => theme.typography.textBox};
 
-  [data-viewport-layout='phone-portrait'] & {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     color: ${({ theme }) => theme.colors.yellow.gold};
     font-size: 16px;
     line-height: 1.25;
@@ -103,45 +105,23 @@ export const DescriptionText = styled(BodyMedium)`
 
 export const TopHatMarmotWrapper = styled.div`
   position: absolute;
-  right: 145.85px;
-  bottom: 0;
+  right: 76.64px;
+  bottom: -25.55px;
+  width: 362.902px;
 
   svg {
     display: block;
+    width: 100%;
   }
 
-  @container services-stage (min-width: 768px) and (max-height: 820px) {
-    right: 5.32%;
-    bottom: -2.52%;
-    width: 258px;
-
-    svg {
-      width: 100%;
-      height: auto;
-    }
-  }
-
-  [data-viewport-layout='short-desktop'] &,
-  [data-viewport-layout='phone-landscape'] & {
-    right: 5.32%;
-    bottom: -2.52%;
-    width: 258px;
-
-    svg {
-      width: 100%;
-      height: auto;
-    }
-  }
-
-  [data-viewport-layout='phone-portrait'] & {
-    right: -16px;
-    bottom: -8px;
-    width: min(49vw, 193px);
+  @media ${MEDIA_QUERIES.mobilePortrait} {
+    right: -14.9px;
+    bottom: -21px;
+    width: 192.738px;
     z-index: 1;
     transform-origin: center bottom;
 
     svg {
-      width: 100%;
       height: auto;
     }
   }
@@ -172,7 +152,7 @@ export const ServicesTitle = styled.h2`
   line-height: 24px;
   text-box: ${({ theme }) => theme.typography.textBox};
 
-  [data-viewport-layout='phone-portrait'] & {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     display: block;
     z-index: 2;
   }

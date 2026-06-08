@@ -5,6 +5,10 @@ import { usePageSceneTransition } from '@/app/landscape/pageSceneTransition'
 import { SCENE_TRANSITION_DURATION_MS } from '@/app/landscape/sceneTiming'
 import DirtLayer from '@/app/landscape/layers/DirtLayer'
 import {
+  DESKTOP_VIEWPORT_WIDTH,
+  VIEWPORT_PX_UNIT_CUSTOM_PROPERTY,
+} from '@/styles/viewportUnits'
+import {
   ROOTS_DROP_DURATION_MS,
   ROOTS_ENTRY_STATE_KEY,
   WORK_ROOTS_ENTRY_STATE_KEY,
@@ -27,8 +31,6 @@ import {
   HeroStage,
   MainContent,
   MarmotWrapper,
-  MobileNavRail,
-  MobileNavStrip,
   NavButton,
   NavIconLayer,
   NavVisual,
@@ -145,10 +147,24 @@ const getDesktopNavNaturalWidth = (widths) =>
   widths.reduce((sum, width) => sum + width, 0) +
   Math.max(0, widths.length - 1) * DESKTOP_NAV_GAP
 
-const getDesktopNavFitScale = (availableWidth, naturalWidth) => {
-  if (availableWidth <= 0 || naturalWidth <= 0) return 1
+const getDesktopNavFitScale = (
+  availableCssWidth,
+  naturalDesignWidth,
+  frameCssWidth,
+) => {
+  if (
+    availableCssWidth <= 0 ||
+    naturalDesignWidth <= 0 ||
+    frameCssWidth <= 0
+  ) {
+    return 1
+  }
 
-  return Math.min(1, availableWidth / naturalWidth)
+  const frameScale = frameCssWidth / DESKTOP_VIEWPORT_WIDTH
+
+  if (frameScale <= 0) return 1
+
+  return Math.min(1, availableCssWidth / (naturalDesignWidth * frameScale))
 }
 
 const renderNavButton = ({
@@ -157,11 +173,10 @@ const renderNavButton = ({
   isCurrent,
   isAccessibleCurrent,
   handleSelect,
-  compact = false,
   keyPrefix,
 }) => {
   const hasIcon = Boolean(caseStudy.navIcon)
-  const navButtonLayout = resolveNavButtonLayout(caseStudy.navButton, compact)
+  const navButtonLayout = resolveNavButtonLayout(caseStudy.navButton)
 
   return (
     <NavButton
@@ -171,8 +186,7 @@ const renderNavButton = ({
       aria-current={isAccessibleCurrent ? 'true' : undefined}
       data-nav-kind={hasIcon ? 'icon' : 'dot'}
       data-work-example={caseStudy.id}
-      data-work-example-region={compact ? 'mobile-nav' : 'desktop-nav'}
-      $compact={compact}
+      data-work-example-region='desktop-nav'
       $layout={navButtonLayout}
       onClick={() => handleSelect(itemIndex)}
     >
@@ -185,7 +199,7 @@ const renderNavButton = ({
             $current={isCurrent}
           />
         ) : (
-          <FallbackDot $compact={compact} $current={isCurrent} />
+          <FallbackDot $current={isCurrent} />
         )}
       </NavVisual>
     </NavButton>
@@ -371,9 +385,12 @@ const WorkPage = () => {
     const updateScale = () => {
       const availableWidth =
         railElement.clientWidth || railElement.getBoundingClientRect().width
+      const frameWidth =
+        railElement.parentElement?.getBoundingClientRect().width ?? 0
       const nextScale = getDesktopNavFitScale(
         availableWidth,
         desktopNavNaturalWidth,
+        frameWidth,
       )
 
       setDesktopNavScale((currentScale) =>
@@ -542,7 +559,7 @@ const WorkPage = () => {
             <DesktopNavStrip
               data-testid='work-nav-desktop'
               style={{
-                '--work-desktop-nav-natural-width': `${desktopNavNaturalWidth}px`,
+                '--work-desktop-nav-natural-width': `calc(${desktopNavNaturalWidth} * var(${VIEWPORT_PX_UNIT_CUSTOM_PROPERTY}))`,
                 '--work-desktop-nav-scale': desktopNavScale,
               }}
             >

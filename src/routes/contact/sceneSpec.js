@@ -13,7 +13,7 @@ export const CONTACT_SCENE_STATE = {
     pathD:
       'M1404 926.001C1200.5 793.5 1154.5 926.001 1066.5 926.001C996.5 926 814.5 739.501 539.5 825C241.501 722 -1235.5 1152 1051 1280.5C2186 629.001 1530.5 1028 1404 926.001Z',
     viewports: {
-      mobile: {
+      phonePortrait: {
         container: { x: 1144.21, y: '90%' },
         wrapper: { scaleX: 1.3, scaleY: 2 },
       },
@@ -29,7 +29,7 @@ export const CONTACT_SCENE_STATE = {
     container: { x: 1893.827022, y: 512 },
     wrapper: { scaleX: 8.4483, scaleY: 8.4483 },
     viewports: {
-      mobile: {
+      phonePortrait: {
         container: { x: 1899, y: 1437 },
         wrapper: { scaleX: 23, scaleY: 23 },
       },

@@ -24,12 +24,11 @@ import {
   useViewportComposition,
 } from '@/app/layout/viewportComposition'
 
-const isPhoneLayout = (layout) =>
-  layout === VIEWPORT_LAYOUT.PHONE_PORTRAIT ||
-  layout === VIEWPORT_LAYOUT.PHONE_LANDSCAPE
+const isMobilePortraitLayout = (layout) =>
+  layout === VIEWPORT_LAYOUT.MOBILE_PORTRAIT
 
 const canUseHomeHoverRegions = ({ hover, layout, pointer }) =>
-  hover === 'hover' && pointer === 'fine' && !isPhoneLayout(layout)
+  hover === 'hover' && pointer === 'fine' && !isMobilePortraitLayout(layout)
 
 const useLandscapeTransitionController = (pathname) => {
   const viewportComposition = useViewportComposition()

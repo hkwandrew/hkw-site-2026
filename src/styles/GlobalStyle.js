@@ -1,12 +1,18 @@
 import { createGlobalStyle } from 'styled-components'
+import { MEDIA_QUERIES } from './breakpoints'
 import {
-  DESKTOP_VIEWPORT_WIDTH,
-  DESKTOP_VIEWPORT_HEIGHT,
-  MOBILE_VIEWPORT_HEIGHT,
-  MOBILE_VIEWPORT_WIDTH,
+  CONTENT_FRAME_HEIGHT_CUSTOM_PROPERTY,
+  CONTENT_FRAME_TOP_CUSTOM_PROPERTY,
+  CONTENT_FRAME_WIDTH_CUSTOM_PROPERTY,
   VIEWPORT_PX_UNIT_CUSTOM_PROPERTY,
-  getCappedViewportPxUnitValue,
-  getFittedViewportPxUnitValue,
+  desktopFrameHeight,
+  desktopFrameTop,
+  desktopFrameViewportPxUnit,
+  desktopFrameWidth,
+  mobileContentFrameHeight,
+  mobileContentFrameTop,
+  mobileContentFrameWidth,
+  mobileViewportPxUnit,
 } from './viewportUnits'
 
 const GlobalStyle = createGlobalStyle`
@@ -20,24 +26,31 @@ const GlobalStyle = createGlobalStyle`
     color-scheme: light;
     text-rendering: optimizeLegibility;
     --hkw-debug-mobile-border: transparent;
-    --hkw-debug-wide-border: transparent;
+    --hkw-debug-desktop-frame-border: transparent;
     --hkw-debug-coarse-border: transparent;
     --hkw-viewport-width: 100vw;
     --hkw-viewport-height: 100vh;
     --hkw-viewport-ratio: 1;
-    ${VIEWPORT_PX_UNIT_CUSTOM_PROPERTY}: ${getFittedViewportPxUnitValue(
-      DESKTOP_VIEWPORT_WIDTH,
-      DESKTOP_VIEWPORT_HEIGHT,
-    )};
+    ${VIEWPORT_PX_UNIT_CUSTOM_PROPERTY}: ${desktopFrameViewportPxUnit};
+    ${CONTENT_FRAME_WIDTH_CUSTOM_PROPERTY}: ${desktopFrameWidth};
+    ${CONTENT_FRAME_HEIGHT_CUSTOM_PROPERTY}: ${desktopFrameHeight};
+    ${CONTENT_FRAME_TOP_CUSTOM_PROPERTY}: ${desktopFrameTop};
   }
 
-  :root[data-viewport-layout='phone-portrait'] {
-    overflow: hidden;
-    --hkw-debug-mobile-border: red;
-    ${VIEWPORT_PX_UNIT_CUSTOM_PROPERTY}: ${getCappedViewportPxUnitValue(
-      MOBILE_VIEWPORT_WIDTH,
-      MOBILE_VIEWPORT_HEIGHT,
-    )};
+  @media ${MEDIA_QUERIES.mobilePortrait} {
+    :root {
+      ${VIEWPORT_PX_UNIT_CUSTOM_PROPERTY}: ${mobileViewportPxUnit};
+      ${CONTENT_FRAME_WIDTH_CUSTOM_PROPERTY}: ${mobileContentFrameWidth};
+      ${CONTENT_FRAME_HEIGHT_CUSTOM_PROPERTY}: ${mobileContentFrameHeight};
+      ${CONTENT_FRAME_TOP_CUSTOM_PROPERTY}: ${mobileContentFrameTop};
+    }
+  }
+
+  @media ${MEDIA_QUERIES.mobilePortrait} {
+    :root {
+      overflow: hidden;
+      --hkw-debug-mobile-border: red;
+    }
   }
 
   html, body, #root {
@@ -46,9 +59,12 @@ const GlobalStyle = createGlobalStyle`
     overflow: hidden;
   }
 
-
   main {
+    position: relative;
+    width: 100%;
+    height: 100%;
     min-height: 100%;
+    overflow: hidden;
   }
 
   body {
@@ -69,7 +85,7 @@ const GlobalStyle = createGlobalStyle`
     pointer-events: none;
     box-shadow:
       inset 0 0 0 0.25rem var(--hkw-debug-mobile-border),
-      inset 0 0 0 0.5rem var(--hkw-debug-wide-border),
+      inset 0 0 0 0.5rem var(--hkw-debug-desktop-frame-border),
       inset 0 0 0 0.75rem var(--hkw-debug-coarse-border);
   }
 
@@ -83,9 +99,9 @@ const GlobalStyle = createGlobalStyle`
     touch-action: none;
   }
 
-  @media (min-aspect-ratio: 1440/1024) {
+  @media ${MEDIA_QUERIES.desktopFrame} {
     :root {
-      --hkw-debug-wide-border: limegreen;
+      --hkw-debug-desktop-frame-border: limegreen;
     }
   }
 
@@ -138,6 +154,23 @@ const GlobalStyle = createGlobalStyle`
       transition-duration: 0.01ms !important;
     }
   }
+
+  [data-page=work-page][data-scene-page=roots-page],
+  [data-page=work-page][data-scene-page=services-page],
+  [data-page=work-page][data-scene-page=work-page],
+  [data-page=work-page][data-scene-page=home-page],{
+    background-color: ${({ theme }) => theme.colors.yellow.gold};
+  }
+
+  [data-page=about-page][data-scene-page=home-page],
+  [data-page=about-page][data-scene-page=services-page] {
+    background-color: ${({ theme }) => theme.colors.blue.light};
+  }
+
+  [data-scene-page=about-page] {
+    ${'' /* background-color: ${({ theme }) => theme.colors.blue.light}; */}
+  }
+
 `
 
 export default GlobalStyle

@@ -1,6 +1,12 @@
 import { Link, useLocation } from 'react-router'
 import styled, { css, keyframes } from 'styled-components'
 import { getPageLabelForPath } from '@/app/router/routeRegistry'
+import { MEDIA_QUERIES } from '@/styles/breakpoints'
+import {
+  CONTENT_FRAME_HEIGHT_CUSTOM_PROPERTY,
+  CONTENT_FRAME_TOP_CUSTOM_PROPERTY,
+  CONTENT_FRAME_WIDTH_CUSTOM_PROPERTY,
+} from '@/styles/viewportUnits'
 import {
   VIEWPORT_LAYOUT,
   useViewportComposition,
@@ -19,13 +25,13 @@ const pageLabelFadeIn = keyframes`
 `
 
 const StyledHeader = styled.header`
-  max-width: 1440px;
+  width: var(${CONTENT_FRAME_WIDTH_CUSTOM_PROPERTY}, 100%);
+  max-width: none;
+  height: var(${CONTENT_FRAME_HEIGHT_CUSTOM_PROPERTY}, auto);
   margin-inline: auto;
   position: fixed;
-  top: 0;
   left: 0;
   right: 0;
-  width: 100%;
   z-index: 80;
   display: flex;
   align-items: flex-start;
@@ -43,7 +49,7 @@ const StyledHeader = styled.header`
   ${({ $isRootsPage }) =>
     $isRootsPage &&
     css`
-      [data-viewport-layout='phone-portrait'] & {
+      @media ${MEDIA_QUERIES.mobilePortrait} {
         min-height: 64px;
 
         &::before {
@@ -63,7 +69,10 @@ const StyledHeader = styled.header`
       }
     `}
 
-  [data-viewport-layout='phone-portrait'] & {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
+    width: 100%;
+    height: auto;
+    top: 0;
     align-items: center;
     gap: 16px;
     padding: 11px 20px
@@ -78,7 +87,7 @@ const BrandBlock = styled.div`
   flex-direction: column;
   gap: ${({ $isServicesPage }) => ($isServicesPage ? '72px' : '20px')};
 
-  [data-viewport-layout='phone-portrait'] & {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     gap: 0;
   }
 `
@@ -89,8 +98,8 @@ const HKWLogo = styled(Link)`
   height: 68px;
   display: grid;
   place-items: center;
-  --fill-0: ${({ $isPhoneViewport, $isRootsPage, theme }) =>
-    $isRootsPage && !$isPhoneViewport
+  --fill-0: ${({ $isMobilePortraitViewport, $isRootsPage, theme }) =>
+    $isRootsPage 
       ? theme.colors.white
       : theme.colors.blue.dark};
   --logo-background: ${({ $isServicesPage, $isWorkPage, theme }) =>
@@ -102,7 +111,7 @@ const HKWLogo = styled(Link)`
   background-color: transparent;
   border-radius: 8px;
 
-  [data-viewport-layout='phone-portrait'] & {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     width: 76px;
     height: 38px;
     border-radius: ${({ $isServicesPage }) =>
@@ -133,7 +142,7 @@ const PageLabel = styled.div`
 
   translate: ${({ $isServicesPage }) => ($isServicesPage ? '10px 0' : '0')};
 
-  [data-viewport-layout='phone-portrait'] & {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     margin-top: ${({ $isServicesPage }) => ($isServicesPage ? '22px' : '6px')};
     will-change: opacity;
     font-weight: 700;
@@ -157,8 +166,8 @@ const Header = ({ contentPathname, isPageLabelReady = true, navPathname }) => {
   const isContactPage = contentPath === '/contact'
   const isPolicyPage = contentPath === '/policy'
   const isPageLabelActive = isPageLabelReady
-  const isPhoneViewport =
-    viewportComposition.layout === VIEWPORT_LAYOUT.PHONE_PORTRAIT
+  const isMobilePortraitViewport =
+    viewportComposition.layout === VIEWPORT_LAYOUT.MOBILE_PORTRAIT
   const navActivePath = isRootsPage ? '/work' : activeNavPath
 
   return (
@@ -169,7 +178,7 @@ const Header = ({ contentPathname, isPageLabelReady = true, navPathname }) => {
           $isServicesPage={isServicesPage}
           $isWorkPage={isWorkPage}
           $isRootsPage={isRootsPage}
-          $isPhoneViewport={isPhoneViewport}
+          $isMobilePortraitViewport={isMobilePortraitViewport}
           $isActive={isPageLabelActive}
         >
           <svg
@@ -204,7 +213,7 @@ const Header = ({ contentPathname, isPageLabelReady = true, navPathname }) => {
         )}
       </BrandBlock>
 
-      {isPhoneViewport ? (
+      {isMobilePortraitViewport ? (
         <MobileNavMenu
           activePathname={activeNavPath}
           isRootsPage={isRootsPage}

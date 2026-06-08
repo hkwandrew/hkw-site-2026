@@ -1,8 +1,14 @@
 export const DESKTOP_VIEWPORT_WIDTH = 1440
 export const DESKTOP_VIEWPORT_HEIGHT = 1024
+export const DESKTOP_VIEWPORT_ASPECT_RATIO = `${DESKTOP_VIEWPORT_WIDTH}/${DESKTOP_VIEWPORT_HEIGHT}`
+export const DESKTOP_VIEWPORT_RATIO =
+  DESKTOP_VIEWPORT_WIDTH / DESKTOP_VIEWPORT_HEIGHT
 export const MOBILE_VIEWPORT_WIDTH = 393
 export const MOBILE_VIEWPORT_HEIGHT = 640
 export const VIEWPORT_PX_UNIT_CUSTOM_PROPERTY = '--hkw-viewport-px-unit'
+export const CONTENT_FRAME_WIDTH_CUSTOM_PROPERTY = '--hkw-content-frame-width'
+export const CONTENT_FRAME_HEIGHT_CUSTOM_PROPERTY = '--hkw-content-frame-height'
+export const CONTENT_FRAME_TOP_CUSTOM_PROPERTY = '--hkw-content-frame-top'
 
 const PX_VALUE_PATTERN = /^[-+]?(?:\d*\.\d+|\d+\.?\d*)px\b/i
 const URL_FUNCTION_PATTERN = /^url\(/i
@@ -34,10 +40,32 @@ export const getFittedViewportPxUnitValue = (viewportWidth, viewportHeight) =>
     viewportHeight,
   )})`
 
-export const getCappedViewportPxUnitValue = (viewportWidth, viewportHeight) =>
-  `min(${getViewportPxUnitValue(viewportWidth)}, ${getViewportPxHeightUnitValue(
-    viewportHeight,
-  )}, 1px)`
+export const getScalingUpViewportPxUnitValue = (
+  viewportWidth,
+  viewportHeight,
+) => `max(1px, ${getFittedViewportPxUnitValue(viewportWidth, viewportHeight)})`
+
+export const desktopFrameViewportPxUnit = getFittedViewportPxUnitValue(
+  DESKTOP_VIEWPORT_WIDTH,
+  DESKTOP_VIEWPORT_HEIGHT,
+)
+
+export const mobileViewportPxUnit = getScalingUpViewportPxUnitValue(
+  MOBILE_VIEWPORT_WIDTH,
+  MOBILE_VIEWPORT_HEIGHT,
+)
+
+export const desktopFrameWidth = `calc(${DESKTOP_VIEWPORT_WIDTH} * var(${VIEWPORT_PX_UNIT_CUSTOM_PROPERTY}))`
+
+export const desktopFrameHeight = `calc(${DESKTOP_VIEWPORT_HEIGHT} * var(${VIEWPORT_PX_UNIT_CUSTOM_PROPERTY}))`
+
+export const desktopFrameTop = `max(0dvh, calc((100dvh - var(${CONTENT_FRAME_HEIGHT_CUSTOM_PROPERTY})) / 2))`
+
+export const mobileContentFrameWidth = '100%'
+
+export const mobileContentFrameHeight = '100%'
+
+export const mobileContentFrameTop = `max(0dvh, calc((100dvh - var(${CONTENT_FRAME_HEIGHT_CUSTOM_PROPERTY})) / 2))`
 
 const formatResponsiveViewportValue = (pxValue) => {
   const numberValue = Number.parseFloat(pxValue)
@@ -148,9 +176,10 @@ const convertCssPxValues = (value, formatPxValue) => {
 export const convertCssPxToVw = (
   value,
   viewportWidth = DESKTOP_VIEWPORT_WIDTH,
-) => convertCssPxValues(value, (pxValue) =>
-  formatViewportValue(pxValue, viewportWidth),
-)
+) =>
+  convertCssPxValues(value, (pxValue) =>
+    formatViewportValue(pxValue, viewportWidth),
+  )
 
 export const convertCssPxToViewportUnit = (value) =>
   convertCssPxValues(value, formatResponsiveViewportValue)

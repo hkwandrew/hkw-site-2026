@@ -1,3 +1,5 @@
+import { BREAKPOINTS } from './breakpoints'
+
 const theme = {
   colors: {
     orange: {
@@ -181,10 +183,7 @@ const theme = {
     fast: 'all 200ms ease',
     medium: 'all 400ms ease',
   },
-  breakpoints: {
-    mobile: '767px',
-    tablet: '1024px',
-  },
+  breakpoints: BREAKPOINTS,
 }
 
 export default theme

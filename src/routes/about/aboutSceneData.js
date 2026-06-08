@@ -9,6 +9,20 @@ import MidCloudCenter from './assets/about-clouds/cloud-mid-center.svg'
 import MidCloudLeft from './assets/about-clouds/cloud-mid-left.svg'
 import MidCloudRight from './assets/about-clouds/cloud-mid-right.svg'
 import DarkCloudMobile from './assets/about-clouds/about-dark-cloud-mobile.svg'
+import CloudWhiteLeft from './assets/about-clouds/cloud-white-left.svg'
+import CloudWhiteRight from './assets/about-clouds/cloud-white-right.svg'
+import CloudDarkLeft1 from './assets/about-clouds/cloud-dark-left-1.svg'
+import CloudDarkLeft2 from './assets/about-clouds/cloud-dark-left-2.svg'
+import CloudDarkRight1 from './assets/about-clouds/cloud-dark-right-1.svg'
+import CloudDarkRight2 from './assets/about-clouds/cloud-dark-right-2.svg'
+import CloudMidLeft1 from './assets/about-clouds/cloud-mid-left-1.svg'
+import CloudMidLeft2 from './assets/about-clouds/cloud-mid-left-2.svg'
+// import CloudMidLeft3 from './assets/about-clouds/cloud-mid-left-3.svg'
+import CloudMidRight1 from './assets/about-clouds/cloud-mid-right-1.svg'
+import CloudMidRight2 from './assets/about-clouds/cloud-mid-right-2.svg'
+// import CloudMidRight3 from './assets/about-clouds/cloud-mid-right-3.svg'
+import CloudLightLeft1 from './assets/about-clouds/cloud-light-left-1.svg'
+import CloudLightRight1 from './assets/about-clouds/cloud-light-right-1.svg'
 
 export const ABOUT_DESIGN_FRAME = { width: 1440, height: 1024 }
 
@@ -23,14 +37,50 @@ export const ABOUT_INTRO_COPY = [
 ]
 
 export const ABOUT_FRAME_VISIBILITY = [
-  { hero: 1, intro: 1, dark: 1, mid: 1, light: 0, outro: 0, mascot: 0 },
-  { hero: 1, intro: 0, dark: 1, mid: 1, light: 1, outro: 0, mascot: 0 },
-  { hero: 0, intro: 0, dark: 1, mid: 1, light: 1, outro: 1, mascot: 0 },
-  { hero: 0, intro: 0, dark: 1, mid: 1, light: 1, outro: 1, mascot: 1 },
+  {
+    hero: 1,
+    intro: 1,
+    white: 1,
+    dark: 1,
+    mid: 1,
+    light: 0,
+    outro: 0,
+    mascot: 0,
+  },
+  {
+    hero: 1,
+    intro: 0,
+    white: 1,
+    dark: 1,
+    mid: 1,
+    light: 1,
+    outro: 0,
+    mascot: 0,
+  },
+  {
+    hero: 0,
+    intro: 0,
+    white: 0,
+    dark: 1,
+    mid: 1,
+    light: 1,
+    outro: 1,
+    mascot: 0,
+  },
+  {
+    hero: 0,
+    intro: 0,
+    white: 0,
+    dark: 1,
+    mid: 1,
+    light: 1,
+    outro: 1,
+    mascot: 1,
+  },
 ]
 
 export const ABOUT_QUOTE_FRAME_VISIBILITY = [
-  { dark: 1, mid: 1, light: 0, outro: 0 },
+  { dark: 1, mid: 0, light: 0, outro: 0 },
   { dark: 1, mid: 1, light: 1, outro: 0 },
   { dark: 0, mid: 1, light: 1, outro: 1 },
   { dark: 0, mid: 0, light: 1, outro: 1 },
@@ -61,6 +111,78 @@ export const ABOUT_MOBILE_HERO_CLOUD = {
 }
 
 export const ABOUT_DESKTOP_CLOUDS = [
+  {
+    id: 'cloud-white-left',
+    layer: 'white',
+    width: 1104,
+    src: CloudWhiteLeft,
+    states: [
+      { x: -781, y: 313 },
+      { x: -781, y: 313 },
+      { x: -781, y: 313 },
+      { x: -781, y: 313 },
+    ],
+  },
+  {
+    id: 'cloud-white-right',
+    layer: 'white',
+    width: 996,
+    src: CloudWhiteRight,
+    states: [
+      { x: 1150, y: 313 },
+      { x: 1150, y: 313 },
+      { x: 1150, y: 313 },
+      { x: 1150, y: 313 },
+    ],
+  },
+  {
+    id: 'cloud-dark-left-1',
+    layer: 'dark',
+    width: 837,
+    src: CloudDarkLeft1,
+    states: [
+      { x: -665, y: 612 },
+      { x: -565, y: 452 },
+      { x: -605, y: 212 },
+      { x: -605, y: 212 },
+    ],
+  },
+  {
+    id: 'cloud-dark-left-2',
+    layer: 'dark',
+    width: 666.63,
+    src: CloudDarkLeft2,
+    states: [
+      { x: -45, y: 734 },
+      { x: 75, y: 500 },
+      { x: -45, y: 330 },
+      { x: -45, y: 330 },
+    ],
+  },
+  {
+    id: 'cloud-dark-right-1',
+    layer: 'dark',
+    width: 857,
+    src: CloudDarkRight1,
+    states: [
+      { x: 1230, y: 595 },
+      { x: 1130, y: 405 },
+      { x: 1200, y: 235 },
+      { x: 1200, y: 265 },
+    ],
+  },
+  {
+    id: 'cloud-dark-right-2',
+    layer: 'dark',
+    width: 610.8,
+    src: CloudDarkRight2,
+    states: [
+      { x: 800, y: 751 },
+      { x: 720, y: 454 },
+      { x: 750, y: 454 },
+      { x: 750, y: 454 },
+    ],
+  },
   {
     id: 'dark-left',
     layer: 'dark',
@@ -96,6 +218,61 @@ export const ABOUT_DESKTOP_CLOUDS = [
       { x: 902.222, y: 146.979 },
       { x: 902.222, y: 146.979 },
     ],
+  },
+  {
+    id: 'cloud-mid-left-1',
+    layer: 'mid',
+    width: 769.773,
+    src: CloudMidLeft1,
+    states: [
+      { x: -665, y: 892 },
+      { x: -665, y: 732 },
+      { x: -565, y: 392 },
+      { x: -565, y: 392 },
+    ],
+  },
+  {
+    id: 'cloud-mid-left-2',
+    layer: 'mid',
+    width: 921,
+    src: CloudMidLeft2,
+    states: [
+      { x: -280, y: 1156 },
+      { x: -280, y: 956 },
+      { x: -280, y: 956 },
+      { x: -280, y: 956 },
+    ],
+  },
+  {
+    id: 'cloud-mid-right-1',
+    layer: 'mid',
+    width: 737.016,
+    src: CloudMidRight1,
+    states: [
+      { x: 1339, y: 896 },
+      { x: 1339, y: 612.836 },
+      { x: 1289, y: 408.836 },
+      { x: 1289, y: 408.836 },
+    ],
+  },
+  {
+    id: 'cloud-mid-right-2',
+    layer: 'mid',
+    width: 921,
+    src: CloudMidRight2,
+    states: [
+      { x: 450, y: 1156 },
+      { x: 450, y: 956 },
+      { x: 450, y: 956 },
+      { x: 450, y: 956 },
+    ],
+  },
+  {
+    id: 'cloud-mid-center',
+    layer: 'mid',
+    width: 807.988,
+    src: MidCloudCenter,
+    states: [{ x: 326, y: 898 }],
   },
   {
     id: 'mid-left',
@@ -146,6 +323,18 @@ export const ABOUT_DESKTOP_CLOUDS = [
     ],
   },
   {
+    id: 'cloud-light-left-1',
+    layer: 'light',
+    width: 737.016,
+    src: CloudLightLeft1,
+    states: [
+      { x: -526, y: 1557 },
+      { x: -526, y: 1194 },
+      { x: -526, y: 821 },
+      { x: -496, y: 576 },
+    ],
+  },
+  {
     id: 'light-center',
     layer: 'light',
     width: 754.332,
@@ -170,6 +359,18 @@ export const ABOUT_DESKTOP_CLOUDS = [
     ],
   },
   {
+    id: 'cloud-light-right-1',
+    layer: 'light',
+    width: 760.344,
+    src: CloudLightRight1,
+    states: [
+      { x: 1285, y: 1560 },
+      { x: 1285, y: 1197 },
+      { x: 1285, y: 824 },
+      { x: 1255, y: 579 },
+    ],
+  },
+  {
     id: 'outro-cloud',
     layer: 'outro',
     width: 1510,
@@ -184,50 +385,50 @@ export const ABOUT_DESKTOP_CLOUDS = [
 ]
 
 export const ABOUT_DESKTOP_FILLS = [
-  {
-    id: 'dark-fill',
-    layer: 'dark',
-    width: ABOUT_DESIGN_FRAME.width,
-    states: [
-      { x: 0, y: 632 },
-      { x: 0, y: 411 },
-      { x: 0, y: 315 },
-      { x: 0, y: 1024 },
-    ],
-  },
-  {
-    id: 'mid-fill',
-    layer: 'mid',
-    width: ABOUT_DESIGN_FRAME.width,
-    states: [
-      { x: 0, y: 1159 },
-      { x: 0, y: 745 },
-      { x: 0, y: 367 },
-      { x: 0, y: 367 },
-    ],
-  },
-  {
-    id: 'light-fill',
-    layer: 'light',
-    width: ABOUT_DESIGN_FRAME.width,
-    states: [
-      { x: 0, y: 1680 },
-      { x: 0, y: 1680 },
-      { x: 0, y: 680 },
-      { x: 0, y: 462 },
-    ],
-  },
-  {
-    id: 'outro-fill',
-    layer: 'outro',
-    width: ABOUT_DESIGN_FRAME.width,
-    states: [
-      { x: 0, y: 2200 },
-      { x: 0, y: 2200 },
-      { x: 0, y: 2200 },
-      { x: 0, y: 1900 },
-    ],
-  },
+  // {
+  //   id: 'dark-fill',
+  //   layer: 'dark',
+  //   width: ABOUT_DESIGN_FRAME.width,
+  //   states: [
+  //     { x: 0, y: 674 },
+  //     { x: 0, y: 411 },
+  //     { x: 0, y: 315 },
+  //     { x: 0, y: 1024 },
+  //   ],
+  // },
+  // {
+  //   id: 'mid-fill',
+  //   layer: 'mid',
+  //   width: ABOUT_DESIGN_FRAME.width,
+  //   states: [
+  //     { x: 0, y: 1159 },
+  //     { x: 0, y: 745 },
+  //     { x: 0, y: 367 },
+  //     { x: 0, y: 367 },
+  //   ],
+  // },
+  // {
+  //   id: 'light-fill',
+  //   layer: 'light',
+  //   width: ABOUT_DESIGN_FRAME.width,
+  //   states: [
+  //     { x: 0, y: 1680 },
+  //     { x: 0, y: 1680 },
+  //     { x: 0, y: 680 },
+  //     { x: 0, y: 462 },
+  //   ],
+  // },
+  // {
+  //   id: 'outro-fill',
+  //   layer: 'outro',
+  //   width: ABOUT_DESIGN_FRAME.width,
+  //   states: [
+  //     { x: 0, y: 2200 },
+  //     { x: 0, y: 2200 },
+  //     { x: 0, y: 2200 },
+  //     { x: 0, y: 1900 },
+  //   ],
+  // },
 ]
 
 export const ABOUT_DESKTOP_QUOTE_LAYOUTS = [

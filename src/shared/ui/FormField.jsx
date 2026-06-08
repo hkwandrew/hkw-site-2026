@@ -37,7 +37,7 @@ const compactSelectTriggerStyles = css`
   padding-top: 10px;
   padding-bottom: 10px;
   padding-right: 56px;
-  padding-left: 20px;
+  padding-left: 24px;
 `
 
 const compactCaretStyles = css`
@@ -175,7 +175,6 @@ const SelectTrigger = styled.button`
 const TriggerValue = styled.span`
   display: block;
   min-width: 0;
-  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   color: ${({ theme, $placeholder }) =>

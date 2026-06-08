@@ -33,7 +33,6 @@ const AppLayout = () => {
   useLayoutEffect(() => {
     const rootElement = document.documentElement
 
-    rootElement.dataset.viewportLayout = viewportComposition.layout
     rootElement.style.setProperty(
       '--hkw-viewport-height',
       `${viewportComposition.height}px`,
@@ -45,14 +44,12 @@ const AppLayout = () => {
     )
 
     return () => {
-      delete rootElement.dataset.viewportLayout
       rootElement.style.removeProperty('--hkw-viewport-height')
       rootElement.style.removeProperty('--hkw-viewport-ratio')
       rootElement.style.removeProperty('--hkw-viewport-width')
     }
   }, [
     viewportComposition.height,
-    viewportComposition.layout,
     viewportComposition.width,
     viewportRatio,
   ])
@@ -66,7 +63,6 @@ const AppLayout = () => {
           data-scene-page={pageKey}
           data-hover={viewportComposition.hover}
           data-pointer={viewportComposition.pointer}
-          data-viewport-layout={viewportComposition.layout}
           className={pageKey}
           style={viewportStyle}
         >

@@ -1,6 +1,11 @@
 import styled, { css, keyframes } from 'styled-components'
 import { BodySmall, H4, applyTypography } from '@/shared/ui/Typography'
 import { ROOTS_DROP_DURATION_MS } from '@/routes/roots/rootsEntry'
+import { MEDIA_QUERIES } from '@/styles/breakpoints'
+import {
+  CONTENT_FRAME_TOP_CUSTOM_PROPERTY,
+  CONTENT_FRAME_WIDTH_CUSTOM_PROPERTY,
+} from '@/styles/viewportUnits'
 import { HOME_HOVER_REGION } from './homeHoverRegions'
 import { getHomeHoverRegionPosition } from './homeHoverConfig'
 
@@ -365,6 +370,15 @@ export const DesktopHome = styled.div`
   pointer-events: none;
 `
 
+export const PlaneViewport = styled.div`
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  pointer-events: none;
+  overflow: hidden;
+  overflow: clip;
+`
+
 export const Content = styled.div`
   pointer-events: none;
   position: absolute;
@@ -376,9 +390,10 @@ export const Content = styled.div`
   flex-direction: column;
   gap: 8px;
 
-  [data-viewport-layout='phone-portrait'] & {
-    padding: 57% 20px 0;
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     position: unset;
+    padding: 57% 20px 0;
+    max-width: 353px;
   }
 `
 
@@ -392,7 +407,7 @@ export const Title = styled.p`
     'wght' 700;
   display: block;
 
-  [data-viewport-layout='phone-portrait'] & {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     font-size: 16px;
     line-height: 1.625;
     font-variation-settings:
@@ -409,7 +424,7 @@ export const HeroText = styled(H4)`
   letter-spacing: unset;
   max-width: 560.57px;
 
-  [data-viewport-layout='phone-portrait'] & {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     font-size: 18px;
     letter-spacing: -0.36px;
   }
@@ -422,7 +437,7 @@ export const Footer = styled.footer`
   z-index: 5;
   pointer-events: auto;
 
-  [data-viewport-layout='phone-portrait'] & {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     padding: 215px 0 0 20px;
     bottom: 48px;
     left: unset;
@@ -431,6 +446,7 @@ export const Footer = styled.footer`
 
 export const FooterText = styled.div`
   color: ${({ theme }) => theme.colors.yellow.light};
+  ${applyTypography('bodySmall')}
 
   a {
     text-decoration-line: underline;
@@ -441,11 +457,10 @@ export const FooterText = styled.div`
     text-underline-position: from-font;
   }
 
-  [data-viewport-layout='phone-portrait'] & {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     display: flex;
     flex-direction: column;
     font-size: 14px;
-
     width: unset;
 
     .separator {
@@ -466,7 +481,9 @@ export const HomeMarmotClip = styled.div`
 
 export const HomeMarmotWrapper = styled.div`
   position: absolute;
-  right: -74.21px;
+  right: calc(
+    (100% - var(${CONTENT_FRAME_WIDTH_CUSTOM_PROPERTY}, 100%)) / 2 - 74.21px
+  );
   bottom: -40.61px;
   width: 681px;
   aspect-ratio: 681 / 453;
@@ -614,15 +631,15 @@ export const HomeMarmotWrapper = styled.div`
     }
   }
 
-  [data-viewport-layout='phone-portrait'] & {
-    width: min(478px, 122vw);
+  @media ${MEDIA_QUERIES.mobilePortrait} {
+    width: min(404px, 122vw);
     right: -127px;
   }
 
-  [data-viewport-layout='phone-portrait'] & {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     @media (max-height: 760px) {
       right: -127px;
-      bottom: -38px;
+      bottom: -48px;
       width: 457px;
     }
   }
@@ -752,7 +769,7 @@ export const MarmotCharacterWrap = styled.div`
     }
   }
 
-  [data-viewport-layout='phone-portrait'] & {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     transform: rotate(-2.012deg);
   }
 `
@@ -801,14 +818,14 @@ export const StumpTrigger = styled.button`
     outline-offset: 6px;
   }
 
-  [data-viewport-layout='phone-portrait'] & {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     top: 7px;
     left: 48px;
     width: 342px;
     height: 276px;
   }
 
-  [data-viewport-layout='phone-portrait'] & {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     @media (max-height: 760px) {
       top: 4px;
       left: 40px;
@@ -819,7 +836,7 @@ export const StumpTrigger = styled.button`
 // Plane scene
 export const PlaneTrack = styled.div`
   position: absolute;
-  top: 47px;
+  top: calc(var(${CONTENT_FRAME_TOP_CUSTOM_PROPERTY}, 0px) + 47px);
   left: 0;
   z-index: 80;
   display: inline-flex;
@@ -833,7 +850,7 @@ export const PlaneTrack = styled.div`
     animation: none;
   }
 
-  [data-viewport-layout='phone-portrait'] & {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     top: 12px;
     left: clamp(92px, 29.26vw, 115px);
     animation: none;
@@ -904,7 +921,7 @@ export const PlaneShell = styled.div`
     }
   }
 
-  [data-viewport-layout='phone-portrait'] & {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     --plane-motion-duration: 4.1s;
     width: min(207px, calc(100vw - 120px));
 

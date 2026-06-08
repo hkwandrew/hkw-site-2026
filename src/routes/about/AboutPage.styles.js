@@ -2,6 +2,7 @@ import styled, { css, keyframes } from 'styled-components'
 import { SCENE_TRANSITION_DURATION_MS } from '@/app/landscape/sceneRegistry'
 import ViewContainer from '@/shared/ui/ViewContainer'
 import { applyTypography } from '@/shared/ui/Typography'
+import { MEDIA_QUERIES } from '@/styles/breakpoints'
 
 const bob = keyframes`
   0%, 100% {
@@ -100,6 +101,7 @@ const ABOUT_PAGE_MOBILE_EXIT_SLIDE_DISTANCE = '100dvh'
 const ABOUT_PAGE_SLIDE_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)'
 
 export const Page = styled(ViewContainer)`
+  width: 100%;
   overflow: visible;
   max-width: 100%;
   margin-inline: auto;
@@ -119,8 +121,28 @@ export const Page = styled(ViewContainer)`
     transform: translate3d(0, ${ABOUT_PAGE_EXIT_SLIDE_DISTANCE}, 0);
   }
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}),
+  @media ${MEDIA_QUERIES.desktopFrame} {
+    top: 0;
+    height: 100dvh;
+  }
+
+  @media ${MEDIA_QUERIES.mobilePortrait},
     (prefers-reduced-motion: reduce) {
+    overflow-y: auto;
+    scroll-snap-type: y mandatory;
+    transform: translate3d(
+      0,
+      ${({ $isActive }) =>
+        $isActive ? '0' : ABOUT_PAGE_MOBILE_ENTER_SLIDE_DISTANCE},
+      0
+    );
+
+    &[data-about-phase='exiting'] {
+      transform: translate3d(0, ${ABOUT_PAGE_MOBILE_EXIT_SLIDE_DISTANCE}, 0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
     overflow-y: auto;
     scroll-snap-type: y mandatory;
     transform: translate3d(
@@ -148,8 +170,12 @@ export const DesktopScroller = styled.div`
     display: none;
   }
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}),
+  @media ${MEDIA_QUERIES.mobilePortrait},
     (prefers-reduced-motion: reduce) {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
     display: none;
   }
 `
@@ -214,7 +240,8 @@ export const DesktopScrollHint = styled.button`
   left: 50%;
   top: 496px;
   z-index: 16;
-  width: clamp(58px, 4.6vw, 68px);
+  width: 66px;
+  height: 65px;
   transform: translateX(-50%);
   pointer-events: auto;
   animation: ${bob} 2.4s ease-in-out infinite;
@@ -338,8 +365,13 @@ export const DesktopMascotFloat = styled.div`
 export const MobilePanels = styled.div`
   display: none;
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}),
+  @media ${MEDIA_QUERIES.mobilePortrait},
     (prefers-reduced-motion: reduce) {
+    display: block;
+    position: relative;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
     display: block;
     position: relative;
   }
