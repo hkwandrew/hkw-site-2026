@@ -101,6 +101,11 @@ const ROOTS_PORTFOLIO_ITEMS = [
     artworkHeight: 732.95,
     artworkTop: 40,
     artworkLeft: -40,
+    mobileArtwork: {
+      top: 0,
+      left: '50%',
+      width: 330,
+    },
   },
   {
     id: 'ewi',
@@ -118,6 +123,11 @@ const ROOTS_PORTFOLIO_ITEMS = [
     },
     artworkWidth: 579.059,
     artworkHeight: 822.19,
+    mobileArtwork: {
+      top: 0,
+      left: '50%',
+      width: 210,
+    },
   },
   {
     id: 'racial-justice',
@@ -136,6 +146,11 @@ const ROOTS_PORTFOLIO_ITEMS = [
     artworkWidth: 877.764,
     artworkHeight: 585.908,
     artworkTop: 60,
+    mobileArtwork: {
+      top: 0,
+      left: '50%',
+      width: 330,
+    },
   },
   {
     id: 'waters-meet',
@@ -160,6 +175,11 @@ const ROOTS_PORTFOLIO_ITEMS = [
     artworkHeight: 1007.876,
     artworkTop: 20,
     artworkLeft: -290,
+    mobileArtwork: {
+      top: 0,
+      left: '46%',
+      width: 360,
+    },
   },
   {
     id: 'community-development-initiative',
@@ -176,6 +196,11 @@ const ROOTS_PORTFOLIO_ITEMS = [
       width: 150.266,
     },
     artworkTop: -80,
+    mobileArtwork: {
+      top: '-210%',
+      left: '50%',
+      width: 220,
+    },
   },
   {
     id: 'spokane-community-against-racism',
@@ -201,6 +226,11 @@ const ROOTS_PORTFOLIO_ITEMS = [
     artworkWidth: 967.93,
     artworkHeight: 1166.299,
     artworkTop: 80,
+    mobileArtwork: {
+      top: 20,
+      left: '50%',
+      width: 295,
+    },
   },
   {
     id: 'asians-for-collective-liberation',
@@ -220,6 +250,11 @@ const ROOTS_PORTFOLIO_ITEMS = [
     artworkHeight: 835.876,
     artworkTop: -70,
     artworkLeft: -100,
+    mobileArtwork: {
+      top: 0,
+      left: '49%',
+      width: 330,
+    },
   },
   {
     id: 'justice-not-jails',
@@ -245,6 +280,11 @@ const ROOTS_PORTFOLIO_ITEMS = [
     artworkHeight: 526.339,
     artworkTop: 180,
     artworkLeft: 10,
+    mobileArtwork: {
+      top: 0,
+      left: '50%',
+      width: 320,
+    },
   },
   {
     id: 'citizen-nine26',
@@ -270,6 +310,11 @@ const ROOTS_PORTFOLIO_ITEMS = [
     artworkHeight: 471.771,
     artworkTop: 160.109,
     artworkLeft: 73.531,
+    mobileArtwork: {
+      top: 30,
+      left: '50%',
+      width: 310,
+    },
   },
   {
     id: 'meals-on-wheels',
@@ -289,6 +334,11 @@ const ROOTS_PORTFOLIO_ITEMS = [
     artworkHeight: 687.379,
     artworkTop: 100,
     artworkLeft: 40,
+    mobileArtwork: {
+      top: 48,
+      left: '50%',
+      width: 280,
+    },
   },
   {
     id: 'community-building',
@@ -308,6 +358,11 @@ const ROOTS_PORTFOLIO_ITEMS = [
     artworkHeight: 770.911,
     artworkTop: 40,
     artworkLeft: 70,
+    mobileArtwork: {
+      top: 0,
+      left: '52%',
+      width: 245,
+    },
   },
   {
     id: 'fyre',
@@ -327,6 +382,11 @@ const ROOTS_PORTFOLIO_ITEMS = [
     artworkHeight: 751.094,
     artworkTop: -20,
     artworkLeft: 40,
+    mobileArtwork: {
+      top: 0,
+      left: '50%',
+      width: 285,
+    },
   },
   {
     id: 'women-of-color-candidates',
@@ -351,6 +411,11 @@ const ROOTS_PORTFOLIO_ITEMS = [
     artworkHeight: 717,
     artworkTop: 68.7,
     artworkLeft: -64,
+    mobileArtwork: {
+      top: -24,
+      left: '54%',
+      width: 335,
+    },
   },
   {
     id: 'terrain',
@@ -370,6 +435,11 @@ const ROOTS_PORTFOLIO_ITEMS = [
     artworkHeight: 941.495,
     artworkTop: -50,
     artworkLeft: -140,
+    mobileArtwork: {
+      top: 0,
+      left: '47%',
+      width: 310,
+    },
   },
   {
     id: 'spokane-arts',
@@ -389,6 +459,11 @@ const ROOTS_PORTFOLIO_ITEMS = [
     artworkHeight: 613.237,
     artworkTop: 70,
     artworkLeft: 130,
+    mobileArtwork: {
+      top: 20,
+      left: '50%',
+      width: 210,
+    },
   },
   {
     id: 'marthas-kitchen',
@@ -408,6 +483,11 @@ const ROOTS_PORTFOLIO_ITEMS = [
     artworkHeight: 678.551,
     artworkTop: 100,
     artworkLeft: -20,
+    mobileArtwork: {
+      top: 20,
+      left: '50%',
+      width: 320,
+    },
   },
   {
     id: 'pjals',
@@ -434,6 +514,11 @@ const ROOTS_PORTFOLIO_ITEMS = [
     artworkHeight: 895.457,
     artworkTop: 0,
     artworkLeft: 20,
+    mobileArtwork: {
+      top: 0,
+      left: '50%',
+      width: 230,
+    },
   },
   {
     id: 'apic-washington',
@@ -452,6 +537,11 @@ const ROOTS_PORTFOLIO_ITEMS = [
     artworkWidth: 730.119,
     artworkHeight: 730.119,
     artworkTop: 40,
+    mobileArtwork: {
+      top: 0,
+      left: '50%',
+      width: 245,
+    },
   },
   {
     id: 'community-whistle',
@@ -470,6 +560,11 @@ const ROOTS_PORTFOLIO_ITEMS = [
     artworkWidth: 1091.189,
     artworkHeight: 727.548,
     artworkTop: 0,
+    mobileArtwork: {
+      top: 0,
+      left: '50%',
+      width: 335,
+    },
   },
 ]
 

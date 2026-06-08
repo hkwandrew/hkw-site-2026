@@ -123,14 +123,10 @@ const citizenStarTwinkle = keyframes`
 
 const Root = styled.section`
   position: absolute;
-  top: var(${CONTENT_FRAME_TOP_CUSTOM_PROPERTY}, 0);
-  right: 0;
-  left: 0;
-  width: var(${CONTENT_FRAME_WIDTH_CUSTOM_PROPERTY}, 100%);
-  max-width: none;
-  margin-inline: auto;
-  height: var(${CONTENT_FRAME_HEIGHT_CUSTOM_PROPERTY}, 100%);
-  overflow: hidden;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
   pointer-events: auto;
   transform: translate3d(0, 0, 0);
   transition: transform ${ROOTS_SCENE_TRANSITION_DURATION_MS}ms
@@ -160,6 +156,18 @@ const Root = styled.section`
     transition: none;
     transform: none;
   }
+`
+
+const SceneFrame = styled.div`
+  position: absolute;
+  top: var(${CONTENT_FRAME_TOP_CUSTOM_PROPERTY}, 0);
+  right: 0;
+  left: 0;
+  width: var(${CONTENT_FRAME_WIDTH_CUSTOM_PROPERTY}, 100%);
+  max-width: none;
+  height: var(${CONTENT_FRAME_HEIGHT_CUSTOM_PROPERTY}, 100%);
+  margin-inline: auto;
+  overflow: hidden;
 `
 
 const VisuallyHiddenHeading = styled.h1`
@@ -459,7 +467,9 @@ const MobileFrameColumn = styled.div`
 
 const RootsMarmotLayer = styled.div`
   position: absolute;
-  right: -1.56px;
+  right: calc(
+    (100% - var(${CONTENT_FRAME_WIDTH_CUSTOM_PROPERTY}, 100%)) / 2 - 1.56px
+  );
   bottom: 0;
   z-index: 1;
   width: 404px;
@@ -567,9 +577,7 @@ const getRootsViewportLayout = ({ layout, ratio, width = 0 }) => {
     return ROOTS_VIEWPORT_LAYOUT.PORTRAIT_TABLET
   }
 
-  if (
-    layout === VIEWPORT_LAYOUT.MOBILE_PORTRAIT
-  ) {
+  if (layout === VIEWPORT_LAYOUT.MOBILE_PORTRAIT) {
     return ROOTS_VIEWPORT_LAYOUT.PHONE
   }
 
@@ -732,91 +740,96 @@ export default function RootsScene({ sceneRef }) {
   }
 
   return (
-    <Root
-      ref={sceneRef}
-      aria-label='Non-profit Roots scene'
-      data-dialog-open={isSliderOpen}
-      data-roots-viewport-layout={viewportLayout}
-    >
-      <VisuallyHiddenHeading>Non-profit Roots</VisuallyHiddenHeading>
+    <>
+      <Root
+        ref={sceneRef}
+        aria-label='Non-profit Roots scene'
+        data-dialog-open={isSliderOpen}
+        data-roots-viewport-layout={viewportLayout}
+      >
+        <SceneFrame>
+          <VisuallyHiddenHeading>Non-profit Roots</VisuallyHiddenHeading>
 
-      {isMobileLayout ? (
-        <MobileScene
-          aria-hidden={isSliderOpen}
-          data-roots-mobile-scroll-region
-          data-roots-mobile-layout={viewportLayout}
-          $isActive={isActive}
-          $isLocked={isSliderOpen}
-          onScroll={handleMobileScroll}
-        >
-          <MobileWelcome />
+          {isMobileLayout ? (
+            <MobileScene
+              aria-hidden={isSliderOpen}
+              data-roots-mobile-scroll-region
+              data-roots-mobile-layout={viewportLayout}
+              $isActive={isActive}
+              $isLocked={isSliderOpen}
+              onScroll={handleMobileScroll}
+            >
+              <MobileWelcome />
 
-          {isPhoneLayout ? (
-            <MobileFrames data-roots-mobile-layout={viewportLayout}>
-              {mobileFrameColumns.map((columnEntries, columnIndex) => (
-                <MobileFrameColumn key={`mobile-roots-column-${columnIndex}`}>
-                  {columnEntries.map(renderMobileFrameButton)}
-                </MobileFrameColumn>
-              ))}
-            </MobileFrames>
+              {isPhoneLayout ? (
+                <MobileFrames data-roots-mobile-layout={viewportLayout}>
+                  {mobileFrameColumns.map((columnEntries, columnIndex) => (
+                    <MobileFrameColumn
+                      key={`mobile-roots-column-${columnIndex}`}
+                    >
+                      {columnEntries.map(renderMobileFrameButton)}
+                    </MobileFrameColumn>
+                  ))}
+                </MobileFrames>
+              ) : (
+                <PortraitTabletFrames data-roots-mobile-layout={viewportLayout}>
+                  {mobileFrameEntries.map(renderMobileFrameButton)}
+                </PortraitTabletFrames>
+              )}
+            </MobileScene>
           ) : (
-            <PortraitTabletFrames data-roots-mobile-layout={viewportLayout}>
-              {mobileFrameEntries.map(renderMobileFrameButton)}
-            </PortraitTabletFrames>
+            <DesktopScene aria-hidden={isSliderOpen} $isActive={isActive}>
+              <Welcome />
+
+              {ROOTS_PORTFOLIO_ITEMS.map((item, itemIndex) => {
+                const FrameComponent = item.FrameComponent
+
+                return (
+                  <DesktopFrameButton
+                    key={item.id}
+                    ref={(node) => setTriggerRef(item.id, node)}
+                    type='button'
+                    aria-label={`Open ${item.title}`}
+                    aria-haspopup='dialog'
+                    aria-expanded={isSliderOpen && activeItem.id === item.id}
+                    data-active={isSliderOpen && activeItem.id === item.id}
+                    data-roots-example={item.id}
+                    data-roots-example-region='desktop-frame'
+                    $left={item.desktopFrame.left}
+                    $top={item.desktopFrame.top}
+                    $width={item.desktopFrame.width}
+                    onClick={() => openPortfolio(itemIndex, item.id)}
+                    disabled={isSliderOpen}
+                  >
+                    <FrameComponent />
+                  </DesktopFrameButton>
+                )
+              })}
+            </DesktopScene>
           )}
-        </MobileScene>
-      ) : (
-        <DesktopScene aria-hidden={isSliderOpen} $isActive={isActive}>
-          <Welcome />
 
-          {ROOTS_PORTFOLIO_ITEMS.map((item, itemIndex) => {
-            const FrameComponent = item.FrameComponent
+          {isMobileLayout ? (
+            <MobileBackButton
+              type='button'
+              aria-label='Return to home'
+              onClick={handleReturnHome}
+              disabled={isSliderOpen}
+            />
+          ) : null}
+        </SceneFrame>
 
-            return (
-              <DesktopFrameButton
-                key={item.id}
-                ref={(node) => setTriggerRef(item.id, node)}
-                type='button'
-                aria-label={`Open ${item.title}`}
-                aria-haspopup='dialog'
-                aria-expanded={isSliderOpen && activeItem.id === item.id}
-                data-active={isSliderOpen && activeItem.id === item.id}
-                data-roots-example={item.id}
-                data-roots-example-region='desktop-frame'
-                $left={item.desktopFrame.left}
-                $top={item.desktopFrame.top}
-                $width={item.desktopFrame.width}
-                onClick={() => openPortfolio(itemIndex, item.id)}
-                disabled={isSliderOpen}
-              >
-                <FrameComponent />
-              </DesktopFrameButton>
-            )
-          })}
-        </DesktopScene>
-      )}
-
-      {isMobileLayout ? (
-        <MobileBackButton
-          type='button'
-          aria-label='Return to home'
-          onClick={handleReturnHome}
-          disabled={isSliderOpen}
-        />
-      ) : null}
-
-      <RootsMarmotLayer aria-hidden='true' $isVisible={!isSliderOpen}>
-        <RootsMarmot />
-      </RootsMarmotLayer>
-
-      {isSliderOpen ? (
-        <RootsPortfolioSlider
-          item={activeItem}
-          onClose={closePortfolio}
-          onNext={next}
-          onPrev={prev}
-        />
-      ) : null}
-    </Root>
+        {isSliderOpen ? (
+          <RootsPortfolioSlider
+            item={activeItem}
+            onClose={closePortfolio}
+            onNext={next}
+            onPrev={prev}
+          />
+        ) : null}
+        <RootsMarmotLayer aria-hidden='true' $isVisible={!isSliderOpen}>
+          <RootsMarmot />
+        </RootsMarmotLayer>
+      </Root>
+    </>
   )
 }

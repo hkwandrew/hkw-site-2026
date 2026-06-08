@@ -113,6 +113,7 @@ const StyledNavLink = styled(Link)`
   display: block;
   padding: ${({ theme }) => theme.components.navTabs.itemPadding};
   border-radius: ${({ theme }) => theme.components.navTabs.borderRadius};
+  text-align: center;
   transition:
     font-variation-settings 0.45s ease,
     color 0.45s ease,
@@ -126,6 +127,7 @@ const StyledNavLink = styled(Link)`
   }
 
   &::after {
+    ${applyTypography('navButton')}
     content: attr(data-text);
     display: block;
     white-space: nowrap;
@@ -136,6 +138,7 @@ const StyledNavLink = styled(Link)`
     user-select: none;
     pointer-events: none;
 
+    font-weight: ${({ theme }) => theme.typography.navButton.activeWeight};
     font-variation-settings:
       'wdth' ${({ theme }) => theme.typography.navButton.width},
       'wght' ${({ theme }) => theme.typography.navButton.activeWeight};

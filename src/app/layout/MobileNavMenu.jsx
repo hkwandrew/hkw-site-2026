@@ -61,12 +61,6 @@ const ToggleButton = styled.button`
     color: ${({ $isRootsPage, theme }) =>
       $isRootsPage ? theme.colors.yellow.light : theme.colors.blue.dark};
   }
-
-  &:focus-visible {
-    outline: 2px solid ${({ theme }) => theme.colors.yellow.gold};
-    outline-offset: 4px;
-    border-radius: 8px;
-  }
 `
 
 const Overlay = styled.div`
@@ -148,11 +142,6 @@ const CloseButton = styled.button`
     width: 12px;
     height: 12px;
   }
-
-  &:focus-visible {
-    outline: 2px solid ${({ theme }) => theme.colors.yellow.gold};
-    outline-offset: 4px;
-  }
 `
 
 const MenuList = styled.nav`
@@ -204,16 +193,11 @@ const MenuLink = styled(Link)`
   }
 
   @media (hover: hover) and (pointer: fine) {
-    &:hover {
+    &:hover,
+    &:focus-visible {
       color: ${({ theme }) => theme.colors.orange.dark};
       transform: translateX(-2px);
     }
-  }
-
-  &:focus-visible {
-    outline: 2px solid ${({ theme }) => theme.colors.yellow.gold};
-    outline-offset: 5px;
-    border-radius: 8px;
   }
 `
 

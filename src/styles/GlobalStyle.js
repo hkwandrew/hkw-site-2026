@@ -163,6 +163,7 @@ const GlobalStyle = createGlobalStyle`
   }
 
   [data-page=about-page][data-scene-page=home-page],
+  [data-page=home-page][data-scene-page=home-page],
   [data-page=about-page][data-scene-page=services-page] {
     background-color: ${({ theme }) => theme.colors.blue.light};
   }

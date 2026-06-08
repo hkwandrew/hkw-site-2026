@@ -10,6 +10,7 @@ import { createPortal } from 'react-dom'
 import styled, { css, keyframes } from 'styled-components'
 import ArrowButton from '@/shared/ui/ArrowButton'
 import { applyTypography } from '@/shared/ui/Typography'
+import { MEDIA_QUERIES } from '@/styles/breakpoints'
 import RootsMarmot from './RootsMarmot'
 import frameBottom from './assets/roots-slider/frame-chrome/bottom.svg'
 import frameLeft from './assets/roots-slider/frame-chrome/left.svg'
@@ -21,6 +22,9 @@ const SLIDE_FADE_DURATION_MS = 180
 
 const toCssLength = (value, fallback = 'auto') =>
   typeof value === 'number' ? `${value}px` : (value ?? fallback)
+
+const getMobileArtworkLength = (layout, key, fallback) =>
+  toCssLength(layout?.[key], fallback)
 
 const getArtworkTranslate = ({ $artworkTop, $artworkLeft }) => {
   const translateX = $artworkLeft == null ? '-50%' : '0'
@@ -102,9 +106,15 @@ const Dialog = styled.div`
     p {
       font-size: 18px;
 
-      @container roots-dialog (max-width: 740px) {
-        font-size: 14px;
+      @media ${MEDIA_QUERIES.mobilePortrait} {
+        font-size: 12px;
       }
+    }
+  }
+
+  &[data-roots-example='community-development-initiative'] {
+    div:nth-of-type(2) {
+      flex-direction: column;
     }
   }
 `
@@ -129,7 +139,7 @@ const FrameSide = styled.img`
   object-fit: fill;
   user-select: none;
 
-  @container roots-dialog (max-width: 740px) {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     top: ${({ $mobileTop, $top }) => $mobileTop ?? $top ?? 'auto'};
     right: ${({ $mobileRight, $right }) => $mobileRight ?? $right ?? 'auto'};
     bottom: ${({ $mobileBottom, $bottom }) =>
@@ -153,13 +163,15 @@ const ClosePill = styled(PillButton)`
   z-index: 4;
 
   &:focus-visible {
-    outline: 3px solid ${({ theme }) => theme.colors.yellow.gold};
-    outline-offset: 4px;
+    ${
+      '' /* outline: 3px solid ${({ theme }) => theme.colors.yellow.gold};
+    outline-offset: 4px; */
+    }
   }
 
-  @container roots-dialog (max-width: 740px) {
-    top: max(24px, calc(36px + env(safe-area-inset-top)));
-    right: 34px;
+  @media ${MEDIA_QUERIES.mobilePortrait} {
+    top: calc(20px + env(safe-area-inset-top));
+    right: calc(34px + env(safe-area-inset-right));
     width: 24px;
     height: 24px;
     padding: 0;
@@ -184,14 +196,14 @@ const ClosePill = styled(PillButton)`
 `
 
 const CloseLabel = styled.span`
-  @container roots-dialog (max-width: 740px) {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     display: none;
   }
 `
 const MobileCloseIcon = styled.svg`
   display: none;
 
-  @container roots-dialog (max-width: 740px) {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     display: block;
     width: 18px;
     height: 18px;
@@ -209,23 +221,16 @@ const Content = styled.div`
   min-height: 0;
   padding: 96px 84px 72px;
 
-  @container roots-dialog (max-width: 1024px) {
-    gap: 40px;
-    grid-template-columns: minmax(0, 1fr) minmax(280px, 372px);
-    padding: 96px 56px 64px;
-  }
-
-  @container roots-dialog (max-width: 740px) {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
     flex: 1 1 auto;
-    gap: 18px;
+    gap: 8px;
     min-height: 0;
-    padding: min(24px, calc(84px + env(safe-area-inset-top))) 48px 12px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-    touch-action: pan-y;
+    padding: calc(54px + env(safe-area-inset-top)) 48px
+      calc(62px + env(safe-area-inset-bottom));
+    overflow: hidden;
   }
 `
 
@@ -237,16 +242,12 @@ const ArtworkStage = styled.div`
   min-width: 0;
   min-height: 0;
 
-  @container roots-dialog (max-width: 740px) {
-    flex: 0 0 auto;
-    height: 220px;
-    min-height: 140px;
+  @media ${MEDIA_QUERIES.mobilePortrait} {
+    flex: 0 0 112px;
+    height: 112px;
+    min-height: 0;
     padding: 0;
     overflow: visible;
-  }
-
-  @container roots-dialog (max-width: 740px) and (max-height: 700px) {
-    height: 34cqb;
   }
 `
 
@@ -262,20 +263,19 @@ const ArtworkImage = styled.img`
   max-block-size: none;
   transform: ${getArtworkTranslate};
 
-  @container roots-dialog (max-width: 740px) {
-    position: relative;
-    top: auto;
-    left: auto;
-    width: min(100%, 360px);
+  @media ${MEDIA_QUERIES.mobilePortrait} {
+    position: absolute;
+    top: ${({ $mobileArtwork }) =>
+      getMobileArtworkLength($mobileArtwork, 'top', '0')};
+    left: ${({ $mobileArtwork }) =>
+      getMobileArtworkLength($mobileArtwork, 'left', '50%')};
+    width: ${({ $mobileArtwork }) =>
+      getMobileArtworkLength($mobileArtwork, 'width', '320px')};
     height: auto;
-    max-width: 100%;
-    max-height: 220px;
+    max-width: none;
+    max-height: none;
     object-fit: contain;
-    transform: none;
-  }
-
-  @container roots-dialog (max-width: 740px) and (max-height: 700px) {
-    max-height: 34cqb;
+    transform: translateX(-50%);
   }
 `
 
@@ -285,23 +285,25 @@ const ArtworkFrame = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  ${'' /* width: min(100%, 520px); */}
 
   > * {
     width: 100%;
   }
 
-  @container roots-dialog (max-width: 740px) {
-    width: min(100%, 300px);
-    max-height: 220px;
+  @media ${MEDIA_QUERIES.mobilePortrait} {
+    position: absolute;
+    top: ${({ $mobileArtwork }) =>
+      getMobileArtworkLength($mobileArtwork, 'top', '0')};
+    left: ${({ $mobileArtwork }) =>
+      getMobileArtworkLength($mobileArtwork, 'left', '50%')};
+    width: ${({ $mobileArtwork }) =>
+      getMobileArtworkLength($mobileArtwork, 'width', '320px')};
+    max-height: none;
+    transform: translateX(-50%);
 
     > * {
       max-height: inherit;
     }
-  }
-
-  @container roots-dialog (max-width: 740px) and (max-height: 700px) {
-    max-height: 34cqb;
   }
 `
 
@@ -318,13 +320,9 @@ const Copy = styled.div`
   max-width: ${({ $maxWidth }) =>
     typeof $maxWidth === 'number' ? `${$maxWidth}px` : ($maxWidth ?? 'none')};
 
-  @container roots-dialog (max-width: 1024px) {
-    gap: 30px;
-    padding-right: 0;
-  }
-
-  @container roots-dialog (max-width: 740px) {
-    gap: 18px;
+  @media ${MEDIA_QUERIES.mobilePortrait} {
+    flex: 0 1 auto;
+    gap: 10px;
     margin-top: 0;
     padding-inline: 2px;
     max-width: none;
@@ -343,8 +341,8 @@ const Title = styled.h2`
     'wght' ${({ theme }) => theme.font.weight.bold};
   color: ${({ theme }) => theme.colors.blue.dark};
 
-  @container roots-dialog (max-width: 740px) {
-    font-size: 24px;
+  @media ${MEDIA_QUERIES.mobilePortrait} {
+    font-size: 22px;
     letter-spacing: 0;
   }
 `
@@ -363,8 +361,8 @@ const ItemType = styled.p`
   text-transform: uppercase;
   color: ${({ theme }) => theme.colors.blue.dark};
 
-  @container roots-dialog (max-width: 740px) {
-    font-size: 14px;
+  @media ${MEDIA_QUERIES.mobilePortrait} {
+    font-size: 13px;
   }
 `
 
@@ -380,9 +378,9 @@ const Bio = styled.p`
     'wght' ${({ theme }) => theme.font.weight.medium};
   text-transform: none;
 
-  @container roots-dialog (max-width: 740px) {
-    font-size: 14px;
-    line-height: 1.2;
+  @media ${MEDIA_QUERIES.mobilePortrait} {
+    font-size: 12px;
+    line-height: 1.18;
     letter-spacing: 0;
   }
 `
@@ -397,8 +395,9 @@ const RolesLabel = styled.p`
   ${applyTypography('bodyMedium')}
   line-height: 1.3;
 
-  @container roots-dialog (max-width: 740px) {
-    font-size: 14px;
+  @media ${MEDIA_QUERIES.mobilePortrait} {
+    font-size: 12px;
+    line-height: 1.2;
   }
 `
 
@@ -420,8 +419,9 @@ const Role = styled.li`
     'wdth' 100,
     'wght' ${({ theme }) => theme.font.weight.semibold};
 
-  @container roots-dialog (max-width: 740px) {
-    font-size: 14px;
+  @media ${MEDIA_QUERIES.mobilePortrait} {
+    font-size: 12px;
+    line-height: 1.22;
   }
 `
 
@@ -435,17 +435,17 @@ const NavCluster = styled.div`
   justify-content: space-between;
   padding: 0 68px;
 
-  @container roots-dialog (max-width: 740px) {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     position: absolute;
     top: auto;
     right: 0;
-    bottom: 24px;
+    bottom: calc(24px + env(safe-area-inset-bottom));
     left: 0;
     z-index: 3;
     justify-content: center;
     gap: 16px;
     margin-top: auto;
-    padding: 18px 0 max(10px, env(safe-area-inset-bottom));
+    padding: 0;
   }
 `
 
@@ -478,7 +478,7 @@ const MarmotAccent = styled.div`
     height: auto;
   }
 
-  @container roots-dialog (max-width: 740px) {
+  @media ${MEDIA_QUERIES.mobilePortrait} {
     display: none;
   }
 `
@@ -523,6 +523,14 @@ export default function RootsPortfolioSlider({
   const handlePrev = useCallback(() => {
     requestSlideChange(onPrev)
   }, [onPrev, requestSlideChange])
+  const handleOverlayPointerDown = useCallback(
+    (event) => {
+      if (event.target === event.currentTarget) {
+        onClose()
+      }
+    },
+    [onClose],
+  )
 
   useLayoutEffect(() => {
     closeRef.current?.focus()
@@ -609,7 +617,10 @@ export default function RootsPortfolioSlider({
   if (typeof document === 'undefined') return null
 
   return createPortal(
-    <Overlay data-roots-portfolio-overlay>
+    <Overlay
+      data-roots-portfolio-overlay
+      onPointerDown={handleOverlayPointerDown}
+    >
       <Dialog
         ref={dialogRef}
         role='dialog'
@@ -682,6 +693,7 @@ export default function RootsPortfolioSlider({
           ref={closeRef}
           variant='close'
           type='button'
+          aria-label='Close portfolio details'
           onClick={onClose}
         >
           <CloseLabel>Close</CloseLabel>
@@ -713,11 +725,15 @@ export default function RootsPortfolioSlider({
                 $artworkHeight={displayItem.artworkHeight}
                 $artworkTop={displayItem.artworkTop}
                 $artworkLeft={displayItem.artworkLeft}
+                $mobileArtwork={displayItem.mobileArtwork}
                 src={displayItem.detailImage}
                 alt={`${displayItem.title} project artwork`}
               />
             ) : (
-              <ArtworkFrame aria-label={`${displayItem.title} project artwork`}>
+              <ArtworkFrame
+                $mobileArtwork={displayItem.mobileArtwork}
+                aria-label={`${displayItem.title} project artwork`}
+              >
                 <FrameComponent />
               </ArtworkFrame>
             )}
