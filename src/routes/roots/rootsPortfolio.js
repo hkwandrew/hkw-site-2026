@@ -20,25 +20,25 @@ import WomenOfColorCandidates from './WomenOfColorCandidates'
 import SpokaneArts from './SpokaneArts'
 import MealsOnWheels from './MealsOnWheels'
 
-import apicWashingtonDetail from './assets/roots-slider/apic-washington-detail.png'
-import asiansForCollectiveLiberationDetail from './assets/roots-slider/asians-for-collective-liberation-detail.png'
-import celdfDetail from './assets/roots-slider/celdf-detail.png'
-import citizenNine26Detail from './assets/roots-slider/citizen-nine26-detail.png'
-import communityBuildingDetail from './assets/roots-slider/community-building-detail.png'
-import communityDevelopmentInitiativeDetail from './assets/roots-slider/community-development-initiative-detail.png'
-import communityWhistleDetail from './assets/roots-slider/community-whistle-detail.png'
-import ewiDetail from './assets/roots-slider/ewi-detail.png'
-import fyreDetail from './assets/roots-slider/fyre-detail.png'
-import justiceNotJailsDetail from './assets/roots-slider/justice-not-jails-detail.png'
-import marthasKitchenDetail from './assets/roots-slider/marthas-kitchen-detail.png'
-import mealsOnWheelsDetail from './assets/roots-slider/meals-on-wheels-detail.png'
-import pjalsDetail from './assets/roots-slider/pjals-detail.png'
-import racialJusticeDetail from './assets/roots-slider/racial-justice-detail.png'
-import spokaneArtsDetail from './assets/roots-slider/spokane-arts-detail.png'
-import spokaneCommunityAgainstRacismDetail from './assets/roots-slider/spokane-community-against-racism-detail.png'
-import terrainDetail from './assets/roots-slider/terrain-detail.png'
-import watersMeetDetail from './assets/roots-slider/waters-meet-detail.png'
-import womenOfColorCandidatesDetail from './assets/roots-slider/women-of-color-candidates-detail.png'
+import apicWashingtonDetail from './assets/roots-slider/apic-washington-detail.webp'
+import asiansForCollectiveLiberationDetail from './assets/roots-slider/asians-for-collective-liberation-detail.webp'
+import celdfDetail from './assets/roots-slider/celdf-detail.webp'
+import citizenNine26Detail from './assets/roots-slider/citizen-nine26-detail.webp'
+import communityBuildingDetail from './assets/roots-slider/community-building-detail.webp'
+import communityDevelopmentInitiativeDetail from './assets/roots-slider/community-development-initiative-detail.webp'
+import communityWhistleDetail from './assets/roots-slider/community-whistle-detail.webp'
+import ewiDetail from './assets/roots-slider/ewi-detail.webp'
+import fyreDetail from './assets/roots-slider/fyre-detail.webp'
+import justiceNotJailsDetail from './assets/roots-slider/justice-not-jails-detail.webp'
+import marthasKitchenDetail from './assets/roots-slider/marthas-kitchen-detail.webp'
+import mealsOnWheelsDetail from './assets/roots-slider/meals-on-wheels-detail.webp'
+import pjalsDetail from './assets/roots-slider/pjals-detail.webp'
+import racialJusticeDetail from './assets/roots-slider/racial-justice-detail.webp'
+import spokaneArtsDetail from './assets/roots-slider/spokane-arts-detail.webp'
+import spokaneCommunityAgainstRacismDetail from './assets/roots-slider/spokane-community-against-racism-detail.webp'
+import terrainDetail from './assets/roots-slider/terrain-detail.webp'
+import watersMeetDetail from './assets/roots-slider/waters-meet-detail.webp'
+import womenOfColorCandidatesDetail from './assets/roots-slider/women-of-color-candidates-detail.webp'
 
 const memoFrame = (FrameComponent, displayName) => {
   const MemoizedFrame = memo(FrameComponent)
@@ -108,51 +108,6 @@ const ROOTS_PORTFOLIO_ITEMS = [
     },
   },
   {
-    id: 'ewi',
-    title: 'Executive Women International of Spokane',
-    type: 'Non-Profit',
-    FrameComponent: EwiFrame,
-    detailImage: ewiDetail,
-    maxWidth: 343,
-    bio: 'EWI brings together leaders from diverse businesses to give back and make a meaningful impact. Through philanthropy, community service, and educational initiatives, their members are committed to strengthening the communities they work and live in.',
-    roles: ['Website Design', 'Website Development'],
-    desktopFrame: {
-      left: 61.54,
-      top: 233.6,
-      width: 158.482,
-    },
-    artworkWidth: 579.059,
-    artworkHeight: 822.19,
-    mobileArtwork: {
-      top: 0,
-      left: '50%',
-      width: 210,
-    },
-  },
-  {
-    id: 'racial-justice',
-    title: 'Racial Justice and Police Misconduct Center (RJPMC)',
-    type: 'Non-Profit',
-    FrameComponent: RjpmcFrame,
-    detailImage: racialJusticeDetail,
-    maxWidth: 358,
-    bio: '"HKW came to the Racial Justice and Police Misconduct Project through a referral and truly knocked it out of the park with our web design. They stepped up and supported us when very few others would, ensuring our community could see the important work we are doing. I can’t thank you enough for the belief you had in our organization."\n\n- Nickeia Hunter, Co-Founder and Executive Director of RJPMC',
-    roles: ['Website Design', 'Website Development'],
-    desktopFrame: {
-      left: 707.91,
-      top: 187.02,
-      width: 143.189,
-    },
-    artworkWidth: 877.764,
-    artworkHeight: 585.908,
-    artworkTop: 60,
-    mobileArtwork: {
-      top: 0,
-      left: '50%',
-      width: 330,
-    },
-  },
-  {
     id: 'waters-meet',
     title: 'Waters Meet C3 & C4',
     type: 'Non-Profit',
@@ -182,6 +137,51 @@ const ROOTS_PORTFOLIO_ITEMS = [
     },
   },
   {
+    id: 'racial-justice',
+    title: 'Racial Justice and Police Misconduct Center (RJPMC)',
+    type: 'Non-Profit',
+    FrameComponent: RjpmcFrame,
+    detailImage: racialJusticeDetail,
+    maxWidth: 358,
+    bio: '"HKW came to the Racial Justice and Police Misconduct Project through a referral and truly knocked it out of the park with our web design. They stepped up and supported us when very few others would, ensuring our community could see the important work we are doing. I can’t thank you enough for the belief you had in our organization."\n\n- Nickeia Hunter, Co-Founder and Executive Director of RJPMC',
+    roles: ['Website Design', 'Website Development'],
+    desktopFrame: {
+      left: 707.91,
+      top: 187.02,
+      width: 143.189,
+    },
+    artworkWidth: 877.764,
+    artworkHeight: 585.908,
+    artworkTop: 60,
+    mobileArtwork: {
+      top: 0,
+      left: '50%',
+      width: 330,
+    },
+  },
+  {
+    id: 'ewi',
+    title: 'Executive Women International of Spokane',
+    type: 'Non-Profit',
+    FrameComponent: EwiFrame,
+    detailImage: ewiDetail,
+    maxWidth: 343,
+    bio: 'EWI brings together leaders from diverse businesses to give back and make a meaningful impact. Through philanthropy, community service, and educational initiatives, their members are committed to strengthening the communities they work and live in.',
+    roles: ['Website Design', 'Website Development'],
+    desktopFrame: {
+      left: 61.54,
+      top: 233.6,
+      width: 158.482,
+    },
+    artworkWidth: 579.059,
+    artworkHeight: 822.19,
+    mobileArtwork: {
+      top: 0,
+      left: '50%',
+      width: 210,
+    },
+  },
+  {
     id: 'community-development-initiative',
     title: 'Community Development Initiative',
     type: 'Non-Profit',
@@ -200,36 +200,6 @@ const ROOTS_PORTFOLIO_ITEMS = [
       top: '-210%',
       left: '50%',
       width: 220,
-    },
-  },
-  {
-    id: 'spokane-community-against-racism',
-    title: 'SCAR Spokane',
-    type: 'Non-Profit',
-    FrameComponent: ScarFrame,
-    detailImage: spokaneCommunityAgainstRacismDetail,
-    maxWidth: 372,
-    bio: 'SCAR is a 501c4 and led by a steering committee of six people; four of whom are people of color. They have a multitude of affiliations with local, state, and national organizations. SCAR uses the Hub and Spoke model of organizing with the Steering Committee in the center.',
-    roles: [
-      'Website Design',
-      'Website Development',
-      'Graphic Design',
-      'Branding',
-      'Logo Design',
-      'Marketing Support',
-    ],
-    desktopFrame: {
-      left: 288.98,
-      top: 537.6,
-      width: 183.207,
-    },
-    artworkWidth: 967.93,
-    artworkHeight: 1166.299,
-    artworkTop: 80,
-    mobileArtwork: {
-      top: 20,
-      left: '50%',
-      width: 295,
     },
   },
   {
@@ -254,6 +224,30 @@ const ROOTS_PORTFOLIO_ITEMS = [
       top: 0,
       left: '49%',
       width: 330,
+    },
+  },
+  {
+    id: 'community-building',
+    title: 'Community Building',
+    type: 'Non-Profit',
+    FrameComponent: CommunityBuildingFrame,
+    detailImage: communityBuildingDetail,
+    maxWidth: 343,
+    bio: "The Community Building Foundation supports the Spokane region through grant-making, women's retreat programs, and the Community Building Campus, a downtown hub offering affordable space for local organizations to grow and do their work.",
+    roles: ['Website Development', 'Retainer Support'],
+    desktopFrame: {
+      left: 835.02,
+      top: 590.02,
+      width: 183.638,
+    },
+    artworkWidth: 686.044,
+    artworkHeight: 770.911,
+    artworkTop: 40,
+    artworkLeft: 70,
+    mobileArtwork: {
+      top: 0,
+      left: '52%',
+      width: 245,
     },
   },
   {
@@ -340,28 +334,35 @@ const ROOTS_PORTFOLIO_ITEMS = [
       width: 280,
     },
   },
+
   {
-    id: 'community-building',
-    title: 'Community Building',
+    id: 'spokane-community-against-racism',
+    title: 'SCAR Spokane',
     type: 'Non-Profit',
-    FrameComponent: CommunityBuildingFrame,
-    detailImage: communityBuildingDetail,
-    maxWidth: 343,
-    bio: "The Community Building Foundation supports the Spokane region through grant-making, women's retreat programs, and the Community Building Campus, a downtown hub offering affordable space for local organizations to grow and do their work.",
-    roles: ['Website Development', 'Retainer Support'],
+    FrameComponent: ScarFrame,
+    detailImage: spokaneCommunityAgainstRacismDetail,
+    maxWidth: 372,
+    bio: 'SCAR is a 501c4 and led by a steering committee of six people; four of whom are people of color. They have a multitude of affiliations with local, state, and national organizations. SCAR uses the Hub and Spoke model of organizing with the Steering Committee in the center.',
+    roles: [
+      'Website Design',
+      'Website Development',
+      'Graphic Design',
+      'Branding',
+      'Logo Design',
+      'Marketing Support',
+    ],
     desktopFrame: {
-      left: 835.02,
-      top: 590.02,
-      width: 183.638,
+      left: 288.98,
+      top: 537.6,
+      width: 183.207,
     },
-    artworkWidth: 686.044,
-    artworkHeight: 770.911,
-    artworkTop: 40,
-    artworkLeft: 70,
+    artworkWidth: 967.93,
+    artworkHeight: 1166.299,
+    artworkTop: 80,
     mobileArtwork: {
-      top: 0,
-      left: '52%',
-      width: 245,
+      top: 20,
+      left: '50%',
+      width: 295,
     },
   },
   {
@@ -490,6 +491,52 @@ const ROOTS_PORTFOLIO_ITEMS = [
     },
   },
   {
+    id: 'community-whistle',
+    title: 'Community Whistle',
+    type: 'Non-Profit',
+    FrameComponent: CommunityWhistleFrame,
+    detailImage: communityWhistleDetail,
+    maxWidth: 318,
+    bio: 'As a grassroots rapid-response system, Community Whistle shares whistle codes, safety guidance, and immigration hotline resources to help neighbors alert each other and respond to raids.',
+    roles: ['Website Design', 'Logo Design'],
+    desktopFrame: {
+      left: 500.16,
+      top: 752.01,
+      width: 139.814,
+    },
+    artworkWidth: 1091.189,
+    artworkHeight: 727.548,
+    artworkTop: 0,
+    mobileArtwork: {
+      top: 0,
+      left: '50%',
+      width: 335,
+    },
+  },
+  {
+    id: 'apic-washington',
+    title: 'Asian & Pacific Islander Coalition \nof Washington',
+    type: 'Non-Profit',
+    FrameComponent: ApicWashingtonFrame,
+    detailImage: apicWashingtonDetail,
+    maxWidth: 358,
+    bio: 'For nearly three decades, APICW has been a steady voice for Asian American, Native Hawaiian, and Pacific Islander communities across Washington state, working to close gaps in access and opportunity through advocacy, community building, and meaningful policy change.',
+    roles: ['Website Design', 'Graphic Design', 'Branding', 'Logo Design'],
+    desktopFrame: {
+      left: 280.99,
+      top: 326.69,
+      width: 156.042,
+    },
+    artworkWidth: 730.119,
+    artworkHeight: 730.119,
+    artworkTop: 40,
+    mobileArtwork: {
+      top: 0,
+      left: '50%',
+      width: 245,
+    },
+  },
+  {
     id: 'pjals',
     title: 'Peace and Justice Action League of Spokane (PJALS)',
     type: 'Non-Profit',
@@ -518,52 +565,6 @@ const ROOTS_PORTFOLIO_ITEMS = [
       top: 0,
       left: '50%',
       width: 230,
-    },
-  },
-  {
-    id: 'apic-washington',
-    title: 'Asian & Pacific Islander Coalition \nof Washington',
-    type: 'Non-Profit',
-    FrameComponent: ApicWashingtonFrame,
-    detailImage: apicWashingtonDetail,
-    maxWidth: 358,
-    bio: 'For nearly three decades, APICW has been a steady voice for Asian American, Native Hawaiian, and Pacific Islander communities across Washington state, working to close gaps in access and opportunity through advocacy, community building, and meaningful policy change.',
-    roles: ['Website Design', 'Graphic Design', 'Branding', 'Logo Design'],
-    desktopFrame: {
-      left: 280.99,
-      top: 326.69,
-      width: 156.042,
-    },
-    artworkWidth: 730.119,
-    artworkHeight: 730.119,
-    artworkTop: 40,
-    mobileArtwork: {
-      top: 0,
-      left: '50%',
-      width: 245,
-    },
-  },
-  {
-    id: 'community-whistle',
-    title: 'Community Whistle',
-    type: 'Non-Profit',
-    FrameComponent: CommunityWhistleFrame,
-    detailImage: communityWhistleDetail,
-    maxWidth: 318,
-    bio: 'As a grassroots rapid-response system, Community Whistle shares whistle codes, safety guidance, and immigration hotline resources to help neighbors alert each other and respond to raids.',
-    roles: ['Website Design', 'Logo Design'],
-    desktopFrame: {
-      left: 500.16,
-      top: 752.01,
-      width: 139.814,
-    },
-    artworkWidth: 1091.189,
-    artworkHeight: 727.548,
-    artworkTop: 0,
-    mobileArtwork: {
-      top: 0,
-      left: '50%',
-      width: 335,
     },
   },
 ]
