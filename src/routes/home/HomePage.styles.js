@@ -506,7 +506,7 @@ export const HomeMarmotWrapper = styled.div`
   #left-eye-lash,
   #right-eye-lash,
   #marmot-hover-blink,
-  #marmot-hover-blink image,
+  #marmot-hover-blink [data-marmot-hover-layer-art],
   #coffee-steam path {
     transform-box: fill-box;
     will-change: transform, opacity;
@@ -554,7 +554,7 @@ export const HomeMarmotWrapper = styled.div`
     opacity: 1;
   }
 
-  #marmot-hover-blink image {
+  #marmot-hover-blink [data-marmot-hover-layer-art] {
     transform-origin: center;
   }
 
@@ -616,7 +616,7 @@ export const HomeMarmotWrapper = styled.div`
     #left-eye-lash,
     #right-eye-lash,
     #marmot-hover-blink,
-    #marmot-hover-blink image,
+    #marmot-hover-blink [data-marmot-hover-layer-art],
     #coffee-steam path {
       animation: none;
       transform: none;
@@ -705,7 +705,7 @@ export const MarmotCharacterWrap = styled.div`
         opacity: 1;
       }
 
-      #marmot-hover-blink image {
+      #marmot-hover-blink [data-marmot-hover-layer-art] {
         animation: ${marmotHoverBlink} 5.6s steps(1, end) infinite;
       }
     `}
@@ -759,7 +759,7 @@ export const MarmotCharacterWrap = styled.div`
     #marmot-hover-face,
     #marmot-hover-mug,
     #marmot-hover-blink,
-    #marmot-hover-blink image {
+    #marmot-hover-blink [data-marmot-hover-layer-art] {
       animation: none;
       transition: none;
     }

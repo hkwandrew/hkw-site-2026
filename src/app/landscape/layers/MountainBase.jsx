@@ -14,6 +14,7 @@ const StaticHoverContent = memo(function StaticHoverContent({ hoverContent }) {
 const MountainBase = ({
   containerId,
   wrapperId,
+  deferHoverContentUntilActive = false,
   hoverPosition,
   hoverRegion,
   hoverContent,
@@ -34,6 +35,8 @@ const MountainBase = ({
   const canInteractWithHomeHover = isHomeInteractive ?? isHome
   const isHoverActive =
     canInteractWithHomeHover && homeHoverRegion === hoverRegion
+  const shouldRenderHoverContent =
+    !deferHoverContentUntilActive || isHoverActive
 
   const hoverGroup = (
     <g
@@ -44,7 +47,9 @@ const MountainBase = ({
       }}
       transform={`translate(${hoverPosition.x ?? 0} ${hoverPosition.y ?? 0})`}
     >
-      <StaticHoverContent hoverContent={hoverContent} />
+      {shouldRenderHoverContent ? (
+        <StaticHoverContent hoverContent={hoverContent} />
+      ) : null}
     </g>
   )
 

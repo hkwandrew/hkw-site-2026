@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import goldMountainHover from '@/assets/images/gold-mountain-hover.png'
+import goldMountainHover from '@/routes/home/assets/gold-mountain-hover.webp'
 import { getHomeHoverRegionPosition } from '@/routes/home/homeHoverConfig'
 import { HOME_HOVER_REGION } from '@/routes/home/homeHoverRegions'
 import theme from '@/styles/theme'
@@ -16,6 +16,7 @@ const GoldMountain = memo(function GoldMountain() {
   return (
     <MountainBase
       containerId='gold-mountain__container'
+      deferHoverContentUntilActive
       wrapperId='gold-mountain__wrapper'
       hoverPosition={HOVER_POSITION}
       hoverRegion={HOME_HOVER_REGION.goldMountain}
