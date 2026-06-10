@@ -16,9 +16,8 @@ import {
   getRoutePathForPath,
 } from '@/app/router/routeRegistry'
 import {
-  animateSharedSceneTransition,
   applySharedSceneState,
-} from '@/app/landscape/runtime/sharedSceneRuntime'
+} from '@/app/landscape/runtime/sharedSceneState'
 import {
   VIEWPORT_LAYOUT,
   useViewportComposition,
@@ -29,6 +28,21 @@ const isMobilePortraitLayout = (layout) =>
 
 const canUseHomeHoverRegions = ({ hover, layout, pointer }) =>
   hover === 'hover' && pointer === 'fine' && !isMobilePortraitLayout(layout)
+
+let sharedSceneRuntimePromise = null
+
+const loadSharedSceneRuntime = () => {
+  if (!sharedSceneRuntimePromise) {
+    sharedSceneRuntimePromise = import(
+      '@/app/landscape/runtime/sharedSceneRuntime'
+    ).catch((error) => {
+      sharedSceneRuntimePromise = null
+      throw error
+    })
+  }
+
+  return sharedSceneRuntimePromise
+}
 
 const useLandscapeTransitionController = (pathname) => {
   const viewportComposition = useViewportComposition()
@@ -130,6 +144,16 @@ const useLandscapeTransitionController = (pathname) => {
       const revealDelayMs = Math.max(durationMs - revealLeadMs, 0)
 
       clearRouteContentRevealTimer()
+
+      if (revealDelayMs === 0) {
+        queueMicrotask(() => {
+          if (activeTargetPathRef.current === nextPath) {
+            setEarlyRevealedContentPath(nextPath)
+          }
+        })
+        return
+      }
+
       routeContentRevealTimeoutRef.current = window.setTimeout(() => {
         routeContentRevealTimeoutRef.current = null
 
@@ -214,15 +238,52 @@ const useLandscapeTransitionController = (pathname) => {
       })
       scheduleRouteContentLeadReveal(nextRoutePath, transitionConfig.durationMs)
 
-      activeSceneTimelineRef.current = animateSharedSceneTransition({
-        rootElement: mainElement,
-        targetState: transitionConfig.targetState,
-        durationMs: transitionConfig.durationMs,
-        pathMorphByLayer: transitionConfig.pathMorphByLayer,
-        onComplete: () => {
-          finishSceneTransition(nextRoutePath)
-        },
-      })
+      const startSharedSceneTransition = () => {
+        loadSharedSceneRuntime()
+          .then(({ animateSharedSceneTransition }) => {
+            if (
+              activeTargetPathRef.current !== nextRoutePath ||
+              mainRef.current !== mainElement
+            ) {
+              return
+            }
+
+            activeSceneTimelineRef.current = animateSharedSceneTransition({
+              rootElement: mainElement,
+              targetState: transitionConfig.targetState,
+              durationMs: transitionConfig.durationMs,
+              pathMorphByLayer: transitionConfig.pathMorphByLayer,
+              onComplete: () => {
+                finishSceneTransition(nextRoutePath)
+              },
+            })
+
+            if (!activeSceneTimelineRef.current) {
+              finishSceneTransition(nextRoutePath)
+            }
+          })
+          .catch(() => {
+            if (
+              activeTargetPathRef.current !== nextRoutePath ||
+              mainRef.current !== mainElement
+            ) {
+              return
+            }
+
+            applySharedSceneState(mainElement, transitionConfig.targetState)
+            finishSceneTransition(nextRoutePath)
+          })
+      }
+
+      const shouldStartWithDestinationEntry =
+        nextRoutePath === '/about' ||
+        getRouteContentRevealLeadMs(nextRoutePath) >= transitionConfig.durationMs
+
+      if (shouldStartWithDestinationEntry && typeof window !== 'undefined') {
+        window.requestAnimationFrame(startSharedSceneTransition)
+      } else {
+        startSharedSceneTransition()
+      }
 
       return true
     },
