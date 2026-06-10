@@ -1,6 +1,5 @@
 import { useCallback, useState } from 'react'
 import { useInRouterContext } from 'react-router'
-import usePageActive from '@/shared/hooks/usePageActive'
 import { convertCssPxToViewportUnit } from '@/styles/viewportUnits'
 import MarmotCheer from './MarmotCheer'
 import {
@@ -163,7 +162,6 @@ const AboutPageTransitionController = ({ pageElement }) => {
 }
 
 const AboutPage = () => {
-  const isActive = usePageActive()
   const isInRouterContext = useInRouterContext()
   const [pageElement, setPageElement] = useState(null)
   const { scrollerRef, sceneRef, handleScrollHintClick } =
@@ -175,7 +173,6 @@ const AboutPage = () => {
   return (
     <Page
       ref={handlePageRef}
-      $isActive={isActive}
       data-testid='about-page'
       data-about-phase='entered'
     >

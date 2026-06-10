@@ -4,6 +4,12 @@ import { usePageSceneTransition } from '@/app/landscape/pageSceneTransition'
 import { SCENE_TRANSITION_DURATION_MS } from '@/app/landscape/sceneRegistry'
 
 const EXIT_PHASE = 'exiting'
+const WORK_ROUTE_PATH = '/work'
+
+const isWorkPath = (pathname) =>
+  pathname === WORK_ROUTE_PATH || pathname?.startsWith(`${WORK_ROUTE_PATH}/`)
+
+const shouldReleaseForDestinationEntry = (pathname) => isWorkPath(pathname)
 
 const useAboutPageTransition = (pageElement) => {
   const exitTransitionRef = useRef(null)
@@ -30,6 +36,12 @@ const useAboutPageTransition = (pageElement) => {
     }
 
     transitionSceneToPath(nextPath)
+
+    if (shouldReleaseForDestinationEntry(nextPath)) {
+      nextPathRef.current = null
+      leaveAboutBlocker.proceed()
+      return
+    }
 
     const runExit = exitTransitionRef.current
 

@@ -5,7 +5,6 @@ import { WorkDirtForeground } from './WorkPage.styles'
 const WorkDirtLayer = styled.g``
 
 function WorkDirtForegroundArtwork({
-  isActive,
   isEntryComplete,
   isLeaving,
   transitionMs,
@@ -18,7 +17,6 @@ function WorkDirtForegroundArtwork({
       viewBox='0 0 1440 1024'
       shapeRendering='geometricPrecision'
       textRendering='geometricPrecision'
-      $isActive={isActive}
       $isEntryComplete={isEntryComplete}
       $isLeaving={isLeaving}
       $transitionMs={transitionMs}

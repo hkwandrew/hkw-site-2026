@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useBlocker, useLocation, useNavigate, useParams } from 'react-router'
-import usePageActive from '@/shared/hooks/usePageActive'
 import { usePageSceneTransition } from '@/app/landscape/pageSceneTransition'
 import { SCENE_TRANSITION_DURATION_MS } from '@/app/landscape/sceneTiming'
 import DirtLayer from '@/app/landscape/layers/DirtLayer'
@@ -47,12 +46,16 @@ import {
 const DESKTOP_NAV_GAP = 24
 const WORK_DIRT_FOREGROUND_TRANSITION_MS = SCENE_TRANSITION_DURATION_MS
 const STUDY_FADE_DURATION_MS = 420
+const ABOUT_ROUTE_PATH = '/about'
 const WORK_ROUTE_PATH = '/work'
 
 const preloadRootsPage = () => import('../roots/RootsPage.jsx')
 
 const isWorkPath = (pathname) =>
-  pathname === WORK_ROUTE_PATH || pathname.startsWith(`${WORK_ROUTE_PATH}/`)
+  pathname === WORK_ROUTE_PATH || pathname?.startsWith(`${WORK_ROUTE_PATH}/`)
+
+const shouldReleaseForDestinationEntry = (pathname) =>
+  pathname === ABOUT_ROUTE_PATH
 
 const getCaseStudySlug = (caseStudy) => caseStudy.slug ?? caseStudy.id
 
@@ -105,6 +108,12 @@ const useWorkPageExitTransition = () => {
     const didStartSceneTransition = transitionSceneToPath(nextPath)
 
     if (!didStartSceneTransition || shouldReduceMotion) {
+      nextPathRef.current = null
+      leaveWorkBlocker.proceed()
+      return undefined
+    }
+
+    if (shouldReleaseForDestinationEntry(nextPath)) {
       nextPathRef.current = null
       leaveWorkBlocker.proceed()
       return undefined
@@ -272,7 +281,6 @@ const renderHeroPane = (study, state) => {
 }
 
 const WorkPage = () => {
-  const isActive = usePageActive()
   const isExiting = useWorkPageExitTransition()
   const navigate = useNavigate()
   const location = useLocation()
@@ -329,8 +337,6 @@ const WorkPage = () => {
   }, [index, routeStudyIndex])
 
   useEffect(() => {
-    if (!isActive) return undefined
-
     const timer = window.setTimeout(() => {
       setIsForegroundEntryComplete(true)
     }, WORK_DIRT_FOREGROUND_TRANSITION_MS)
@@ -338,7 +344,7 @@ const WorkPage = () => {
     return () => {
       window.clearTimeout(timer)
     }
-  }, [isActive])
+  }, [])
 
   useEffect(() => {
     if (studyPhase === 'leaving') {
@@ -489,7 +495,7 @@ const WorkPage = () => {
   }
 
   return (
-    <Page $isActive={isActive}>
+    <Page $isActive>
       <PageFrame data-testid='work-page-frame'>
         <MarmotWrapper
           type='button'
@@ -548,7 +554,6 @@ const WorkPage = () => {
         </MainContent>
 
         <WorkDirtForegroundArtwork
-          isActive={isActive}
           isEntryComplete={isForegroundEntryComplete}
           isLeaving={isExiting}
           transitionMs={WORK_DIRT_FOREGROUND_TRANSITION_MS}

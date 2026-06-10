@@ -100,6 +100,26 @@ const ABOUT_PAGE_MOBILE_ENTER_SLIDE_DISTANCE = '72dvh'
 const ABOUT_PAGE_MOBILE_EXIT_SLIDE_DISTANCE = '100dvh'
 const ABOUT_PAGE_SLIDE_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)'
 
+const aboutPageEnter = keyframes`
+  from {
+    transform: translate3d(0, ${ABOUT_PAGE_ENTER_SLIDE_DISTANCE}, 0);
+  }
+
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+`
+
+const aboutPageMobileEnter = keyframes`
+  from {
+    transform: translate3d(0, ${ABOUT_PAGE_MOBILE_ENTER_SLIDE_DISTANCE}, 0);
+  }
+
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+`
+
 export const Page = styled(ViewContainer)`
   width: 100%;
   overflow: visible;
@@ -107,17 +127,16 @@ export const Page = styled(ViewContainer)`
   margin-inline: auto;
   pointer-events: auto;
   opacity: 1;
-  transform: translate3d(
-    0,
-    ${({ $isActive }) => ($isActive ? '0' : ABOUT_PAGE_ENTER_SLIDE_DISTANCE)},
-    0
-  );
-  transition: transform ${SCENE_TRANSITION_DURATION_MS}ms
-    ${ABOUT_PAGE_SLIDE_EASE};
+  transform: translate3d(0, 0, 0);
+  animation: ${aboutPageEnter} ${SCENE_TRANSITION_DURATION_MS}ms
+    ${ABOUT_PAGE_SLIDE_EASE} both;
   will-change: transform;
 
   &[data-about-phase='exiting'] {
+    animation: none;
     pointer-events: none;
+    transition: transform ${SCENE_TRANSITION_DURATION_MS}ms
+      ${ABOUT_PAGE_SLIDE_EASE};
     transform: translate3d(0, ${ABOUT_PAGE_EXIT_SLIDE_DISTANCE}, 0);
   }
 
@@ -130,14 +149,11 @@ export const Page = styled(ViewContainer)`
     (prefers-reduced-motion: reduce) {
     overflow-y: auto;
     scroll-snap-type: y mandatory;
-    transform: translate3d(
-      0,
-      ${({ $isActive }) =>
-        $isActive ? '0' : ABOUT_PAGE_MOBILE_ENTER_SLIDE_DISTANCE},
-      0
-    );
+    transform: translate3d(0, 0, 0);
+    animation-name: ${aboutPageMobileEnter};
 
     &[data-about-phase='exiting'] {
+      animation: none;
       transform: translate3d(0, ${ABOUT_PAGE_MOBILE_EXIT_SLIDE_DISTANCE}, 0);
     }
   }
@@ -145,14 +161,11 @@ export const Page = styled(ViewContainer)`
   @media (prefers-reduced-motion: reduce) {
     overflow-y: auto;
     scroll-snap-type: y mandatory;
-    transform: translate3d(
-      0,
-      ${({ $isActive }) =>
-        $isActive ? '0' : ABOUT_PAGE_MOBILE_ENTER_SLIDE_DISTANCE},
-      0
-    );
+    animation: none;
+    transform: translate3d(0, 0, 0);
 
     &[data-about-phase='exiting'] {
+      transition: none;
       transform: translate3d(0, ${ABOUT_PAGE_MOBILE_EXIT_SLIDE_DISTANCE}, 0);
     }
   }

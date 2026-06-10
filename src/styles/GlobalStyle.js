@@ -164,7 +164,9 @@ const GlobalStyle = createGlobalStyle`
 
   [data-page=about-page][data-scene-page=home-page],
   [data-page=home-page][data-scene-page=home-page],
-  [data-page=about-page][data-scene-page=services-page] {
+  [data-page=about-page][data-scene-page=services-page],
+  [data-page=roots-page][data-scene-page=about-page],
+  [data-page=about-page][data-scene-page=roots-page] {
     background-color: ${({ theme }) => theme.colors.blue.light};
   }
 

@@ -4,10 +4,18 @@ import { usePageSceneTransition } from '@/app/landscape/pageSceneTransition'
 import { SCENE_TRANSITION_DURATION_MS } from '@/app/landscape/sceneRegistry'
 
 export const ROOTS_SCENE_TRANSITION_DURATION_MS = SCENE_TRANSITION_DURATION_MS
+const ABOUT_ROUTE_PATH = '/about'
 const ROOTS_ROUTE_PATH = '/roots'
+const WORK_ROUTE_PATH = '/work'
 
 const isRootsPath = (pathname) =>
-  pathname === ROOTS_ROUTE_PATH || pathname.startsWith(`${ROOTS_ROUTE_PATH}/`)
+  pathname === ROOTS_ROUTE_PATH || pathname?.startsWith(`${ROOTS_ROUTE_PATH}/`)
+
+const isWorkPath = (pathname) =>
+  pathname === WORK_ROUTE_PATH || pathname?.startsWith(`${WORK_ROUTE_PATH}/`)
+
+const shouldReleaseForDestinationEntry = (pathname) =>
+  pathname === ABOUT_ROUTE_PATH || isWorkPath(pathname)
 
 const useRootsPageTransition = () => {
   const sectionRef = useRef(null)
@@ -27,10 +35,24 @@ const useRootsPageTransition = () => {
   useEffect(() => {
     if (leaveRootsBlocker.state !== 'blocked') return
 
-    transitionSceneToPath(nextPathRef.current)
+    const nextPath = nextPathRef.current
+
+    if (!nextPath) {
+      leaveRootsBlocker.proceed()
+      return
+    }
+
+    transitionSceneToPath(nextPath)
+
+    if (shouldReleaseForDestinationEntry(nextPath)) {
+      nextPathRef.current = null
+      leaveRootsBlocker.proceed()
+      return
+    }
 
     const runExit = exitTransitionRef.current
     if (!runExit) {
+      nextPathRef.current = null
       leaveRootsBlocker.proceed()
       return
     }

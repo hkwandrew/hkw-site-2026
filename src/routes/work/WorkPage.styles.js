@@ -54,6 +54,16 @@ const workMarmotDescend = keyframes`
   }
 `
 
+const workDirtForegroundEnter = keyframes`
+  from {
+    transform: translate3d(0, 128%, 0);
+  }
+
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+`
+
 const steamRiseLeft = keyframes`
   0% {
     opacity: 0;
@@ -496,13 +506,14 @@ export const WorkDirtForeground = styled.svg`
   height: auto;
   overflow: visible;
   pointer-events: none;
-  transform: translate3d(
-    0,
-    ${({ $isActive, $isEntryComplete, $isLeaving }) =>
-      $isLeaving || (!$isActive && !$isEntryComplete) ? '128%' : '0'},
-    0
-  );
-  transition: transform ${({ $transitionMs }) => $transitionMs}ms linear;
+  transform: ${({ $isLeaving }) =>
+    $isLeaving ? 'translate3d(0, 128%, 0)' : 'translate3d(0, 0, 0)'};
+  transition: ${({ $isLeaving, $transitionMs }) =>
+    $isLeaving ? `transform ${$transitionMs}ms linear` : 'none'};
+  animation: ${({ $isEntryComplete, $isLeaving, $transitionMs }) =>
+    !$isEntryComplete && !$isLeaving
+      ? css`${workDirtForegroundEnter} ${$transitionMs}ms linear both`
+      : 'none'};
   will-change: transform;
 
   @media ${MEDIA_QUERIES.mobilePortrait} {
