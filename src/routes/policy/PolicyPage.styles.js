@@ -4,6 +4,7 @@ import { applyTypography } from '@/shared/ui/Typography'
 import { MEDIA_QUERIES } from '@/styles/breakpoints'
 
 export const Page = styled(ViewContainer)`
+  width: auto;
   max-width: 100%;
   overflow-x: hidden;
   overflow-y: auto;
