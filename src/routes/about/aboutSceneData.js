@@ -1,28 +1,28 @@
-import DarkCloudCenter from './assets/about-clouds/about-dark-cloud.svg'
-import OutroCloud from './assets/about-clouds/about-layer-outro.svg'
-import DarkCloudLeft from './assets/about-clouds/cloud-dark.svg'
-import DarkCloudRight from './assets/about-clouds/cloud-dk-right.svg'
-import LightCloudCenter from './assets/about-clouds/cloud-light-center.svg'
-import LightCloudLeft from './assets/about-clouds/cloud-light-left.svg'
-import LightCloudRight from './assets/about-clouds/cloud-light-right.svg'
-import MidCloudCenter from './assets/about-clouds/cloud-mid-center.svg'
-import MidCloudLeft from './assets/about-clouds/cloud-mid-left.svg'
-import MidCloudRight from './assets/about-clouds/cloud-mid-right.svg'
-import DarkCloudMobile from './assets/about-clouds/about-dark-cloud-mobile.svg'
-import CloudWhiteLeft from './assets/about-clouds/cloud-white-left.svg'
-import CloudWhiteRight from './assets/about-clouds/cloud-white-right.svg'
-import CloudDarkLeft1 from './assets/about-clouds/cloud-dark-left-1.svg'
-import CloudDarkLeft2 from './assets/about-clouds/cloud-dark-left-2.svg'
-import CloudDarkRight1 from './assets/about-clouds/cloud-dark-right-1.svg'
-import CloudDarkRight2 from './assets/about-clouds/cloud-dark-right-2.svg'
-import CloudMidLeft1 from './assets/about-clouds/cloud-mid-left-1.svg'
-import CloudMidLeft2 from './assets/about-clouds/cloud-mid-left-2.svg'
-// import CloudMidLeft3 from './assets/about-clouds/cloud-mid-left-3.svg'
-import CloudMidRight1 from './assets/about-clouds/cloud-mid-right-1.svg'
-import CloudMidRight2 from './assets/about-clouds/cloud-mid-right-2.svg'
-// import CloudMidRight3 from './assets/about-clouds/cloud-mid-right-3.svg'
-import CloudLightLeft1 from './assets/about-clouds/cloud-light-left-1.svg'
-import CloudLightRight1 from './assets/about-clouds/cloud-light-right-1.svg'
+import {
+  CloudDarkLeft1,
+  CloudDarkLeft2,
+  CloudDarkRight1,
+  CloudDarkRight2,
+  CloudLightLeft1,
+  CloudLightRight1,
+  CloudMidLeft1,
+  CloudMidLeft2,
+  CloudMidRight1,
+  CloudMidRight2,
+  CloudWhiteLeft,
+  CloudWhiteRight,
+  DarkCloudCenter,
+  DarkCloudLeft,
+  DarkCloudMobile,
+  DarkCloudRight,
+  LightCloudCenter,
+  LightCloudLeft,
+  LightCloudRight,
+  MidCloudCenter,
+  MidCloudLeft,
+  MidCloudRight,
+  OutroCloud,
+} from './AboutClouds'
 
 export const ABOUT_DESIGN_FRAME = { width: 1440, height: 1024 }
 
@@ -115,7 +115,7 @@ export const ABOUT_DESKTOP_CLOUDS = [
     id: 'cloud-white-left',
     layer: 'white',
     width: 1104,
-    src: CloudWhiteLeft,
+    Svg: CloudWhiteLeft,
     states: [
       { x: -781, y: 313 },
       { x: -781, y: 313 },
@@ -127,7 +127,7 @@ export const ABOUT_DESKTOP_CLOUDS = [
     id: 'cloud-white-right',
     layer: 'white',
     width: 996,
-    src: CloudWhiteRight,
+    Svg: CloudWhiteRight,
     states: [
       { x: 1150, y: 313 },
       { x: 1150, y: 313 },
@@ -139,7 +139,7 @@ export const ABOUT_DESKTOP_CLOUDS = [
     id: 'cloud-dark-left-1',
     layer: 'dark',
     width: 837,
-    src: CloudDarkLeft1,
+    Svg: CloudDarkLeft1,
     states: [
       { x: -665, y: 612 },
       { x: -565, y: 452 },
@@ -151,7 +151,7 @@ export const ABOUT_DESKTOP_CLOUDS = [
     id: 'cloud-dark-left-2',
     layer: 'dark',
     width: 666.63,
-    src: CloudDarkLeft2,
+    Svg: CloudDarkLeft2,
     states: [
       { x: -45, y: 734 },
       { x: 75, y: 500 },
@@ -163,7 +163,7 @@ export const ABOUT_DESKTOP_CLOUDS = [
     id: 'cloud-dark-right-1',
     layer: 'dark',
     width: 857,
-    src: CloudDarkRight1,
+    Svg: CloudDarkRight1,
     states: [
       { x: 1230, y: 595 },
       { x: 1130, y: 405 },
@@ -175,7 +175,7 @@ export const ABOUT_DESKTOP_CLOUDS = [
     id: 'cloud-dark-right-2',
     layer: 'dark',
     width: 610.8,
-    src: CloudDarkRight2,
+    Svg: CloudDarkRight2,
     states: [
       { x: 800, y: 751 },
       { x: 720, y: 454 },
@@ -187,7 +187,7 @@ export const ABOUT_DESKTOP_CLOUDS = [
     id: 'dark-left',
     layer: 'dark',
     width: 666.631,
-    src: DarkCloudLeft,
+    Svg: DarkCloudLeft,
     states: [
       { x: -107, y: 448 },
       { x: -54, y: 276.463 },
@@ -199,7 +199,7 @@ export const ABOUT_DESKTOP_CLOUDS = [
     id: 'dark-center',
     layer: 'dark',
     width: 669.981,
-    src: DarkCloudCenter,
+    Svg: DarkCloudCenter,
     states: [
       { x: 384.986, y: 568.916 },
       { x: 384.986, y: 180.916 },
@@ -211,7 +211,7 @@ export const ABOUT_DESKTOP_CLOUDS = [
     id: 'dark-right',
     layer: 'dark',
     width: 610.799,
-    src: DarkCloudRight,
+    Svg: DarkCloudRight,
     states: [
       { x: 919, y: 445 },
       { x: 902.223, y: 262.979 },
@@ -223,7 +223,7 @@ export const ABOUT_DESKTOP_CLOUDS = [
     id: 'cloud-mid-left-1',
     layer: 'mid',
     width: 769.773,
-    src: CloudMidLeft1,
+    Svg: CloudMidLeft1,
     states: [
       { x: -665, y: 892 },
       { x: -665, y: 732 },
@@ -235,7 +235,7 @@ export const ABOUT_DESKTOP_CLOUDS = [
     id: 'cloud-mid-left-2',
     layer: 'mid',
     width: 921,
-    src: CloudMidLeft2,
+    Svg: CloudMidLeft2,
     states: [
       { x: -280, y: 1156 },
       { x: -280, y: 956 },
@@ -247,7 +247,7 @@ export const ABOUT_DESKTOP_CLOUDS = [
     id: 'cloud-mid-right-1',
     layer: 'mid',
     width: 737.016,
-    src: CloudMidRight1,
+    Svg: CloudMidRight1,
     states: [
       { x: 1339, y: 896 },
       { x: 1339, y: 612.836 },
@@ -259,7 +259,7 @@ export const ABOUT_DESKTOP_CLOUDS = [
     id: 'cloud-mid-right-2',
     layer: 'mid',
     width: 921,
-    src: CloudMidRight2,
+    Svg: CloudMidRight2,
     states: [
       { x: 450, y: 1156 },
       { x: 450, y: 956 },
@@ -271,14 +271,14 @@ export const ABOUT_DESKTOP_CLOUDS = [
     id: 'cloud-mid-center',
     layer: 'mid',
     width: 807.988,
-    src: MidCloudCenter,
+    Svg: MidCloudCenter,
     states: [{ x: 326, y: 898 }],
   },
   {
     id: 'mid-left',
     layer: 'mid',
     width: 769.773,
-    src: MidCloudLeft,
+    Svg: MidCloudLeft,
     states: [
       { x: -187, y: 843 },
       { x: -142, y: 602.823 },
@@ -290,7 +290,7 @@ export const ABOUT_DESKTOP_CLOUDS = [
     id: 'mid-center',
     layer: 'mid',
     width: 807.988,
-    src: MidCloudCenter,
+    Svg: MidCloudCenter,
     states: [
       { x: 326, y: 898 },
       { x: 305.977, y: 495 },
@@ -302,7 +302,7 @@ export const ABOUT_DESKTOP_CLOUDS = [
     id: 'mid-right',
     layer: 'mid',
     width: 737.016,
-    src: MidCloudRight,
+    Svg: MidCloudRight,
     states: [
       { x: 842, y: 876 },
       { x: 828.565, y: 612.836 },
@@ -314,7 +314,7 @@ export const ABOUT_DESKTOP_CLOUDS = [
     id: 'light-left',
     layer: 'light',
     width: 698.345,
-    src: LightCloudLeft,
+    Svg: LightCloudLeft,
     states: [
       { x: -138, y: 1357 },
       { x: -138, y: 994 },
@@ -326,7 +326,7 @@ export const ABOUT_DESKTOP_CLOUDS = [
     id: 'cloud-light-left-1',
     layer: 'light',
     width: 737.016,
-    src: CloudLightLeft1,
+    Svg: CloudLightLeft1,
     states: [
       { x: -526, y: 1557 },
       { x: -526, y: 1194 },
@@ -338,7 +338,7 @@ export const ABOUT_DESKTOP_CLOUDS = [
     id: 'light-center',
     layer: 'light',
     width: 754.332,
-    src: LightCloudCenter,
+    Svg: LightCloudCenter,
     states: [
       { x: 309, y: 1241 },
       { x: 309, y: 878 },
@@ -350,7 +350,7 @@ export const ABOUT_DESKTOP_CLOUDS = [
     id: 'light-right',
     layer: 'light',
     width: 760.344,
-    src: LightCloudRight,
+    Svg: LightCloudRight,
     states: [
       { x: 872, y: 1331 },
       { x: 872, y: 968 },
@@ -362,7 +362,7 @@ export const ABOUT_DESKTOP_CLOUDS = [
     id: 'cloud-light-right-1',
     layer: 'light',
     width: 760.344,
-    src: CloudLightRight1,
+    Svg: CloudLightRight1,
     states: [
       { x: 1285, y: 1560 },
       { x: 1285, y: 1197 },
@@ -374,7 +374,7 @@ export const ABOUT_DESKTOP_CLOUDS = [
     id: 'outro-cloud',
     layer: 'outro',
     width: 1510,
-    src: OutroCloud,
+    Svg: OutroCloud,
     states: [
       { x: -30, y: 1568 },
       { x: -30, y: 1205 },
@@ -593,7 +593,7 @@ export const ABOUT_MASCOT = {
 }
 
 export const ABOUT_MOBILE_QUOTE_CLOUD = {
-  src: DarkCloudMobile,
+  Svg: DarkCloudMobile,
 }
 
 export const ABOUT_MOBILE_PANELS = [

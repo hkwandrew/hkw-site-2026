@@ -166,6 +166,7 @@ const AboutPage = () => {
   const [pageElement, setPageElement] = useState(null)
   const { scrollerRef, sceneRef, handleScrollHintClick } =
     useAboutDesktopScene()
+  const MobileQuoteCloudSvg = ABOUT_MOBILE_QUOTE_CLOUD.Svg
   const handlePageRef = useCallback((node) => {
     setPageElement(node)
   }, [])
@@ -212,22 +213,26 @@ const AboutPage = () => {
               <ScrollCue />
             </DesktopScrollHint>
 
-            {ABOUT_DESKTOP_CLOUDS.map(({ id, layer, src }, index) => (
-              <DesktopCloud
-                key={id}
-                data-about-cloud={id}
-                data-about-layer={layer}
-                $layer={layer}
-                aria-hidden='true'
-              >
-                <DesktopCloudFloat
-                  data-about-float-layer='cloud'
-                  style={getCloudFloatStyle(layer, index)}
+            {ABOUT_DESKTOP_CLOUDS.map((cloud, index) => {
+              const CloudSvg = cloud.Svg
+
+              return (
+                <DesktopCloud
+                  key={cloud.id}
+                  data-about-cloud={cloud.id}
+                  data-about-layer={cloud.layer}
+                  $layer={cloud.layer}
+                  aria-hidden='true'
                 >
-                  <img src={src} alt='' />
-                </DesktopCloudFloat>
-              </DesktopCloud>
-            ))}
+                  <DesktopCloudFloat
+                    data-about-float-layer='cloud'
+                    style={getCloudFloatStyle(cloud.layer, index)}
+                  >
+                    <CloudSvg />
+                  </DesktopCloudFloat>
+                </DesktopCloud>
+              )
+            })}
 
             {/* {ABOUT_DESKTOP_FILLS.map(({ id, layer }) => (
               <DesktopBandFill
@@ -295,7 +300,7 @@ const AboutPage = () => {
           </MobileIntroCopy>
 
           <MobileQuoteCloud aria-hidden='true'>
-            <img src={ABOUT_MOBILE_QUOTE_CLOUD.src} alt='' />
+            <MobileQuoteCloudSvg />
           </MobileQuoteCloud>
         </MobileStaticScene>
 
