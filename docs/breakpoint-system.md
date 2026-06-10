@@ -47,8 +47,8 @@ Current simplified source contract:
   Shared scene art direction lives in `contact/sceneSpec.js` `phonePortrait`
   overrides.
 - Roots: uses the desktop frame outside mobile portrait. Inside mobile portrait,
-  Roots keeps a route-owned `portrait-tablet` portfolio grid for wider portrait
-  screens; this is local content layout, not a shared breakpoint or scene key.
+  Roots uses a route-owned masonry portfolio layout that adds a third column
+  when the portrait scroll area is wide enough.
 - Policy: document spacing and type adjustments use the shared mobile portrait
   query.
 

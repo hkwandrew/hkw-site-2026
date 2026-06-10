@@ -7,14 +7,13 @@ import {
 } from '@/app/layout/viewportComposition'
 import useCarousel from '@/shared/hooks/useCarousel'
 import usePageActive from '@/shared/hooks/usePageActive'
-import { BREAKPOINT_WIDTHS, MEDIA_QUERIES } from '@/styles/breakpoints'
+import { MEDIA_QUERIES } from '@/styles/breakpoints'
 import {
   CONTENT_FRAME_HEIGHT_CUSTOM_PROPERTY,
   CONTENT_FRAME_TOP_CUSTOM_PROPERTY,
   CONTENT_FRAME_WIDTH_CUSTOM_PROPERTY,
 } from '@/styles/viewportUnits'
 import ROOTS_PORTFOLIO_ITEMS from './rootsPortfolio'
-import BookShelf from './BookShelf'
 import RootsPortfolioSlider from './RootsPortfolioSlider'
 import RootsMarmot from './RootsMarmot'
 import { ROOTS_SCENE_TRANSITION_DURATION_MS } from './useRootsPageTransition'
@@ -23,14 +22,13 @@ import RootsUpButton from './RootsUpButton'
 
 const DESKTOP_SCENE_WIDTH = 1440
 const DESKTOP_SCENE_HEIGHT = 1024
-const ROOTS_PORTRAIT_TABLET_MIN_WIDTH = 768
-const ROOTS_PORTRAIT_TABLET_MAX_WIDTH = BREAKPOINT_WIDTHS.mobileMax
+const ROOTS_MASONRY_THREE_COLUMN_MIN_WIDTH = 768
 const ROOTS_VIEWPORT_LAYOUT = Object.freeze({
   DESKTOP: 'desktop',
-  PHONE: 'phone',
-  PORTRAIT_TABLET: 'portrait-tablet',
+  MOBILE: 'mobile',
 })
 const ROOTS_ROUTE_PATH = '/roots'
+const ROOTS_MOBILE_SCROLL_THRESHOLD = 4
 
 const getPortfolioSlug = (item) => item.slug ?? item.id
 
@@ -134,10 +132,6 @@ const Root = styled.section`
   will-change: transform;
   isolation: isolate;
   z-index: 20;
-
-  &[data-roots-viewport-layout='portrait-tablet'] {
-    --hkw-viewport-px-unit: 1px;
-  }
 
   &[data-roots-phase='entering'],
   &[data-roots-phase='exiting'] {
@@ -379,26 +373,32 @@ const MobileWelcome = styled(WelcomeSign)`
   z-index: 1;
   display: block;
   flex: 0 0 auto;
-  width: min(46vw, 172px);
+  width: max(46vw, 300px);
   height: auto;
   margin: 0 auto 24px;
-
-  [data-roots-mobile-layout='portrait-tablet'] & {
-    width: min(30vw, 224px);
-    margin-bottom: 28px;
-  }
 `
 
 const MobileScene = styled.div`
+  --roots-mobile-scroll-fade-height: 178px;
   position: relative;
   z-index: 1;
   display: flex;
   flex-direction: column;
   height: 100dvh;
-  padding: 88px 20px 178px;
+  padding: 88px 20px var(--roots-mobile-scroll-fade-height);
   overflow-x: hidden;
   overflow-y: ${({ $isLocked }) => ($isLocked ? 'hidden' : 'auto')};
   -webkit-overflow-scrolling: touch;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    #000 calc(100% - var(--roots-mobile-scroll-fade-height)),
+    transparent
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    #000 calc(100% - var(--roots-mobile-scroll-fade-height)),
+    transparent
+  );
 
   opacity: ${({ $isActive }) => ($isActive ? 1 : 0)};
   transform: translateY(${({ $isActive }) => ($isActive ? '0' : '20px')});
@@ -406,11 +406,6 @@ const MobileScene = styled.div`
     opacity 500ms ease,
     transform 500ms ease;
   will-change: transform, opacity;
-
-  &[data-roots-mobile-layout='portrait-tablet'] {
-    padding-top: 96px;
-    padding-inline: 40px;
-  }
 `
 
 const MobileBackButton = styled(BackButton)`
@@ -422,6 +417,13 @@ const MobileBackButton = styled(BackButton)`
   min-width: 42px;
   max-width: 42px;
   z-index: 5;
+  opacity: ${({ $isVisible }) => ($isVisible ? 1 : 0)};
+  pointer-events: ${({ $isVisible }) => ($isVisible ? 'auto' : 'none')};
+  transform: translateY(${({ $isVisible }) => ($isVisible ? '0' : '8px')});
+
+  &:hover {
+    transform: translateY(${({ $isVisible }) => ($isVisible ? '-4px' : '8px')});
+  }
 
   > svg {
     width: 100%;
@@ -432,36 +434,17 @@ const MobileBackButton = styled(BackButton)`
 const MobileFrames = styled.div`
   position: relative;
   z-index: 1;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-count: 2;
   column-gap: 20px;
-  align-items: start;
   width: 100%;
   max-width: 353px;
-  margin-inline: auto;r;
-`
-
-const PortraitTabletFrames = styled.div`
-  position: relative;
-  z-index: 1;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-  gap: 24px;
-  align-items: center;
-  width: 100%;
-  max-width: 720px;
   margin-inline: auto;
-`
 
-const MobileFrameColumn = styled.div`
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  align-items: center;
-  gap: 18px;
-
-  &:nth-child(2) {
-    padding-top: 4px;
+  @media (min-width: ${ROOTS_MASONRY_THREE_COLUMN_MIN_WIDTH}px) and
+    ${MEDIA_QUERIES.mobilePortrait} {
+    column-count: 3;
+    column-gap: 24px;
+    max-width: 720px;
   }
 `
 
@@ -489,22 +472,21 @@ const RootsMarmotLayer = styled.div`
     width: min(52vw, 200px);
     z-index: 3;
   }
-
-  [data-roots-viewport-layout='portrait-tablet'] & {
-    right: -8px;
-    bottom: -8px;
-    width: min(32vw, 260px);
-    z-index: 3;
-  }
 `
 
 const MobileFrameButton = styled.button`
+  display: inline-block;
   width: 100%;
+  margin: 0 0 18px;
   padding: 0;
   border: none;
   background: transparent;
+  break-inside: avoid;
   cursor: pointer;
+  page-break-inside: avoid;
   user-select: none;
+  -webkit-column-break-inside: avoid;
+  vertical-align: top;
   transition:
     transform 180ms ease,
     filter 180ms ease;
@@ -568,17 +550,9 @@ function SceneBackIcon() {
   )
 }
 
-const getRootsViewportLayout = ({ layout, ratio, width = 0 }) => {
-  if (
-    width >= ROOTS_PORTRAIT_TABLET_MIN_WIDTH &&
-    width <= ROOTS_PORTRAIT_TABLET_MAX_WIDTH &&
-    ratio < 1
-  ) {
-    return ROOTS_VIEWPORT_LAYOUT.PORTRAIT_TABLET
-  }
-
+const getRootsViewportLayout = ({ layout }) => {
   if (layout === VIEWPORT_LAYOUT.MOBILE_PORTRAIT) {
-    return ROOTS_VIEWPORT_LAYOUT.PHONE
+    return ROOTS_VIEWPORT_LAYOUT.MOBILE
   }
 
   return ROOTS_VIEWPORT_LAYOUT.DESKTOP
@@ -592,7 +566,7 @@ export default function RootsScene({ sceneRef }) {
   const viewportComposition = useViewportComposition()
   const viewportLayout = getRootsViewportLayout(viewportComposition)
   const isMobileLayout = viewportLayout !== ROOTS_VIEWPORT_LAYOUT.DESKTOP
-  const isPhoneLayout = viewportLayout === ROOTS_VIEWPORT_LAYOUT.PHONE
+  const mobileScrollRef = useRef(null)
   const triggerRefs = useRef({})
   const openedFromIdRef = useRef(null)
   const routePortfolioIndex = getPortfolioIndexForSlug(portfolioSlug)
@@ -601,6 +575,7 @@ export default function RootsScene({ sceneRef }) {
   const [isSliderOpen, setIsSliderOpen] = useState(
     Boolean(portfolioSlug && routePortfolioIndex >= 0),
   )
+  const [isMobileScrolled, setIsMobileScrolled] = useState(false)
   const { index, goTo } = useCarousel(
     ROOTS_PORTFOLIO_ITEMS.length,
     initialPortfolioIndex,
@@ -610,12 +585,7 @@ export default function RootsScene({ sceneRef }) {
     item,
     itemIndex,
   }))
-  const mobileFrameColumns = [
-    mobileFrameEntries.filter((_, entryIndex) => entryIndex % 2 === 0),
-    mobileFrameEntries.filter((_, entryIndex) => entryIndex % 2 === 1),
-  ]
 
-  const handleReturnHome = () => navigate('/')
   const navigateToPortfolioIndex = (nextIndex) => {
     const normalizedIndex = normalizePortfolioIndex(nextIndex)
     const nextItem = ROOTS_PORTFOLIO_ITEMS[normalizedIndex]
@@ -630,8 +600,27 @@ export default function RootsScene({ sceneRef }) {
   const next = () => navigateToPortfolioIndex(index + 1)
   const prev = () => navigateToPortfolioIndex(index - 1)
   const handleMobileScroll = (event) => {
-    document.body.dataset.rootsMobileScrolled =
-      event.currentTarget.scrollTop > 4 ? 'true' : 'false'
+    const isScrolled =
+      event.currentTarget.scrollTop > ROOTS_MOBILE_SCROLL_THRESHOLD
+
+    document.body.dataset.rootsMobileScrolled = isScrolled ? 'true' : 'false'
+    setIsMobileScrolled((currentValue) =>
+      currentValue === isScrolled ? currentValue : isScrolled,
+    )
+  }
+  const handleScrollToMobileTop = () => {
+    const scrollRegion = mobileScrollRef.current
+
+    if (!scrollRegion) return
+
+    const shouldReduceMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+
+    scrollRegion.scrollTo({
+      top: 0,
+      behavior: shouldReduceMotion ? 'auto' : 'smooth',
+    })
   }
 
   useLayoutEffect(() => {
@@ -682,14 +671,29 @@ export default function RootsScene({ sceneRef }) {
   }, [goTo, index, isSliderOpen, navigate, portfolioSlug, routePortfolioIndex])
 
   useEffect(() => {
+    let animationFrameId = 0
+
     if (!isMobileLayout) {
       delete document.body.dataset.rootsMobileScrolled
-      return undefined
+      animationFrameId = window.requestAnimationFrame(() => {
+        setIsMobileScrolled(false)
+      })
+
+      return () => {
+        window.cancelAnimationFrame(animationFrameId)
+      }
     }
 
     document.body.dataset.rootsMobileScrolled = 'false'
+    animationFrameId = window.requestAnimationFrame(() => {
+      setIsMobileScrolled(
+        (mobileScrollRef.current?.scrollTop ?? 0) >
+          ROOTS_MOBILE_SCROLL_THRESHOLD,
+      )
+    })
 
     return () => {
+      window.cancelAnimationFrame(animationFrameId)
       delete document.body.dataset.rootsMobileScrolled
     }
   }, [isMobileLayout])
@@ -738,6 +742,7 @@ export default function RootsScene({ sceneRef }) {
       </MobileFrameButton>
     )
   }
+  const isMobileUpButtonVisible = isMobileScrolled && !isSliderOpen
 
   return (
     <>
@@ -752,6 +757,7 @@ export default function RootsScene({ sceneRef }) {
 
           {isMobileLayout ? (
             <MobileScene
+              ref={mobileScrollRef}
               aria-hidden={isSliderOpen}
               data-roots-mobile-scroll-region
               data-roots-mobile-layout={viewportLayout}
@@ -761,21 +767,9 @@ export default function RootsScene({ sceneRef }) {
             >
               <MobileWelcome />
 
-              {isPhoneLayout ? (
-                <MobileFrames data-roots-mobile-layout={viewportLayout}>
-                  {mobileFrameColumns.map((columnEntries, columnIndex) => (
-                    <MobileFrameColumn
-                      key={`mobile-roots-column-${columnIndex}`}
-                    >
-                      {columnEntries.map(renderMobileFrameButton)}
-                    </MobileFrameColumn>
-                  ))}
-                </MobileFrames>
-              ) : (
-                <PortraitTabletFrames data-roots-mobile-layout={viewportLayout}>
-                  {mobileFrameEntries.map(renderMobileFrameButton)}
-                </PortraitTabletFrames>
-              )}
+              <MobileFrames data-roots-mobile-layout={viewportLayout}>
+                {mobileFrameEntries.map(renderMobileFrameButton)}
+              </MobileFrames>
             </MobileScene>
           ) : (
             <DesktopScene aria-hidden={isSliderOpen} $isActive={isActive}>
@@ -811,9 +805,12 @@ export default function RootsScene({ sceneRef }) {
           {isMobileLayout ? (
             <MobileBackButton
               type='button'
-              aria-label='Return to home'
-              onClick={handleReturnHome}
-              disabled={isSliderOpen}
+              aria-hidden={!isMobileUpButtonVisible}
+              aria-label='Scroll to top'
+              $isVisible={isMobileUpButtonVisible}
+              onClick={handleScrollToMobileTop}
+              tabIndex={isMobileUpButtonVisible ? undefined : -1}
+              disabled={!isMobileUpButtonVisible}
             />
           ) : null}
         </SceneFrame>
