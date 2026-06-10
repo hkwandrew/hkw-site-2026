@@ -27,8 +27,14 @@ const LandscapeSceneWrapper = styled.svg`
   overflow: visible;
 `
 
-const getHomeLayerLinkProps = (isInteractive, to, transitionSceneToPath) => ({
+const getHomeLayerLinkProps = (
+  isInteractive,
+  to,
+  label,
+  transitionSceneToPath,
+) => ({
   'aria-hidden': isInteractive ? undefined : true,
+  'aria-label': label,
   onClick: (event) => {
     if (
       to !== '/about' ||
@@ -70,6 +76,7 @@ const LandscapeScene = ({ areHomeLayerLinksInteractive, scenePathname }) => {
           {...getHomeLayerLinkProps(
             areHomeLayerLinksInteractive,
             '/about',
+            'About',
             transitionSceneToPath,
           )}
         >
@@ -80,6 +87,7 @@ const LandscapeScene = ({ areHomeLayerLinksInteractive, scenePathname }) => {
           {...getHomeLayerLinkProps(
             areHomeLayerLinksInteractive,
             '/work',
+            'Work',
             transitionSceneToPath,
           )}
         >
@@ -92,6 +100,7 @@ const LandscapeScene = ({ areHomeLayerLinksInteractive, scenePathname }) => {
           {...getHomeLayerLinkProps(
             areHomeLayerLinksInteractive,
             '/services',
+            'Services',
             transitionSceneToPath,
           )}
         >

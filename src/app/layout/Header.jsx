@@ -98,7 +98,7 @@ const HKWLogo = styled(Link)`
   height: 68px;
   display: grid;
   place-items: center;
-  --fill-0: ${({ $isMobilePortraitViewport, $isRootsPage, theme }) =>
+  --fill-0: ${({ $isRootsPage, theme }) =>
     $isRootsPage 
       ? theme.colors.white
       : theme.colors.blue.dark};
@@ -168,17 +168,15 @@ const Header = ({ contentPathname, isPageLabelReady = true, navPathname }) => {
   const isPageLabelActive = isPageLabelReady
   const isMobilePortraitViewport =
     viewportComposition.layout === VIEWPORT_LAYOUT.MOBILE_PORTRAIT
-  const navActivePath = isRootsPage ? '/work' : activeNavPath
-
   return (
     <StyledHeader $isRootsPage={isRootsPage} $isPolicyPage={isPolicyPage}>
       <BrandBlock $isServicesPage={isServicesPage}>
         <HKWLogo
           to='/'
+          aria-label='HKW home'
           $isServicesPage={isServicesPage}
           $isWorkPage={isWorkPage}
           $isRootsPage={isRootsPage}
-          $isMobilePortraitViewport={isMobilePortraitViewport}
           $isActive={isPageLabelActive}
         >
           <svg
@@ -224,7 +222,7 @@ const Header = ({ contentPathname, isPageLabelReady = true, navPathname }) => {
           isPolicyPage={isPolicyPage}
         />
       ) : (
-        <NavMenu activePathname={navActivePath} isRootsPage={isRootsPage} />
+        <NavMenu activePathname={activeNavPath} isRootsPage={isRootsPage} />
       )}
     </StyledHeader>
   )

@@ -51,6 +51,7 @@ const Sun = () => {
   return (
     <Link
       to='/contact'
+      aria-label='Contact'
       aria-hidden={canInteractWithHomeHover ? undefined : true}
       onMouseEnter={() => {
         if (canInteractWithHomeHover) {
