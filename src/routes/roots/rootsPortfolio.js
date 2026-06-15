@@ -195,6 +195,8 @@ const ROOTS_PORTFOLIO_ITEMS = [
       top: 835.17,
       width: 150.266,
     },
+    artworkWidth: 473,
+    artworkHeight: 887,
     artworkTop: -80,
     mobileArtwork: {
       top: '-210%',

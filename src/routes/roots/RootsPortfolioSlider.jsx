@@ -107,14 +107,31 @@ const Dialog = styled.div`
       font-size: 18px;
 
       @media ${MEDIA_QUERIES.mobilePortrait} {
-        font-size: 12px;
+        font-size: 14px;
       }
     }
   }
 
   &[data-roots-example='community-development-initiative'] {
-    div:nth-of-type(2) {
-      flex-direction: column;
+    @media ${MEDIA_QUERIES.mobilePortrait} {
+      [data-roots-slide-pane] {
+        flex-direction: column;
+        justify-content: flex-start;
+        gap: 0;
+      }
+
+      [data-roots-slide-artwork] {
+        margin-bottom: clamp(92px, 11vh, 100px);
+      }
+
+      [data-roots-slide-artwork] img {
+        top: -100%;
+        width: clamp(170px, 46vw, 180px);
+      }
+
+      [data-roots-slide-copy] {
+        margin-top: clamp(8px, 1.5vh, 12px);
+      }
     }
   }
 `
@@ -322,7 +339,7 @@ const Copy = styled.div`
 
   @media ${MEDIA_QUERIES.mobilePortrait} {
     flex: 0 1 auto;
-    gap: 10px;
+    gap: 14px;
     margin-top: 0;
     padding-inline: 2px;
     max-width: none;
@@ -379,7 +396,7 @@ const Bio = styled.p`
   text-transform: none;
 
   @media ${MEDIA_QUERIES.mobilePortrait} {
-    font-size: 12px;
+    font-size: 14px;
     line-height: 1.18;
     letter-spacing: 0;
   }
@@ -396,7 +413,7 @@ const RolesLabel = styled.p`
   line-height: 1.3;
 
   @media ${MEDIA_QUERIES.mobilePortrait} {
-    font-size: 12px;
+    font-size: 14px;
     line-height: 1.2;
   }
 `
@@ -420,7 +437,7 @@ const Role = styled.li`
     'wght' ${({ theme }) => theme.font.weight.semibold};
 
   @media ${MEDIA_QUERIES.mobilePortrait} {
-    font-size: 12px;
+    font-size: 14px;
     line-height: 1.22;
   }
 `
