@@ -665,25 +665,25 @@ export const MarmotCharacterWrap = styled.div`
   #marmot-character-idle {
     opacity: ${({ $isHoverActive }) => ($isHoverActive ? 0 : 1)};
     transition-duration: ${({ $isHoverActive }) =>
-      $isHoverActive
-        ? `${MARMOT_HOVER_ENTER_MS}ms`
-        : `${MARMOT_HOVER_EXIT_MS}ms`};
+    $isHoverActive
+      ? `${MARMOT_HOVER_ENTER_MS}ms`
+      : `${MARMOT_HOVER_EXIT_MS}ms`};
   }
 
   #marmot-character-hover {
     opacity: ${({ $isHoverActive }) => ($isHoverActive ? 1 : 0)};
     transform: ${({ $isHoverActive }) =>
-      $isHoverActive
-        ? `translate3d(
+    $isHoverActive
+      ? `translate3d(
             var(--marmot-hover-x),
             var(--marmot-hover-y),
             0
           ) scale(1)`
-        : 'translate3d(0, 9px, 0) scale(0.985)'};
+      : 'translate3d(0, 9px, 0) scale(0.985)'};
     transition-duration: ${({ $isHoverActive }) =>
-      $isHoverActive
-        ? `${MARMOT_HOVER_ENTER_MS}ms`
-        : `${MARMOT_HOVER_EXIT_MS}ms`};
+    $isHoverActive
+      ? `${MARMOT_HOVER_ENTER_MS}ms`
+      : `${MARMOT_HOVER_EXIT_MS}ms`};
   }
 
   ${({ $isHoverActive }) =>
@@ -787,7 +787,7 @@ export const StumpHoverOverlay = styled.div`
   transform: translate3d(
     0,
     ${({ $active, $isTransitioning }) =>
-      $isTransitioning ? '22px' : $active ? '0' : '10px'},
+    $isTransitioning ? '22px' : $active ? '0' : '10px'},
     0
   );
   transition:
@@ -890,6 +890,7 @@ export const PlaneShell = styled.div`
   #banner-text {
     transform-box: fill-box;
     transform-origin: center;
+    scale: 0.75;
   }
 
   #propeller-group {
