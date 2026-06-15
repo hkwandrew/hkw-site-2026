@@ -1,6 +1,7 @@
 import { createContext, useContext } from 'react'
 
 const PageSceneTransitionContext = createContext({
+    startAboutExitOverlay: () => false,
     transitionSceneToPath: () => {},
 })
 

@@ -2,19 +2,22 @@ import { useEffect, useLayoutEffect, useRef } from 'react'
 import { useBlocker } from 'react-router'
 import { usePageSceneTransition } from '@/app/landscape/pageSceneTransition'
 import { SCENE_TRANSITION_DURATION_MS } from '@/app/landscape/sceneRegistry'
+import { getRoutePathForPath } from '@/app/router/routeRegistry'
 
 const EXIT_PHASE = 'exiting'
-const WORK_ROUTE_PATH = '/work'
-
-const isWorkPath = (pathname) =>
-  pathname === WORK_ROUTE_PATH || pathname?.startsWith(`${WORK_ROUTE_PATH}/`)
-
-const shouldReleaseForDestinationEntry = (pathname) => isWorkPath(pathname)
+const PRIMARY_ABOUT_EXIT_HANDOFF_PATHS = new Set([
+  '/',
+  '/contact',
+  '/roots',
+  '/services',
+  '/work',
+])
 
 const useAboutPageTransition = (pageElement) => {
   const exitTransitionRef = useRef(null)
   const nextPathRef = useRef(null)
-  const { transitionSceneToPath } = usePageSceneTransition()
+  const { startAboutExitOverlay, transitionSceneToPath } =
+    usePageSceneTransition()
   const leaveAboutBlocker = useBlocker(({ currentLocation, nextLocation }) => {
     const isLeavingAbout =
       currentLocation.pathname === '/about' &&
@@ -35,9 +38,18 @@ const useAboutPageTransition = (pageElement) => {
       return
     }
 
+    const shouldReduceMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    const nextRoutePath = getRoutePathForPath(nextPath)
+
     transitionSceneToPath(nextPath)
 
-    if (shouldReleaseForDestinationEntry(nextPath)) {
+    if (
+      shouldReduceMotion ||
+      (PRIMARY_ABOUT_EXIT_HANDOFF_PATHS.has(nextRoutePath) &&
+        startAboutExitOverlay(pageElement))
+    ) {
       nextPathRef.current = null
       leaveAboutBlocker.proceed()
       return
@@ -55,7 +67,12 @@ const useAboutPageTransition = (pageElement) => {
       nextPathRef.current = null
       leaveAboutBlocker.proceed()
     })
-  }, [leaveAboutBlocker, transitionSceneToPath])
+  }, [
+    leaveAboutBlocker,
+    pageElement,
+    startAboutExitOverlay,
+    transitionSceneToPath,
+  ])
 
   useLayoutEffect(() => {
     if (!pageElement) return undefined

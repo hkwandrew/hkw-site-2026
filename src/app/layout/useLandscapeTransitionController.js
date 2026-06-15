@@ -31,6 +31,36 @@ const canUseHomeHoverRegions = ({ hover, layout, pointer }) =>
 
 let sharedSceneRuntimePromise = null
 
+const createAboutExitSnapshot = (pageElement) => {
+  if (!(pageElement instanceof HTMLElement)) return null
+
+  const snapshot = pageElement.cloneNode(true)
+
+  if (!(snapshot instanceof HTMLElement)) return null
+
+  const sourceNodes = [pageElement, ...pageElement.querySelectorAll('*')]
+  const snapshotNodes = [snapshot, ...snapshot.querySelectorAll('*')]
+
+  sourceNodes.forEach((sourceNode, index) => {
+    const snapshotNode = snapshotNodes[index]
+
+    if (!(sourceNode instanceof HTMLElement)) return
+    if (!(snapshotNode instanceof HTMLElement)) return
+
+    snapshotNode.scrollLeft = sourceNode.scrollLeft
+    snapshotNode.scrollTop = sourceNode.scrollTop
+  })
+
+  snapshot.dataset.aboutPhase = 'entered'
+  snapshot.dataset.aboutExitOverlay = 'true'
+  snapshot.setAttribute('aria-hidden', 'true')
+  snapshot.setAttribute('inert', '')
+  snapshot.style.animation = 'none'
+  snapshot.style.pointerEvents = 'none'
+
+  return snapshot
+}
+
 const loadSharedSceneRuntime = () => {
   if (!sharedSceneRuntimePromise) {
     sharedSceneRuntimePromise = import(
@@ -57,11 +87,13 @@ const useLandscapeTransitionController = (pathname) => {
   const locationPathRef = useRef(routePath)
   const homeHoverClearTimeoutRef = useRef(null)
   const routeContentRevealTimeoutRef = useRef(null)
+  const aboutExitOverlayTimeoutRef = useRef(null)
   const [homeHoverRegion, setHomeHoverRegion] = useState(null)
   const [pendingNavPath, setPendingNavPath] = useState(null)
   const [activeTransitionPath, setActiveTransitionPath] = useState(null)
   const [revealedContentPath, setRevealedContentPath] = useState(routePath)
   const [earlyRevealedContentPath, setEarlyRevealedContentPath] = useState(null)
+  const [aboutExitOverlaySnapshot, setAboutExitOverlaySnapshot] = useState(null)
   const canUseHoverRegions = canUseHomeHoverRegions(viewportComposition)
   const pageKey = getPageKeyForPath(routePath)
   const isHome = routePath === '/'
@@ -134,6 +166,38 @@ const useLandscapeTransitionController = (pathname) => {
       routeContentRevealTimeoutRef.current = null
     }
   }, [])
+
+  const clearAboutExitOverlay = useCallback(() => {
+    if (
+      aboutExitOverlayTimeoutRef.current !== null &&
+      typeof window !== 'undefined'
+    ) {
+      window.clearTimeout(aboutExitOverlayTimeoutRef.current)
+      aboutExitOverlayTimeoutRef.current = null
+    }
+
+    setAboutExitOverlaySnapshot(null)
+  }, [])
+
+  const startAboutExitOverlay = useCallback(
+    (pageElement) => {
+      if (typeof window === 'undefined') return false
+
+      const snapshot = createAboutExitSnapshot(pageElement)
+
+      if (!snapshot) return false
+
+      clearAboutExitOverlay()
+      setAboutExitOverlaySnapshot(snapshot)
+      aboutExitOverlayTimeoutRef.current = window.setTimeout(() => {
+        aboutExitOverlayTimeoutRef.current = null
+        setAboutExitOverlaySnapshot(null)
+      }, SCENE_TRANSITION_DURATION_MS)
+
+      return true
+    },
+    [clearAboutExitOverlay],
+  )
 
   const scheduleRouteContentLeadReveal = useCallback(
     (nextPath, durationMs) => {
@@ -364,8 +428,11 @@ const useLandscapeTransitionController = (pathname) => {
 
   useLayoutEffect(() => clearRouteContentRevealTimer, [clearRouteContentRevealTimer])
 
+  useLayoutEffect(() => clearAboutExitOverlay, [clearAboutExitOverlay])
+
   return {
     SCENE_TRANSITION_DURATION_MS,
+    aboutExitOverlaySnapshot,
     pageKey,
     mainRef,
     headerContentPath,
@@ -378,8 +445,8 @@ const useLandscapeTransitionController = (pathname) => {
     areHomeLayerLinksInteractive,
     viewportComposition,
     transitionContextValue: useMemo(
-      () => ({ transitionSceneToPath }),
-      [transitionSceneToPath],
+      () => ({ startAboutExitOverlay, transitionSceneToPath }),
+      [startAboutExitOverlay, transitionSceneToPath],
     ),
     homeHoverContextValue: useMemo(
       () => ({

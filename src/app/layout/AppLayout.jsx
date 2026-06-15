@@ -1,4 +1,4 @@
-import { Suspense, useLayoutEffect } from 'react'
+import { Suspense, useLayoutEffect, useRef } from 'react'
 import { Outlet, useLocation } from 'react-router'
 import DebugHud from '@/app/debug/DebugHud'
 import Header from '@/app/layout/Header'
@@ -7,9 +7,49 @@ import useLandscapeTransitionController from '@/app/layout/useLandscapeTransitio
 import { PageSceneTransitionProvider } from '@/app/landscape/pageSceneTransition'
 import { HomeHoverProvider } from '@/routes/home/homeHoverContext'
 
+const ABOUT_EXIT_OVERLAY_STYLE = {
+  inset: 0,
+  overflow: 'hidden',
+  pointerEvents: 'none',
+  position: 'absolute',
+  zIndex: 60,
+}
+
+const AboutExitOverlay = ({ snapshot }) => {
+  const containerRef = useRef(null)
+
+  useLayoutEffect(() => {
+    const container = containerRef.current
+
+    if (!container || !snapshot) return undefined
+
+    container.replaceChildren(snapshot)
+    const overlayNode = container.firstElementChild
+
+    if (overlayNode instanceof HTMLElement) {
+      overlayNode.dataset.aboutPhase = 'entered'
+      void overlayNode.offsetHeight
+      overlayNode.dataset.aboutPhase = 'exiting'
+    }
+
+    return () => {
+      container.replaceChildren()
+    }
+  }, [snapshot])
+
+  return (
+    <div
+      ref={containerRef}
+      data-about-exit-overlay-container
+      style={ABOUT_EXIT_OVERLAY_STYLE}
+    />
+  )
+}
+
 const AppLayout = () => {
   const location = useLocation()
   const {
+    aboutExitOverlaySnapshot,
     pageKey,
     mainRef,
     headerContentPath,
@@ -83,6 +123,10 @@ const AppLayout = () => {
             <Suspense fallback={null}>
               <Outlet />
             </Suspense>
+          ) : null}
+
+          {aboutExitOverlaySnapshot ? (
+            <AboutExitOverlay snapshot={aboutExitOverlaySnapshot} />
           ) : null}
 
           {import.meta.env.DEV ? <DebugHud /> : null}
