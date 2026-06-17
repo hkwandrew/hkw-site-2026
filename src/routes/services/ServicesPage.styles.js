@@ -103,15 +103,28 @@ export const DescriptionText = styled(BodyMedium)`
   }
 `
 
-export const TopHatMarmotWrapper = styled.div`
+export const TopHatMarmotWrapper = styled.button`
+  display: block;
   position: absolute;
   right: 76.64px;
   bottom: -25.55px;
   width: 362.902px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  appearance: none;
+  pointer-events: auto;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid ${({ theme }) => theme.colors.yellow.gold};
+    outline-offset: 4px;
+  }
 
   svg {
     display: block;
     width: 100%;
+    pointer-events: none;
   }
 
   @media ${MEDIA_QUERIES.mobilePortrait} {

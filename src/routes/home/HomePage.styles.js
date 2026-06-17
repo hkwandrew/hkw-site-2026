@@ -881,16 +881,9 @@ export const PlaneShell = styled.div`
     transform-origin: center;
   }
 
-  #banner-text,
   #propeller-group,
   #motion-streaks {
     will-change: transform, opacity;
-  }
-
-  #banner-text {
-    transform-box: fill-box;
-    transform-origin: center;
-    scale: 0.75;
   }
 
   #propeller-group {

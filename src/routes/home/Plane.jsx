@@ -5,15 +5,21 @@ import { BREAKPOINT_WIDTHS } from '@/styles/breakpoints'
 import {
   BANNER_WAVE_ENABLED,
   BANNER_RIGHT_X,
+  buildSplineSegments,
   getBannerWaveMotionConfig,
+  getScarfFlutterPathData,
+  getSplineCommands,
+  getSplineYAtX,
   getTranslatedPathData,
+  getTransformedPathData,
   getWavedPathData,
   parseWavePathData,
   getWaveOffset,
 } from './planeMotion'
 
+const BANNER_TEXT_SCALE = 0.9
 const BANNER_NOTCH_POINT = { x: 18.9817, y: 27.5996 }
-const BANNER_TOP_Y = 6.3243
+const BANNER_TOP_Y = 0
 const BANNER_BOTTOM_Y = 53.963
 const BANNER_CENTER_Y = (BANNER_TOP_Y + BANNER_BOTTOM_Y) / 2
 const BANNER_SAMPLE_XS = [
@@ -31,48 +37,40 @@ const BANNER_SAMPLE_XS = [
 ]
 const PLANE_MOBILE_BREAKPOINT_PX = BREAKPOINT_WIDTHS.mobileMax
 const PLANE_PORTRAIT_MOBILE_QUERY = `(max-width: ${PLANE_MOBILE_BREAKPOINT_PX}px) and (orientation: portrait)`
-const BANNER_TEXT_OPTICAL_CENTER_Y_OFFSET = 2
+const BANNER_TEXT_OPTICAL_CENTER_Y_OFFSET = 0
+const SCARF_FLUTTER_FREQUENCY_MULTIPLIER = 1.5
+const SCARF_FLUTTER_PROFILES = [
+  { amplitude: 0.8, phaseOffset: 0.3 },
+  { amplitude: 0.8, phaseOffset: 0.3 },
+]
 // Banner glyph DOM order is right-to-left: s b e W t i n k d n a H.
 const BANNER_GLYPH_BASELINE_NORMALIZATION_BY_COUNT = {
   12: {
-    0: 0.45,
-    1: 0.4,
-    2: 0.55,
-    3: 0.3,
-    4: -0.4,
-    5: -0.25,
-    6: -0.2,
-    7: -0.45,
-    8: 0.25,
-    9: 0.2,
-    10: 0.2,
-    11: 0.3,
+    0: -1.45,
+    1: -1.9,
+    2: -1.55,
+    3: -1.3,
+    4: -1.4,
+    5: -1.25,
+    6: -1.2,
+    7: -1.45,
+    8: -1.25,
+    9: -1.2,
+    10: -1.2,
+    11: -1.3,
   },
 }
 
 const formatValue = (value) => Number(value.toFixed(3))
 
-const buildCurveCommands = (points) => {
-  let commands = ''
+const getOpenSplinePath = (splineSegments) => {
+  const startPoint = splineSegments[0]?.startPoint
 
-  for (let index = 0; index < points.length - 1; index += 1) {
-    const previousPoint = points[Math.max(0, index - 1)]
-    const startPoint = points[index]
-    const endPoint = points[index + 1]
-    const nextPoint = points[Math.min(points.length - 1, index + 2)]
-    const controlPointOne = {
-      x: startPoint.x + (endPoint.x - previousPoint.x) / 6,
-      y: startPoint.y + (endPoint.y - previousPoint.y) / 6,
-    }
-    const controlPointTwo = {
-      x: endPoint.x - (nextPoint.x - startPoint.x) / 6,
-      y: endPoint.y - (nextPoint.y - startPoint.y) / 6,
-    }
-
-    commands += `C${formatValue(controlPointOne.x)} ${formatValue(controlPointOne.y)} ${formatValue(controlPointTwo.x)} ${formatValue(controlPointTwo.y)} ${formatValue(endPoint.x)} ${formatValue(endPoint.y)}`
+  if (!startPoint) {
+    return ''
   }
 
-  return commands
+  return `M${formatValue(startPoint.x)} ${formatValue(startPoint.y)}${getSplineCommands(splineSegments)}`
 }
 
 const getBannerEdgePoints = (baseY, phase, intensity = 1) =>
@@ -80,6 +78,18 @@ const getBannerEdgePoints = (baseY, phase, intensity = 1) =>
     x,
     y: baseY + getWaveOffset(x, phase, intensity),
   }))
+
+const getBannerSplineSegments = (
+  baseY,
+  phase,
+  intensity = 1,
+  reverse = false,
+) =>
+  buildSplineSegments(
+    reverse
+      ? [...getBannerEdgePoints(baseY, phase, intensity)].reverse()
+      : getBannerEdgePoints(baseY, phase, intensity),
+  )
 
 const getNotchPoint = (phase, intensity = 1) => ({
   x: BANNER_NOTCH_POINT.x,
@@ -89,22 +99,47 @@ const getNotchPoint = (phase, intensity = 1) => ({
 })
 
 const getBannerPath = (phase, intensity = 1) => {
-  const topPoints = getBannerEdgePoints(BANNER_TOP_Y, phase, intensity)
-  const bottomPoints = getBannerEdgePoints(BANNER_BOTTOM_Y, phase, intensity)
-  const bottomCurvePoints = [...bottomPoints].reverse()
+  const topSplineSegments = getBannerSplineSegments(
+    BANNER_TOP_Y,
+    phase,
+    intensity,
+  )
+  const bottomSplineSegments = getBannerSplineSegments(
+    BANNER_BOTTOM_Y,
+    phase,
+    intensity,
+    true,
+  )
   const notchPoint = getNotchPoint(phase, intensity)
 
-  return `M${formatValue(bottomCurvePoints[0].x)} ${formatValue(bottomCurvePoints[0].y)}${buildCurveCommands(bottomCurvePoints)}L${formatValue(notchPoint.x)} ${formatValue(notchPoint.y)}L${formatValue(topPoints[0].x)} ${formatValue(topPoints[0].y)}${buildCurveCommands(topPoints)}Z`
+  return `${getOpenSplinePath(bottomSplineSegments)}L${formatValue(notchPoint.x)} ${formatValue(notchPoint.y)}L${formatValue(topSplineSegments[0].startPoint.x)} ${formatValue(topSplineSegments[0].startPoint.y)}${getSplineCommands(topSplineSegments)}Z`
 }
 
 const getCenterPath = (phase, intensity = 1) => {
-  const centerPoints = getBannerEdgePoints(BANNER_CENTER_Y, phase, intensity)
-
-  return `M${formatValue(centerPoints[0].x)} ${formatValue(centerPoints[0].y)}${buildCurveCommands(centerPoints)}`
+  return getOpenSplinePath(
+    getBannerSplineSegments(BANNER_CENTER_Y, phase, intensity),
+  )
 }
 
 const BANNER_STATIC_PATH = getBannerPath(0, 0)
 const BANNER_STATIC_CENTER_PATH = getCenterPath(0, 0)
+
+const getPathXValues = (pathSegments) =>
+  pathSegments.flatMap(({ command, values }) => {
+    if (command === 'H') {
+      return [values[0]]
+    }
+
+    if (command === 'M' || command === 'L') {
+      return [values[0]]
+    }
+
+    if (command === 'C') {
+      return [values[0], values[2], values[4]]
+    }
+
+    return []
+  })
 
 const getGlyphMeta = (node) => {
   const basePathData = node.getAttribute('d')
@@ -118,7 +153,33 @@ const getGlyphMeta = (node) => {
     normalizedPathData: basePathData,
     node,
     parsedPathData: parseWavePathData(basePathData),
-    normalizedPathSegments: parseWavePathData(basePathData),
+  }
+}
+
+const getScarfMeta = (node, index) => {
+  const basePathData = node.getAttribute('d')
+
+  if (!basePathData) {
+    return null
+  }
+
+  const pathSegments = parseWavePathData(basePathData)
+  const xValues = getPathXValues(pathSegments)
+  const knotX = Math.max(...xValues)
+  const tailX = Math.min(...xValues)
+  const profile =
+    SCARF_FLUTTER_PROFILES[
+      Math.min(index, SCARF_FLUTTER_PROFILES.length - 1)
+    ] ?? SCARF_FLUTTER_PROFILES[0]
+
+  return {
+    amplitude: profile.amplitude,
+    basePathData,
+    knotX,
+    node,
+    pathSegments,
+    phaseOffset: profile.phaseOffset,
+    spanX: Math.max(knotX - tailX, 1),
   }
 }
 
@@ -131,7 +192,8 @@ const Plane = () => {
   const bannerShapeRef = useRef(null)
   const bannerTextRef = useRef(null)
   const bannerGlyphMetaRef = useRef([])
-  const bannerTextOffsetXRef = useRef(0)
+  const bannerTextPathMetaRef = useRef(null)
+  const scarfMetaRef = useRef([])
 
   useGSAP(
     () => {
@@ -143,24 +205,6 @@ const Plane = () => {
         !bannerTextRef.current
       ) {
         return undefined
-      }
-
-      const centerBannerTextGroup = () => {
-        const bannerBounds = bannerShapeRef.current.getBBox()
-        const textBounds = bannerTextRef.current.getBBox()
-        const targetCenterX = bannerBounds.x + bannerBounds.width / 2
-        const targetCenterY = bannerBounds.y + bannerBounds.height / 2
-        const textCenterX = textBounds.x + textBounds.width / 2
-        const textCenterY = textBounds.y + textBounds.height / 2
-        const offsetX = targetCenterX - textCenterX
-        const offsetY =
-          targetCenterY - textCenterY + BANNER_TEXT_OPTICAL_CENTER_Y_OFFSET
-
-        bannerTextOffsetXRef.current = offsetX
-        bannerTextRef.current.setAttribute(
-          'transform',
-          `translate(${formatValue(offsetX)} ${formatValue(offsetY)})`,
-        )
       }
 
       const bannerGlyphNodes = Array.from(
@@ -188,37 +232,140 @@ const Plane = () => {
           return {
             ...glyphMeta,
             normalizedPathData,
-            normalizedPathSegments: parseWavePathData(normalizedPathData),
           }
         })
         .filter(Boolean)
 
-      bannerGlyphMetaRef.current.forEach(({ node, normalizedPathData }) => {
-        node.setAttribute('d', normalizedPathData)
+      const [bannerTextPathMeta, ...hiddenGlyphMetas] =
+        bannerGlyphMetaRef.current
+
+      if (!bannerTextPathMeta) {
+        return undefined
+      }
+
+      hiddenGlyphMetas.forEach(({ node }) => {
+        node.setAttribute('d', '')
+        node.setAttribute('display', 'none')
       })
-      centerBannerTextGroup()
+
+      const combinedBannerTextPathData = bannerGlyphMetaRef.current
+        .map(({ normalizedPathData }) => normalizedPathData)
+        .join('')
+
+      bannerTextPathMeta.node.setAttribute('d', combinedBannerTextPathData)
+      bannerTextPathMeta.node.removeAttribute('transform')
+      bannerTextRef.current.removeAttribute('transform')
+
+      // Important: this bbox must be measured before any wave deformation.
+      // It must also not be affected by CSS scale/transform.
+      const bannerBounds = bannerShapeRef.current.getBBox()
+      const textBounds = bannerTextPathMeta.node.getBBox()
+
+      const bannerCenterX = bannerBounds.x + bannerBounds.width / 2
+      const bannerCenterY = bannerBounds.y + bannerBounds.height / 2
+      const textCenterX = textBounds.x + textBounds.width / 2.125
+      const textCenterY = textBounds.y + textBounds.height / 2
+
+      const centeredBannerTextPathData = getTransformedPathData(
+        parseWavePathData(combinedBannerTextPathData),
+        {
+          originX: textCenterX,
+          originY: textCenterY,
+          scale: BANNER_TEXT_SCALE,
+          xOffset: bannerCenterX - textCenterX,
+          yOffset:
+            bannerCenterY - textCenterY + BANNER_TEXT_OPTICAL_CENTER_Y_OFFSET,
+        },
+      )
+
+      bannerTextPathMeta.node.setAttribute('d', centeredBannerTextPathData)
+
+      bannerTextPathMetaRef.current = {
+        node: bannerTextPathMeta.node,
+        normalizedPathData: centeredBannerTextPathData,
+        normalizedPathSegments: parseWavePathData(centeredBannerTextPathData),
+      }
+
+      scarfMetaRef.current = Array.from(
+        planeRef.current.querySelectorAll('.pilot-scarf'),
+      )
+        .flatMap((node, profileIndex) => {
+          const scarfNodes = [node]
+          const companionNode = node.nextElementSibling
+
+          if (
+            companionNode?.tagName?.toLowerCase() === 'path' &&
+            !companionNode.classList.contains('pilot-scarf') &&
+            companionNode.getAttribute('fill') === node.getAttribute('fill')
+          ) {
+            scarfNodes.push(companionNode)
+          }
+
+          return scarfNodes.map((scarfNode) =>
+            getScarfMeta(scarfNode, profileIndex),
+          )
+        })
+        .filter(Boolean)
 
       const applyBannerWave = (phase, intensity = 1) => {
         const path = getBannerPath(phase, intensity)
-        const centerPath = getCenterPath(phase, intensity)
+        const centerSplineSegments = getBannerSplineSegments(
+          BANNER_CENTER_Y,
+          phase,
+          intensity,
+        )
+        const centerPath = getOpenSplinePath(centerSplineSegments)
+        const getBannerCenterYOffsetAtX = (x) =>
+          getSplineYAtX(centerSplineSegments, x) - BANNER_CENTER_Y
 
         bannerShapeRef.current.setAttribute('d', path)
         bannerClipRef.current.setAttribute('d', path)
         bannerCenterPathRef.current.setAttribute('d', centerPath)
 
-        bannerGlyphMetaRef.current.forEach(
-          ({ node, normalizedPathData, normalizedPathSegments }) => {
+        if (!intensity) {
+          bannerTextPathMetaRef.current.node.setAttribute(
+            'd',
+            bannerTextPathMetaRef.current.normalizedPathData,
+          )
+        } else {
+          bannerTextPathMetaRef.current.node.setAttribute(
+            'd',
+            getWavedPathData(
+              bannerTextPathMetaRef.current.normalizedPathSegments,
+              {
+                getYOffsetAtX: getBannerCenterYOffsetAtX,
+                intensity,
+                phase,
+              },
+            ),
+          )
+        }
+
+        scarfMetaRef.current.forEach(
+          ({
+            amplitude,
+            basePathData,
+            knotX,
+            node,
+            pathSegments,
+            phaseOffset,
+            spanX,
+          }) => {
             if (!intensity) {
-              node.setAttribute('d', normalizedPathData)
+              node.setAttribute('d', basePathData)
               return
             }
 
             node.setAttribute(
               'd',
-              getWavedPathData(normalizedPathSegments, {
+              getScarfFlutterPathData(pathSegments, {
+                amplitude,
+                frequencyMultiplier: SCARF_FLUTTER_FREQUENCY_MULTIPLIER,
                 intensity,
+                knotX,
                 phase,
-                xOffset: bannerTextOffsetXRef.current,
+                phaseOffset,
+                spanX,
               }),
             )
           },
@@ -237,7 +384,6 @@ const Plane = () => {
         ({ conditions }) => {
           if (!conditions?.motionOk || !BANNER_WAVE_ENABLED) {
             applyBannerWave(0, 0)
-            centerBannerTextGroup()
             return undefined
           }
 
@@ -249,7 +395,6 @@ const Plane = () => {
             )
           const waveState = { phase: startPhase }
           applyBannerWave(0, 0)
-          centerBannerTextGroup()
 
           const waveTween = gsap.to(waveState, {
             delay: startDelay,
@@ -468,6 +613,7 @@ const Plane = () => {
           fill='#FB9D38'
         />
         <path
+          className='pilot-scarf'
           d='M395.602 26.8178C397.131 25.3854 399.134 24.3924 401.208 23.8212C402.421 23.5048 403.669 23.3291 404.908 23.2851C406.094 23.2236 407.272 23.3291 408.449 23.3554C409.539 23.3906 410.638 23.2588 411.736 23.1533C411.964 23.127 412.184 23.127 412.413 23.1182C412.061 23.25 411.798 23.5224 411.666 23.83C411.543 24.12 411.446 24.4188 411.402 24.7263C410.734 25.0603 410.005 25.2888 409.267 25.4469C408.195 25.6754 407.105 25.6754 406.033 25.693C404.969 25.7369 403.888 25.8424 402.834 26.106C401.199 26.4839 399.6 27.2397 398.44 28.3733C398.326 28.2854 398.203 28.2063 398.08 28.1272C398.335 27.9163 398.572 27.6878 398.844 27.4945C398.765 27.4418 398.686 27.3978 398.607 27.3451C398.335 27.5384 398.097 27.7669 397.851 27.9866C397.728 27.9075 397.605 27.8372 397.473 27.7757C397.711 27.5472 397.957 27.3451 398.212 27.1342C398.132 27.0815 398.045 27.0375 397.965 26.9936C397.719 27.2133 397.456 27.4242 397.219 27.6439C397.096 27.5736 396.972 27.5033 396.849 27.433C397.095 27.2045 397.35 26.9936 397.596 26.7739C397.509 26.73 397.429 26.6948 397.35 26.6509C397.104 26.8706 396.849 27.0815 396.621 27.31C396.498 27.2484 396.366 27.1869 396.243 27.1254C396.463 26.8969 396.718 26.6948 396.955 26.4751C396.876 26.44 396.797 26.396 396.709 26.3609C396.454 26.5718 396.217 26.7827 395.971 27.0024C395.848 26.9321 395.716 26.8706 395.584 26.8266'
           fill='#FB9D38'
         />
@@ -562,6 +708,7 @@ const Plane = () => {
           fill='#1C2D38'
         />
         <path
+          className='pilot-scarf'
           d='M398.193 21.3256C400.109 20.4819 402.332 20.2095 404.477 20.3677C405.725 20.4732 406.964 20.7192 408.15 21.0971C409.292 21.4398 410.364 21.9231 411.463 22.345C412.482 22.7404 413.563 22.9777 414.627 23.2413C414.846 23.294 415.057 23.3643 415.277 23.4346C414.899 23.4346 414.556 23.6104 414.337 23.8565C414.126 24.0937 413.932 24.3398 413.792 24.6122C413.045 24.7089 412.28 24.6737 411.542 24.5771C410.452 24.4365 409.433 24.0762 408.414 23.7334C407.394 23.4171 406.34 23.1622 405.259 23.0656C403.598 22.881 401.84 23.0656 400.355 23.7422C400.276 23.6192 400.188 23.5049 400.1 23.3907C400.408 23.2765 400.715 23.1446 401.032 23.048C400.97 22.9777 400.909 22.8986 400.856 22.8283C400.531 22.925 400.232 23.048 399.933 23.1798C399.845 23.0656 399.749 22.9601 399.652 22.8546C399.951 22.7228 400.259 22.6086 400.566 22.4943C400.505 22.424 400.443 22.345 400.382 22.2747C400.074 22.3977 399.766 22.5119 399.468 22.6437C399.38 22.5383 399.283 22.4328 399.186 22.3274C399.494 22.1956 399.81 22.0813 400.109 21.9495C400.048 21.888 399.977 21.8177 399.916 21.7562C399.608 21.8792 399.301 22.0022 399.011 22.134C398.914 22.0374 398.809 21.9319 398.712 21.8353C399.002 21.6947 399.301 21.5804 399.599 21.4574C399.538 21.3959 399.476 21.3256 399.415 21.2641C399.107 21.3783 398.809 21.5013 398.51 21.6244C398.422 21.5189 398.316 21.4222 398.202 21.3256'
           fill='#FB9D38'
         />

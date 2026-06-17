@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import { useInRouterContext } from 'react-router'
+import { useInRouterContext, useNavigate } from 'react-router'
 import { convertCssPxToViewportUnit } from '@/styles/viewportUnits'
 import MarmotCheer from './MarmotCheer'
 import {
@@ -45,6 +45,8 @@ import {
   MobileStaticScene,
   Page,
 } from './AboutPage.styles'
+
+const preloadRootsPage = () => import('../roots/RootsPage.jsx')
 
 const CLOUD_FLOAT_PRESETS = {
   dark: { x: '4px', y: '-8px', duration: 7.6 },
@@ -163,9 +165,14 @@ const AboutPageTransitionController = ({ pageElement }) => {
 
 const AboutPage = () => {
   const isInRouterContext = useInRouterContext()
+  const navigate = useNavigate()
   const [pageElement, setPageElement] = useState(null)
-  const { scrollerRef, sceneRef, handleScrollHintClick } =
-    useAboutDesktopScene()
+  const {
+    scrollerRef,
+    sceneRef,
+    handleScrollHintClick,
+    isFinalStageActive,
+  } = useAboutDesktopScene()
   const MobileQuoteCloudSvg = ABOUT_MOBILE_QUOTE_CLOUD.Svg
   const handlePageRef = useCallback((node) => {
     setPageElement(node)
@@ -266,11 +273,17 @@ const AboutPage = () => {
             ))}
 
             <DesktopMascot
+              type='button'
+              aria-label='Enter Non-profit Roots'
               data-about-mascot
               data-about-layer='mascot'
-              aria-hidden='true'
+              disabled={!isFinalStageActive}
+              onClick={() => navigate('/roots')}
+              onFocus={preloadRootsPage}
+              onMouseEnter={preloadRootsPage}
             >
               <DesktopMascotFloat
+                aria-hidden='true'
                 data-about-float-layer='mascot'
                 style={MASCOT_FLOAT_STYLE}
               >

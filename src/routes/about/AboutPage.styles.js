@@ -345,21 +345,38 @@ export const DesktopQuoteMeta = styled.p`
   ${({ $layer }) => desktopMetaPalette[$layer]}
 `
 
-export const DesktopMascot = styled.div`
+export const DesktopMascot = styled.button`
+  display: block;
   position: absolute;
   left: 0;
   top: 0;
   z-index: 50;
   width: 23.6vw;
   max-width: 349.01px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  appearance: none;
+  pointer-events: auto;
+  cursor: pointer;
   transform-origin: bottom center;
   will-change: transform, width, opacity;
   rotate: -11.89deg;
+
+  &:disabled {
+    cursor: default;
+  }
+
+  &:focus-visible {
+    outline: 2px solid ${({ theme }) => theme.colors.yellow.gold};
+    outline-offset: 6px;
+  }
 
   svg {
     display: block;
     width: 100%;
     height: auto;
+    pointer-events: none;
   }
 `
 

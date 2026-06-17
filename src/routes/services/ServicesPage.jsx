@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router'
 import usePageActive from '@/shared/hooks/usePageActive'
 import ViewContainer from '@/shared/ui/ViewContainer'
 import services from './services'
@@ -14,8 +15,11 @@ import {
 } from './ServicesPage.styles'
 import TopHatMarmot from './TopHatMarmot'
 
+const preloadRootsPage = () => import('../roots/RootsPage.jsx')
+
 export default function Services() {
   const isActive = usePageActive()
+  const navigate = useNavigate()
   const [activeService, setActiveService] = useState(0)
   const activeEntry = services[activeService]
 
@@ -45,7 +49,13 @@ export default function Services() {
           <DescriptionText>{activeEntry.description}</DescriptionText>
         </Description>
       </ServicesStage>
-      <TopHatMarmotWrapper>
+      <TopHatMarmotWrapper
+        type='button'
+        aria-label='Enter Non-profit Roots'
+        onClick={() => navigate('/roots')}
+        onFocus={preloadRootsPage}
+        onMouseEnter={preloadRootsPage}
+      >
         <TopHatMarmot />
       </TopHatMarmotWrapper>
     </ViewContainer>

@@ -19,6 +19,57 @@ import frameTop from './assets/roots-slider/frame-chrome/top.svg'
 import PillButton from '@/shared/ui/PillButton'
 
 const SLIDE_FADE_DURATION_MS = 180
+const READY_ARTWORK_SOURCES = new Set()
+const ARTWORK_PRELOAD_PROMISES = new Map()
+
+const preloadArtworkSource = (source) => {
+  if (!source) return Promise.resolve()
+
+  if (READY_ARTWORK_SOURCES.has(source)) {
+    return Promise.resolve()
+  }
+
+  const existingPromise = ARTWORK_PRELOAD_PROMISES.get(source)
+
+  if (existingPromise) return existingPromise
+
+  const preloadPromise = new Promise((resolve) => {
+    const image = new Image()
+    let isResolved = false
+
+    const finalize = () => {
+      if (isResolved) return
+
+      isResolved = true
+      READY_ARTWORK_SOURCES.add(source)
+      ARTWORK_PRELOAD_PROMISES.delete(source)
+      resolve()
+    }
+
+    image.onload = finalize
+    image.onerror = () => {
+      ARTWORK_PRELOAD_PROMISES.delete(source)
+      resolve()
+    }
+
+    image.decoding = 'async'
+    image.fetchPriority = 'high'
+    image.src = source
+
+    if (image.complete && image.naturalWidth > 0) {
+      finalize()
+      return
+    }
+
+    if (typeof image.decode === 'function') {
+      image.decode().then(finalize).catch(() => {})
+    }
+  })
+
+  ARTWORK_PRELOAD_PROMISES.set(source, preloadPromise)
+
+  return preloadPromise
+}
 
 const toCssLength = (value, fallback = 'auto') =>
   typeof value === 'number' ? `${value}px` : (value ?? fallback)
@@ -338,6 +389,8 @@ const Copy = styled.div`
     typeof $maxWidth === 'number' ? `${$maxWidth}px` : ($maxWidth ?? 'none')};
 
   @media ${MEDIA_QUERIES.mobilePortrait} {
+    visibility: ${({ $isArtworkReady }) =>
+      $isArtworkReady ? 'visible' : 'hidden'};
     flex: 0 1 auto;
     gap: 14px;
     margin-top: 0;
@@ -520,9 +573,27 @@ export default function RootsPortfolioSlider({
   const titleId = useId()
   const [displayItem, setDisplayItem] = useState(item)
   const [slidePhase, setSlidePhase] = useState('active')
+  const [artworkReadySource, setArtworkReadySource] = useState(() =>
+    READY_ARTWORK_SOURCES.has(item.detailImage) ? item.detailImage : null,
+  )
   const FrameComponent = displayItem.FrameComponent
   const frameComponentName =
     FrameComponent.displayName ?? FrameComponent.name ?? displayItem.id
+  const displayArtworkSource = displayItem.detailImage ?? null
+  const isArtworkReady =
+    !displayArtworkSource ||
+    READY_ARTWORK_SOURCES.has(displayArtworkSource) ||
+    artworkReadySource === displayArtworkSource
+
+  const markArtworkReady = useCallback((source) => {
+    if (!source) return
+
+    READY_ARTWORK_SOURCES.add(source)
+
+    setArtworkReadySource((currentSource) =>
+      currentSource === source ? currentSource : source,
+    )
+  }, [])
 
   const requestSlideChange = useCallback(
     (changeSlide) => {
@@ -552,6 +623,30 @@ export default function RootsPortfolioSlider({
   useLayoutEffect(() => {
     closeRef.current?.focus()
   }, [])
+
+  useEffect(() => {
+    preloadArtworkSource(item.detailImage)
+  }, [item.detailImage])
+
+  useEffect(() => {
+    if (!displayArtworkSource) return undefined
+
+    if (READY_ARTWORK_SOURCES.has(displayArtworkSource)) {
+      return undefined
+    }
+
+    let isCancelled = false
+
+    preloadArtworkSource(displayArtworkSource).then(() => {
+      if (!isCancelled) {
+        markArtworkReady(displayArtworkSource)
+      }
+    })
+
+    return () => {
+      isCancelled = true
+    }
+  }, [displayArtworkSource, markArtworkReady])
 
   useEffect(() => {
     if (slidePhase === 'leaving') {
@@ -743,6 +838,9 @@ export default function RootsPortfolioSlider({
                 $artworkTop={displayItem.artworkTop}
                 $artworkLeft={displayItem.artworkLeft}
                 $mobileArtwork={displayItem.mobileArtwork}
+                fetchPriority='high'
+                loading='eager'
+                onLoad={() => markArtworkReady(displayItem.detailImage)}
                 src={displayItem.detailImage}
                 alt={`${displayItem.title} project artwork`}
               />
@@ -756,7 +854,11 @@ export default function RootsPortfolioSlider({
             )}
           </ArtworkStage>
 
-          <Copy $maxWidth={displayItem.maxWidth} data-roots-slide-copy>
+          <Copy
+            $isArtworkReady={isArtworkReady}
+            $maxWidth={displayItem.maxWidth}
+            data-roots-slide-copy
+          >
             <HeadingGroup>
               {displayItem.type ? (
                 <ItemType>{displayItem.type}</ItemType>

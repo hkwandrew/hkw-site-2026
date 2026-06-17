@@ -1,4 +1,4 @@
-import { useCallback, useLayoutEffect, useRef } from 'react'
+import { useCallback, useLayoutEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import MorphSVGPlugin from 'gsap/MorphSVGPlugin'
 import { MEDIA_QUERIES } from '@/styles/breakpoints'
@@ -100,6 +100,7 @@ const getSceneMediaQuery = (query) =>
 const useAboutDesktopScene = () => {
   const scrollerRef = useRef(null)
   const sceneRef = useRef(null)
+  const [isFinalStageActive, setIsFinalStageActive] = useState(false)
 
   const handleScrollHintClick = useCallback(() => {
     const scroller = scrollerRef.current
@@ -279,11 +280,17 @@ const useAboutDesktopScene = () => {
         maxScroll > 0
           ? Math.min(Math.max(scroller.scrollTop / maxScroll, 0), 1)
           : 0
+      const nextIsFinalStageActive =
+        progress >= ABOUT_FINAL_STAGE_START_PROGRESS
 
       timeline.progress(progress)
       syncHeroViewBox(heroSvg, progress)
-      scene.dataset.aboutFinalStage =
-        progress >= ABOUT_FINAL_STAGE_START_PROGRESS ? 'true' : 'false'
+      scene.dataset.aboutFinalStage = nextIsFinalStageActive ? 'true' : 'false'
+      setIsFinalStageActive((currentValue) =>
+        currentValue === nextIsFinalStageActive
+          ? currentValue
+          : nextIsFinalStageActive,
+      )
     }
 
     const requestSync = () => {
@@ -347,6 +354,7 @@ const useAboutDesktopScene = () => {
     scrollerRef,
     sceneRef,
     handleScrollHintClick,
+    isFinalStageActive,
   }
 }
 
